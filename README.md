@@ -28,11 +28,12 @@
     1. 【Python】画像の滑らかさを落とさないようにリサイズする。
     1. 【Python】セグメンテーション画像をリサイズする。
     1. 【Python】品質評価のためのグリッド画像を生成する。
+    1. 【Python】OpenCV ↔ Pillow ↔ numpy の変換対応
 1. 高速化処理
     1. 【シェルスクリプト】別プロセスで起動する。
     1. 【Python】CPU の並列処理を行う。
-    1. [【Python】GPU 並列化のために、フォルダ内のファイルを分割し別フォルダに保存し、その後１つのフォルダに再統合する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/acceleration_processing/1)
-    1. 【Python】for ではなく行列処理で画像処理の高速化する。
+    1. [【Python】複数 GPU での並列化のために、フォルダ内のファイルを分割し別フォルダに保存し、その後１つのフォルダに再統合する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/acceleration_processing/1)
+    1. 【Python】for ではなく行列処理で画像処理を高速化する。
 1. その他処理
     1. xxx
 
