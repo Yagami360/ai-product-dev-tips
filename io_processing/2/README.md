@@ -1,10 +1,9 @@
 
-- フォルダ内のファイル数は、`ls -1 | wc -l` で確認出来る。
-    - `ls -1 | wc -l` では、サブディレクトリ内の全ファイル数を表示することに注意。
+- フォルダ内のファイル数は、`$ ls -1 | wc -l` で確認出来る。
+    - `$ ls -1 | wc -l` では、サブディレクトリ内の全ファイル数を表示することに注意。
     ```sh
     #!bin/bash
-    DIR="${HOME}/GitHub/MachineLearning_PreProcessing_Exercises/io_processing/2/dir"   # 絶対パスで指定
-    #DIR="dir"  # 相対パスで指定
+    DIR="dir"  # 相対パスで指定
 
     echo ${DIR}
     ls ${DIR} | wc -l
@@ -18,11 +17,11 @@
 
 - 複数フォルダのファイル数確認は、以下のシェルコマンドで実行可能
     ```sh
-    ls | while read name
+    $ ls | while read name
 
     > do
     > echo $name
     > done
 
-    ls | while read name; do echo $name; ls -1 $name | wc -l; done
+    $ ls | while read name; do echo $name; ls -1 $name | wc -l; done
     ```

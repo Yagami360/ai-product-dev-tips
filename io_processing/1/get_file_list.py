@@ -19,7 +19,7 @@ if __name__ == "__main__":
         os.makedirs(out_dir)
 
     # フォルダ内の全ファイルは、`os.listdir()` で取得出来る。
-    # ソートされていないことに注意
+    # ソートされていないことに注意（機械学習のタスクにおいてlistがソートされていないと，処理が中断された時に再開ができない）
     # サブディレクトリも取得されていることに注意
     files = os.listdir(in_dir)
     print( "files :", files )
