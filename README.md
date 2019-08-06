@@ -16,17 +16,16 @@
     1. [【シェルスクリプト】フォルダ内のファイル数を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/io_processing/2)
     1. [【Python】フォルダ内のファイル一覧を取得する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/io_processing/1)
     1. [【Python】２つのフォルダのファイル数＆ファイル名の差分を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/io_processing/3)
-    1. 【シェルスクリプト】ランダムに１００個のファイルをサンプリングする。
+    1. [【シェルスクリプト】ランダムに１００個のファイルをサンプリングする。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/io_processing/4)
 1. サーバー処理
-    1. 【シェルスクリプト】ssh 切れ対策のための nphup での実行
+    1. 【シェルスクリプト】ssh 切れ対策のための nohup での実行
     1. 【シェルスクリプト】サーバー間でデータを転送・コピーする。
     1. 【UNIX】サーバー上の画像ファイルをブラウザで確認する。
-    1. 【シェルスクリプト】AWS インスタンスをシェルスクリプト上から停止する。
+    1. [【シェルスクリプト】AWS インスタンスをシェルスクリプト上から停止する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/1)
 1. 画像処理
-    1. 【シェルスクリプト】画像ファイルの解像度を確認する。
+    1. [【シェルスクリプト】画像ファイルの解像度を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/1)
     1. 【Python】画像の滑らかさを落とさないように拡張子を変更する。
-    1. 【Python】画像の滑らかさを落とさないようにリサイズする。
-    1. 【Python】セグメンテーション画像をリサイズする。
+    1. [【Python】画像やセグメンテーション画像の滑らかさを落とさないようにリサイズする。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/2)
     1. 【Python】品質評価のためのグリッド画像を生成する。
     1. 【Python】OpenCV ↔ Pillow ↔ numpy の変換対応
 1. 高速化処理
