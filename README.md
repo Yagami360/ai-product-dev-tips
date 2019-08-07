@@ -35,12 +35,16 @@
     1. 【Python】品質評価のためのグリッド画像を生成する。
 1. 高速化処理
     1. 【シェルスクリプト】別プロセスで起動する。
-    1. 【Python】CPU の並列処理を行う。
+    1. [【Python】CPU の並列処理を行う。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/acceleration_processing/2)
     1. [【Python】複数 GPU での並列化のために、フォルダ内のファイルを分割し別フォルダに保存し、その後１つのフォルダに再統合する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/acceleration_processing/1)
     1. 【Python】for ではなく行列処理で画像処理を高速化する。
 1. スクレイピング
+1. 自然言語処理
 1. 音声処理
 1. その他処理
-    1. xxx
+    1. OpenPose
+        1. OpenPose の json ファイルを読み込む
+        1. OpenPose の json ファイルを書き込む。
+
 
 ## ■ 参考文献＆サイト

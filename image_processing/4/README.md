@@ -38,17 +38,19 @@
     img_pillow = Image.open('image/1.jpeg')
     img_np = np.asarray(img_pillow)
     img_cv = cv2.cvtColor(img_np, cv2.COLOR_RGB2BGR)
-    cv2.imwrite('image/1_cv2.jpg', img_cv)
+    cv2.imwrite('image/1_cv2.png', img_cv)
     ```
     - `np.asarray()` : 参照 Copy
     - `np.array()` : Deep Copy
 
-
-- OpenCV → Pillow への変換は、配列の shape の配置以外にも RGB の順番に注意して行う必要がある。
+- OpenCV → Pillow への変換は、`cv2.cvtColor()` の引数 `cv2.COLOR_BGR2RGB` で色の順番を BGR → RGB にした後に、`Image.fromarray()` で numpy 型から Pillow オブジェクトを生成することで行える。
     ```python
     import numpy as np
     from PIL import Image
     import cv2
 
-
+    img_cv = cv2.imread('image/1.jpeg')
+    img_np = cv2.cvtColor(img_cv, cv2.COLOR_BGR2RGB)
+    img_pillow = Image.fromarray(img_np)
+    img_pillow.save('image/1_pillow.png')
     ```
