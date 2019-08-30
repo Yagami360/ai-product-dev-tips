@@ -59,6 +59,7 @@ if __name__ == '__main__':
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("in_image_path", type=str)
+    parser.add_argument("out_image_path", type=str)
     args = parser.parse_args()
 
     image = cv2.imread(args.in_image_path)
@@ -66,7 +67,7 @@ if __name__ == '__main__':
 
     # crop 先の空の画像
     image_base_np = np.zeros((height, width, 3))
-
+    
     for i in range(height) :
         for j in range(width):
             label = image[i][j]
@@ -77,5 +78,4 @@ if __name__ == '__main__':
             else:
                 pass
 
-    out_file_path = args.in_image_path.split("/")[-1].replace(".png", "_cropped.png") 
-    cv2.imwrite(out_file_path, image_base_np)
+    cv2.imwrite(args.out_image_path, image_base_np)

@@ -19,9 +19,7 @@
             else:
                 pass
 
-    cv2.imwrite("1_cropped", image_base_np)
+    cv2.imwrite("1_cropped.png", image_base_np)
     ```
     - もっと効率的な方法はないか？
         - OpenCV の機能にこのような機能はないか？
-
-- このような画像の paste 処理は
