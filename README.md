@@ -35,11 +35,11 @@
     1. 【Python】データオーギュメンションや品質評価のための画像の拡大縮小＆平行移動＆回転
     1. [【Python】セマンティックセグメンテーション画像からラベル値を取得する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/5)
     1. [【Python】セマンティックセグメンテーション画像の特定のラベル値の部分を抜き取る。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/6)
-    1. 【Python】品質評価のためのグリッド画像を生成する。
+    1. [【Python】品質評価のためのグリッド画像を生成する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/7)
     1. 【Python】画像のバイナリマスク画像を生成する。
     1. 【Python】画像の左右対称性を検出する。
     1. OpenPose
-        1. 【Python】OpenPose の json ファイルを読み込む
+        1. 【Python】OpenPose の json ファイルを読み込む。
         1. 【Python】OpenPose の json ファイルを書き込む。
         1. [【Python】OpenPose の json ファイルの関節点を画像表示する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/openpose/1)
 1. 高速化処理
