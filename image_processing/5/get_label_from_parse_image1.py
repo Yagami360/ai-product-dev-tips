@@ -3,7 +3,6 @@ import argparse
 import numpy as np
 import cv2
 
-"""
 map_name_to_idx = {
     "Background" : 0,
     "Hat" : 1,
@@ -28,7 +27,6 @@ map_name_to_idx = {
     "RightHand" : 20,
     "LeftHand" : 21,
 }
-"""
 
 map_name_to_rgb = {
     "Background" : (0,0,0),
@@ -61,11 +59,18 @@ if __name__ == '__main__':
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("in_image_path", type=str)
+    parser.add_argument("--rgb", action='store_true' )
     args = parser.parse_args()
 
     image = cv2.imread(args.in_image_path)
-    #image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)   # グレースケールに変換
-    #cv2.imwrite( args.in_image_path.replace(".png", "_Gray.png"), image )
+
+    if( args.rgb ):
+        pass
+    else:
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)   # グレースケールに変換
+        #cv2.imwrite( args.in_image_path.replace(".png", "_Gray.png"), image )
+        pass
+
     height, width = image.shape[0], image.shape[1]
 
     n_background = 0
@@ -74,22 +79,41 @@ if __name__ == '__main__':
     n_face = 0
     for i in range(height) :
         for j in range(width):
-            label = image[i][j]
-
-            if( all(label == map_name_to_rgb["Background"]) ):
-                print( "0 : Background" )
-                n_background += 1
-            elif( all(label == map_name_to_rgb["Hat"]) ):
-                print( "1 : Hat" )
-                n_hat += 1
-            elif( all(label == map_name_to_rgb["Hair"]) ):
-                print( "2 : Hair" )
-                n_hair += 1
-            elif( all(label == map_name_to_rgb["Face"]) ):
-                print( "13 : Face" )
-                n_face += 1
+            if( args.rgb ):
+                label = image[i][j]
             else:
-                pass
+                label = image[i][j][0]
+                
+            if( args.rgb ):
+                if( all(label == map_name_to_rgb["Background"]) ):
+                    print( "0 : Background" )
+                    n_background += 1
+                elif( all(label == map_name_to_rgb["Hat"]) ):
+                    print( "1 : Hat" )
+                    n_hat += 1
+                elif( all(label == map_name_to_rgb["Hair"]) ):
+                    print( "2 : Hair" )
+                    n_hair += 1
+                elif( all(label == map_name_to_rgb["Face"]) ):
+                    print( "13 : Face" )
+                    n_face += 1
+                else:
+                    pass
+            else:
+                if( all(label == map_name_to_idx["Background"]) ):
+                    print( "0 : Background" )
+                    n_background += 1
+                elif( all(label == map_name_to_idx["Hat"]) ):
+                    print( "1 : Hat" )
+                    n_hat += 1
+                elif( all(label == map_name_to_idx["Hair"]) ):
+                    print( "2 : Hair" )
+                    n_hair += 1
+                elif( all(label == map_name_to_idx["Face"]) ):
+                    print( "13 : Face" )
+                    n_face += 1
+                else:
+                    pass
 
     print( "n_background :", n_background )
     print( "percent_background :", n_background / (height*width) )

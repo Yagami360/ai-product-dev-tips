@@ -59,23 +59,35 @@ if __name__ == '__main__':
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("in_image_path", type=str)
+    parser.add_argument("--rgb", action='store_true' )
     args = parser.parse_args()
 
     image = cv2.imread(args.in_image_path)
-    image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)   # グレースケールに変換
-    #cv2.imwrite( args.in_image_path.replace(".png", "_Gray.png"), image )
+
+    if( args.rgb ):
+        pass
+    else:
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)   # グレースケールに変換
+        #cv2.imwrite( args.in_image_path.replace(".png", "_Gray.png"), image )
+
     height, width = image.shape[0], image.shape[1]
 
-    # == 演算子で 画像全体を比較
-    # 各要素の True -> 対応するピクセルのラベル値が 0 ; True -> 対応するピクセルのラベル値が 0 でない
-    b_matrix = ( image ==  map_name_to_idx["Background"] )
-    #b_matrix = ( image ==  map_name_to_rgb["Background"] )
+    #------------------------
+    # あるラベルに対して検出
+    #------------------------
+    if( args.rgb ):
+        # == 演算子で 画像全体を比較
+        # 各要素の True -> 対応するピクセルのラベル値が 0 ; True -> 対応するピクセルのラベル値が 0 でない
+        b_matrix = ( image ==  map_name_to_rgb["Background"] )
+
+        # 行列の True 要素の数の和を取る。この値が該当するラベルの総ピクセル数となる。
+        n_true = np.sum( b_matrix[:,:,0] )   # for RGB
+    else:
+        b_matrix = ( image ==  map_name_to_idx["Background"] )
+        n_true = np.sum( b_matrix[:,:] )      # for Gray scale
+
     print( "b_matrix :", b_matrix )
     print( "b_matrix.shape :", b_matrix.shape )
-
-    # 行列の True 要素の数の和を取る。この値が該当するラベルの総ピクセル数となる。
-    #n_true = np.sum( b_matrix[:,:,0] )   # for RGB
-    n_true = np.sum( b_matrix[:,:] )      # for Gray scale
     print( "n_true :", n_true )
 
     # 画像全体に対してのラベル値が 0 の割合
@@ -87,14 +99,21 @@ if __name__ == '__main__':
     if( parcent >= threshold ):
         print( "0 : Background" ) 
 
+    #------------------------
     # 別のラベルに対しても検出
-    b_matrix = ( image ==  map_name_to_idx["Face"] )
-    #b_matrix = ( image ==  map_name_to_rgb["Face"] )
+    #------------------------
+    if( args.rgb ):
+        b_matrix = ( image ==  map_name_to_rgb["Face"] )
+        n_true = np.sum( b_matrix[:,:,0] )
+    else:
+        b_matrix = ( image ==  map_name_to_idx["Face"] )
+        n_true = np.sum( b_matrix[:,:] )
+
     print( "b_matrix :", b_matrix )
     print( "b_matrix.shape :", b_matrix.shape )
-    n_true = np.sum( b_matrix[:,:] )
-    #n_true = np.sum( b_matrix[:,:,0] )
+
     parcent = 100 * ( n_true / ( height * width ) )
     threshold = 1
     if( parcent >= threshold ):
+        print( "parcent :", parcent )
         print( "13 : Face" ) 
