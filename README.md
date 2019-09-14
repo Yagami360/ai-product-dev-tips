@@ -36,9 +36,10 @@
     1. [【Python】セマンティックセグメンテーション画像からラベル値を取得する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/5)
     1. [【Python】セマンティックセグメンテーション画像の特定のラベル値の部分を抜き取る。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/6)
     1. [【Python】品質評価のためのグリッド画像を生成する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/7)
-    1. 【Python】画像のバイナリマスク画像を生成する。
+    1. [【Python】画像のバイナリマスク画像を生成する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/9)
     1. [【Python】画像の上下 or 左右対称性を検出する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/8)
     1. 【Python】画像の特定の対象物が画面端で途切れているかを検出する。
+    1. 【Python】人物画像で半袖を着ているか長袖を着ているかを検出する。
     1. OpenPose
         1. 【Python】OpenPose の json ファイルを読み込む。
         1. 【Python】OpenPose の json ファイルを書き込む。

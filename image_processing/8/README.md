@@ -28,7 +28,7 @@
         print("非対称画像 : symmetry_rate={}".format(symmetry_rate) )
     ```
 
-- 或いはマスク画像にしなくても、以下の手順でも検出出来る。
+- 或いはマスク画像にしなくても、以下の手順でも検出出来る？
     1. 元の画像 `original_img` の反転画像 `flipped_img` に対して、`==` 演算子で比較したもの sum を取り、画像の高さ H と 幅 W、及びチャンネル数 C で正規化し、シンメトリー値 `symmetry_rate` とする。<br> 
         `symmetry_rate = sum(sum(sum(original_img == flipped_img)))/ H / W / C`
     1. このシンメトリー値は、1.0 に近いほど画像の対称性が高いことを示しているので、あるスレッショルド値の以上 or 以下で、画像の対称 or 非対称を検出することが出来る。
