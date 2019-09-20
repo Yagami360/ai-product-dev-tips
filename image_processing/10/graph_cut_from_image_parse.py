@@ -13,7 +13,7 @@ if __name__ == '__main__':
     parser.add_argument("in_image_parse_dir", type=str)
     parser.add_argument("out_image_dir", type=str)
     parser.add_argument('--binary_threshold', type=int, default=0)
-    #parser.add_argument("--back_ground_color", type=int, default=[0,0,0])
+    parser.add_argument('--back_ground_color', choices=['black', 'white', 'green'])
     parser.add_argument('--debug', action='store_true')
     args = parser.parse_args()
 
@@ -50,7 +50,15 @@ if __name__ == '__main__':
         img_org = img_org.astype('float32') / 255.0
 
         # 元画像とバイナリマスク画像をブレンドする。
-        back_ground_color = (1.0,1.0,1.0)
+        if( args.back_ground_color == "black" ):
+            back_ground_color = (0.0, 0.0, 0.0)
+        elif( args.back_ground_color == "white" ):
+            back_ground_color = (1.0, 1.0, 1.0)
+        elif( args.back_ground_color == "green" ):
+            back_ground_color = (0.0, 1.0, 0.0)
+        else:
+            back_ground_color = (0.0, 0.0, 0.0)
+
         masked = (img_parse * img_org) + ((1-img_parse) * back_ground_color )
 
         # 0 ~255 のスケールに戻す
