@@ -1,4 +1,8 @@
-## 【Python】OpenCV ↔ Pillow ↔ numpy の変換対応
+# 【Python】OpenCV ↔ Pillow ↔ numpy の変換対応
+
+## 機械学習の文脈での用途
+
+## 実現方法
 
 - OpenCV ↔ Pillow ↔ numpy の変換を行うときは、配列の shape や size の順番に注意すること。
     - OpenCV : ndarray.shape / [height, width, channels(3)]
