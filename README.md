@@ -24,7 +24,6 @@
     1. 【シェルスクリプト】ssh 切れ対策のために `nohup` コマンドで実行する。
     1. 【シェルスクリプト】サーバー間でデータを転送・コピーする。
     1. 【UNIX】サーバー上の画像ファイルをブラウザ上で確認する。
-    1. 【UNIX】サーバー上のディスク容量を確認する。`df -h`, `du -hd1`
     1. [【シェルスクリプト】GCP or AWS インスタンスをシェルスクリプト上から停止する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/1)
     1. 【UNIX】GCP ディスクを `gcsfuse` コマンドでマウントする。
 1. 画像処理
@@ -38,8 +37,13 @@
     1. [【Python】品質評価のためのグリッド画像を生成する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/7)
     1. [【Python】画像のバイナリマスク画像を生成する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/9)
     1. [【Python】画像の上下 or 左右対称性を検出する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/8)
+    1. 【Python】元画像とセグメンテーション画像をアルファブレンディングで重ねて表示する。
+    1. [【Python】画像の背景部分をくり抜く。（グラフ カット）](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/10)
+    1. 【Python】OpenPose の関節点情報に基づき、人物画像を全身部分でクロップする。
+    1. 【Python】OpenPose の関節点情報に基づき、人物画像を上半身部分でクロップする。
+    1. 【Python】OpenPose の関節点情報に基づき、人物画像が半袖を着ているか長袖を着ているかを検出する。
+    1. 【Python】人物セグメンテーション画像に、他の人体部位のラベルを追加する。
     1. 【Python】画像の特定の対象物が画面端で途切れているかを検出する。
-    1. 【Python】人物画像で半袖を着ているか長袖を着ているかを検出する。
     1. OpenPose
         1. 【Python】OpenPose の json ファイルを読み込む。
         1. 【Python】OpenPose の json ファイルを書き込む。
