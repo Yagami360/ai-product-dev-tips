@@ -31,7 +31,7 @@
     1. [【Python】OpenCV ↔ Pillow ↔ numpy の変換対応](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/4)
     1. [【Python】画像の滑らかさを落とさないように拡張子を変更する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/3)
     1. [【Python】画像やセマンティックセグメンテーション画像の滑らかさを落とさないようにリサイズする。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/2)
-    1. [【Python】画像の対象物のアスペクト比を変えないまま resize & crop する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/11)
+    1. [【Python】画像の対象物のアスペクト比を変えないまま adjust する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/11)
     1. 【Python】データオーギュメンションや品質評価のための画像の拡大縮小＆平行移動＆回転
     1. [【Python】セマンティックセグメンテーション画像からラベル値を取得する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/5)
     1. [【Python】セマンティックセグメンテーション画像の特定のラベル値の部分を抜き取る。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/6)

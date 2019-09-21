@@ -5,7 +5,7 @@ from PIL import Image
 
 if __name__ == '__main__':
     """
-    マスク画像を利用せずに、画像の対象物のアスペクト比を変えないまま resize する。
+    マスク画像を利用せずに、画像の対象物のアスペクト比を変えないまま adjust する。
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("in_image_dir", type=str)
@@ -28,7 +28,7 @@ if __name__ == '__main__':
         new_height = args.height
         new_aspect = float( new_width / new_height )
         img_org = img_org.resize( (new_width, new_height), Image.LANCZOS )
-        img_org.save( os.path.join(args.out_image_dir, "A-1_" + image_name.replace(".jpg",".png")) )
+        img_org.save( os.path.join(args.out_image_dir, image_name.replace(".jpg",".png")) )
 
         if( args.debug ):
             print( "name={}, aspect_org={}, new_aspect={}, new_width={}, new_height={}".format(image_name, aspect_org, new_aspect, new_width, new_height) )
