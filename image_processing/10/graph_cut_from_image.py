@@ -6,7 +6,7 @@ import cv2
 
 if __name__ == '__main__':
     """
-    人物セグメンテーション画像から、背景をくり抜く。
+    人物セグメンテーション画像を使用せずに、背景をくり抜く。
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("in_image_dir", type=str)
@@ -42,7 +42,7 @@ if __name__ == '__main__':
         # グレースケールのバイナリマスクを RGB の３チャンネルに戻す
         img = cv2.merge((img_org_binary, img_org_binary, img_org_binary))
 
-        # ブレンド式用に 0.0 ~ 1.0f 　のスケールに変換する。
+        # ブレンド式用に 0.0 ~ 1.0f のスケールに変換する。
         img  = img.astype('float32') / 255.0
         img_org = img_org.astype('float32') / 255.0
 

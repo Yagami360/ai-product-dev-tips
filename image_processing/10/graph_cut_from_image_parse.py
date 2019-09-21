@@ -6,7 +6,7 @@ import cv2
 
 if __name__ == '__main__':
     """
-    人物セグメンテーション画像から、背景をくり抜く。
+    人物セグメンテーション画像を使用して、背景をくり抜く。
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("in_image_dir", type=str)

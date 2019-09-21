@@ -28,17 +28,18 @@
     1. 【UNIX】GCP ディスクを `gcsfuse` コマンドでマウントする。
 1. 画像処理
     1. [【シェルスクリプト】画像ファイルの解像度を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/1)
+    1. [【Python】OpenCV ↔ Pillow ↔ numpy の変換対応](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/4)
     1. [【Python】画像の滑らかさを落とさないように拡張子を変更する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/3)
     1. [【Python】画像やセマンティックセグメンテーション画像の滑らかさを落とさないようにリサイズする。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/2)
-    1. [【Python】OpenCV ↔ Pillow ↔ numpy の変換対応](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/4)
+    1. [【Python】画像の対象物のアスペクト比を変えないまま resize & crop する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/11)
     1. 【Python】データオーギュメンションや品質評価のための画像の拡大縮小＆平行移動＆回転
     1. [【Python】セマンティックセグメンテーション画像からラベル値を取得する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/5)
     1. [【Python】セマンティックセグメンテーション画像の特定のラベル値の部分を抜き取る。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/6)
-    1. [【Python】品質評価のためのグリッド画像を生成する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/7)
     1. [【Python】画像のバイナリマスク画像を生成する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/9)
-    1. [【Python】画像の上下 or 左右対称性を検出する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/8)
-    1. 【Python】元画像とセグメンテーション画像をアルファブレンディングで重ねて表示する。
     1. [【Python】画像の背景部分をくり抜く。（グラフ カット）](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/10)
+    1. [【Python】画像の上下 or 左右対称性を検出する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/8)
+    1. [【Python】品質評価のためのグリッド画像を生成する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/7)
+    1. 【Python】元画像とセグメンテーション画像をアルファブレンディングで重ねて表示する。
     1. 【Python】OpenPose の関節点情報に基づき、人物画像を全身部分でクロップする。
     1. 【Python】OpenPose の関節点情報に基づき、人物画像を上半身部分でクロップする。
     1. 【Python】OpenPose の関節点情報に基づき、人物画像が半袖を着ているか長袖を着ているかを検出する。
@@ -56,7 +57,9 @@
 1. スクレイピング
 1. 自然言語処理
 1. 音声処理
+1. Docker
 1. その他処理
     1. 【シェルスクリプト】`curl` コマンドで WebAPI を直接たたく
+
 
 ## ■ 参考文献＆サイト
