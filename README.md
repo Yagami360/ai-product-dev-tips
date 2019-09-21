@@ -39,7 +39,7 @@
     1. [【Python】画像の背景部分をくり抜く。（グラフ カット）](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/10)
     1. [【Python】画像の上下 or 左右対称性を検出する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/8)
     1. [【Python】品質評価のためのグリッド画像を生成する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/7)
-    1. 【Python】元画像とセグメンテーション画像をアルファブレンディングで重ねて表示する。
+    1. [【Python】元画像とセグメンテーション画像をアルファブレンディングで重ねて表示する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/12)
     1. 【Python】OpenPose の関節点情報に基づき、人物画像を全身部分でクロップする。
     1. 【Python】OpenPose の関節点情報に基づき、人物画像を上半身部分でクロップする。
     1. 【Python】OpenPose の関節点情報に基づき、人物画像が半袖を着ているか長袖を着ているかを検出する。
