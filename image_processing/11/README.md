@@ -11,6 +11,8 @@
     1. 元画像の height or width を基準として、aspect 比を保ったまま元画像を resize する。
 
     ※ この方法では、基準として採用していない height or width への resize が行われないことに注意。
+
+    `image_adjust_wo_mask1.py`<br>
     ```python
     img_org = Image.open( os.path.join(args.in_image_dir, image_name ) )
 
@@ -30,6 +32,8 @@
     ※ Pillow では、画像の貼り付け paste() メソッドを使えるので、OpenCV より Pillow を使うほうが簡単に実現出来る。<br>
     ※ この方法では、対象物の画面全体に対する大きさの割合が小さくなってしまうことに注意<br>
     ※ 又、この方法では、resize したい (width, height) の値が、元の対象物のサイズよりも小さい場合、画面端で途切れてしまう。
+
+    `image_adjust_wo_mask2.py`<br>
     ```python
     img_org = Image.open( os.path.join(args.in_image_dir, image_name ) )
 
@@ -59,6 +63,8 @@
     1. resize したい (width, height) の画像サイズを持つ、貼り付け先となる空のベース画像を生成する。
     1. 空の画像の中央に、元画像を paste する。
     1. この際に、画像端は境界色か単色で埋め合わせする。
+
+    `image_adjust_wo_mask3.py`<br>
     ```python
     img_org = Image.open( os.path.join(args.in_image_dir, image_name ) )
 

@@ -8,6 +8,8 @@
 ## 実現方法
 
 - OpenCV の `cv2.addWeighted()` メソッドを用いて、元画像とセグメンテーション画像をアルファブレンディングで重ねて表示する。
+
+    `alpha_blend_image_and_parse.py`<br>
     ```python
     img = cv2.imread( os.path.join(args.in_image_dir, image_name) )
     img_parse = cv2.imread( os.path.join(args.in_image_parse_dir, image_name) )
