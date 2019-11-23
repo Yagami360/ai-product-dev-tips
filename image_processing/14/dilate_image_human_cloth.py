@@ -76,10 +76,16 @@ if __name__ == '__main__':
 
         # cv2.dilate() でマスク画像を膨張
         human_parsing_cloth_np = cv2.dilate(human_parsing_cloth_np, kernel )
-
-        #human_parsing_cloth_np *= 255
-        #print( "human_parsing_cloth_np.shape :", human_parsing_cloth_np.shape )
+        human_parsing_cloth_np *= 255
         #human_parsing_agnotic_np = cv2.cvtColor(human_parsing_agnotic_np, cv2.COLOR_GRAY2RGB)
-        #new_human_img += human_img * human_parsing_cloth_np
+        human_parsing_cloth_np_RGB = np.ones( (human_parsing_cloth_np.shape[0], human_parsing_cloth_np.shape[1], 3) )
+        human_parsing_cloth_np_RGB[:,:,0] = human_parsing_cloth_np
+        human_parsing_cloth_np_RGB[:,:,1] = human_parsing_cloth_np
+        human_parsing_cloth_np_RGB[:,:,2] = human_parsing_cloth_np
+        #print(human_img.shape)
+        #print( "human_parsing_cloth_np_RGB.shape :", human_parsing_cloth_np_RGB.shape )
+
+        new_human_img += human_img * human_parsing_cloth_np_RGB
+        #cv2.imwrite(os.path.join(args.out_image_dir, human_name.split(".")[0] + "_cloth_dilate.png" ), human_parsing_cloth_np)
 
         cv2.imwrite(os.path.join(args.out_image_dir, human_name.split(".")[0] + ".png" ), new_human_img)

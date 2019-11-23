@@ -58,7 +58,7 @@
         1. waifu2x のインストール
         1. waifu2x による画像の超解像度
     1. dlib による顔の landmark 検出
-        1. xxx
+        1. [【Python】dlib で顔の landmark 検出を検出し、画像上に表示する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/15)
 1. 高速化処理
     1. 【シェルスクリプト】別プロセスで起動する。
     1. [【Python】for ループ内の処理を複数 CPU の並列処理で高速化する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/acceleration_processing/2)
