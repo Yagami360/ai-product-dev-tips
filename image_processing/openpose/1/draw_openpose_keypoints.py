@@ -14,7 +14,6 @@ if __name__ == '__main__':
 
     with open(args.in_json_path, 'r') as f:
         json_data = json.load(f)
-        f.close()
 
     version = json_data["version"]
     print("openpose version :", version)
