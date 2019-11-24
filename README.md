@@ -50,8 +50,8 @@
         1. 【Python】OpenPose の json ファイルを書き込む。
         1. [【Python】OpenPose の json ファイルの関節点を画像表示する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/openpose/1)
         1. 【Python】OpenPose の関節点情報に基づき、人物画像を全身部分でクロップする。
-        1. 【Python】OpenPose の関節点情報に基づき、人物画像を上半身部分でクロップする。
-        1. 【Python】OpenPose の関節点情報に基づき、人物画像が正面を向いているか後ろを向いているか判定する。
+        1. [【Python】OpenPose の関節点情報に基づき、人物画像を上半身部分でクロップする。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/openpose/3)
+        1. [【Python】OpenPose の関節点情報に基づき、人物画像が正面を向いているか後ろを向いているか判定する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/openpose/2)
         1. 【Python】OpenPose の関節点情報に基づき、人物画像が半袖を着ているか長袖を着ているかを検出する。
         1. 【Python】OpenPose の関節点情報に基づき、人物セグメンテーション画像に、他の人体部位のラベルを追加する。
     1. waifu2x による画像の超解像度

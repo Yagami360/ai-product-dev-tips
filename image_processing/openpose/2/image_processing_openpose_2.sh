@@ -1,6 +1,5 @@
 #!/bin/sh
 set -eu
-cd ${HOME}/GitHub/MachineLearning_PreProcessing_Exercises/image_processing/openpose/2
 
 python check_human_backpose.py \
     in_human in_human_keypoints \
