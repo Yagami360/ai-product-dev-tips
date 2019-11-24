@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
         human_img = cv2.imread( os.path.join(args.in_human_dir, human_name) )
 
-        # 両肩と両尻を囲む長方形
+        # 鼻と両肩と両尻を囲む長方形
         x, y, width, height = cv2.boundingRect(np.array([[Nose], [RHip], [LHip], [RShoulder], [LShoulder]]))
         
         # 上半身の crop y 座標を算出

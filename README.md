@@ -44,15 +44,15 @@
     1. [【Python】品質評価のためのグリッド画像を生成する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/7)
     1. [【Python】元画像とセグメンテーション画像をアルファブレンディングで重ねて表示する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/12)
     1. 【Python】画像の特定の対象物が画面端で途切れているかを検出する。
+    1. 【Python】人物パース画像から上着を着ているような人物画像を検出する。
     1. OpenPose による姿勢推定
         1. OpenPose のインストール
         1. 【Python】OpenPose の json ファイルを読み込む。
         1. 【Python】OpenPose の json ファイルを書き込む。
         1. [【Python】OpenPose の json ファイルの関節点を画像表示する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/openpose/1)
-        1. 【Python】OpenPose の関節点情報に基づき、人物画像を全身部分でクロップする。
         1. [【Python】OpenPose の関節点情報に基づき、人物画像を上半身部分でクロップする。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/openpose/3)
         1. [【Python】OpenPose の関節点情報に基づき、人物画像が正面を向いているか後ろを向いているか判定する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/openpose/2)
-        1. 【Python】OpenPose の関節点情報に基づき、人物画像が半袖を着ているか長袖を着ているかを検出する。
+        1. [【Python】OpenPose の関節点情報と人物パース画像に基づき、人物画像が半袖を着ているかを検出する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/openpose/4)
         1. 【Python】OpenPose の関節点情報に基づき、人物セグメンテーション画像に、他の人体部位のラベルを追加する。
     1. waifu2x による画像の超解像度
         1. waifu2x のインストール
