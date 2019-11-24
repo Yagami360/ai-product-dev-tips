@@ -54,11 +54,4 @@
 
     - 膨張画像<br>
 
-    - 回転<br>
-
-    - 拡大縮小<br>
-        ![scale0_messi](https://user-images.githubusercontent.com/25688193/65373644-2472a900-dcbb-11e9-8c9a-3716e3b9a50e.png)<br>
-        ![scale1_messi](https://user-images.githubusercontent.com/25688193/65373645-2472a900-dcbb-11e9-8e65-19a9c5efe8c9.png)<br>
-        ![scale2_messi](https://user-images.githubusercontent.com/25688193/65373646-2472a900-dcbb-11e9-834e-091eba7fb673.png)<br>
-        ![scale3_messi](https://user-images.githubusercontent.com/25688193/65373647-250b3f80-dcbb-11e9-85ab-47280b4f2d80.png)<br>
-        ![scale4_messi](https://user-images.githubusercontent.com/25688193/65373648-250b3f80-dcbb-11e9-92ff-998bc0d07eec.png)<br>
+    - 収縮画像<br>

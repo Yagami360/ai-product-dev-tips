@@ -2,18 +2,19 @@ import numpy as np
 import os, argparse
 from tqdm import tqdm
 import cv2
+from PIL import Image
 
 if __name__ == '__main__':
     """
-    人物パース画像から服部分を膨張させる。
+    人物パース画像から服部分のみを膨張させる。
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("in_image_human_dir", type=str)
-    parser.add_argument("in_image_human_parsing_dir", type=str)
-    parser.add_argument("out_image_dir", type=str)
+    parser.add_argument("in_human_dir", type=str)
+    parser.add_argument("in_human_parsing_dir", type=str)
+    parser.add_argument("--out_dir", type=str, default="results")
     parser.add_argument('--width', type=int, default=192 )
     parser.add_argument('--height', type=int, default=256 )
-    parser.add_argument('--dilate_kernel_size', type=int, default=12 )
+    parser.add_argument('--dilate_kernel_size', type=int, default=16 )
     parser.add_argument('--debug', action='store_true')
     args = parser.parse_args()
 
@@ -21,15 +22,15 @@ if __name__ == '__main__':
         for key, value in vars(args).items():
             print('%s: %s' % (str(key), str(value)))
 
-    if not os.path.isdir(args.out_image_dir):
-        os.mkdir(args.out_image_dir)
+    if not os.path.isdir(args.out_dir):
+        os.mkdir(args.out_dir)
 
-    image_human_names = sorted( [f for f in os.listdir(args.in_image_human_dir) if f.endswith(('.jpg','.jpeg','.png','.bmp'))] )
-    image_human_parsing_names = sorted( [f for f in os.listdir(args.in_image_human_parsing_dir) if f.endswith(('.jpg','.jpeg','.png','.bmp'))] )
+    image_human_names = sorted( [f for f in os.listdir(args.in_human_dir) if f.endswith(('.jpg','.jpeg','.png','.bmp'))] )
+    image_human_parsing_names = sorted( [f for f in os.listdir(args.in_human_parsing_dir) if f.endswith(('.jpg','.jpeg','.png','.bmp'))] )
 
     for human_name in tqdm(image_human_names):
-        human_img = cv2.imread(os.path.join(args.in_image_human_dir, human_name ))
-        human_parsing_img = cv2.imread(os.path.join(args.in_image_human_parsing_dir, human_name ))
+        human_img = cv2.imread(os.path.join(args.in_human_dir, human_name ))
+        human_parsing_img = cv2.imread(os.path.join(args.in_human_parsing_dir, human_name ))
         human_parsing_img = cv2.cvtColor(human_parsing_img, cv2.COLOR_RGB2GRAY)
 
         #------------------
@@ -76,8 +77,9 @@ if __name__ == '__main__':
 
         # cv2.dilate() でマスク画像を膨張
         human_parsing_cloth_np = cv2.dilate(human_parsing_cloth_np, kernel )
+        
+        # channel 1 → 3
         human_parsing_cloth_np *= 255
-        #human_parsing_agnotic_np = cv2.cvtColor(human_parsing_agnotic_np, cv2.COLOR_GRAY2RGB)
         human_parsing_cloth_np_RGB = np.ones( (human_parsing_cloth_np.shape[0], human_parsing_cloth_np.shape[1], 3) )
         human_parsing_cloth_np_RGB[:,:,0] = human_parsing_cloth_np
         human_parsing_cloth_np_RGB[:,:,1] = human_parsing_cloth_np
@@ -85,7 +87,17 @@ if __name__ == '__main__':
         #print(human_img.shape)
         #print( "human_parsing_cloth_np_RGB.shape :", human_parsing_cloth_np_RGB.shape )
 
+        # 膨張させた cloth 部分を貼り付け
         new_human_img += human_img * human_parsing_cloth_np_RGB
-        #cv2.imwrite(os.path.join(args.out_image_dir, human_name.split(".")[0] + "_cloth_dilate.png" ), human_parsing_cloth_np)
 
-        cv2.imwrite(os.path.join(args.out_image_dir, human_name.split(".")[0] + ".png" ), new_human_img)
+        #new_human_img_pillow = Image.fromarray( cv2.cvtColor(new_human_img, cv2.COLOR_BGR2RGB) )
+        #human_parsing_cloth_pillow = Image.fromarray( cv2.cvtColor(human_parsing_cloth_np_RGB, cv2.COLOR_BGR2RGB) )
+        #human_parsing_cloth_mask_pillow = Image.fromarray( cv2.cvtColor(human_parsing_cloth_np, cv2.COLOR_BGR2RGB) )
+        #new_human_img_pillow = Image.composite(human_parsing_cloth_pillow, new_human_img_pillow, human_parsing_cloth_mask_pillow)
+
+        #
+        cv2.imwrite(os.path.join(args.out_dir, human_name.split(".")[0] + ".png" ), new_human_img)
+
+        if( args.debug ):
+            cv2.imwrite(os.path.join(args.out_dir, human_name.split(".")[0] + "_cloth_dilate.png" ), human_parsing_cloth_np)
+        
