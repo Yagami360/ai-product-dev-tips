@@ -31,7 +31,7 @@ if __name__ == '__main__':
         os.mkdir(out_NG_dir)
 
     human_names  = sorted( [f for f in os.listdir(args.in_human_dir) if f.endswith(('.jpg','.jpeg','.png','.bmp'))] )
-    human_keypoints_names  = sorted( [f for f in os.listdir(args.in_human_keypoints_dir) if f.endswith(('.json'))] )
+    human_keypoints_names  = sorted( [f for f in os.listdir(args.in_human_keypoints_dir) if f.endswith(('_keypoints.json'))] )
 
     n_all = len(human_keypoints_names)
     n_ok = 0
@@ -82,8 +82,8 @@ if __name__ == '__main__':
             if( Nose[0] == 0 and Nose[1] == 0 ):
                 n_nose_ng += 1
                 n_ng += 1
-                in_full_path = os.path.join(args.in_human_dir, human_keypoints_name.replace(".json",".png"))
-                out_full_path = os.path.join(out_NG_dir, human_keypoints_name.replace(".json",".png"))
+                in_full_path = os.path.join(args.in_human_dir, human_keypoints_name.replace("_keypoints.json",".png"))
+                out_full_path = os.path.join(out_NG_dir, human_keypoints_name.replace("_keypoints.json",".png"))
                 if( os.path.exists(in_full_path) ):
                     shutil.copyfile( in_full_path, out_full_path)
                 continue
@@ -93,8 +93,8 @@ if __name__ == '__main__':
             if( RShoulder[0] > LShoulder[0] ):
                 n_shoulder_ng += 1
                 n_ng += 1
-                in_full_path = os.path.join(args.in_human_dir, human_keypoints_name.replace(".json",".png"))
-                out_full_path = os.path.join(out_NG_dir, human_keypoints_name.replace(".json",".png"))
+                in_full_path = os.path.join(args.in_human_dir, human_keypoints_name.replace("_keypoints.json",".png"))
+                out_full_path = os.path.join(out_NG_dir, human_keypoints_name.replace("_keypoints.json",".png"))
                 if( os.path.exists(in_full_path) ):
                     shutil.copyfile( in_full_path, out_full_path)
                 continue
@@ -104,8 +104,8 @@ if __name__ == '__main__':
             if( RHip[0] > LHip[0] ):
                 n_hip_ng += 1
                 n_ng += 1
-                in_full_path = os.path.join(args.in_human_dir, human_keypoints_name.replace(".json",".png"))
-                out_full_path = os.path.join(out_NG_dir, human_keypoints_name.replace(".json",".png"))
+                in_full_path = os.path.join(args.in_human_dir, human_keypoints_name.replace("_keypoints.json",".png"))
+                out_full_path = os.path.join(out_NG_dir, human_keypoints_name.replace("_keypoints.json",".png"))
                 if( os.path.exists(in_full_path) ):
                     shutil.copyfile( in_full_path, out_full_path)
                 continue
@@ -115,15 +115,15 @@ if __name__ == '__main__':
             if( Rknee[0] > Lknee[0] ):
                 n_knee_ng += 1
                 n_ng += 1
-                in_full_path = os.path.join(args.in_human_dir, human_keypoints_name.replace(".json",".png"))
-                out_full_path = os.path.join(out_NG_dir, human_keypoints_name.replace(".json",".png"))
+                in_full_path = os.path.join(args.in_human_dir, human_keypoints_name.replace("_keypoints.json",".png"))
+                out_full_path = os.path.join(out_NG_dir, human_keypoints_name.replace("_keypoints.json",".png"))
                 if( os.path.exists(in_full_path) ):
                     shutil.copyfile( in_full_path, out_full_path)
                 continue
 
         n_ok += 1
-        in_full_path = os.path.join(args.in_human_dir, human_keypoints_name.replace(".json",".png"))
-        out_full_path = os.path.join(out_OK_dir, human_keypoints_name.replace(".json",".png"))
+        in_full_path = os.path.join(args.in_human_dir, human_keypoints_name.replace("_keypoints.json",".png"))
+        out_full_path = os.path.join(out_OK_dir, human_keypoints_name.replace("_keypoints.json",".png"))
         if( os.path.exists(in_full_path) ):
             shutil.copyfile( in_full_path, out_full_path)
 

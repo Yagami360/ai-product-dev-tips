@@ -54,7 +54,7 @@ if __name__ == '__main__':
 
     human_names  = sorted( [f for f in os.listdir(args.in_human_dir) if f.endswith(('.jpg','.jpeg','.png','.bmp'))] )
     human_parse_names  = sorted( [f for f in os.listdir(args.in_human_dir) if f.endswith(('.jpg','.jpeg','.png','.bmp'))] )
-    human_keypoints_names  = sorted( [f for f in os.listdir(args.in_human_keypoints_dir) if f.endswith(('.json'))] )
+    human_keypoints_names  = sorted( [f for f in os.listdir(args.in_human_keypoints_dir) if f.endswith(('_keypoints.json'))] )
 
     n_all = len(human_names)
     n_ok = 0
@@ -63,7 +63,7 @@ if __name__ == '__main__':
     n_debug_print = 1
 
     for human_name in tqdm(human_names):
-        with open( os.path.join(args.in_human_keypoints_dir, human_name.split(".")[0]+".json"), 'r') as f:
+        with open( os.path.join(args.in_human_keypoints_dir, human_name.split(".")[0]+"_keypoints.json"), 'r') as f:
             json_data = json.load(f)
             if( len(json_data['people']) != 0 ):
                 key_points = json_data['people'][0]["pose_keypoints_2d"]

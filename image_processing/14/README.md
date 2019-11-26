@@ -5,7 +5,7 @@
 
 ## 機械学習の文脈での用途
 
-- 画像が中央でくり抜かれているような画像においては、単純に resize で拡大縮小する方法では、うまく狙い通りの拡大縮小が行えないケースが存在する。
+- オクリュージョンが生じているような画像においては、単純に resize で拡大縮小する方法では、うまく狙い通りの拡大縮小が行えないケースが存在する。
 - このような画像に対しては、 OpenCV の `cv2.dilate()`, `cv2.erode()` を用いて、膨張収縮させるとうまくいくケースがある。
 
 ## 実現方法
@@ -47,11 +47,13 @@
 ## 入出力データ
 
 - 入力データ<br>
-    <br>
+    ![mask](https://user-images.githubusercontent.com/25688193/69625975-0a728f80-108b-11ea-980f-46184f5103ae.jpg)<br>
 
 - 出力データ<br>
     - resize<br>
 
     - 膨張画像<br>
+        ![mask](https://user-images.githubusercontent.com/25688193/69625984-0cd4e980-108b-11ea-8c16-ea28baea83ae.png)
 
     - 収縮画像<br>
+        ![mask](https://user-images.githubusercontent.com/25688193/69625990-0fcfda00-108b-11ea-848c-e9629d096ee2.png)

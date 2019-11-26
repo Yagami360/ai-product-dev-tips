@@ -10,6 +10,6 @@ fi
 python dilate_image_human_cloth.py \
     in_human in_human_parsing \
     --out_dir ${OUT_DIR} \
-    --width 825 --height 1100 \
-    --dilate_kernel_size 32 \
+    --width 196 --height 256 \
+    --dilate_kernel_size 12 \
     --debug
