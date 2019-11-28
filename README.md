@@ -69,6 +69,7 @@
 1. 自然言語処理
 1. 音声処理
 1. Docker
+    - [Docker の基本事項・基本コマンド](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker/1)
     - ディレクトリを Docker のコンテナから参照できるようにする。（`-v` オプションの使用）
     - `docker run` 経由で作ったファイルの所有者を指定する。
     - Docker コンテナで動作するスクリプトを nohup でも実行できるようにする。
