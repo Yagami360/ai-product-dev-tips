@@ -65,7 +65,8 @@
     - [【Python】for ループ内の処理を複数 CPU の並列処理で高速化する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/acceleration_processing/2)
     - [【Python】複数 GPU での並列化のために、フォルダ内のファイルを分割し別フォルダに保存し、その後１つのフォルダに再統合する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/acceleration_processing/1)
     - 【Python】for ではなく行列処理で画像処理を高速化する。
-1. スクレイピング
+1. WEB スクレイピング
+    - WEB 上の画像データを収集する。
 1. 自然言語処理
 1. 音声処理
 1. Docker
@@ -73,7 +74,6 @@
     - [【Docker】 docker コンテナ内で機械学習モデルの処理を実行中に tensorboard で実行結果を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/2)
     - `docker run` 経由で作ったファイルの所有者を指定する。
     - Docker コンテナで動作するスクリプトを nohup でも実行できるようにする。
-    - nvidia-docker
 1. 機械学習フレームワーク
     1. PyTorch
         - 【PyTorch】OpenCV ↔ Pillow ↔ numpy ↔ Tensor [PyTorch] の変換対応
