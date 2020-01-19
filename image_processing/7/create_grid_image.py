@@ -47,14 +47,14 @@ if __name__ == '__main__':
     for i in range(args.n_grid_size):
         # y 軸の画像
         image_y = Image.open( os.path.join(args.in_y_dir, image_y_names[i]) )
-        image_y = image_y.resize( (args.width, args.width), Image.LANCZOS )
+        image_y = image_y.resize( (args.width, args.height), Image.LANCZOS )
         image_base.paste( image_y, (0,(i+1)*args.height) )
         if( args.debug ):
             print( "[y-axis] paste pos (width,height) : {}".format( (0,(i+1)*args.height) ) )
 
         # x 軸の画像（下の for ループ内で行うよりこっちのループ内で処理を行うほうが効率がいい）
         image_x = Image.open( os.path.join(args.in_x_dir, image_x_names[i]) )
-        image_x = image_x.resize( (args.width, args.width), Image.LANCZOS )
+        image_x = image_x.resize( (args.width, args.height), Image.LANCZOS )
         image_base.paste( image_x, ((i+1)*args.width,0) )
         if( args.debug ):
             print( "[x-axis] paste pos (width,height) : {}".format( ((i+1)*args.width,0) ) )
@@ -62,7 +62,7 @@ if __name__ == '__main__':
         for n in range(args.n_grid_size):
             # グリッド内の合成画像
             image_synthesis = Image.open( os.path.join(args.in_synthesis_dir, synthesis_names[k]) )
-            image_synthesis = image_synthesis.resize( (args.width, args.width), Image.LANCZOS )
+            image_synthesis = image_synthesis.resize( (args.width, args.height), Image.LANCZOS )
             image_base.paste( image_synthesis,( (1+n)*args.width,(1+i)*args.height ) )
             k += 1
             if( args.debug ):
