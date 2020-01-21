@@ -28,6 +28,8 @@
     - 【GCP】GCP ディスクを `gcsfuse` コマンドでマウントする。
     - 【AWS】EC インスタンスのディスク容量を後から増設する。
     - `import pdb; pdb.set_trace()`: 【Python】サーバー上での Python スクリプトをデバッグするときに、ブレークポイントを有効にする。
+    - [【シェルスクリプト】シェルスクリプトで、GoogleDrive から大容量データをコピーする。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/3)
+    - 【Python】スクリプトで GoogleDrive へデータを自動的に転送する。
 1. 画像処理
     - [【シェルスクリプト】画像ファイルの解像度を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/1)
     - [【Python】OpenCV ↔ Pillow ↔ numpy の変換対応](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/4)
