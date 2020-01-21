@@ -27,6 +27,7 @@
     - [【シェルスクリプト】GCP or AWS インスタンスをシェルスクリプト上から停止する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/1)
     - 【GCP】GCP ディスクを `gcsfuse` コマンドでマウントする。
     - 【AWS】EC インスタンスのディスク容量を後から増設する。
+    - `import pdb; pdb.set_trace()`: 【Python】サーバー上での Python スクリプトをデバッグするときに、ブレークポイントを有効にする。
 1. 画像処理
     - [【シェルスクリプト】画像ファイルの解像度を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/1)
     - [【Python】OpenCV ↔ Pillow ↔ numpy の変換対応](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/4)
@@ -66,12 +67,13 @@
     - [【Python】複数 GPU での並列化のために、フォルダ内のファイルを分割し別フォルダに保存し、その後１つのフォルダに再統合する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/acceleration_processing/1)
     - 【Python】for ではなく行列処理で画像処理を高速化する。
 1. WEB スクレイピング
-    - WEB 上の画像データを収集する。
+    - [【Python】WEB 上の画像データを収集する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/web_scraping/1)
 1. 自然言語処理
 1. 音声処理
 1. Docker
     - [【Docker】 Docker の基本事項・基本コマンド](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/1)
     - [【Docker】 docker コンテナ内で機械学習モデルの処理を実行中に tensorboard で実行結果を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/2)
+    - [【Docker】docker run（コンテナ立ち上げ） とコンテナ内での python スクリプト実行を一括して行う。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/3)
     - `docker run` 経由で作ったファイルの所有者を指定する。
     - Docker コンテナで動作するスクリプトを nohup でも実行できるようにする。
 1. 機械学習フレームワーク
