@@ -26,6 +26,8 @@
     - [【UNIX】サーバー上の画像ファイルをブラウザ上で確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/2)
     - [【シェルスクリプト】GCP or AWS インスタンスをシェルスクリプト上から停止する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/1)
     - 【GCP】GCP ディスクを `gcsfuse` コマンドでマウントする。
+    - [【GCP】Cloud Scheduler 機能を用いて、サーバーを一定の時間間隔で起動・停止する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/4)
+    - [【GCP】サーバー起動後に自動的に実行するスクリプトを設定する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/5)
     - 【AWS】EC インスタンスのディスク容量を後から増設する。
     - `import pdb; pdb.set_trace()`: 【Python】サーバー上での Python スクリプトをデバッグするときに、ブレークポイントを有効にする。
     - [【シェルスクリプト】シェルスクリプトで、GoogleDrive から大容量データをコピーする。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/3)
@@ -76,6 +78,7 @@
     - [【Docker】 Docker の基本事項・基本コマンド](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/1)
     - [【Docker】 docker コンテナ内で機械学習モデルの処理を実行中に tensorboard で実行結果を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/2)
     - [【Docker】コンテナの起動とコンテナ内での python スクリプト実行を一括して行う。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/3)
+    - [【Docker】 Docker イメージの作成＆コンテナ起動を一括して実行する](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/4)
     - `docker run` 経由で作ったファイルの所有者を指定する。
     - Docker コンテナで動作するスクリプトを nohup でも実行できるようにする。
 1. 機械学習フレームワーク
