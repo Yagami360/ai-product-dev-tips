@@ -75,7 +75,7 @@
 1. Docker
     - [【Docker】 Docker の基本事項・基本コマンド](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/1)
     - [【Docker】 docker コンテナ内で機械学習モデルの処理を実行中に tensorboard で実行結果を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/2)
-    - [【Docker】docker run（コンテナ立ち上げ） とコンテナ内での python スクリプト実行を一括して行う。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/3)
+    - [【Docker】コンテナの起動とコンテナ内での python スクリプト実行を一括して行う。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/3)
     - `docker run` 経由で作ったファイルの所有者を指定する。
     - Docker コンテナで動作するスクリプトを nohup でも実行できるようにする。
 1. 機械学習フレームワーク
