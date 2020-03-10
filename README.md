@@ -75,12 +75,17 @@
 1. 自然言語処理
 1. 音声処理
 1. Docker
-    - [【Docker】 Docker の基本事項・基本コマンド](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/1)
-    - [【Docker】 docker コンテナ内で機械学習モデルの処理を実行中に tensorboard で実行結果を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/2)
+    - [【Docker】Docker の基本事項・基本コマンド](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/1)
+    - [【Docker】docker コンテナ内で機械学習モデルの処理を実行中に tensorboard で実行結果を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/2)
     - [【Docker】コンテナの起動とコンテナ内での python スクリプト実行を一括して行う。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/3)
-    - [【Docker】 Docker イメージの作成＆コンテナ起動を一括して実行する](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/4)
-    - `docker run` 経由で作ったファイルの所有者を指定する。
-    - Docker コンテナで動作するスクリプトを nohup でも実行できるようにする。
+    - [【Docker】docker-compose を用いず Docker イメージの作成＆コンテナ起動を一括して実行する](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/4)
+    - [【Docker】ホスト環境とコンテナ環境で同期したファイルの所有権を指定する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/5)
+    - [【Docker】docker exec を nohup で実行する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/6)
+    - [【Docker】本番環境用の Docker イメージと開発環境用の Docker イメージの構成](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/7)
+    - 【Docker】Docker イメージに sudo 権限ユーザーを追加することで、ホストとコンテナ間の permission 問題を解消する。
+    - 【Docker】dockerfile でユーザー追加後に git clone する際の、permission denied エラー対策
+    - 【Docker】dockerfile の work_dir 変更前のデフォルトパス
+    - 【Docker】Flask & requests を用いてコンテナ間通信するときの、IP アドレス指定方式（コンテナ名で指定）
 1. 機械学習フレームワーク
     1. PyTorch
         - 【PyTorch】OpenCV ↔ Pillow ↔ numpy ↔ Tensor [PyTorch] の変換対応

@@ -1,4 +1,6 @@
-# 【Docker】 Docker イメージの作成＆コンテナ起動を一括して実行する
+# 【Docker】 docker-compose を用いず Docker イメージの作成＆コンテナ起動を一括して実行する
+
+Docker イメージの作成＆コンテナ起動の自動実行は、一般的に docker-compose で行うが、docker-compose を用いなくともシェルスクリプトを用いて実現可能
 
 ```sh
 #!/bin/sh
