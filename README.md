@@ -15,6 +15,18 @@
 
 1. 開発環境
     - 【シェルスクリプト】シェルスクリプト内で conda 環境を切り替える。
+    - Docker
+        - [【Docker】Docker の基本事項・基本コマンド](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/1)
+        - [【Docker】docker コンテナ内で機械学習モデルの処理を実行中に tensorboard で実行結果を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/2)
+        - [【Docker】コンテナの起動とコンテナ内での python スクリプト実行を一括して行う。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/3)
+        - [【Docker】docker-compose を用いず Docker イメージの作成＆コンテナ起動を一括して実行する](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/4)
+        - [【Docker】ホスト環境とコンテナ環境で同期したファイルの所有権を指定する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/5)
+        - [【Docker】docker exec を nohup で実行する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/6)
+        - [【Docker】本番環境用の Docker イメージと開発環境用の Docker イメージの構成](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/7)
+        - 【Docker】Docker イメージに sudo 権限ユーザーを追加することで、ホストとコンテナ間の permission 問題を解消する。
+        - 【Docker】dockerfile でユーザー追加後に git clone する際の、permission denied エラー対策
+        - 【Docker】dockerfile の work_dir 変更前のデフォルトパス
+        - 【Docker】Flask & requests を用いてコンテナ間通信するときの、IP アドレス指定方式（コンテナ名で指定）
 1. 入出力処理
     - [【シェルスクリプト】フォルダ内のファイル数を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/io_processing/2)
     - [【Python】フォルダ内のファイル一覧を取得する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/io_processing/1)
@@ -70,26 +82,17 @@
     - [【Python】for ループ内の処理を複数 CPU の並列処理で高速化する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/acceleration_processing/2)
     - [【Python】複数 GPU での並列化のために、フォルダ内のファイルを分割し別フォルダに保存し、その後１つのフォルダに再統合する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/acceleration_processing/1)
     - 【Python】for ではなく行列処理で画像処理を高速化する。
+    - 【PyTorch】AMP [Automatic Mixed Precision] を使用した学習と推論の高速化
 1. WEB スクレイピング
     - [【Python】WEB 上の画像データを収集する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/web_scraping/1)
 1. 自然言語処理
 1. 音声処理
-1. Docker
-    - [【Docker】Docker の基本事項・基本コマンド](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/1)
-    - [【Docker】docker コンテナ内で機械学習モデルの処理を実行中に tensorboard で実行結果を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/2)
-    - [【Docker】コンテナの起動とコンテナ内での python スクリプト実行を一括して行う。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/3)
-    - [【Docker】docker-compose を用いず Docker イメージの作成＆コンテナ起動を一括して実行する](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/4)
-    - [【Docker】ホスト環境とコンテナ環境で同期したファイルの所有権を指定する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/5)
-    - [【Docker】docker exec を nohup で実行する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/6)
-    - [【Docker】本番環境用の Docker イメージと開発環境用の Docker イメージの構成](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/7)
-    - 【Docker】Docker イメージに sudo 権限ユーザーを追加することで、ホストとコンテナ間の permission 問題を解消する。
-    - 【Docker】dockerfile でユーザー追加後に git clone する際の、permission denied エラー対策
-    - 【Docker】dockerfile の work_dir 変更前のデフォルトパス
-    - 【Docker】Flask & requests を用いてコンテナ間通信するときの、IP アドレス指定方式（コンテナ名で指定）
 1. 機械学習フレームワーク
     1. PyTorch
         - 【PyTorch】OpenCV ↔ Pillow ↔ numpy ↔ Tensor [PyTorch] の変換対応
         - 【PyTorch】独自データセットの DataLoader 
+        - 【PyTorch】TensorBoard のヒストグラムにネットワークの重みを表示する。
+        - 【PyTorch】再現性確保のためのシード値固定処理
 1. その他処理
     - 【シェルスクリプト】`curl` コマンドで WebAPI を直接たたく
 

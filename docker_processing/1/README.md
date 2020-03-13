@@ -29,6 +29,9 @@
 ### ◎ Docker イメージの作成
 
 - `$ docker build ./ -t ${IMAGE_NAME}`
+    - `-t` オプション : ビルド成功後、作成されたメッセージにリポジトリ名（とオプションタグ）を付与する
+
+- 使用法
     - 作成するイメージの構成を定義した Dockerfile が存在するディレクトリで、上のコマンドを実行
     ```sh
     $ docker build ./ -t ml_exercises_pytorch_image
@@ -39,6 +42,8 @@
     Step 2/7 : ARG ROOT_DIR=/workspace
      ---> Running in 190f0a9adf81
     ...
+    Successfully built 304c93e21f90
+    Successfully tagged ml_exercises_pytorch_image:latest
     ```
 
 ### ◎ 作成した Docker イメージの確認
@@ -73,13 +78,12 @@
 
 ### ◎ コンテナを起動
 
-- `$ docker run ${CONTAINER_NAME} ${IMAGE_NAME} /bin/bash`
-    - `${CONTAINER_NAME}` : コンテナ名
+- `$ docker run -it --rm --name ${CONTAINER_NAME} ${IMAGE_NAME} /bin/bash`
     - `${IMAGE_NAME}` : docker イメージ名
+    - `--name ${CONTAINER_NAME}` : コンテナ名を指定してコンテナ起動。省略した場合は自動的に名前が割り振られる
     - `-i` オプション : ホストマシンとコンテナの双方向に接続できるようにする
     - `-t` オプション : コンテナ内に擬似的なターミナルを割り当て（コンテナ内でターミナルを使用できるようにする？）
     - `--rm` オプション : コンテナから抜けるとコンテナを自動で削除する
-    - `--name` オプション : コンテナの名前を指定する
     - `-v ${ホストマシンの同期するディレクトリ}:${Dockerコンテナ内の同期するディレクトリ}` オプション : ホストマシンとコンテナの同期して、ホストマシンで編集した内容が、即時コンテナにも反映されるようにする。
     - `-p ${ホストマシンのIPアドレス}:${Dockerコンテナ内の同期するディレクトリ}`
         - ホスト側のディレクトリも絶対パスで指定する必要あり。
