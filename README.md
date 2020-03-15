@@ -14,7 +14,8 @@
 ## ■ 項目
 
 1. 開発環境
-    - 【シェルスクリプト】シェルスクリプト内で conda 環境を切り替える。
+    - conda
+        - 【シェルスクリプト】シェルスクリプト内で conda 環境を切り替える。
     - Docker
         - [【Docker】Docker の基本事項・基本コマンド](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/1)
         - [【Docker】docker コンテナ内で機械学習モデルの処理を実行中に tensorboard で実行結果を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/2)
@@ -23,10 +24,9 @@
         - [【Docker】ホスト環境とコンテナ環境で同期したファイルの所有権を指定する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/5)
         - [【Docker】docker exec を nohup で実行する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/6)
         - [【Docker】本番環境用の Docker イメージと開発環境用の Docker イメージの構成](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/7)
-        - 【Docker】Docker イメージに sudo 権限ユーザーを追加することで、ホストとコンテナ間の permission 問題を解消する。
         - 【Docker】dockerfile でユーザー追加後に git clone する際の、permission denied エラー対策
-        - 【Docker】dockerfile の work_dir 変更前のデフォルトパス
-        - 【Docker】Flask & requests を用いてコンテナ間通信するときの、IP アドレス指定方式（コンテナ名で指定）
+        - [【Docker】dockerfile の WORKDIR 変更前のデフォルトパス](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/9)
+        - [【Docker】requests モジュールを用いてコンテナ間通信するときの、IP アドレス指定方式（コンテナ名で指定）](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/8)
 1. 入出力処理
     - [【シェルスクリプト】フォルダ内のファイル数を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/io_processing/2)
     - [【Python】フォルダ内のファイル一覧を取得する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/io_processing/1)
@@ -41,7 +41,7 @@
     - [【GCP】Cloud Scheduler 機能を用いて、サーバーを一定の時間間隔で起動・停止する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/4)
     - [【GCP】サーバー起動後に自動的に実行するスクリプトを設定する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/5)
     - 【AWS】EC インスタンスのディスク容量を後から増設する。
-    - `import pdb; pdb.set_trace()`: 【Python】サーバー上での Python スクリプトをデバッグするときに、ブレークポイントを有効にする。
+    - 【Python】サーバー上での Python スクリプトをデバッグするときに、ブレークポイントを有効にする。（`import pdb; pdb.set_trace()`）
     - [【シェルスクリプト】シェルスクリプトで、GoogleDrive から大容量データをコピーする。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/3)
     - 【Python】スクリプトで GoogleDrive へデータを自動的に転送する。
 1. 画像処理
@@ -78,7 +78,6 @@
     1. dlib による顔の landmark 検出
         - [【Python】dlib で顔の landmark 検出を検出し、画像上に表示する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/15)
 1. 高速化処理
-    - 【シェルスクリプト】別プロセスで起動する。
     - [【Python】for ループ内の処理を複数 CPU の並列処理で高速化する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/acceleration_processing/2)
     - [【Python】複数 GPU での並列化のために、フォルダ内のファイルを分割し別フォルダに保存し、その後１つのフォルダに再統合する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/acceleration_processing/1)
     - 【Python】for ではなく行列処理で画像処理を高速化する。
