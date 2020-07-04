@@ -15,7 +15,8 @@
 
 1. 開発環境
     - conda
-        - 【シェルスクリプト】シェルスクリプト内で conda 環境を切り替える。
+        - [【シェルスクリプト】シェルスクリプト内で conda 環境を切り替える。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/conda_processing/1)
+        - [【シェルスクリプト】conda 環境の自動的に作成する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/conda_processing/2)
     - Docker
         - [【Docker】Docker の基本事項・基本コマンド](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/1)
         - [【Docker】docker コンテナ内で機械学習モデルの処理を実行中に tensorboard で実行結果を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/docker_processing/2)
@@ -44,6 +45,11 @@
     - 【Python】サーバー上での Python スクリプトをデバッグするときに、ブレークポイントを有効にする。（`import pdb; pdb.set_trace()`）
     - [【シェルスクリプト】シェルスクリプトで、GoogleDrive から大容量データをコピーする。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/3)
     - 【Python】スクリプトで GoogleDrive へデータを自動的に転送する。
+    - 【シェルスクリプト】GCP に DeepLearning 環境を自動的に構築する。
+1. テーブルデータ処理
+    - 【Python】pandas_profiling でテーブルデータの統計情報を確認する。
+    - 【Python】pandas データ型に基づき、欠損値の埋め合わせとカテゴリデータのエンコードを一括して行う。
+    - 【Python】モデルの `feature_importances_` で重要特徴量を確認する。
 1. 画像処理
     - [【シェルスクリプト】画像ファイルの解像度を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/1)
     - [【Python】OpenCV ↔ Pillow ↔ numpy の変換対応](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/4)
@@ -92,6 +98,14 @@
         - 【PyTorch】独自データセットの DataLoader 
         - 【PyTorch】TensorBoard のヒストグラムにネットワークの重みを表示する。
         - 【PyTorch】再現性確保のためのシード値固定処理
+        - 【PyTorch】k-fold CV での学習処理
+            - scikit-learn の `KFold` と PyTorch の `Subset` の使用
+        - 【PyTorch】特定の層のみ学習を行うようにする
+            - `param.requires_grad = False` と optimizer の `params` 引数の設定
+    1. Keras
+        - 【Keras】独自データセットの DataLoader
+        - 【Keras】継承クラスで独自のネットワークを定義する 
+        - 【Keras】FineTuning
 1. その他処理
     - 【シェルスクリプト】`curl` コマンドで WebAPI を直接たたく
 
