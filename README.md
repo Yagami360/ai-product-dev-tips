@@ -34,6 +34,7 @@
     - [【Python】２つのフォルダのファイル数＆ファイル名の差分を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/io_processing/3)
     - [【シェルスクリプト】ランダムに１００個のファイルをサンプリングする。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/io_processing/4)
 1. サーバー＆クラウド処理
+    - [【シェルスクリプト】GCP に DeepLearning 環境を自動的に構築する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/6)
     - 【シェルスクリプト】ssh 切れ対策のために `nohup` コマンドで実行する。
     - 【シェルスクリプト】サーバー間でデータを転送・コピーする。
     - [【UNIX】サーバー上の画像ファイルをブラウザ上で確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/2)
@@ -45,7 +46,6 @@
     - 【Python】サーバー上での Python スクリプトをデバッグするときに、ブレークポイントを有効にする。（`import pdb; pdb.set_trace()`）
     - [【シェルスクリプト】シェルスクリプトで、GoogleDrive から大容量データをコピーする。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/3)
     - 【Python】スクリプトで GoogleDrive へデータを自動的に転送する。
-    - 【シェルスクリプト】GCP に DeepLearning 環境を自動的に構築する。
 1. テーブルデータ処理
     - 【Python】pandas_profiling でテーブルデータの統計情報を確認する。
     - 【Python】pandas データ型に基づき、欠損値の埋め合わせとカテゴリデータのエンコードを一括して行う。
@@ -62,6 +62,7 @@
     - [【Python】セマンティックセグメンテーション画像からラベル値を取得する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/5)
     - [【Python】セマンティックセグメンテーション画像の特定のラベル値の部分を抜き取る。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/6)
     - [【Python】画像のバイナリマスク画像を生成する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/9)
+    - [【Python】画像の境界輪郭線を滑らかにしたマスク画像を生成する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/17)
     - [【Python】画像の背景部分をくり抜く。（グラフ カット）](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/10)
     - remove bg を使用して、画像の背景部分をくり抜く。（グラフ カット）
     - [【Python】画像の上下 or 左右対称性を検出する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/8)

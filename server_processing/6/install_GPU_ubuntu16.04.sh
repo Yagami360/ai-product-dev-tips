@@ -29,6 +29,9 @@ rm -rf libcudnn7_7.6.5.32-1+cuda9.0_amd64.deb
 rm -rf libcudnn7-dev_7.6.5.32-1+cuda9.0_amd64.deb
 rm -rf libcudnn7-doc_7.6.5.32-1+cuda9.0_amd64.deb
 
+# install basic
+sudo apt-get install zip unzip
+
 # install pip
 sudo apt-get update
 sudo apt-get upgrade
