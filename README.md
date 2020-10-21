@@ -34,21 +34,25 @@
     - [【Python】２つのフォルダのファイル数＆ファイル名の差分を確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/io_processing/3)
     - [【シェルスクリプト】ランダムに１００個のファイルをサンプリングする。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/io_processing/4)
 1. サーバー＆クラウド処理
-    - [【シェルスクリプト】GCP に DeepLearning 環境を自動的に構築する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/6)
     - 【シェルスクリプト】ssh 切れ対策のために `nohup` コマンドで実行する。
     - 【シェルスクリプト】サーバー間でデータを転送・コピーする。
     - [【UNIX】サーバー上の画像ファイルをブラウザ上で確認する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/2)
     - [【シェルスクリプト】GCP or AWS インスタンスをシェルスクリプト上から停止する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/1)
-    - 【GCP】GCP ディスクを `gcsfuse` コマンドでマウントする。
-    - [【GCP】Cloud Scheduler 機能を用いて、サーバーを一定の時間間隔で起動・停止する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/4)
-    - [【GCP】サーバー起動後に自動的に実行するスクリプトを設定する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/5)
-    - 【AWS】EC インスタンスのディスク容量を後から増設する。
     - 【Python】サーバー上での Python スクリプトをデバッグするときに、ブレークポイントを有効にする。（`import pdb; pdb.set_trace()`）
     - [【シェルスクリプト】シェルスクリプトで、GoogleDrive から大容量データをコピーする。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/3)
     - 【Python】スクリプトで GoogleDrive へデータを自動的に転送する。
-    - 【GCP】インスタンスグループを利用したオートスケーリング、ロードバランサーの導入
-    - [【GCP】Cloud Functions を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/7)
-    - [【GCP】Cloud Run を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/8)
+    - AWS
+        - 【AWS】EC インスタンスのディスク容量を後から増設する。
+    - GCP
+        - [【シェルスクリプト】GCP に DeepLearning 環境を自動的に構築する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/6)
+        - 【GCP】GCP ディスクを `gcsfuse` コマンドでマウントする。
+        - [【GCP】Cloud Scheduler 機能を用いて、サーバーを一定の時間間隔で起動・停止する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/4)
+        - [【GCP】サーバー起動後に自動的に実行するスクリプトを設定する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/5)
+        - 【GCP】インスタンスグループを利用したオートスケーリング、ロードバランサーの導入
+        - [【GCP】Cloud Functions を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/7)
+        - 【GCP】Cloud Functions の単体テスト＆結合テスト
+        - [【GCP】Cloud Run を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/8)
+        - 【GCP】GKE [Google Kubernetes Engine] の基本事項
 1. テーブルデータ処理
     - 【Python】pandas_profiling でテーブルデータの統計情報を確認する。
     - 【Python】pandas データ型に基づき、欠損値の埋め合わせとカテゴリデータのエンコードを一括して行う。

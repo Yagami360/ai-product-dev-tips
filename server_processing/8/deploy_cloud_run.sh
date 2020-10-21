@@ -7,7 +7,6 @@ SERVICE_NAME=cloud-run-sample
 REGION=us-central1
 PORT=8080
 HOST_ADRESS=https://${SERVICE_NAME}-zilzej7vmq-uc.a.run.app
-HOST_ADRESS=https://cloud-run-sample-zilzej7vmq-uc.a.run.app
 
 # 1. docker image を作成
 #docker build -t gcr.io/${PROJECT_ID}/${IMAGE_NAME} .
