@@ -52,6 +52,7 @@
         - [【GCP】Cloud Functions を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/7)
         - 【GCP】Cloud Functions の単体テスト＆結合テスト
         - [【GCP】Cloud Run を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/8)
+        - [Kubernetes (k8s) の基本事項](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/10)
         - [【GCP】GKE [Google Kubernetes Engine] の基本事項](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/9)
 1. テーブルデータ処理
     - 【Python】pandas_profiling でテーブルデータの統計情報を確認する。
@@ -110,6 +111,9 @@
             - scikit-learn の `KFold` と PyTorch の `Subset` の使用
         - 【PyTorch】特定の層のみ学習を行うようにする
             - `param.requires_grad = False` と optimizer の `params` 引数の設定
+<!--
+        - `add_module()` or `nn.ModuleList` or `nn.ModuleDict` でネットワークの段数を柔軟に可変出来るようにする
+-->
     1. Keras
         - 【Keras】独自データセットの DataLoader
         - 【Keras】継承クラスで独自のネットワークを定義する 
