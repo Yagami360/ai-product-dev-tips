@@ -34,3 +34,5 @@ kubectl get service ${CLUSTER_NAME}
 
 # 公開サイトにアクセスして動作確認する
 # http://34.85.65.57/ にアクセス
+
+# 作成した POd のコンテナにアクセス

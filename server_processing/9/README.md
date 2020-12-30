@@ -2,7 +2,7 @@
 
 ## ■ GKE の基本事項
 
-<img src="https://user-images.githubusercontent.com/25688193/96675747-9168de80-13a6-11eb-9614-f93679137e47.png" width="500">
+<img src="https://user-images.githubusercontent.com/25688193/103282973-a99a5100-4a1a-11eb-8c1b-9a3511616e58.png" width=915>
 
 GKE [Google Kubernetes Engine] は、Kubernetes (k8s) に基づくコンテナライフサイクル管理システムで、以下のようなことが行える。
 - コンテナの起動停止
@@ -10,11 +10,14 @@ GKE [Google Kubernetes Engine] は、Kubernetes (k8s) に基づくコンテナ�
 - コンテナのオートスケーリング（ロードバランシング）
 
 GKE は、以下のようなコンポーネントから構成される
+
 - Node : Dockerが動くマシンのこと。
-- Pod（＝クラスター） : コンテナを配置する入れ物で１つ以上のコンテナを持つ。GKE では、この単位でスケーリングされる。
+- Pod : コンテナを配置する入れ物で１つ以上のコンテナを持つ。GKE では、この単位でスケーリングされる。
 - Proxy : コンテナとの通信を経由するプロキシ。
-- Deployments : Pod（コンテナ）を複数集めて管理するもの。
+- Deployments : Pod を複数集めて管理するもの。
 - Service : Deployment に対して外部からアクセス可能な IP アドレスを付与し、外部からアクセスできるようにしたもの
+
+「クラスター > Deployments > Pod > コンテナ」の包含関係？
 
 ### ◎ 参考サイト
 - https://cloud.google.com/kubernetes-engine/docs/quickstart#dockerfile
@@ -43,6 +46,7 @@ GKE は、以下のようなコンポーネントから構成される
     ```
     - `${CLUSTER_NAME}` : 作成するクラスターの名前（`_` は使用できないことに注意）
     - `--nodes` : ノード数（デフォルトでは３）
+        - ノートは GCP での VM インスタンスに相当
 
 <!--
 - Kubernetes のローカルプロキシを起動
@@ -75,6 +79,8 @@ GKE は、以下のようなコンポーネントから構成される
     ```
 
 ### 4. Deployment を公開する
+Deployment を公開指定ない状態では、Node 内でコンテナが動いているだけであり、外部からアクセスすることができない状態になっている。<br>
+以下のコマンドでDeployment を公開することで、Service とロードバランサーが作成され、外部から指定したIPアドレスにアクセスできるようになる。
 
 - Deployment を公開する
     ```sh
@@ -82,6 +88,7 @@ GKE は、以下のようなコンポーネントから構成される
     ```
     - `${PORT}` : インターネット用公開ポート / ex `80`
     - `${TARGET_PORT}` : アプリケーション用のポート / ex `8080`
+
 
 ### 5. 公開サイトにアクセスして動作確認する
 
@@ -96,4 +103,20 @@ GKE は、以下のようなコンポーネントから構成される
     ```
     `EXTERNAL-IP` のアドレスに `http://${EXTERNAL-IP}/` でアクセスする(今の場合 http://34.85.65.57/ ) ことで、実行中の Service の動作確認をすることが出来る
 
+
+### その他コマンド
+
+作成した Pod のコンテナ内部にアクセスしたい場合は、以下のコマンドでアクセスできる
+
+```sh
+$ kubectl exec -it ${Pod名} /bin/bash
+```
+- ※ node のインスタンスではなく、master のインスタンスにアクセスしている状態になることに注意
+
+
+Pod 名は、以下のコマンドで確認可能
+
+```
+$ kubectl get pod
+```
 
