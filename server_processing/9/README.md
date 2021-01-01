@@ -1,37 +1,74 @@
 # 【GCP】GKE [Google Kubernetes Engine] の基本事項
 
-## ■ GKE の基本事項
+## ■ Kubernetes (k8s) と GKE の基本事項
 
-<img src="https://user-images.githubusercontent.com/25688193/103282973-a99a5100-4a1a-11eb-8c1b-9a3511616e58.png" width=915>
+### ◎ Kubernetes (k8s)
+Kubernetes（クーベネティス）は、コンテナの運用管理と自動化（＝コンテナオーケストレーション）を行うシステムで、複数サーバーで分散環境されたシステムをあたかも１台のコンピューターのように扱えるようになる。<br>
 
-GKE [Google Kubernetes Engine] は、Kubernetes (k8s) に基づくコンテナライフサイクル管理システムで、以下のようなことが行える。
-- コンテナの起動停止
-- コンテナのモニタリング
-- コンテナのオートスケーリング（ロードバランシング）
+具体的には、以下のような機能を持つ
 
-GKE は、以下のようなコンポーネントから構成される
+- 複数サーバーでのコンテナ管理
+- コンテナのスケジューリング
+- オートスケーリング、ロードバランシング（負荷分散）
+- コンテナの死活監視
+- 障害時のセルフヒーリング
+- ログの管理
 
-- Node : Dockerが動くマシンのこと。
-- Pod : コンテナを配置する入れ物で１つ以上のコンテナを持つ。GKE では、この単位でスケーリングされる。
-- Proxy : コンテナとの通信を経由するプロキシ。
-- Deployments : Pod を複数集めて管理するもの。
-- Service : Deployment に対して外部からアクセス可能な IP アドレスを付与し、外部からアクセスできるようにしたもの
+多数のコンテナから構成され、それらを適切にスケーリングする必要があるシステムにおいて、Kubernetes を導入することで、システムの管理が用意になるというメリットがある。
 
-「クラスター > Deployments > Pod > コンテナ」の包含関係？
+<img src="https://user-images.githubusercontent.com/25688193/103432871-467f0900-4c2a-11eb-982b-d2d82fb29056.png" width=600>
 
-### ◎ 参考サイト
-- https://cloud.google.com/kubernetes-engine/docs/quickstart#dockerfile
-- https://qiita.com/ntoreg/items/74aa6de2f8f29b4a3b79
-- https://www.topgate.co.jp/gcp07-how-to-start-docker-image-gke
+上図は Kubernetes のアーキテクチャを示した図である。<br>
+Kubernetes は、以下のようなコンポーネントから構成される
 
-## ■ GKE の構築手順
+- Kubernetes クラスタ<br>
+    Kubernetes では、後述の master サーバー と複数の Node 全体で１つのクラスタという処理単位で扱う。
+
+- master サーバー<br>
+    クラスタ内のコンテナを操作するためのサーバー。<br>
+    複数のサーバーから構築されている負荷分散システムでは、各々のサーバー（Node）に対してそのサーバー内のコンテナにアスセスする方法ではうまく連携が取れなくなるので、複数の Node を管理している master サーバーを介して、クラスタ内の各コンテナを操作できるようになっている。
+
+- Node<br>
+    Dockerが動くサーバーのこと。
+
+- Pod<br>
+    コンテナを配置する入れ物で１つ以上のコンテナを持つ。Kubernetes ではこの単位でスケーリングされ、アプリケーションのデプロイ単位になる。そして、コンテナの起動・停止などの処理はこの Pod 単位で行われる。<br>Pod 単位で管理するので、役割の異なるコンテナ（データベースコンテナと Web フロントコンテナなど）を１つの Pod 内に格納するのは一般的に NG となる。<br>
+    Pod の設定は yaml ファイルで記述する。
+
+- ReplicaSet<br>
+    クラスタ内に、事前に指定した数の Pod が常に起動している状態を保持するための機能。障害などで Pod が停止してしまった場合、その Pod を削除し、Pod を新規に作成することで常に必要な数の Pod が起動した状態を保持する。（いわゆるオートスケーリングを行っている機能）
+
+- Deployments<br>
+    <img src="https://user-images.githubusercontent.com/25688193/103432768-b7bdbc80-4c28-11eb-9b5f-33c3330c4b33.png" width=350><br>
+    Pod（コンテナ）と ReplicaSet をまとめて管理し、それらの履歴を管理する機能。Deployments は ReplicaSet のテンプレートを持ち、そのテンプレートに従って ReplicaSet と Pod を作成する。これにより、Pod 内コンテナの docker image を更新したい場合に、システムを停止することなく更新できるようになる。また履歴も管理しているので、Pod 内コンテナの docker image を古いバージョンに更新することもできる。
+
+- Service（ネットワーク管理）<br>
+    クラスタ内の各 Pod に対して、アクセス可能な IP アドレスを付与し、外部からアクセスできるようにしたもの。Service の設定は yaml ファイルで記述する。
+
+- DaemonSet<br>
+    xxx
+
+### ◎ GKE の基本事項
+GKE [Google Kubernetes Engine] は、Google が提供している Kubernetes (k8s) のマネージドサービスで、Kubernetes を GUI でより手軽に扱ったり、既存の GCP サービスとの連携などを行うことができる。<br>
+GKE を利用して Kubernetes クラスタを構築する際には、以下の GCP サービスを利用することが多い
+
+- Google Container Builder<br>
+    Dockerfile を元に docker image を作成する作業を、ローカルPCやサーバー上で行うのでなく、GCP 上で行うことのできるサービス。作成した docker image は、Google Conatainer Registry に自動的にアップロードされる。<br>
+- Google Conatainer Registry
+    docker image を GCP プロジェクト内で管理できるストレージサービス。docker image のアップロードとダウンロードができる。
+
+## ■ GKE を利用した Kubernetes クラスターの構築手順
 
 0. 【事前準備】作成した api コードの docker image を作成し、GCP の Container Registry にアップロード
 1. クラスタを作成
-1. クラスタの認証情報を取得
-1. Deployment を作成する（＝作成したクラスタに、コンテナ化された docker image をデプロイする）
-1. Deployment を公開する
+1. Deployment を作成する
+1. Service を公開する
 1. 公開サイトにアクセスして動作確認する
+
+
+- xxx
+    1. yaml ファイルなしで Pod と Deployment を作成する場合
+    1. yaml ファイルありで Pod と Deployment を作成する場合
 
 ### 1. クラスタを作成
 
@@ -56,7 +93,7 @@ GKE は、以下のようなコンポーネントから構成される
     ```
 -->
 
-### 2. クラスタの認証情報を取得
+### 1.1. クラスタの認証情報を取得
 
 - クラスタの認証情報を取得
     このコマンドにより、作成したクラスタを使用するように `kubectl` が構成される？
@@ -64,7 +101,8 @@ GKE は、以下のようなコンポーネントから構成される
     $ gcloud container clusters get-credentials ${CLUSTER_NAME}
     ```
 
-### 3. Deployment を作成する（＝作成したクラスタに、コンテナ化された docker image をデプロイする）
+### 2. Deployment を作成する
+作成したクラスタの各 Node に、docker image のコンテナを Pod 単位でデプロイする。
 
 - Deployment を作成する
     ```sh
@@ -78,17 +116,18 @@ GKE は、以下のようなコンポーネントから構成される
     $ kubectl describe deployments
     ```
 
-### 4. Deployment を公開する
-Deployment を公開指定ない状態では、Node 内でコンテナが動いているだけであり、外部からアクセスすることができない状態になっている。<br>
-以下のコマンドでDeployment を公開することで、Service とロードバランサーが作成され、外部から指定したIPアドレスにアクセスできるようになる。
+### 4. Service を公開する
+Service を公開指定ない状態では、Node 内でコンテナが動いているだけであり、外部からアクセスすることができない状態になっている。<br>
+以下のコマンドで Deployment を公開することで、Service とロードバランサーが作成され、外部から指定したIPアドレスにアクセスできるようになる。
 
-- Deployment を公開する
+- Service を公開する
     ```sh
     $ kubectl expose deployment ${CLUSTER_NAME} --type LoadBalancer --port ${PORT} --target-port ${TARGET_PORT}
     ```
     - `${PORT}` : インターネット用公開ポート / ex `80`
     - `${TARGET_PORT}` : アプリケーション用のポート / ex `8080`
-
+    - `--type` : 
+        - LoadBalancer 指定時：Service の IPアドレス＋ポート番号にアクセスすると、複数の Pod でのレイヤー４レベルの負荷分散を行う
 
 ### 5. 公開サイトにアクセスして動作確認する
 
@@ -120,3 +159,9 @@ Pod 名は、以下のコマンドで確認可能
 $ kubectl get pod
 ```
 
+
+## ■ 参考サイト
+- https://cloud.google.com/kubernetes-engine/docs/quickstart#dockerfile
+- https://qiita.com/ntoreg/items/74aa6de2f8f29b4a3b79
+- https://www.topgate.co.jp/gcp07-how-to-start-docker-image-gke
+- https://www.kagoya.jp/howto/rentalserver/kubernetes/
