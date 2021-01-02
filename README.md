@@ -52,7 +52,8 @@
         - [【GCP】Cloud Functions を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/7)
         - 【GCP】Cloud Functions の単体テスト＆結合テスト
         - [【GCP】Cloud Run を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/8)
-        - [【GCP】Kubernetes (k8s) と GKE [Google Kubernetes Engine] の基本事項](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/9)
+        - [【GKE】Kubernetes (k8s) と GKE [Google Kubernetes Engine] の基本事項](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/9)
+        - 【GKE】GKE クラスタのノードで GPU を使用可能にする
 1. テーブルデータ処理
     - 【Python】pandas_profiling でテーブルデータの統計情報を確認する。
     - 【Python】pandas データ型に基づき、欠損値の埋め合わせとカテゴリデータのエンコードを一括して行う。

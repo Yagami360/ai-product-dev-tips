@@ -59,16 +59,51 @@ GKE を利用して Kubernetes クラスタを構築する際には、以下の 
 
 ## ■ GKE を利用した Kubernetes クラスターの構築手順
 
-0. 【事前準備】作成した api コードの docker image を作成し、GCP の Container Registry にアップロード
-1. クラスタを作成
-1. Deployment を作成する
-1. Service を公開する
-1. 公開サイトにアクセスして動作確認する
+0. 【事前準備】作成した api コードの docker image を作成し、GCP の Container Registry にアップロード<br>
+1. クラスタを作成<br>
+2. Deployment を作成する<br>
+    2-1. yaml ファイルなしで Pod と Deployment を作成する場合<br>
+    2-2. yaml ファイルありで Pod と Deployment を作成する場合<br>
+3. Service を公開する<br>
+    3-1. yaml ファイルなしで Service を作成する場合<br>
+    3-1. yaml ファイルありで Service を作成する場合<br>
+4. 外部アドレスにアクセスして動作確認する<br>
+    4-1. 公開外部アドレスの URL にアドレスして動作確認する<br>
+    4-2. 公開外部アドレスにリクエスト処理して、レスポンスを受け取る<br>
 
+### 0. 【事前準備】作成した api コードの docker image を作成し、GCP の Container Registry にアップロード
 
-- xxx
-    1. yaml ファイルなしで Pod と Deployment を作成する場合
-    1. yaml ファイルありで Pod と Deployment を作成する場合
+- 作成済みの docker image を GCP の Container Registry にアップロード
+    ```sh
+    # docker image に TAG をつける
+    # TAG 名 : gcr.io/${PROJECT_ID}/${IMAGE_NAME}
+    $ docker tag ${IMAGE_NAME} gcr.io/${PROJECT_ID}/${IMAGE_NAME}
+
+    # Container Registry にアップロード（TAGを使用）
+    $ docker push gcr.io/${PROJECT_ID}/${IMAGE_NAME}
+    ```
+    - `${PROJECT_ID}` : GCP プロジェクト名
+    - `${IMAGE_NAME}` : docker image 名
+        - イメージ名にも `_` は使用できないことに注意
+
+- docker image を作成し、GCP の Container Registry にアップロード
+    ソースコードと Dockerfile が格納されているディレクトリから次のコマンドを実行。
+    ```sh
+    $ gcloud builds submit --tag gcr.io/${PROJECT_ID}/${IMAGE_NAME}
+    ```
+
+- `cloudbuild.yml` の設定情報を元に docker image を作成し、GCP の Container Registry にアップロード
+    ソースコードと Dockerfile が格納されているディレクトリから次のコマンドを実行。
+    ```sh
+    $ gcloud builds submit --config ${cloudbuildの設定ファイル名（.yml）}
+    ```
+    - `cloudbuild.yml` ファイルの中身
+        ```yml
+        steps:
+        - name: 'gcr.io/cloud-builders/docker'  # docker コマンドを実行するには必要
+            args: ['build', '-t', 'gcr.io/myproject-292103/sample-image', './api']  # ./api に格納されている dockerfile を元に、docker image を作成
+        images: ['gcr.io/myproject-292103/sample-image']
+        ```
 
 ### 1. クラスタを作成
 
@@ -93,6 +128,13 @@ GKE を利用して Kubernetes クラスタを構築する際には、以下の 
     ```
 -->
 
+作成したクラスタの各ノードは、以下のコマンドで確認できる
+
+- クラスタのノードを確認
+    ```sh
+    $ kubectl get nodes
+    ```
+
 ### 1.1. クラスタの認証情報を取得
 
 - クラスタの認証情報を取得
@@ -104,61 +146,202 @@ GKE を利用して Kubernetes クラスタを構築する際には、以下の 
 ### 2. Deployment を作成する
 作成したクラスタの各 Node に、docker image のコンテナを Pod 単位でデプロイする。
 
-- Deployment を作成する
+### 2-1. yaml ファイルなしで Pod と Deployment を作成する場合
+`kubectl run`, `kubectl create`, `kubectl expose` コマンドを使用することで、yaml ファイルなしに Pod, Deployment, Service を手軽に作成できる。
+
+- yaml ファイルなしに Pod と Deployment を作成
     ```sh
-    $ kubectl create deployment ${CLUSTER_NAME} --image=${IMAGE_NAME}
+    $ kubectl run ${POD_NAME} --image=${IMAGE_NAME}
+    ```
+    ```sh
+    # 例）nginx を起動する場合
+    $ kubectl run nginx --image=nginx:1.11.3
+    ```
+
+- yaml ファイルなしに Pod と Deployment を作成
+    ```sh
+    $ kubectl create deployment ${POD_NAME} --image=${IMAGE_NAME}
     ```
     - `${IMAGE_NAME}` : docker コンテナのイメージ名 : ex `gcr.io/${PROJECT_ID}/${IMAGE_NAME}`
         - イメージ名にも `_` は使用できないことに注意
 
-- デプロイされた Deployment の情報を閲覧
+作成した Pod や Deployment は、以下の `kubectl get`, `kubectl describe` コマンドで確認可能
+
+- Pod の確認
+    ```sh
+    $ kubectl get pods
+    NAME                         READY   STATUS    RESTARTS   AGE
+    nginx-pod-7d8dc9d9f9-7p8mg   1/1     Running   0          13s
+    nginx-pod-7d8dc9d9f9-sgl5g   1/1     Running   0          13s
+    nginx-pod-7d8dc9d9f9-tqqxj   1/1     Running   0          13s
+    ```
+
+- Pod の確認（詳細）
+    ```sh
+    $ kubectl describe pods
+    ```
+
+- Deployment の確認
+    ```sh
+    $ kubectl get deployments
+    NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+    nginx-pod   3/3     3            3           40s
+    ```
+
+- Deployment の確認（詳細）
     ```sh
     $ kubectl describe deployments
     ```
 
-### 4. Service を公開する
+作成した Pod や Deployment は、以下のコマンドで削除可能
+
+- Pod と Deployment を削除
+    ```sh
+    $ kubectl delete deployment ${POD_NAME}
+    ```
+
+### 2-2. yaml ファイルありで Pod と Deployment を作成する場合
+
+この場合まず、Pod の設定をデプロイメント定義ファイル `deployment.yml`（ファイル名は任意）に記述する。
+
+- `deployment.yml` の中身
+    ```yml
+    apiVersion: apps/v1         # Deployment の API バージョン。kubectl api-resources | grep Deployment と kubectl api-versions  | grep apps で確認可能  
+    kind: Deployment            # デプロイメント定義ファイルであることを明示
+    metadata:
+    name: sample-pod          # 識別名
+    spec:
+    replicas: 3               # Pod の数
+    selector:
+        matchLabels:
+        app: sample-server    # template:metadata:labels:app と同じ値にする必要がある
+    template:
+        metadata:
+        labels:               # Pod をクラスタ内で識別のするためのラベル
+            app: sample-server  # 識別名。selector:matchLabels:app と同じ値にする必要がある
+        spec:
+        containers:               # Pod 内で動作させるコンテナ群の設定
+        - image: gcr.io/myproject-292103/sample-image     # Container Registry にアップロードした docker image
+            name: sample-container                          # コンテナ名
+            env:                    # ConfigMap と Secret を Pod で利用するための設定情報（ConfigMap と Secret を利用しない場合は、これらの定義は不要）
+            - name: PROJECT_ID                              # ConfigMap で定義した project.id
+            valueFrom:
+                configMapKeyRef:
+                name: projectid
+                key: project.id
+            - name: SECRET_ID                               # Secret で定義した apikey の id
+            valueFrom:
+                secretKeyRef:
+                name: apikey
+                key: id
+            - name: SECRET_KEY                              # Secret で定義した apikey の key
+            valueFrom:
+                secretKeyRef:
+                name: apikey
+                key: key
+            ports:
+            - containerPort: 80    # コンテナの通信ポート番号
+            name: http-server
+    ```
+
+デプロイメント定義ファイル `deployment.yml` を作成後、以下のコマンドで yml ファイルに従った Pod と Deployment を作成できる。
+
+- yaml ファイルありで Pod と Deployment を作成
+    ```sh
+    $ kubectl apply -f ${デプロイメント定義ファイル（.yml）}
+    ```
+    ```sh
+    # 使用例
+    $ kubectl apply -f k8s/deployment.yml
+    ```
+
+### 3. Service を公開する
 Service を公開指定ない状態では、Node 内でコンテナが動いているだけであり、外部からアクセスすることができない状態になっている。<br>
 以下のコマンドで Deployment を公開することで、Service とロードバランサーが作成され、外部から指定したIPアドレスにアクセスできるようになる。
 
-- Service を公開する
+#### 3-1. yaml ファイルなしで Service を作成する場合
+
+- yaml ファイルなしで Service を公開する
     ```sh
     $ kubectl expose deployment ${CLUSTER_NAME} --type LoadBalancer --port ${PORT} --target-port ${TARGET_PORT}
     ```
     - `${PORT}` : インターネット用公開ポート / ex `80`
-    - `${TARGET_PORT}` : アプリケーション用のポート / ex `8080`
+    - `${TARGET_PORT}` : アプリケーション用のポート / ex `80`
     - `--type` : 
         - LoadBalancer 指定時：Service の IPアドレス＋ポート番号にアクセスすると、複数の Pod でのレイヤー４レベルの負荷分散を行う
 
-### 5. 公開サイトにアクセスして動作確認する
+#### 3-2. yaml ファイルありで Service を作成する場合
+この場合まず、Service の設定をサービス定義ファイル `service.yml`（ファイル名は任意）に記述する。
 
-- 実行中の Service を確認
-    ```sh
-    $ kubectl get service ${CLUSTER_NAME}
+- `service.yml` の中身
+    ```yml
+    apiVersion: v1
+    kind: Service           # サービス定義ファイルであることを明示
+    metadata:
+    name: sample-server     # サービス名
+    spec:
+    type: LoadBalancer      # ロードバランサーを指定。
+    ports:
+        - port: 80          # インターネット用公開ポート
+        targetPort: 80      # アプリケーション用のポート
+        protocol: TCP
+    selector:               # リクエストをうけるコンテナの設定
+        type: sample-server     # デプロイメント定義ファイルで定義した識別名？
     ```
-    このコマンドを実行すると、以下のような出力表示される
+
+- yaml ファイルありで Service を公開する
     ```sh
-    NAME             TYPE           CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE
-    sample-cluster   LoadBalancer   10.3.240.39   34.85.65.57   80:30786/TCP   105s
+    $ kubectl apply -f ${サービス定義ファイル（.yml）}
     ```
-    `EXTERNAL-IP` のアドレスに `http://${EXTERNAL-IP}/` でアクセスする(今の場合 http://34.85.65.57/ ) ことで、実行中の Service の動作確認をすることが出来る
+    ```sh
+    # 使用例
+    $ kubectl apply -f k8s/service.yml
+    ```
 
+作成したサービスは、以下のコマンドで確認できる
 
-### その他コマンド
+- サービスの確認
+    ```sh
+    $ kubectl get service
+    NAME           TYPE           CLUSTER-IP    EXTERNAL-IP    PORT(S)        AGE
+    kubernetes     ClusterIP      10.3.240.1    <none>         443/TCP        111m
+    nginx-server   LoadBalancer   10.3.252.30   34.84.63.179   80:31088/TCP   76s
+    ```
+    ```sh
+    $ kubectl get service ${SERVICE_NAME}
+    ```
 
-作成した Pod のコンテナ内部にアクセスしたい場合は、以下のコマンドでアクセスできる
+- サービスの確認（詳細）
+    ```sh
+    $ kubectl describe service ${SERVICE_NAME}
+    ```
 
-```sh
-$ kubectl exec -it ${Pod名} /bin/bash
-```
-- ※ node のインスタンスではなく、master のインスタンスにアクセスしている状態になることに注意
+作成した Service は、以下のコマンドで削除可能
 
+- Service を削除
+    ```sh
+    $ kubectl delete service ${SERVICE_NAME}
+    ```
 
-Pod 名は、以下のコマンドで確認可能
+### 4. 外部アドレスにアクセスして動作確認する
 
-```
-$ kubectl get pod
-```
+#### 4-1. 公開外部アドレスの URL にアドレスして動作確認する
+`kubectl get service` で表示される `EXTERNAL-IP` のアドレスに `http://${EXTERNAL-IP}/` でアクセスする(今の場合 http://34.84.63.179/ ) ことで、実行中の Service の動作確認をすることが出来る。
 
+#### 4-2. 公開外部アドレスにリクエスト処理して、レスポンスを受け取る
+作成したクラスタのコンテナの docker image が image 化された API コード（Flask を用いたコードなど）である場合は、`kubectl get service` で表示される `EXTERNAL-IP` のアドレスに、リクエストメッセージを送信することで、作成したクラスタからレスポンスメッセージを受け取ることができる。（処理内容は docker image 化されたコード内容による）
+
+## ■ その他便利コマンド
+
+- 作成した Pod のコンテナ内部にアクセス<br>
+    デバッグ用途などで、作成した Pod のコンテナ内部にアクセスしたい場合は、以下のコマンドでアクセスできる
+    ```sh
+    $ kubectl exec -it ${POD_NAME} /bin/bash
+    ```
+    - `${POD_NAME}` : Pod 名。`kubectl get pods` で確認可能
+    - ※ node のインスタンスではなく、master のインスタンスにアクセスしている状態になることに注意
+
+- xxx
 
 ## ■ 参考サイト
 - https://cloud.google.com/kubernetes-engine/docs/quickstart#dockerfile
