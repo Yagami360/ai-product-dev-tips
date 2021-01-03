@@ -38,6 +38,11 @@ Kubernetes は、以下のようなコンポーネントから構成される
 - ReplicaSet<br>
     クラスタ内に、事前に指定した数の Pod が常に起動している状態を保持するための機能。障害などで Pod が停止してしまった場合、その Pod を削除し、Pod を新規に作成することで常に必要な数の Pod が起動した状態を保持する。（いわゆるオートスケーリングを行っている機能）
 
+- DaemonSet<br>
+    ReplicaSet は、クラスタ内に事前に指定した数の Pod が常に起動している状態を保持するための機能であったが、各ノードの Pod 数が常に同じ数で配置されることを保証するものではない。<br>
+    一方 DaemonSet は、クラスタ内の全ノードに１つの Pod づつ配置されるようにした ReplicaSet の一種になっている。用途としては、全 Node 上で必ず動作している必要のあるプロセスのために利用されることが多い。<br>
+    例えば、GKE クラスタのノードで GPU を使用可能にする場合には、NVIDIA のデバイスドライバを DaemonSet 経由でインストールする。これによってオートスケーリング機能の良さを殺さずにデバイスドライバのインストールを実現できる。
+
 - Deployments<br>
     <img src="https://user-images.githubusercontent.com/25688193/103432768-b7bdbc80-4c28-11eb-9b5f-33c3330c4b33.png" width=350><br>
     Pod（コンテナ）と ReplicaSet をまとめて管理し、それらの履歴を管理する機能。Deployments は ReplicaSet のテンプレートを持ち、そのテンプレートに従って ReplicaSet と Pod を作成する。これにより、Pod 内コンテナの docker image を更新したい場合に、システムを停止することなく更新できるようになる。また履歴も管理しているので、Pod 内コンテナの docker image を古いバージョンに更新することもできる。
@@ -45,8 +50,6 @@ Kubernetes は、以下のようなコンポーネントから構成される
 - Service（ネットワーク管理）<br>
     クラスタ内の各 Pod に対して、アクセス可能な IP アドレスを付与し、外部からアクセスできるようにしたもの。Service の設定は yaml ファイルで記述する。
 
-- DaemonSet<br>
-    xxx
 
 ### ◎ GKE の基本事項
 GKE [Google Kubernetes Engine] は、Google が提供している Kubernetes (k8s) のマネージドサービスで、Kubernetes を GUI でより手軽に扱ったり、既存の GCP サービスとの連携などを行うことができる。<br>
@@ -326,22 +329,41 @@ Service を公開指定ない状態では、Node 内でコンテナが動いて�
 ### 4. 外部アドレスにアクセスして動作確認する
 
 #### 4-1. 公開外部アドレスの URL にアドレスして動作確認する
-`kubectl get service` で表示される `EXTERNAL-IP` のアドレスに `http://${EXTERNAL-IP}/` でアクセスする(今の場合 http://34.84.63.179/ ) ことで、実行中の Service の動作確認をすることが出来る。
+`kubectl get service` で表示される `EXTERNAL-IP` のアドレスに `http://${EXTERNAL-IP}:${PORT}` でアクセスすることで、実行中の Service の動作確認をすることが出来る。
+
+- 公開サイトへのアスセス
+    ```sh
+    $ curl http://${EXTERNAL_IP}:${PORT}
+    ```
+    - ${EXTERNAL_IP} : `kubectl get service` で表示される `EXTERNAL-IP` のアドレス。<br>
+        以下のコマンドでも取得できる
+        ```sh
+        $ EXTERNAL_IP=`kubectl describe service ${SERVICE_NAME} | grep "LoadBalancer Ingress" | awk '{print $3}'`
+        ```
 
 #### 4-2. 公開外部アドレスにリクエスト処理して、レスポンスを受け取る
 作成したクラスタのコンテナの docker image が image 化された API コード（Flask を用いたコードなど）である場合は、`kubectl get service` で表示される `EXTERNAL-IP` のアドレスに、リクエストメッセージを送信することで、作成したクラスタからレスポンスメッセージを受け取ることができる。（処理内容は docker image 化されたコード内容による）
 
 ## ■ その他便利コマンド
 
+- 作成した Pod のコンテナログを確認する
+    デバッグ用途などで、作成した Pod のコンテナログを確認したい場合は、以下のコマンドで確認できる
+    ```sh
+    kubectl logs ${POD_NAME}
+    ```
+    - `${POD_NAME}` : Pod 名。`kubectl get pods` で確認可能<br>
+        Pod 数が１個の場合は、以下のコマンドでも取得できる
+        ```sh
+        $ POD_NAME=`kubectl get pods | awk '{print $1}' | sed -n 2p`
+        ```
+
 - 作成した Pod のコンテナ内部にアクセス<br>
     デバッグ用途などで、作成した Pod のコンテナ内部にアクセスしたい場合は、以下のコマンドでアクセスできる
     ```sh
     $ kubectl exec -it ${POD_NAME} /bin/bash
     ```
-    - `${POD_NAME}` : Pod 名。`kubectl get pods` で確認可能
+    - `${POD_NAME}` : Pod 名。`kubectl get pods` で確認可能<br>
     - ※ node のインスタンスではなく、master のインスタンスにアクセスしている状態になることに注意
-
-- xxx
 
 ## ■ 参考サイト
 - https://cloud.google.com/kubernetes-engine/docs/quickstart#dockerfile

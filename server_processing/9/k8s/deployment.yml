@@ -3,7 +3,7 @@ kind: Deployment            # デプロイメント定義ファイルである�
 metadata:
   name: sample-pod          # 識別名
 spec:
-  replicas: 3               # Pod の数
+  replicas: 1               # Pod の数
   selector:
     matchLabels:
       app: sample-server    # template:metadata:labels:app と同じ値にする必要がある
@@ -16,5 +16,5 @@ spec:
       - image: gcr.io/myproject-292103/sample-image     # Container Registry にアップロードした docker image
         name: sample-container                          # コンテナ名
         ports:
-        - containerPort: 5000
+        - containerPort: 80
           name: http-server
