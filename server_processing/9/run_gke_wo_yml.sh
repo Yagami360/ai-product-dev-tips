@@ -27,12 +27,12 @@ gcloud container clusters create ${CLUSTER_NAME} --num-nodes=${NUM_NODES}
 #gcloud container clusters get-credentials ${CLUSTER_NAME}
 
 # Deployment を作成する
-kubectl apply -f k8s/deployment.yml
+kubectl create deployment ${CLUSTER_NAME} --image=gcr.io/${PROJECT_ID}/${IMAGE_NAME}
 kubectl get pods
 kubectl get deployments
 
 # Deployment を公開する
-kubectl apply -f k8s/service.yml
+kubectl expose deployment ${POD_NAME} --type LoadBalancer --port ${PORT} --target-port ${TARGET_PORT}
 kubectl get service ${SERVICE_NAME}
 
 # 公開外部アドレス取得
