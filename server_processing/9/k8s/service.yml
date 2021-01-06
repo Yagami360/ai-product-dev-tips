@@ -9,4 +9,4 @@ spec:
       targetPort: 80
       protocol: TCP
   selector:
-    type: sample-server
+    app: sample-pod  # デプロイメント定義ファイルで定義した Pod の識別名。app:sample-pod のラベルがつけられた Pod を通信先とする

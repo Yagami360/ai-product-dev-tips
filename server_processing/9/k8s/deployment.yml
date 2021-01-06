@@ -6,11 +6,11 @@ spec:
   replicas: 1               # Pod の数
   selector:
     matchLabels:
-      app: sample-server    # template:metadata:labels:app と同じ値にする必要がある
+      app: sample-pod    # template:metadata:labels:app と同じ値にする必要がある
   template:
     metadata:
-      labels:               # Pod をクラスタ内で識別のするためのラベル
-        app: sample-server  # 識別名。selector:matchLabels:app と同じ値にする必要がある
+      labels:               # Pod をクラスタ内で識別のするためのラベル。service.yml で Pod を識別するラベルとして使用される
+        app: sample-pod     # 識別名。selector:matchLabels:app と同じ値にする必要がある
     spec:
       containers:           # Pod 内で動作させるコンテナ群の設定
       - image: gcr.io/myproject-292103/sample-image     # Container Registry にアップロードした docker image

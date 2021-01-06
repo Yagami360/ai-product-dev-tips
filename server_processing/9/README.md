@@ -108,6 +108,8 @@ GKE を利用して Kubernetes クラスタを構築する際には、以下の 
         images: ['gcr.io/myproject-292103/sample-image']
         ```
 
+※ Dockerfile 内では、`EXPOSE` 命令で使用するコンテナ通信ポートの設定をする必要があることに注意
+
 ### 1. クラスタを作成
 
 #### ☆ GUI 使用時
@@ -212,16 +214,16 @@ GKE を利用して Kubernetes クラスタを構築する際には、以下の 
     apiVersion: apps/v1         # Deployment の API バージョン。kubectl api-resources | grep Deployment と kubectl api-versions  | grep apps で確認可能  
     kind: Deployment            # デプロイメント定義ファイルであることを明示
     metadata:
-    name: sample-pod          # 識別名
+    name: sample-pod          # Pod の名前
     spec:
     replicas: 3               # Pod の数
     selector:
         matchLabels:
-        app: sample-server    # template:metadata:labels:app と同じ値にする必要がある
-    template:
+        app: sample-pod       # template:metadata:labels:app と同じ値にする必要がある
+    template:                 # Pod のテンプレート。このテンプレートをもとに ReplicaSet がレプリカ数の Pod を作成する
         metadata:
-        labels:               # Pod をクラスタ内で識別のするためのラベル
-            app: sample-server  # 識別名。selector:matchLabels:app と同じ値にする必要がある
+        labels:               # Pod をクラスタ内で識別のするためのラベル。service.yml で Pod を識別するラベルとして使用される
+            app: sample-pod   # ↑
         spec:
         containers:               # Pod 内で動作させるコンテナ群の設定
         - image: gcr.io/myproject-292103/sample-image     # Container Registry にアップロードした docker image
@@ -266,7 +268,7 @@ Service を公開指定ない状態では、Node 内でコンテナが動いて�
 
 - yaml ファイルなしで Service を公開する
     ```sh
-    $ kubectl expose deployment ${CLUSTER_NAME} --type LoadBalancer --port ${PORT} --target-port ${TARGET_PORT}
+    $ kubectl expose deployment ${POD_NAME} --type LoadBalancer --port ${PORT} --target-port ${TARGET_PORT}
     ```
     - `${PORT}` : インターネット用公開ポート / ex `80`
     - `${TARGET_PORT}` : アプリケーション用のポート / ex `80`
@@ -289,7 +291,7 @@ Service を公開指定ない状態では、Node 内でコンテナが動いて�
         targetPort: 80      # アプリケーション用のポート
         protocol: TCP
     selector:               # リクエストをうけるコンテナの設定
-        type: sample-server     # デプロイメント定義ファイルで定義した識別名？
+        app: sample-pod     # デプロイメント定義ファイルで定義した Pod の識別名。この場合 app:sample-pod のラベルがつけられた Pod を通信先とする
     ```
 
 - yaml ファイルありで Service を公開する

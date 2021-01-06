@@ -16,10 +16,6 @@ gcloud config set project ${PROJECT_ID}
 gcloud config set compute/zone ${REGION}
 gcloud config list
 
-# docker image の作成
-#docker-compose -f docker-compose.yml stop
-#docker-compose -f docker-compose.yml up -d
-
 # docker image を GCP の Container Registry にアップロード
 #gcloud builds submit --tag gcr.io/${PROJECT_ID}/${IMAGE_NAME}
 gcloud builds submit --config api/cloudbuild.yml
@@ -37,7 +33,7 @@ kubectl get pods
 kubectl get deployments
 
 # Deployment を公開する
-#kubectl expose deployment ${SERVICE_NAME} --type LoadBalancer --port ${PORT} --target-port ${TARGET_PORT}
+#kubectl expose deployment ${POD_NAME} --type LoadBalancer --port ${PORT} --target-port ${TARGET_PORT}
 kubectl apply -f k8s/service.yml
 kubectl get service ${SERVICE_NAME}
 
