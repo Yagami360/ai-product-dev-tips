@@ -119,7 +119,7 @@ GKE を利用して Kubernetes クラスタを構築する際には、以下の 
 
 - クラスタを作成
     ```sh
-    $ gcloud container clusters create ${CLUSTER_NAME} --num-nodes=
+    $ gcloud container clusters create ${CLUSTER_NAME} --num-nodes=3
     ```
     - `${CLUSTER_NAME}` : 作成するクラスターの名前（`_` は使用できないことに注意）
     - `--nodes` : ノード数（デフォルトでは３）
