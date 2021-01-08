@@ -2,7 +2,14 @@
 set -eu
 
 PROJECT_ID=myproject-292103
-REGION=asia-northeast1-a
+#REGION=asia-northeast1-a
+#REGION=asia-northeast1-c
+#REGION=us-central1-a
+#REGION=us-central1-c
+REGION=asia-east1-a
+#GPU_TYPE=nvidia-tesla-t4
+GPU_TYPE=nvidia-tesla-k80
+
 IMAGE_NAME=sample-image
 CLUSTER_NAME=sample-gpu-cluster
 POOL_NAME=sample-gpu-pool
@@ -18,30 +25,30 @@ gcloud config set compute/zone ${REGION}
 gcloud config list
 
 # クラスタを作成
-#gcloud container clusters create ${CLUSTER_NAME} \
-#    --accelerator type=nvidia-tesla-t4,count=1
-
 gcloud container clusters create ${CLUSTER_NAME} \
-    --accelerator type=nvidia-tesla-t4,count=1
+    --num-nodes=${NUM_NODES}
+
+#    --accelerator type=${GPU_TYPE},count=1
 
 # GPU ノードプールを作成
 gcloud container node-pools create ${POOL_NAME} \
-    --accelerator type=nvidia-tesla-t4,count=1 \
+    --accelerator type=${GPU_TYPE},count=1 \
     --cluster ${CLUSTER_NAME} \
     --num-nodes ${NUM_NODES} --min-nodes 0 --max-nodes ${NUM_NODES} \
     --enable-autoscaling \
     --machine-type n1-standard-4
 
-<<COMMENTOUT
+# k8s の DaemonSet での Pod 経由で GPU ドライバーをインストール
+kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/container-engine-accelerators/master/nvidia-driver-installer/ubuntu/daemonset-preloaded.yaml
+
 # docker image を GCP の Container Registry にアップロード
 gcloud builds submit --config api/cloudbuild.yml
 
-# Deployment を作成する
+# Pod を作成する
 kubectl apply -f k8s/deployment.yml
 kubectl get pods
-kubectl get deployments
 
-# Deployment を公開する
+# Service を公開する
 kubectl apply -f k8s/service.yml
 kubectl get service ${SERVICE_NAME}
 
@@ -61,4 +68,3 @@ kubectl logs ${POD_NAME_1}
 
 # 作成した Pod のコンテナにアクセス
 kubectl exec -it ${POD_NAME_1} /bin/bash
-COMMENTOUT

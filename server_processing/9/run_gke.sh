@@ -31,7 +31,7 @@ kubectl apply -f k8s/deployment.yml
 kubectl get pods
 kubectl get deployments
 
-# Deployment を公開する
+# Service を公開する
 kubectl apply -f k8s/service.yml
 kubectl get service ${SERVICE_NAME}
 

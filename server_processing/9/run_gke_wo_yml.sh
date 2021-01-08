@@ -31,7 +31,7 @@ kubectl create deployment ${CLUSTER_NAME} --image=gcr.io/${PROJECT_ID}/${IMAGE_N
 kubectl get pods
 kubectl get deployments
 
-# Deployment を公開する
+# Service を公開する
 kubectl expose deployment ${POD_NAME} --type LoadBalancer --port ${PORT} --target-port ${TARGET_PORT}
 kubectl get service ${SERVICE_NAME}
 

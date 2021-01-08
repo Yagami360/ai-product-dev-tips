@@ -5,9 +5,13 @@ metadata:
 spec:
   containers:
   - name: sample-container
-    image: nvidia/cuda:10.0-runtime-ubuntu18.04
+    image: gcr.io/myproject-292103/sample-image
+    ports:
+    - containerPort: 80
+      name: http-server
     command: ["/bin/bash"]
     resources:
       limits:
        nvidia.com/gpu: 1
   restartPolicy: Never
+  

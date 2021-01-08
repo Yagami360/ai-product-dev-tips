@@ -4,28 +4,31 @@
 1. GPU 搭載クラスタを作成
 2. GPU のノードプールを作成する
 3. k8s の DaemonSet での Pod 経由で GPU ドライバーをインストール
-    3-1. DaemonSet で使う Docker Image の build と push
-    3-2. DaemonSet をデプロイ
-4. GPU を使用するように Pod を構成する
-
-- GKE のノードプール<br>
-    クラスタ内で同じ構成を持つノードのグループ。
+4. GPU を使用するように Pod を構成し、デプロイする
+5. Sevice を公開する
+6. 外部アドレスにアクセスして動作確認する
 
 ### 1. GPU 搭載クラスタを作成
 
 - GPU 搭載クラスタを作成
     ```sh
     $ gcloud container clusters create ${CLUSTER_NAME} \
+        --num-nodes=1 \
         --accelerator type=nvidia-tesla-t4,count=1
     ```
     - `${CLUSTER_NAME}` : 作成するクラスターの名前（`_` は使用できないことに注意）
+    - `--num-nodes` : ノード数（デフォルトでは３）。GPU割り当ての申請数より大きな数は作成できないことに注意
     - `--accelerator` : 
         - `type` : GPU の種類
             - `nvidia-tesla-k80`, `nvidia-tesla-p100`, `nvidia-tesla-p4`, `nvidia-tesla-v100`, `nvidia-tesla-t4`, `nvidia-tesla-a100`
         - `count`: GPU の数
 
 ### 2. GPU のノードプールを作成する
-xxx
+
+- GKE のノードプール<br>
+    クラスタ内で同じ構成を持つノードのグループ。
+
+作成した GPU 搭載クラスタに、GPU のノードプールを追加する。
 
 - GPU 搭載ノードプールを作成する
     ```sh
@@ -45,10 +48,26 @@ xxx
     - `--enable-autoscaling` : ノードプールを自動スケーリング
     - `--machine-type` : CPU の種類
 
-### 3. k8s の DaemonSet での Pod 経由で GPU ドライバーをインストール
-xxx
 
-### 4. GPU を使用するように Pod を構成する
+作成したノードプールは、作成した GKE クラスタの GUI 画面の「ノード」タブから確認可能<br>
+<img src="https://user-images.githubusercontent.com/25688193/104014131-e4a83b80-51f5-11eb-9bc1-c1820879062b.png" width="500">
+
+### 3. k8s の DaemonSet での Pod 経由で GPU ドライバーをインストール
+
+- DaemonSet<br>
+    ReplicaSet は、クラスタ内に事前に指定した数の Pod が常に起動している状態を保持するための機能であったが、各ノードの Pod 数が常に同じ数で配置されることを保証するものではない。<br>
+    一方 DaemonSet は、クラスタ内の全ノードに１つの Pod づつ配置されるようにした ReplicaSet の一種になっている。用途としては、全 Node 上で必ず動作している必要のあるプロセスのために利用されることが多い。<br>
+    
+    
+GKE クラスタのノードで GPU を使用可能にする場合には、NVIDIA の GPU ドライバを DaemonSet 経由でインストールする。<br>
+これにより、オートスケーリングによって新しく GPU ノードが作成されたとしても、そのノードに GPU ドライバが自動的にインストールされる。
+
+- DaemonSet をデプロイ（＝yaml ファイルありで Pod と Deployment を作成するときと同じコマンド）
+    ```sh
+    $ kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/container-engine-accelerators/master/nvidia-driver-installer/ubuntu/daemonset-preloaded.yaml
+    ```
+
+### 4. GPU を使用するように Pod を構成し、デプロイする
 
 - taint<br>
     node selector は、特定の Node に特定の Pod をスケジューリングする（＝どこに配置するか決める）ために使用される仕組みであったが、<br>
@@ -65,21 +84,12 @@ effect: NoSchedule      # taint の effect | NoSchedule : taint が許容でき�
 ただし GKE で GPU を利用する場合は toleration ではなく、以下のように pod 定義ファイル `deployment.yml` に `resources` 指定を追加することで GPU ノードプールへのスケジューリングを可能にする。
 
 - `deployment.yml` の中身
-```yml
-    apiVersion: apps/v1         # Deployment の API バージョン。kubectl api-resources | grep Deployment と kubectl api-versions  | grep apps で確認可能  
-    kind: Deployment            # デプロイメント定義ファイルであることを明示
+    ```yml
+    apiVersion: v1       # API バージョン  
+    kind: Pod            # Podであることを明示
     metadata:
-    name: sample-gpu-pod        # 識別名
+        name: sample-gpu-pod        # 識別名
     spec:
-    replicas: 1                 # Pod の数
-    selector:
-        matchLabels:
-        app: sample-gpu-pod     # template:metadata:labels:app と同じ値にする必要がある
-    template:
-        metadata:
-        labels:                 # Pod をクラスタ内で識別のするためのラベル。service.yml で Pod を識別するラベルとして使用される
-            app: sample-gpu-pod # 識別名。selector:matchLabels:app と同じ値にする必要がある
-        spec:
         containers:             # Pod 内で動作させるコンテナ群の設定
         - image: gcr.io/myproject-292103/sample-image     # Container Registry にアップロードした docker image
             name: sample-container                        # コンテナ名
@@ -91,6 +101,44 @@ effect: NoSchedule      # taint の effect | NoSchedule : taint が許容でき�
             limits:
             nvidia.com/gpu: 1   # GPU 数
     ```
+
+デプロイメント定義ファイル `deployment.yml` を作成後、以下のコマンドで yml ファイルに従った Pod を作成できる。（＝Pod をデプロイする）<br>
+※ Deployment は作成しないことに注意
+
+- yaml ファイルありで Pod を作成（＝Pod をデプロイする）
+    ```sh
+    $ kubectl apply -f ${デプロイメント定義ファイル（.yml）}
+    ```
+    ```sh
+    # 使用例
+    $ kubectl apply -f k8s/deployment.yml
+    ```
+
+### 5. Service を公開する
+Service を公開指定ない状態では、Node 内でコンテナが動いているだけであり、外部からアクセスすることができない状態になっている。<br>
+以下のコマンドで Deployment を公開することで、Service とロードバランサーが作成され、外部から指定したIPアドレスにアクセスできるようになる。
+
+- yaml ファイルありで Service を公開する
+    ```sh
+    $ kubectl apply -f ${サービス定義ファイル（.yml）}
+    ```
+    ```sh
+    # 使用例
+    $ kubectl apply -f k8s/service.yml
+    ```
+
+### 6. 外部アドレスにアクセスして動作確認する
+`kubectl get service` で表示される `EXTERNAL-IP` のアドレスに `http://${EXTERNAL-IP}:${PORT}` でアクセスすることで、実行中の Service の動作確認をすることが出来る。
+
+- 公開サイトへのアスセス
+    ```sh
+    $ curl http://${EXTERNAL_IP}:${PORT}
+    ```
+    - ${EXTERNAL_IP} : `kubectl get service` で表示される `EXTERNAL-IP` のアドレス。<br>
+        以下のコマンドでも取得できる
+        ```sh
+        $ EXTERNAL_IP=`kubectl describe service ${SERVICE_NAME} | grep "LoadBalancer Ingress" | awk '{print $3}'`
+        ```
 
 ## 参考サイト
 - https://cloud.google.com/kubernetes-engine/docs/how-to/gpus
