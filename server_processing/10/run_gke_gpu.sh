@@ -28,32 +28,33 @@ gcloud config list
 gcloud container clusters create ${CLUSTER_NAME} \
     --num-nodes=${NUM_NODES}
 
-#    --accelerator type=${GPU_TYPE},count=1
-
 # GPU ノードプールを作成
 gcloud container node-pools create ${POOL_NAME} \
     --accelerator type=${GPU_TYPE},count=1 \
     --cluster ${CLUSTER_NAME} \
-    --num-nodes ${NUM_NODES} --min-nodes 0 --max-nodes ${NUM_NODES} \
+    --num-nodes ${NUM_NODES} --min-nodes ${NUM_NODES} --max-nodes ${NUM_NODES} \
     --enable-autoscaling \
-    --machine-type n1-standard-4
+    --machine-type n1-standard-1
 
 # k8s の DaemonSet での Pod 経由で GPU ドライバーをインストール
-kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/container-engine-accelerators/master/nvidia-driver-installer/ubuntu/daemonset-preloaded.yaml
+kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/container-engine-accelerators/master/nvidia-driver-installer/cos/daemonset-preloaded.yaml
+sleep 120
+kubectl get pods -n=kube-system
 
 # docker image を GCP の Container Registry にアップロード
-gcloud builds submit --config api/cloudbuild.yml
+#gcloud builds submit --config api/cloudbuild.yml
 
 # Pod を作成する
 kubectl apply -f k8s/deployment.yml
+sleep 120
 kubectl get pods
 
 # Service を公開する
 kubectl apply -f k8s/service.yml
+sleep 60
 kubectl get service ${SERVICE_NAME}
 
 # 公開外部アドレス取得
-sleep 10
 EXTERNAL_IP=`kubectl describe service ${SERVICE_NAME} | grep "LoadBalancer Ingress" | awk '{print $3}'`
 
 # 公開外部アドレスにリクエスト処理して、レスポンスを受け取る
