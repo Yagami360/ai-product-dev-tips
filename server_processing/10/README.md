@@ -180,24 +180,29 @@ effect: NoSchedule      # taint の effect | NoSchedule : taint が許容でき�
 
 - `deployment.yml` の中身
     ```yml
-    apiVersion: v1       # API バージョン  
-    kind: Pod            # Podであることを明示
+    apiVersion: v1                  # API バージョン  
+    kind: Pod                       # Podであることを明示
     metadata:
-        name: sample-gpu-pod    # 識別名
+        name: sample-gpu-pod        # 識別名
       labels:
-        app: sample-gpu-pod     # Pod をクラスタ内で識別のするためのラベル。service.yml で Pod を識別するラベルとして使用される
+        app: sample-gpu-pod         # Pod をクラスタ内で識別のするためのラベル。service.yml で Pod を識別するラベルとして使用される
     spec:
-        containers:             # Pod 内で動作させるコンテナ群の設定
+        restartPolicy: OnFailure    # 失敗時のみコンテナを再起動。Pod や Job 作成時に指定
+        containers:                 # Pod 内で動作させるコンテナ群の設定
         - image: gcr.io/myproject-292103/sample-image     # Container Registry にアップロードした docker image
             name: sample-container                        # コンテナ名
             ports:
-            - containerPort: 80
+            - containerPort: 80                           # 通信ポート番号
             name: http-server
-        command: ["/bin/bash"]
-        resources:              # GPU 使用時には必要
+        #command: ["/bin/bash"]     # 起動後一度だけ実行したいコマンドを指定。指定するとコマンド完了後 READY 0/1 となることに注意
+        resources:                  # GPU 使用時には必要
             limits:
-            nvidia.com/gpu: 1   # GPU 数
+            nvidia.com/gpu: 1       # GPU 数
     ```
+    - `restartPolicy` : コンテナが失敗した際の再起動のポリシー
+        - `Always` : Deployment 作成時に指定（デフォルト値）。Pod や Job 作成時には指定不可
+        - `OnFailure` : 失敗時のみコンテナを再起動。Pod や Job 作成時に指定
+        - `Never` : コンテナを再起動しない。Pod や Job 作成時に指定
 
 デプロイメント定義ファイル `deployment.yml` を作成後、以下のコマンドで yml ファイルに従った Pod を作成できる。（＝Pod をデプロイする）<br>
 ※ Deployment は作成しないことに注意

@@ -5,15 +5,14 @@ metadata:
   labels:
     app: sample-gpu-pod
 spec:
+  restartPolicy: OnFailure
   containers:
   - name: sample-gpu-container
     image: gcr.io/myproject-292103/sample-image
     ports:
     - containerPort: 80
       name: http-server
-    command: ["nvidia-smi"]
+#    command: ["nvidia-smi"]
     resources:
       limits:
         nvidia.com/gpu: 1
-  restartPolicy: Never
-  

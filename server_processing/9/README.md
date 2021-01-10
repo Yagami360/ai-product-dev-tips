@@ -47,6 +47,12 @@ Kubernetes は、以下のようなコンポーネントから構成される
     <img src="https://user-images.githubusercontent.com/25688193/103432768-b7bdbc80-4c28-11eb-9b5f-33c3330c4b33.png" width=350><br>
     Pod（コンテナ）と ReplicaSet をまとめて管理し、それらの履歴を管理する機能。Deployments は ReplicaSet のテンプレートを持ち、そのテンプレートに従って ReplicaSet と Pod を作成する。これにより、Pod 内コンテナの docker image を更新したい場合に、システムを停止することなく更新できるようになる。また履歴も管理しているので、Pod 内コンテナの docker image を古いバージョンに更新することもできる。
 
+- Job<br>
+    1つ以上の Pod を作成し、指定された数の Pod が正常に終了するのを保証するための仕組み。<br>
+
+- CronJob<br>
+    xxx
+
 - Service（ネットワーク管理）<br>
     クラスタ内の各 Pod に対して、アクセス可能な IP アドレスを付与し、外部からアクセスできるようにしたもの。Service の設定は yaml ファイルで記述する。
 

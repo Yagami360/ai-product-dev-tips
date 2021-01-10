@@ -42,7 +42,7 @@ sleep 120
 kubectl get pods -n=kube-system
 
 # docker image を GCP の Container Registry にアップロード
-#gcloud builds submit --config api/cloudbuild.yml
+gcloud builds submit --config api/cloudbuild.yml
 
 # Pod を作成する
 kubectl apply -f k8s/deployment.yml
@@ -69,3 +69,6 @@ kubectl logs ${POD_NAME_1}
 
 # 作成した Pod のコンテナにアクセス
 kubectl exec -it ${POD_NAME_1} /bin/bash
+
+# nvidia-smi コマンドで GPU ドライバが正しくインストールされているか確認
+nvidia-smi
