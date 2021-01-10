@@ -67,6 +67,7 @@ GKE を利用して Kubernetes クラスタを構築する際には、以下の 
     docker image を GCP プロジェクト内で管理できるストレージサービス。docker image のアップロードとダウンロードができる。
 
 ## ■ GKE を利用した Kubernetes クラスターの構築手順
+GKE を利用した Kubernetes クラスターの構築手順は、以下のようになる。
 
 0. 【事前準備】作成した api コードの docker image を作成し、GCP の Container Registry にアップロード<br>
 1. クラスタを作成<br>
