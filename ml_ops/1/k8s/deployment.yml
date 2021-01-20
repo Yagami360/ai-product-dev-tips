@@ -1,0 +1,20 @@
+apiVersion: apps/v1         # Deployment の API バージョン。kubectl api-resources | grep Deployment と kubectl api-versions  | grep apps で確認可能  
+kind: Deployment            # デプロイメント定義ファイルであることを明示
+metadata:
+  name: sample-pod          # 識別名
+spec:
+  replicas: 1               # Pod の数
+  selector:
+    matchLabels:
+      app: sample-pod    # template:metadata:labels:app と同じ値にする必要がある
+  template:                 # Pod のテンプレート。このテンプレートをもとに ReplicaSet がレプリカ数の Pod を作成する
+    metadata:
+      labels:               # Pod をクラスタ内で識別のするためのラベル。service.yml で Pod を識別するラベルとして使用される
+        app: sample-pod     # 識別名。selector:matchLabels:app と同じ値にする必要がある
+    spec:
+      containers:           # Pod 内で動作させるコンテナ群の設定
+      - image: gcr.io/myproject-292103/sample-image     # Container Registry にアップロードした docker image
+        name: sample-container                          # コンテナ名
+        ports:
+        - containerPort: 80
+          name: http-server

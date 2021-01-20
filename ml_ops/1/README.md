@@ -1,0 +1,109 @@
+# 【Kubeflow】 Kubeflow の基礎事項
+Kubeflow は、学習用データセットの前処理、機械学習モデルの学習、機械学習モデルの推論API化といった機械学習における一連のワークフローを k8s 上で実行するためのツールである。
+
+Kubeflow は、以下のコンポーネントで構成されている。<br>
+<img src="https://user-images.githubusercontent.com/25688193/105124219-07ebb880-5b1d-11eb-99d6-69a4968b1499.png" width="550">
+
+- Central Dashboard<br>
+    各種機能を GUI 画面で表示＆作成するための機能
+
+- Pipelines<br>
+    Kubeflow 上で機械学習ワークフロー（前処理→モデルの構築→モデルの学習→モデルの推論→モデルのモニタリングなど）の構成を行うための機能
+
+- Frameworks for Training (TensorFlow Training, PyTorch Training など）<br>
+    Kubeflow 上で機械フレームワークを用いて機械学習モデルの学習を行うための機能
+
+- Jupyter Notebooks<br>
+    Kubeflow 上で Jupyter Notebooks を使用して、機械学習モデルの構築・実験などを行うための機能。
+
+- Katib<br>
+    Kubeflow 上でハイパーチューニングを行うための機能
+
+- Feature Store (Feast)<br>
+    Kubeflow 上で特徴量管理を行うための機能
+
+- Metadata<br>
+    xxx
+
+- Fairing<br>
+    xxx
+
+- Tools for Serving<br>
+    xxx
+
+## ■ Kubeflow のインストール
+
+<!--
+### ◎ ローカル環境に Kubeflow をインストール
+xxx
+-->
+
+### ◎ GKE クラスタに Kubeflow をインストール
+
+#### ☆ kfctl を使用する場合
+1. ローカル環境に kfctl（kubeflow の CLI）をインストール
+    以下のコマンドで `kfctl` をインストールする
+    ```sh
+    $ mkdir ${HOME}/kubeflow
+    $ cd ${HOME}/kubeflow
+    $ curl -LO https://github.com/kubeflow/kfctl/releases/download/v1.0.1/kfctl_v1.0.1-0-gf3edb9b_darwin.tar.gz
+    $ tar zxf kfctl_v1.0.1-0-gf3edb9b_darwin.tar.gz
+    $ chmod +x kfctl
+    $ sudo mv kfctl /usr/local/bin/kfctl
+    ```
+
+    次に、以下のコマンドで `kfctl` コマンドが使用する環境変数を定義する
+    ```sh
+    # ファイル名 : kfctl_env.sh
+    $ export BASE_DIR=${HOME}/kubeflow
+    $ export PATH=${PATH}:${BASE_DIR}
+    $ export KF_NAME=mykubeflow
+    $ export KF_DIR=${BASE_DIR}/${KF_NAME}
+    $ export CONFIG_URI="https://raw.githubusercontent.com/kubeflow/manifests/v1.0-branch/kfdef/kfctl_k8s_istio.v1.0.1.yaml"    
+    ```
+
+    `kfctl_env.sh` で定義した環境変数を、以下のコマンドで有効化する
+    ```sh
+    $ source kfctl_env.sh
+    ```
+1. GKE 上に k8s クラスタを構築
+    ```sh
+    $ gcloud container clusters create ${CLUSTER_NAME} --num-nodes=${NUM_NODES}
+    ```
+1. `kfctl apply` コマンドで k8s クラスタに kubeflow をデプロイする
+    `kfctl_env.sh` で定義した環境変数を元に、以下のコマンドで k8s クラスタに kubeflow をデプロイする（=kubeflow の Pod と Service を作成する）
+    ```sh
+    $ mkdir -p ${KF_DIR}
+    $ cd ${KF_DIR}
+    $ kfctl apply -V -f ${CONFIG_URI}
+    ```
+
+    デプロイした kubeflow の全ての Pod は、以下のコマンドで確認可能
+    ```sh
+    $ kubectl get pod --all-namespaces
+    ```
+
+1. Kubeflow の Central Dashboard にアクセス
+    ```sh
+    $ kubectl port-forward -n istio-system svc/istio-ingressgateway 80:80 --address 0.0.0.0
+    ```
+
+#### ☆ ksonnet を使用する場合
+> ksonnet : <br>
+> k8s のマニフェストファイル管理ツール。k8s のマニフェストファイル yaml を用意して `kubectl create -f xxx.yaml` する代わりに、`ks pkg install xxx` だけでデプロイができるようになる。
+
+1. ローカル環境に ksonnet をインストール
+1. GKE 上に k8s クラスタを構築
+1. `ks apply` で k8s クラスタに kubeflow をデプロイする
+1. Kubernetes ダッシュボードにアクセス
+
+### ◎ Google AI Platform Pipelines を利用した Kubeflow Pipelines のインストール
+xxx
+
+## ■ KubeFlow Pipelines の構成
+xxx
+
+## ■ 参考文献
+- https://qiita.com/Hiroyuki_OSAKI/items/9ab5cbbcb9365eed7fc5
+- https://ymym3412.hatenablog.com/entry/2020/01/07/051653
+- https://techblog.zozo.com/entry/aip-pipelines-impl

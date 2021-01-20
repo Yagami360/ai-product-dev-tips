@@ -10,14 +10,12 @@ REGION=asia-east1-a
 #GPU_TYPE=nvidia-tesla-t4
 GPU_TYPE=nvidia-tesla-k80
 
-IMAGE_NAME=sample-image
 CLUSTER_NAME=sample-gpu-cluster
 POOL_NAME=sample-gpu-pool
 POD_NAME=sample-gpu-pod
 SERVICE_NAME=sample-gpu-server
 NUM_NODES=1
 PORT=80
-TARGET_PORT=80
 
 # デフォルト値の設定
 gcloud config set project ${PROJECT_ID}
@@ -38,7 +36,7 @@ gcloud container node-pools create ${POOL_NAME} \
 
 # k8s の DaemonSet での Pod 経由で GPU ドライバーをインストール
 kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/container-engine-accelerators/master/nvidia-driver-installer/cos/daemonset-preloaded.yaml
-sleep 120
+sleep 60
 kubectl get pods -n=kube-system
 
 # docker image を GCP の Container Registry にアップロード

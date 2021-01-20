@@ -111,15 +111,20 @@
             - scikit-learn の `KFold` と PyTorch の `Subset` の使用
         - 【PyTorch】特定の層のみ学習を行うようにする
             - `param.requires_grad = False` と optimizer の `params` 引数の設定
-<!--
         - `add_module()` or `nn.ModuleList` or `nn.ModuleDict` でネットワークの段数を柔軟に可変出来るようにする
--->
     1. Keras
         - 【Keras】独自データセットの DataLoader
         - 【Keras】継承クラスで独自のネットワークを定義する 
         - 【Keras】FineTuning
+1. 機械学習基盤（MLOps）
+    - [【GKE】Kubernetes (k8s) と GKE [Google Kubernetes Engine] の基本事項](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/9)
+    - [【GKE】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/10)
+    - [【GCP】Cloud Functions を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/7)
+    - 【GCP】Cloud Functions の単体テスト＆結合テスト
+    - [【GCP】Cloud Run を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/8)
+    - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/ml_ops/1)
+
 1. その他処理
     - 【シェルスクリプト】`curl` コマンドで WebAPI を直接たたく
-
 
 ## ■ 参考文献＆サイト
