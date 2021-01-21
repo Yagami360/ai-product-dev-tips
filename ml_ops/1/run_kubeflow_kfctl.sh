@@ -25,7 +25,7 @@ gcloud config list
 #-------------------------------------
 # kfctl のインストール
 #-------------------------------------
-<<COMMENTOUT
+#<<COMMENTOUT
 mkdir -p kubeflow
 cd kubeflow
 #curl -LO https://github.com/kubeflow/kfctl/releases/download/v1.0.1/kfctl_v1.0.1-0-gf3edb9b_darwin.tar.gz
@@ -35,7 +35,7 @@ tar zxf kfctl_v1.0.2-0-ga476281_darwin.tar.gz
 chmod +x kfctl
 sudo mv kfctl /usr/local/bin/kfctl
 cd ${ROOT_DIR}
-COMMENTOUT
+#COMMENTOUT
 
 #-------------------------------------
 # kfctl 用環境変数の設定
