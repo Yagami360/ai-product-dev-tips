@@ -123,7 +123,8 @@
     - 【GCP】Cloud Functions の単体テスト＆結合テスト
     - [【GCP】Cloud Run を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/8)
     - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/ml_ops/1)
-
+    - [<In-progress>【Kubeflow】GKE クラスタに Kubeflow を構築する](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/ml_ops/2)
+    - [【Kubeflow】Google AI Platform Pipelines を利用して Kubeflow Pipelines の構築する](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/ml_ops/3)
 1. その他処理
     - 【シェルスクリプト】`curl` コマンドで WebAPI を直接たたく
 

@@ -6,10 +6,26 @@ PROJECT_ID=myproject-292103
 CLIENT_ID=378574289136-l3vl0c4ev2vrl58tuqgddm7rm9jdk467.apps.googleusercontent.com
 CLIENT_SECRET=rozdWJfh1tnzYoU6nv5QvJot
 
-REGION=asia-northeast1-a
+#REGION=asia-northeast1-a
+#REGION=asia-northeast1-c
+#REGION=us-central1-a
+#REGION=us-central1-c
+REGION=asia-east1-a
+CPU_TYPE=n1-standard-4
+
+if [ ${REGION} = "asia-east1-a" ] ; then
+    GPU_TYPE=nvidia-tesla-k80
+elif [ ${REGION} = "us-central1-a" ] ; then
+    GPU_TYPE=nvidia-tesla-k80
+elif [ ${REGION} = "us-central1-c" ] ; then
+    GPU_TYPE=nvidia-tesla-k80
+else
+    GPU_TYPE=nvidia-tesla-t4
+fi
+
 CLUSTER_NAME=kubeflow-cluster
 SERVICE_NAME=kubeflow-server
-NUM_NODES=4
+NUM_NODES=1
 POD_NAME=kubeflow-pod
 PORT=80
 
@@ -44,6 +60,7 @@ export BASE_DIR=${ROOT_DIR}/kubeflow
 export PATH=${PATH}:${BASE_DIR}
 export KF_NAME=${CLUSTER_NAME}
 export KF_DIR=${BASE_DIR}/${KF_NAME}
+#export CONFIG_URI="https://raw.githubusercontent.com/kubeflow/manifests/v1.0-branch/kfdef/kfctl_gcp_iap.v1.0.0.yaml"
 export CONFIG_URI="https://raw.githubusercontent.com/kubeflow/manifests/v1.0-branch/kfdef/kfctl_gcp_iap.v1.0.2.yaml"
 export CLIENT_ID=${CLIENT_ID}
 export CLIENT_SECRET=${CLIENT_SECRET}
@@ -51,11 +68,12 @@ export CLIENT_SECRET=${CLIENT_SECRET}
 #-------------------------------------
 # クラスタの構築
 #-------------------------------------
+#<<COMMENTOUT
 gcloud container clusters create ${CLUSTER_NAME} \
-    --machine-type=n1-standard-4 \
+    --machine-type=${CPU_TYPE} \
+    --accelerator type=${GPU_TYPE},count=1 \
     --num-nodes=${NUM_NODES}
-
-#  --accelerator type=nvidia-tesla-k80,count=1 \
+#COMMENTOUT
 
 #-------------------------------------
 # `kfctl apply` コマンドで k8s クラスタに kubeflow をデプロイする
