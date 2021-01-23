@@ -31,8 +31,21 @@ Kubeflow は、以下のコンポーネントで構成されている。<br>
 - Tools for Serving<br>
     xxx
 
-## ■ KubeFlow Pipelines の構成
-xxx
+## ■ Kubeflow Pipelines の基本事項
+
+- Pipeline<br>
+    機械学習ワークフローを有向グラフで定義したもの。<br>
+    Pipeline の実体は yaml 形式のファイルとなる。この yaml ファイルの作成は通常、作成した Python スクリプトを Kubeflow Pipelines SDK を用いてコンパイルすることで作成される。<br>
+    <img src="https://user-images.githubusercontent.com/25688193/105571572-3921ee00-5d94-11eb-84b1-26b0db7b5a50.png" width="500">
+
+- Component<br>
+    Pipeline に定義した各処理ブロック。Pipelines からは、各々の Component に対して使用する docker image や処理内容（スクリプト）、使用する引数などを設定することができる。k8s の動作としては、各々の Component はそれぞれ別の Pod としてデプロイされる。
+
+- Run<br>
+    Pipeline で定義した処理フローに従って、実際にパラメーターや名称を設定して処理を動作させたもの
+
+- Experiment<br>
+    複数の Run をまとめて１つの実験として管理したもの
 
 ## ■ 参考文献
 - https://ymym3412.hatenablog.com/entry/2020/01/07/051653
