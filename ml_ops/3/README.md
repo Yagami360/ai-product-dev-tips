@@ -27,6 +27,8 @@
 4. 学習済みモデルでの推論
 ```
 
+### ◎ Kubeflow Pipelines SDK での Python コードを新規作成して、Pipelines を構築する。
+
 1. Kubeflow Pipelines SDK である `kfp` をインストールする。
     ```sh
     $ pip install kfp
@@ -44,14 +46,13 @@
 1. 作成した Pipeline に対して、Run を作成＆実行し、Pipeline に定義した処理フローを動かす。（必要があれば先に Experiment も作成）<br>
     <img src="https://user-images.githubusercontent.com/25688193/105571867-ba7a8000-5d96-11eb-81ac-5d28a168b70d.png" width="500"><br>
 
+### ◎ 既存の Python コードを docker image 化して、Pipelines を構築する。
+xxx
 
-<img src="" width=""><br>
-<img src="" width=""><br>
-<img src="" width=""><br>
 <img src="" width=""><br>
 
 ## ■ 参考文献
-- 公式 : https://cloud.google.com/ai-platform/pipelines/docs/getting-started
+- 公式 : https://cloud.google.com/ai-platform/pipelines/docs?hl=ja
 - https://ymym3412.hatenablog.com/entry/2020/01/07/051653
 - https://techblog.zozo.com/entry/aip-pipelines-impl
 - https://qiita.com/oguogura/items/32fcaaa7ece2ab868e81

@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: download-dataset-pipeline-
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.3.0, pipelines.kubeflow.org/pipeline_compilation_time: '2021-01-25T19:10:11.301024',
+    pipelines.kubeflow.org/pipeline_spec: '{"description": "Download dataset from
+      gcs storage.", "inputs": [{"default": "myproject-292103", "name": "project_id",
+      "optional": true}, {"default": "ml_dataset_360", "name": "bucket_name", "optional":
+      true}, {"default": "gs://ml_dataset_360/few-shot-images", "name": "dataset_dir",
+      "optional": true}], "name": "Download dataset pipeline"}'}
+  labels: {pipelines.kubeflow.org/kfp_sdk_version: 1.3.0}
+spec:
+  entrypoint: download-dataset-pipeline
+  templates:
+  - name: download-dataset-pipeline
+    dag:
+      tasks:
+      - {name: download-from-gcs, template: download-from-gcs}
+  - name: download-from-gcs
+    container:
+      command: [pwd]
+      image: gcr.io/myproject-292103/pipeline-image:latest
+    outputs:
+      artifacts:
+      - {name: download-from-gcs-output, path: /output.txt}
+  arguments:
+    parameters:
+    - {name: project_id, value: myproject-292103}
+    - {name: bucket_name, value: ml_dataset_360}
+    - {name: dataset_dir, value: 'gs://ml_dataset_360/few-shot-images'}
+  serviceAccountName: pipeline-runner

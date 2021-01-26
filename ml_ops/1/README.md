@@ -47,5 +47,26 @@ Kubeflow は、以下のコンポーネントで構成されている。<br>
 - Experiment<br>
     複数の Run をまとめて１つの実験として管理したもの
 
+## ■ Kubeflow 導入のメリット・デメリット
+
+- メリット
+    - 「前処理→学習→推論→ログ管理・表示」といった機械学習ワークフローを Kubeflow Central Dashboard 上で一元管理＆実行＆評価できる。<br>
+        これにより、MLOps が満たすべき以下の４つの要素要件のうち、「Reproducible」、「Accountable」、「Continuous」を満たすことができる。
+        > 1. Reproducible<br>
+            9ヶ月前に学習したモデルが全く同じ環境で、同じデータで再学習でき、ほぼ同じ(数%以内の差)の精度を得られるべきである
+        > 2. Accountable<br>
+            本番で稼働しているどのモデルも、作成時のパラメータと学習データ、更に生データまでトレースできるべきである
+        > 3. Collaborative<br>
+            他の同僚の作ったモデルを本人に聞くことなく改善でき、非同期で改善とコードやデータのマージができるべきである
+        > 4. Continuous<br>
+            手動での作業0でモデルはデプロイできるべき。統計的にモニタリングできるべき        
+    - xxx
+
+- デメリット
+    - Pipelines を構築するのに、Kubeflow Pipelines SDK を用いて、独特な Python コードを新たに実装しなくてはならないので、今までの機械学習のワークフローの全てのコードを、Kubeflow Pipelines SDK を用いた独特な Python コードに書き直さなくてはならない。この際に、今まで簡単に行えていた処理が、Kubeflow Pipelines SDK を用いた Pipelines 用コードではうまくできないということが多々発生しがち。
+        - 既存の Kubeflow Pipelines SDK 非対応 python コードの docker image を作成し、それを Pipelines にする方法もある（https://www.kubeflow.org/docs/pipelines/sdk/sdk-overview/#creating-components-from-existing-application-code）が、結局 IO 関連部分（GSC）などの互換性があるコードでないとうまく動作しない？
+    - MLOps の話は未だベストなフレームワークというものが確立されておらず、仕様・考え方・実装もコロコロ変わっている印象。この Kubeflow のフレームワークも頻繁に変更される可能性が高し、別の MLOps フレームワークのほうが広く浸透する可能性もある。もっとフレームワークが確立されて広く使用されるようになってから習得したほうがいいかもしれない。
+
+
 ## ■ 参考文献
 - https://ymym3412.hatenablog.com/entry/2020/01/07/051653
