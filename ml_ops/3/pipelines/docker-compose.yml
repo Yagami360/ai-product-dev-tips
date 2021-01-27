@@ -6,12 +6,16 @@ services:
         image: pipeline-image
         build:
             context: "."
-            dockerfile: Dockerfile
+            dockerfile: Dockerfile_dev
+        volumes:
+            - ${PWD}/pipelines/src:/src
+            - /etc/group:/etc/group:ro
+            - /etc/passwd:/etc/passwd:ro
         ports:
-            - "5000:5000"
+           - "5000:5000"
         tty: true
         environment:
             TZ: "Asia/Tokyo"
             LC_ALL: C.UTF-8
             LANG: C.UTF-8
-            #command: bash -c "python3 download_dataset_from_gcs.py --debug"
+        command: bash -c "python3 download_dataset_from_gcs.py --debug"

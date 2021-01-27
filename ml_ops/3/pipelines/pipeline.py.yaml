@@ -2,24 +2,42 @@ apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
   generateName: download-dataset-pipeline-
-  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.3.0, pipelines.kubeflow.org/pipeline_compilation_time: '2021-01-25T19:10:11.301024',
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.3.0, pipelines.kubeflow.org/pipeline_compilation_time: '2021-01-27T18:04:05.517863',
     pipelines.kubeflow.org/pipeline_spec: '{"description": "Download dataset from
       gcs storage.", "inputs": [{"default": "my-project2-303004", "name": "project_id",
       "optional": true}, {"default": "ml_dataset_360", "name": "bucket_name", "optional":
-      true}, {"default": "gs://ml_dataset_360/few-shot-images", "name": "dataset_dir",
-      "optional": true}], "name": "Download dataset pipeline"}'}
+      true}, {"default": "gs://ml_dataset_360", "name": "dataset_dir", "optional":
+      true}], "name": "Download dataset pipeline"}'}
   labels: {pipelines.kubeflow.org/kfp_sdk_version: 1.3.0}
 spec:
   entrypoint: download-dataset-pipeline
   templates:
   - name: download-dataset-pipeline
+    inputs:
+      parameters:
+      - {name: bucket_name}
+      - {name: dataset_dir}
+      - {name: project_id}
     dag:
       tasks:
-      - {name: download-from-gcs, template: download-from-gcs}
+      - name: download-from-gcs
+        template: download-from-gcs
+        arguments:
+          parameters:
+          - {name: bucket_name, value: '{{inputs.parameters.bucket_name}}'}
+          - {name: dataset_dir, value: '{{inputs.parameters.dataset_dir}}'}
+          - {name: project_id, value: '{{inputs.parameters.project_id}}'}
   - name: download-from-gcs
     container:
-      command: [pwd]
+      args: [--project_id, '{{inputs.parameters.project_id}}', --bucket_name, '{{inputs.parameters.bucket_name}}',
+        --dataset_dir, '{{inputs.parameters.dataset_dir}}']
+      command: [python3, download_dataset_from_gcs.py]
       image: gcr.io/my-project2-303004/pipeline-image:latest
+    inputs:
+      parameters:
+      - {name: bucket_name}
+      - {name: dataset_dir}
+      - {name: project_id}
     outputs:
       artifacts:
       - {name: download-from-gcs-output, path: /output.txt}
@@ -27,5 +45,5 @@ spec:
     parameters:
     - {name: project_id, value: my-project2-303004}
     - {name: bucket_name, value: ml_dataset_360}
-    - {name: dataset_dir, value: 'gs://ml_dataset_360/few-shot-images'}
+    - {name: dataset_dir, value: 'gs://ml_dataset_360'}
   serviceAccountName: pipeline-runner

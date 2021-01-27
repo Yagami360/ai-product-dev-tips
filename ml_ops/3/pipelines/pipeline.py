@@ -19,7 +19,7 @@ def make_pipeline(
                 '--project_id', project_id,
                 '--bucket_name', bucket_name,
                 '--dataset_dir', dataset_dir,
-                '--debug', True,
+#                '--debug', True,
         ],
         file_outputs={                      # 下流(downstream)のタスクにデータを受け渡したいときは、ファイルに書き出してそのパスをfile_outputsに渡すと値を渡せる
                     'output': '/output.txt',

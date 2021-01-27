@@ -17,37 +17,65 @@
     <img src="https://user-images.githubusercontent.com/25688193/105570262-85b4fb80-5d8b-11eb-8d2e-a5fcf1d583cb.png" width="800"><br>
 
 ## ■ AI Platform Pipelines を使用した機械学習のワークフローの構築
+ここでの例では、以下のワークフローを AI Platform Pipelines で構築してみる。<br>
 
-ここでの例では、以下の一連の機械学習ワークフローを AI Platform Pipelines で構築してみる。
+```
+1. GCS から学習用データセットをダウンロード
+```
 
+<!--
 ```
 1. GCS から学習用データセットをダウンロード
 2. ダウンロードした学習用データセットを前処理でクレンジング
 3. クレンジングした学習用データセットで機械学習モデル（Light-Weight GAN）を学習
 4. 学習済みモデルでの推論
 ```
-
-### ◎ Kubeflow Pipelines SDK での Python コードを新規作成して、Pipelines を構築する。
+-->
 
 1. Kubeflow Pipelines SDK である `kfp` をインストールする。
     ```sh
     $ pip install kfp
     ```
+
+1. 機械学習ワークフローの Python コードを docker image 化し、Container Registry にアップロードする。（＝Pipeline の Component 用 docker image の作成）
+    ```sh
+    $ gcloud builds submit --config cloudbuild.yml
+    ```
+    - Pipeline の Component 上で動作する Pod での IO 処理は、GCS ストレージを介して行うことになるが、docker コンテナ内から GCS にアクセスするためには、サービスアカウントキー（jsonファイル）の docker image への書き込みなどで行う必要がある。この際にサービスアカウントキーの漏洩には注意すること。
+
 1. Pipeline の Python スクリプトを作成＆コンパイルし、Pipeline の yaml ファイルを作成する<br>
-    Pipeline を定義するための Python スクリプトを記載し、それを Kubeflow Pipelines SDK を用いてコンパイルすることで Pipeline の実体である yaml ファイルを作成する<br>
+    Pipeline を定義するための Python スクリプトを記載し、それを Kubeflow Pipelines SDK（`import kfp` を使用）を用いてコンパイルすることで Pipeline の実体である yaml ファイルを作成する<br>
     ```sh
     $ cd pipelines
-    # 処理完了後、yaml ファイル download_dataset_from_gcs.py.yaml が同ディレクトリ上に作成される
-    $ python download_dataset_from_gcs.py
+    # 処理完了後、yaml ファイル pipeline.py.yaml が同ディレクトリ上に作成される
+    $ python pipeline.py
     ```
+
+    上記で作成した 機械学習ワークフローの Python コードの docker image（＝Pipeline の Component 用 docker image）は、`dsl.ContainerOp()` の `image` 引数で設定できる
+    ```python
+    # [pipeline.py]
+    download_op = dsl.ContainerOp(
+        name='download_from_gcs',                                   # Component の名前
+        image='gcr.io/my-project2-303004/pipeline-image:latest',    # Pipeline の Component 用 docker image
+        command=['python3', 'download_dataset_from_gcs.py'],        # Pod 起動時の実行コマンド
+        arguments=[                                                 # download_dataset_from_gcs.py　のコマンドライン引数
+                '--project_id', project_id,
+                '--bucket_name', bucket_name,
+                '--dataset_dir', dataset_dir,
+                '--debug', True,
+        ],
+        file_outputs={                      # 下流(downstream)のタスクにデータを受け渡したいときは、ファイルに書き出してそのパスをfile_outputsに渡すと値を渡せる
+                    'output': '/output.txt',
+        }
+    )
+    ```
+
 1. 作成した Pipeline の yaml ファイルをアップロードし、Pipeline を作成する<br>
     <img src="https://user-images.githubusercontent.com/25688193/105571445-31157e80-5d93-11eb-90e1-910b59dc6b02.png" width="500"><br>
     <img src="https://user-images.githubusercontent.com/25688193/105571713-9e2a1380-5d95-11eb-9fb7-9d3517a36d86.png" width="500"><br>
 1. 作成した Pipeline に対して、Run を作成＆実行し、Pipeline に定義した処理フローを動かす。（必要があれば先に Experiment も作成）<br>
     <img src="https://user-images.githubusercontent.com/25688193/105571867-ba7a8000-5d96-11eb-81ac-5d28a168b70d.png" width="500"><br>
 
-### ◎ 既存の Python コードを docker image 化して、Pipelines を構築する。
-xxx
 
 <img src="" width=""><br>
 

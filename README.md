@@ -47,7 +47,7 @@
     - AWS
         - 【AWS】EC インスタンスのディスク容量を後から増設する。
     - GCP
-        - [【GCP】GCP の認証システム](#https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/11)
+        - [【GCP】GCP の認証システム](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/11)
         - [【シェルスクリプト】GCP に DeepLearning 環境を自動的に構築する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/6)
         - 【GCP】GCP ディスクを `gcsfuse` コマンドでマウントする。
         - [【GCP】Cloud Scheduler 機能を用いて、サーバーを一定の時間間隔で起動・停止する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/4)

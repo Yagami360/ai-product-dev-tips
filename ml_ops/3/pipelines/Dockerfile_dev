@@ -57,8 +57,8 @@ RUN conda install -c conda-forge google-api-python-client && conda clean -ya
 # ソースコードの書き込み
 #-----------------------------
 WORKDIR /src
-COPY src/*.py /src/
-COPY src/*.json /src/
+#COPY src/*.py /src/
+#COPY src/*.json /src/
 
 #-----------------------------
 # コンテナ起動後の作業ディレクトリ
