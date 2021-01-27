@@ -1,14 +1,14 @@
 # 【Kubeflow】Google AI Platform Pipelines を利用して Kubeflow Pipelines を構築する
-「[【Kubeflow】GKE クラスタに Kubeflow を構築する](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/ml_ops/2) 」記載の方法でも Kubeflow Pipelines を構築することができるが、Google AI Platform Pipelines を利用することで、より手軽に Kubeflow Pipelines を構築することができる。
+「[【Kubeflow】GKE クラスタに Kubeflow を構築する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/2) 」記載の方法でも Kubeflow Pipelines を構築することができるが、Google AI Platform Pipelines を利用することで、より手軽に Kubeflow Pipelines を構築することができる。
 
 ## ■ AI Platform Pipelines を使用した kubeflow をデプロイした GKE クラスタの構築
-1. AI Platform Pipelines の [GUI 画面](https://console.cloud.google.com/kubernetes/application?project=myproject-292103) に移動する
+1. AI Platform Pipelines の [GUI 画面](https://console.cloud.google.com/kubernetes/application?project=my-project2-303004) に移動する
 1. 「新しいインスタンス」ボタンを選択し、kubeflow をデプロイした GKE クラスタを新規作成する
     <img src="https://user-images.githubusercontent.com/25688193/105569886-fa3a6b00-5d88-11eb-9553-923c7be219ba.png" width="800"><br>
     1. [次の Cloud API へのアクセスを許可する] をオンにし、GKE クラスタ上で実行されるアプリケーションに Google Cloud リソースへのアクセス権を付与する。
     1. [新しいクラスタの作成] のリンクが表示されたら、[新しいクラスタの作成] をクリック。<br>
         <img src="https://user-images.githubusercontent.com/25688193/105569915-484f6e80-5d89-11eb-87f4-560a553f4c8d.png" width="400">
-    1. 作成した Pipiline と GKE クラスタは、それぞれ [Pipelines の GUI 画面](https://console.cloud.google.com/ai-platform/pipelines/clusters?folder=&organizationId=&project=myproject-292103) と [GKE の GUI 画面](https://console.cloud.google.com/kubernetes/list?hl=ja&organizationId=0&project=myproject-292103) から確認できる。<br>
+    1. 作成した Pipiline と GKE クラスタは、それぞれ [Pipelines の GUI 画面](https://console.cloud.google.com/ai-platform/pipelines/clusters?folder=&organizationId=&project=my-project2-303004) と [GKE の GUI 画面](https://console.cloud.google.com/kubernetes/list?hl=ja&organizationId=0&project=my-project2-303004) から確認できる。<br>
         ※ Pipiline を削除する際は、Pipeline だけでなく GKE クラスタも削除する必要があることに注意<br>
         <img src="https://user-images.githubusercontent.com/25688193/105570220-18a16600-5d8b-11eb-8bed-ea1dbe7a1b13.png" width="500"><br>
         <img src="https://user-images.githubusercontent.com/25688193/105570145-adf02a80-5d8a-11eb-8381-fbceccc16e57.png" width="500"><br>

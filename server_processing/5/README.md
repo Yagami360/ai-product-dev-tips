@@ -2,7 +2,7 @@
 本記事は、GCPインスタンス起動時に指定したスクリプトを自動的に実行する方法についての記事です。
 
 この方法を使用することにより、例えば、GCPインスタンス起動時に指定の docker 環境や WebAPI などを自動的に実行し、利用可能な状態にするといった活用が可能となります。
-又、本手法と別記事「[【GCP】Cloud Scheduler 機能を用いて、サーバーを一定の時間間隔で起動・停止する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/4)」 で紹介している方法と組み合わせることで、「GCPインスタンスを指定した時間スケジュールで起動・停止させつつ、起動時には WebAPI などを実行可能な状態にしておく」といった活用が可能となります。
+又、本手法と別記事「[【GCP】Cloud Scheduler 機能を用いて、サーバーを一定の時間間隔で起動・停止する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/4)」 で紹介している方法と組み合わせることで、「GCPインスタンスを指定した時間スケジュールで起動・停止させつつ、起動時には WebAPI などを実行可能な状態にしておく」といった活用が可能となります。
 
 ## 1. 起動時に自動的に実行するスクリプトを作成する
 シェルスクリプト（.sh）で、インスタンス起動時に自動的に実行させた独自のスクリプトを作成してくだい。

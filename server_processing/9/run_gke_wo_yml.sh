@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-PROJECT_ID=myproject-292103
+PROJECT_ID=my-project2-303004
 REGION=asia-northeast1-a
 IMAGE_NAME=sample-image
 CLUSTER_NAME=sample-cluster

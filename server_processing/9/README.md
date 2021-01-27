@@ -111,8 +111,8 @@ GKE を利用した Kubernetes クラスターの構築手順は、以下のよ�
         ```yml
         steps:
         - name: 'gcr.io/cloud-builders/docker'  # docker コマンドを実行するには必要
-            args: ['build', '-t', 'gcr.io/myproject-292103/sample-image', './api']  # ./api に格納されている dockerfile を元に、docker image を作成
-        images: ['gcr.io/myproject-292103/sample-image']
+            args: ['build', '-t', 'gcr.io/my-project2-303004/sample-image', './api']  # ./api に格納されている dockerfile を元に、docker image を作成
+        images: ['gcr.io/my-project2-303004/sample-image']
         ```
 
 ※ Dockerfile 内では、`EXPOSE` 命令で使用するコンテナ通信ポートの設定をする必要があることに注意
@@ -120,7 +120,7 @@ GKE を利用した Kubernetes クラスターの構築手順は、以下のよ�
 ### 1. クラスタを作成
 
 #### ☆ GUI 使用時
-[GKE の GUI 画面上](https://console.cloud.google.com/kubernetes/list?project=myproject-292103&folder&organizationId) から作成できる
+[GKE の GUI 画面上](https://console.cloud.google.com/kubernetes/list?project=my-project2-303004&folder&organizationId) から作成できる
 
 #### ☆ GUI 非使用時
 
@@ -233,7 +233,7 @@ GKE を利用した Kubernetes クラスターの構築手順は、以下のよ�
             app: sample-pod   # ↑
         spec:
         containers:               # Pod 内で動作させるコンテナ群の設定
-        - image: gcr.io/myproject-292103/sample-image     # Container Registry にアップロードした docker image
+        - image: gcr.io/my-project2-303004/sample-image     # Container Registry にアップロードした docker image
             name: sample-container                          # コンテナ名
             env:                    # ConfigMap と Secret を Pod で利用するための設定情報（ConfigMap と Secret を利用しない場合は、これらの定義は不要）
             - name: PROJECT_ID                              # ConfigMap で定義した project.id

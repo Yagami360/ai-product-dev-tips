@@ -2,7 +2,7 @@
 set -eu
 
 ROOT_DIR=${PWD}
-PROJECT_ID=myproject-292103
+PROJECT_ID=my-project2-303004
 CLIENT_ID=378574289136-l3vl0c4ev2vrl58tuqgddm7rm9jdk467.apps.googleusercontent.com
 CLIENT_SECRET=rozdWJfh1tnzYoU6nv5QvJot
 

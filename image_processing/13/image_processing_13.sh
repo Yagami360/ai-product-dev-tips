@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-cd ${HOME}/GitHub/MachineLearning_PreProcessing_Exercises/image_processing/13
+cd ${HOME}/GitHub/MachineLearning_Tips/image_processing/13
 
 python scale_image_pillow.py in_image out_image_scale_pillow \
 --n_scale 5 \

@@ -1,5 +1,5 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/myproject-292103/pipeline-image', '.']
-#    args: ['build', "--cache-from", '-t', 'gcr.io/myproject-292103/pipeline-image', '.']
-images: ['gcr.io/myproject-292103/pipeline-image']
+    args: ['build', '-t', 'gcr.io/my-project2-303004/pipeline-image', '.']
+#    args: ['build', "--cache-from", '-t', 'gcr.io/my-project2-303004/pipeline-image', '.']
+images: ['gcr.io/my-project2-303004/pipeline-image']

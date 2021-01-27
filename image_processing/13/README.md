@@ -32,7 +32,7 @@
         ```
 
     - 拡大縮小：<br>
-        単純に、Pillow の`resize()` メソッドを使っただけでは、対象物のアスペクト比が変わってしまうので、 [「【Python】画像の対象物のアスペクト比を変えないまま adjust する。」](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/image_processing/11) で紹介しているものと同様の手法で画像の対象物のアスペクト比を変えないまま adjust する必要がある。<br>
+        単純に、Pillow の`resize()` メソッドを使っただけでは、対象物のアスペクト比が変わってしまうので、 [「【Python】画像の対象物のアスペクト比を変えないまま adjust する。」](https://github.com/Yagami360/MachineLearning_Tips/tree/master/image_processing/11) で紹介しているものと同様の手法で画像の対象物のアスペクト比を変えないまま adjust する必要がある。<br>
 
         `scale_image_pillow.py`
         ```python

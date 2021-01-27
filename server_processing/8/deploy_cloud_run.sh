@@ -2,7 +2,7 @@
 set -eu
 
 IMAGE_NAME=sample_image
-PROJECT_ID=myproject-292103
+PROJECT_ID=my-project2-303004
 SERVICE_NAME=cloud-run-sample
 REGION=us-central1
 PORT=8080

@@ -43,11 +43,11 @@ Cloud Run は、以下の手順で利用できる。
     $ gcloud builds submit --tag gcr.io/${PROJECT_ID}/${IMAGE_NAME}
     ```
 
-アップロードされた docker image は、[GCP の Container Registry の GUI](https://console.cloud.google.com/gcr/images/myproject-292103?project=myproject-292103) に存在する。（アップロードされた docker image の削除等もこの画面上から行える）
+アップロードされた docker image は、[GCP の Container Registry の GUI](https://console.cloud.google.com/gcr/images/my-project2-303004?project=my-project2-303004) に存在する。（アップロードされた docker image の削除等もこの画面上から行える）
 
 
 ### 3. アップロードした docker image を元に Cloud Run を作成する（=docker image を Cloud Run にデプロイ）
-Cloud Run の [GUI 画面](https://console.cloud.google.com/run?hl=ja&organizationId=0&project=myproject-292103)、又は、以下のコマンドを用いて、アップロードした docker image を元に Cloud Run を作成する
+Cloud Run の [GUI 画面](https://console.cloud.google.com/run?hl=ja&organizationId=0&project=my-project2-303004)、又は、以下のコマンドを用いて、アップロードした docker image を元に Cloud Run を作成する
 
 - docker image を Cloud Run にデプロイ
     ```sh
@@ -57,10 +57,10 @@ Cloud Run の [GUI 画面](https://console.cloud.google.com/run?hl=ja&organizati
 
 ### 4. Cloud Run の動作確認
 
-- `app.py` の `@app.route('/')` アクセス時の挙動は、Cloud Run の [GUI 画面](https://console.cloud.google.com/run?hl=ja&organizationId=0&project=myproject-292103) の項目「URL」のリンク先から確認できる。
+- `app.py` の `@app.route('/')` アクセス時の挙動は、Cloud Run の [GUI 画面](https://console.cloud.google.com/run?hl=ja&organizationId=0&project=my-project2-303004) の項目「URL」のリンク先から確認できる。
 - `app.py` の リクエストメッセージ受信時の動作は、リクエスト処理のコードを実装するか、以下のコマンドで確認できる
     ```sh
     $ curl -H "Content-type: application/json"  -X POST -d "{\"name\":\"test\"}" ${HOST_ADRESS}:${PORT}/hello_world
     ```
-    - 作成した Could Run の アドレス `${HOST_ADRESS}` は、[GUI 画面](https://console.cloud.google.com/run?hl=ja&organizationId=0&project=myproject-292103) の項目「URL」のアドレスを設定すれば良い
+    - 作成した Could Run の アドレス `${HOST_ADRESS}` は、[GUI 画面](https://console.cloud.google.com/run?hl=ja&organizationId=0&project=my-project2-303004) の項目「URL」のアドレスを設定すれば良い
     

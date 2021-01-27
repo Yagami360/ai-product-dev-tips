@@ -8,12 +8,12 @@ from kfp import dsl
   description='Download dataset from gcs storage.'
 )
 def make_pipeline(
-    project_id = "myproject-292103", bucket_name = "ml_dataset_360", dataset_dir = "gs://ml_dataset_360",
+    project_id = "my-project2-303004", bucket_name = "ml_dataset_360", dataset_dir = "gs://ml_dataset_360",
 ):
     # dsl.ContainerOp に実行する Docker Image やコンテナで実行するコマンドや引数を指定することで Component を生成できる
     download_op = dsl.ContainerOp(
         name='download_from_gcs',
-        image='gcr.io/myproject-292103/pipeline-image:latest',
+        image='gcr.io/my-project2-303004/pipeline-image:latest',
         command=['python3', 'download_dataset_from_gcs.py'],
         arguments=[
                 '--project_id', project_id,

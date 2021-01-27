@@ -13,7 +13,7 @@ spec:
         app: sample-pod     # 識別名。selector:matchLabels:app と同じ値にする必要がある
     spec:
       containers:           # Pod 内で動作させるコンテナ群の設定
-      - image: gcr.io/myproject-292103/sample-image     # Container Registry にアップロードした docker image
+      - image: gcr.io/my-project2-303004/sample-image     # Container Registry にアップロードした docker image
         name: sample-container                          # コンテナ名
         ports:
         - containerPort: 80

@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-PROJECT_ID=myproject-292103
+PROJECT_ID=my-project2-303004
 FUNCTION_NAME=cloud-function-sample
 REGION=us-central1
 ENTORY_NAME=hello_world

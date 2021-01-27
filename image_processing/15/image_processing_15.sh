@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-cd ${HOME}/GitHub/MachineLearning_PreProcessing_Exercises/image_processing/15
+cd ${HOME}/GitHub/MachineLearning_Tips/image_processing/15
 
 python detect_face_landmark.py \
     in_image out_image \

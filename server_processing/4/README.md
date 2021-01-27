@@ -4,7 +4,7 @@
 <img src="/attachment/5e3cff42b4655300410883fb" width="500">
 
 この機能を利用することにより、例えば、深夜や休日などの GCP インスタンスが使われない時間帯のみインスタンスを停止状態にし、その他の時間帯ではインスタンスを起動状態にするといったような利用が可能となります。
-又、本手法と別記事「[【GCP】サーバー起動後に自動的に実行するスクリプトを設定する。](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/server_processing/5)」 で紹介している方法と組み合わせることで、「GCPインスタンスを指定した時間スケジュールで起動・停止させつつ、起動時には WebAPI などを実行可能な状態にしておく」といった活用が可能となります。
+又、本手法と別記事「[【GCP】サーバー起動後に自動的に実行するスクリプトを設定する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/5)」 で紹介している方法と組み合わせることで、「GCPインスタンスを指定した時間スケジュールで起動・停止させつつ、起動時には WebAPI などを実行可能な状態にしておく」といった活用が可能となります。
     
 ## 1. Cloud Functions の設定
 

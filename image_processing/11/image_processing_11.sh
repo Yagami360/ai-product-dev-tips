@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-cd ${HOME}/GitHub/MachineLearning_PreProcessing_Exercises/image_processing/11
+cd ${HOME}/GitHub/MachineLearning_Tips/image_processing/11
 
 python image_adjust_wo_mask1.py in_image out_image_A-1_512 --width 512 --height 512 --debug
 python image_adjust_wo_mask1.py in_image out_image_A-1_256 --width 256 --height 256 --debug

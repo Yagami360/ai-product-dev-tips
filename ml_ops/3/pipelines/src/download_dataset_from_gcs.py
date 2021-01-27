@@ -25,7 +25,7 @@ def download_dataset_from_gcs(project_id, bucket_name, dataset_dir):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--project_id", type=str, default="myproject-292103")
+    parser.add_argument("--project_id", type=str, default="my-project2-303004")
     parser.add_argument("--bucket_name", type=str, default="ml_dataset_360")
     parser.add_argument("--dataset_dir", type=str, default="gs://ml_dataset_360")
     parser.add_argument('--debug', action='store_true')

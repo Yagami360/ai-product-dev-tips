@@ -53,7 +53,7 @@ Cloud Functions の作成からデプロイ処理までを行うコマンドに�
 #### ☆ GUI 使用時
 GUI を使用して、作成したCloud Functions の動作テストする場合は、以下の手順で実行できる。
 
-1. Cloud Functions の [GUI 画面](https://console.cloud.google.com/functions/list?hl=ja&organizationId=0&project=myproject-292103) に移動する
+1. Cloud Functions の [GUI 画面](https://console.cloud.google.com/functions/list?hl=ja&organizationId=0&project=my-project2-303004) に移動する
 1. 作成した Cloud Functions を選択する
 1. 「テスト」タグを選択する
 1. トリガーとなるイベントに、json 形式のリクエストデータを入力する

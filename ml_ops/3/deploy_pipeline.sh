@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-PROJECT_ID="myproject-292103"
+PROJECT_ID="my-project2-303004"
 cd pipelines
 
 # デフォルト値の設定

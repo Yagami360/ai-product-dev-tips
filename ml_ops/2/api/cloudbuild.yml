@@ -1,4 +1,4 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/myproject-292103/sample-image', './api']
-images: ['gcr.io/myproject-292103/sample-image']
+    args: ['build', '-t', 'gcr.io/my-project2-303004/sample-image', './api']
+images: ['gcr.io/my-project2-303004/sample-image']

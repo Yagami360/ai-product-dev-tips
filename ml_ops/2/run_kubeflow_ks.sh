@@ -2,7 +2,7 @@
 set -eu
 
 ROOT_DIR=${PWD}
-PROJECT_ID=myproject-292103
+PROJECT_ID=my-project2-303004
 REGION=asia-northeast1-a
 CLUSTER_NAME=kubeflow-cluster
 SERVICE_NAME=kubeflow-server

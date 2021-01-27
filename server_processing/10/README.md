@@ -190,7 +190,7 @@ effect: NoSchedule      # taint の effect | NoSchedule : taint が許容でき�
     spec:
         restartPolicy: OnFailure    # 失敗時のみコンテナを再起動。Pod や Job 作成時に指定
         containers:                 # Pod 内で動作させるコンテナ群の設定
-        - image: gcr.io/myproject-292103/sample-image     # Container Registry にアップロードした docker image
+        - image: gcr.io/my-project2-303004/sample-image     # Container Registry にアップロードした docker image
             name: sample-container                        # コンテナ名
             ports:
             - containerPort: 80                           # 通信ポート番号

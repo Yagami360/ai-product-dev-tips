@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-PROJECT_ID=myproject-292103
+PROJECT_ID=my-project2-303004
 #REGION=asia-northeast1-a
 #REGION=asia-northeast1-c
 #REGION=us-central1-a

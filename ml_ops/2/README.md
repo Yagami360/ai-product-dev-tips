@@ -1,7 +1,7 @@
 # <In-progress>【Kubeflow】GKE クラスタに Kubeflow を構築する
 
 > 現状この方法では、以下のエラーがでてうまくインストールできない。
-> Kubeflow Pipelines を使用するだけなら、「[Kubeflow】Google AI Platform Pipelines を利用して Kubeflow Pipelines の構築する](https://github.com/Yagami360/MachineLearning_PreProcessing_Exercises/tree/master/ml_ops/3)」 での方法のほうが圧倒的に簡単
+> Kubeflow Pipelines を使用するだけなら、「[Kubeflow】Google AI Platform Pipelines を利用して Kubeflow Pipelines の構築する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/3)」 での方法のほうが圧倒的に簡単
 
 ```sh
 INFO[0017] Updating kubeflow-cluster-storage status: RUNNING (op = operation-1611310888974-5b97a8d28f85d-07c2a090-5869c891)  filename="gcp/gcp.go:390"
