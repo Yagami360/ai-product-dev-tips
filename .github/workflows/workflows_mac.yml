@@ -11,4 +11,3 @@ jobs:
         with:
           python-version: '3.6.9'
           architecture: x64
-          
