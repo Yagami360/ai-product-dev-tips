@@ -31,6 +31,7 @@
         - 【Docker】dockerfile でユーザー追加後に git clone する際の、permission denied エラー対策
         - [【Docker】dockerfile の WORKDIR 変更前のデフォルトパス](https://github.com/Yagami360/MachineLearning_Tips/tree/master/docker_processing/9)
         - [【Docker】requests モジュールを用いてコンテナ間通信するときの、IP アドレス指定方式（コンテナ名で指定）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/docker_processing/8)
+    - [機械学習基盤（MLOps）](#機械学習基盤)
 1. 入出力処理
     - [【シェルスクリプト】フォルダ内のファイル数を確認する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/io_processing/2)
     - [【Python】フォルダ内のファイル一覧を取得する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/io_processing/1)
@@ -121,15 +122,22 @@
         - 【Keras】独自データセットの DataLoader
         - 【Keras】継承クラスで独自のネットワークを定義する 
         - 【Keras】FineTuning
-1. 機械学習基盤（MLOps）
-    - [【GKE】Kubernetes (k8s) と GKE [Google Kubernetes Engine] の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/9)
-    - [【GKE】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/10)
-    - [【GCP】Cloud Functions を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/7)
-    - 【GCP】Cloud Functions の単体テスト＆結合テスト
-    - [【GCP】Cloud Run を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/8)
-    - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/1)
-    - [<In-progress>【Kubeflow】GKE クラスタに Kubeflow を構築する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/2)
-    - [【Kubeflow】Google AI Platform Pipelines を利用して Kubeflow Pipelines の構築する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/3)
+1. <a id="機械学習基盤"></a>機械学習基盤（MLOps）
+    - docker
+        - xxx
+    - Kubernetes (k8s)
+        - [【GKE】Kubernetes (k8s) と GKE [Google Kubernetes Engine] の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/9)
+        - [【GKE】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/10)
+    - サーバレス 
+        - [【GCP】Cloud Functions を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/7)
+        - 【GCP】Cloud Functions の単体テスト＆結合テスト
+        - [【GCP】Cloud Run を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/8)
+    - CI/CD
+        - xxx
+    - 機械学習ワークフロー
+        - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/1)
+        - [<In-progress>【Kubeflow】GKE クラスタに Kubeflow を構築する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/2)
+        - [【Kubeflow】Google AI Platform Pipelines を利用して Kubeflow Pipelines の構築する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/3)
 1. その他処理
     - 【シェルスクリプト】`curl` コマンドで WebAPI を直接たたく
 
