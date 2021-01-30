@@ -144,7 +144,7 @@
         - [【GCP】Cloud Run を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/8)
     - CI/CD
         - [CI/CD の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/4)
-        - GitHub Actions を用いた CI/CD
+        - [<In-progress> GitHub Actions を用いた CI/CD](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/github-actions_exercises)
     - データ基盤 / データ分析基盤
         - BigQuery
         - BigQueryML
