@@ -20,7 +20,7 @@
     - conda
         - [【シェルスクリプト】シェルスクリプト内で conda 環境を切り替える。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/conda_processing/1)
         - [【シェルスクリプト】conda 環境の自動的に作成する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/conda_processing/2)
-    - Docker
+    - [Docker](#Docker)
         - [【Docker】Docker の基本事項・基本コマンド](https://github.com/Yagami360/MachineLearning_Tips/tree/master/docker_processing/1)
         - [【Docker】docker コンテナ内で機械学習モデルの処理を実行中に tensorboard で実行結果を確認する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/docker_processing/2)
         - [【Docker】コンテナの起動とコンテナ内での python スクリプト実行を一括して行う。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/docker_processing/3)
@@ -47,7 +47,7 @@
     - 【Python】スクリプトで GoogleDrive へデータを自動的に転送する。
     - AWS
         - 【AWS】EC インスタンスのディスク容量を後から増設する。
-    - GCP
+    - <a id="GCP"></a>GCP
         - [【GCP】GCP の認証システム](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/11)
         - [【シェルスクリプト】GCP に DeepLearning 環境を自動的に構築する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/6)
         - 【GCP】GCP ディスクを `gcsfuse` コマンドでマウントする。
@@ -107,6 +107,7 @@
     - [【Python】WEB 上の画像データを収集する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/web_scraping/1)
 1. 自然言語処理
 1. 音声処理
+
 1. 機械学習フレームワーク
     1. PyTorch
         - 【PyTorch】OpenCV ↔ Pillow ↔ numpy ↔ Tensor [PyTorch] の変換対応
@@ -118,26 +119,40 @@
         - 【PyTorch】特定の層のみ学習を行うようにする
             - `param.requires_grad = False` と optimizer の `params` 引数の設定
         - `add_module()` or `nn.ModuleList` or `nn.ModuleDict` でネットワークの段数を柔軟に可変出来るようにする
+        <!-- 
+        - 【PyTorch】データオーギュメントのランダム seed 値を固定することで入力画像の種類に応じた異なるDAを適用する
+        -->
     1. Keras
         - 【Keras】独自データセットの DataLoader
         - 【Keras】継承クラスで独自のネットワークを定義する 
         - 【Keras】FineTuning
+
 1. <a id="機械学習基盤"></a>機械学習基盤（MLOps）
-    - docker
-        - xxx
-    - Kubernetes (k8s)
-        - [【GKE】Kubernetes (k8s) と GKE [Google Kubernetes Engine] の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/9)
-        - [【GKE】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/10)
-    - サーバレス 
+    - クラウド環境一般
+        - [GCP](#GCP)
+        - AWS
+    - コンテナ基盤
+        - [Docker](#Docker)
+        - Kubernetes (k8s)
+            - [【GKE】Kubernetes (k8s) と GKE [Google Kubernetes Engine] の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/9)
+            - [【GKE】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/10)
+    - 認証基盤
+        - [【GCP】GCP の認証システム](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/11)
+    - サーバレス / FaaS [Function as a Service]
         - [【GCP】Cloud Functions を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/7)
         - 【GCP】Cloud Functions の単体テスト＆結合テスト
         - [【GCP】Cloud Run を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/8)
     - CI/CD
-        - xxx
+        - [CI/CD の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/4)
+        - GitHub Actions を用いた CI/CD
+    - データ基盤 / データ分析基盤
+        - BigQuery
+        - BigQueryML
     - 機械学習ワークフロー
         - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/1)
         - [<In-progress>【Kubeflow】GKE クラスタに Kubeflow を構築する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/2)
         - [【Kubeflow】Google AI Platform Pipelines を利用して Kubeflow Pipelines の構築する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/3)
+
 1. その他処理
     - 【シェルスクリプト】`curl` コマンドで WebAPI を直接たたく
 
