@@ -2,7 +2,7 @@
 他の一般的な CI/CD ツールと同様にして、リポジトリに対するプッシュやプルリクエストといった操作、もしくは指定した時刻になるといったイベントをトリガーとして、あらかじめ定義しておいた処理を実行することで CI/CD を実現できる。<br> 
 GitHub だけで CI/CD 的な機能を実現できるのがメリット。利用料金も無料。CI/CD ツールとしては、現状 GitHub Actions を使うのがベストっぽい。
 
-[![build and deploy on mac](https://github.com/Yagami360/github-actions_exercises/workflows/build%20and%20deploy%20on%20mac/badge.svg)](https://github.com/Yagami360/github-actions_exercises/actions?query=workflow%3A%22build+and+deploy+on+mac%22)
+- GitHub Actions を用いた CI/CD のサンプルコード : https://github.com/Yagami360/github-actions_exercises<br>
 
 ## ■ GitHub Actions の基礎事項
 
@@ -58,7 +58,7 @@ GitHub だけで CI/CD 的な機能を実現できるのがメリット。利用
           pip install tqdm
           pip install Pillow
           pip install opencv-python
-      - name: Run test scripts          # テストスクリプトの自動実行
+      - name: Run test scripts          # 独自のテストスクリプトの自動実行
         run:
           python src/test.py --debug
     ```
@@ -83,6 +83,14 @@ GitHub だけで CI/CD 的な機能を実現できるのがメリット。利用
           - master
     ```
 
+- 特定のファイルのみの push をトリガーとする場合 
+	```yml
+  	on:
+      push:
+        paths:
+          - '*.py'  # python ファイルの push のみをトリガー
+	```
+
 ### ◎ ジョブ
 
 - ジョブの設定例
@@ -104,7 +112,7 @@ GitHub だけで CI/CD 的な機能を実現できるのがメリット。利用
           pip install tqdm
           pip install Pillow
           pip install opencv-python
-      - name: Run test scripts        # テストスクリプトの自動実行
+      - name: Run test scripts        # 独自のテストスクリプトの自動実行
         run:
           python src/test.py --debug
     ```
