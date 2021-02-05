@@ -1,8 +1,6 @@
-# 【BigQuery】BigQuery を使用したデータ処理
+# 【BigQuery】BigQuery を使用したデータ処理（GUI使用時）
 
-## ■ GUI 使用時
-
-### ◎ 事前準備（一般公開データセットを使用）
+## ■ 事前準備（一般公開データセットを使用）
 1. BigQuery API を有効化する
 1. [BigQuery のウェブ UI ページ](https://console.cloud.google.com/bigquery?hl=ja&project=my-project2-303004) にアクセス<br>
 1. Google が一般公開している一般公開データセットをプロジェクトに追加したい場合は、以下のコマンドでサイトにアクセスする<br>
@@ -10,7 +8,7 @@
     $ open https://console.cloud.google.com/bigquery?p=bigquery-public-data&page=project
     ```
 
-### ◎ データセットを作成する
+## ■ データセットを作成する
 
 1. 指定したプロジェクトで、「データセットを作成」ボタンをクリックして、空のデータセットを作成する<br>
     <img src="https://user-images.githubusercontent.com/25688193/106879123-18f01880-671e-11eb-96b3-831667955381.png" width="500"><br>
@@ -31,7 +29,7 @@
     <img src="https://user-images.githubusercontent.com/25688193/106881667-2bb81c80-6721-11eb-8bae-5ee9a635e3fe.png" width=""><br>
 
 
-### ◎ クエリ（処理要求）を実行する（一般公開データセット使用）
+## ■ クエリ（処理要求）を実行する（一般公開データセット使用）
 
 - クエリ（処理要求）を実行する
     xxx
@@ -57,81 +55,5 @@
     1. クエリの結果フィールドにクエリの実行結果が表示される<br>
         <img src="https://user-images.githubusercontent.com/25688193/106378265-b2e65700-63e6-11eb-95ee-66164f6fd17f.png" width="800">
 
-
-## ■ CLI 使用時
-BigQuery の CLI での処理は、gcloud コマンドインストール時にインストールされている `bq` コマンドを用いて行うことができる。
-
-### ◎ 事前準備
-
-1. Google Cloud SDK（gcloud）のインストール
-1. BigQuery API を有効化する
-1. Google が一般公開している一般公開データセットをプロジェクトに追加したい場合は、以下のコマンドでサイトにアクセスする<br>
-    ```sh
-    $ open https://console.cloud.google.com/bigquery?p=bigquery-public-data&page=project
-    ```
-
-### ◎ データセットを作成する
-xxx
-
-
-### ◎ テーブルデータを確認する
-
-- テーブルデータを確認する<br>
-    ```sh
-    bq show ${PROJECT_ID}:${DATASET_ID}.${TABLE_ID}
-    ```
-
-- テーブルデータを確認する（一般公開データセット）<br>
-    例えば、一般公開データセット（PROJECT_ID=`bigquery-public-data`）の `usa_names` データセットの `usa_1910_2013` テーブルを確認する場合は、以下のようなコマンドとなる
-    ```sh
-    bq show bigquery-public-data:usa_names.usa_1910_2013
-    ```
-
-### ◎ クエリ（処理要求）を実行する
-
-- クエリを実行する
-    ```sh
-    # 構文
-    $ bq query "SQL_STATEMENT"
-    ```
-    - `--use_legacy_sql` : false に設定した場合は、標準 SQL クエリを使用。デフォルト値は true
-
-- クエリを実行する（一般公開データセット）
-    例えば、一般公開データセット（PROJECT_ID=`bigquery-public-data`）の `usa_names` データセットの `usa_1910_2013` テーブルに対してクエリを実行する場合は、以下のようなコマンドとなる
-    ```sh
-    # 例 : 一般公開データセットに対して、クエリ実行
-    $ bq query --use_legacy_sql=false \
-        'SELECT
-            name, gender,
-            SUM(number) AS total
-        FROM
-            `bigquery-public-data.usa_names.usa_1910_2013`
-        GROUP BY
-            name, gender
-        ORDER BY
-            total DESC
-        LIMIT
-            10'
-    ```
-    ```sh
-    Waiting on bqjob_r1d2b6f0ad65dd7c9_000001775794d45f_1 ... (1s) Current status: DONE
-    +---------+--------+---------+
-    |  name   | gender |  total  |
-    +---------+--------+---------+
-    | James   | M      | 4924235 |
-    | John    | M      | 4818746 |
-    | Robert  | M      | 4703680 |
-    | Michael | M      | 4280040 |
-    | William | M      | 3811998 |
-    | Mary    | F      | 3728041 |
-    | David   | M      | 3541625 |
-    | Richard | M      | 2526927 |
-    | Joseph  | M      | 2467298 |
-    | Charles | M      | 2237170 |
-    +---------+--------+---------+
-    ```
-
 ## ■ 参考サイト
 - https://cloud.google.com/bigquery/docs/quickstarts/quickstart-web-ui?hl=ja&_ga=2.65098990.-1151485257.1612079281
-- https://cloud.google.com/bigquery/docs/quickstarts/quickstart-command-line?hl=ja
-- https://www.apps-gcp.com/bq-command/

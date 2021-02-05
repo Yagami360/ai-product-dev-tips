@@ -4,8 +4,10 @@ PROJECT_ID=bigquery-public-data
 DATASET_ID=usa_names
 TABLE_ID=usa_1910_2013
 
+# テーブルデータを確認する
 bq show ${PROJECT_ID}:${DATASET_ID}.${TABLE_ID}
 
+# クエリ（処理要求）を実行する
 bq query --use_legacy_sql=false \
     'SELECT
         name, gender,
@@ -18,4 +20,3 @@ bq query --use_legacy_sql=false \
         total DESC
     LIMIT
         10'
-
