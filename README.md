@@ -60,9 +60,11 @@
         - [【GKE】Kubernetes (k8s) と GKE [Google Kubernetes Engine] の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/9)
         - [【GKE】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/10)
         - 【GKE】Workload Identity を用いた GKE クラスタから GCP リソースへのアクセス
-        - 【Firebase】Firebase の基礎事項
-        - 【Firebase】Firebase のデプロイ処理（ウェブアプリ）
-        - 【Firebase】Firebase のデプロイ処理（iOSアプリ）
+        - [【Firebase】Firebase の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/12)
+        - 【Firebase】Firebase でのウェブアプリのデプロイ処理
+        - [【Firebase】Firebase Hosting を使用して静的なウェブサイトをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/14)
+        - [【Firebase】Firebase Cloud Function を使用して動的なウェブアプリをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/15)
+        - 【Firebase】Firebase での iOS アプリのデプロイ処理
 1. テーブルデータ処理
     - 【Python】pandas_profiling でテーブルデータの統計情報を確認する。
     - 【Python】pandas データ型に基づき、欠損値の埋め合わせとカテゴリデータのエンコードを一括して行う。
