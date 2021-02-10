@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Sample Page</title>
+<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-auth.js"></script>
+<script>
+// Initialize Firebase
+let config = {
+  apiKey: "AIzaSyBqwt9MVj6JWtDydOa7jflFxy_t8mE0LUg",
+  authDomain: "sample-app-73cab.firebaseapp.com",
+  databaseURL: "https://sample-app-73cab-default-rtdb.firebaseio.com",
+  projectId: "sample-app-73cab",
+  storageBucket: "sample-app-73cab.appspot.com",
+  messagingSenderId: "101517631439",
+  appId: "1:101517631439:web:a68b69649521dbef2ebcba",
+  measurementId: "G-MSZ0YNEVK3"
+};
+try {
+    firebase.initializeApp(config);
+} catch(e) {
+    console.log(e);
+}
+
+firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+        console.log('auth user', user);
+        document.querySelector('#msg').textContent = '"' + user.email + '" logined!';
+    }
+});
+
+// login
+function login(){
+    let provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithRedirect(provider).then((result) => {
+        console.log('sign in successfully.');
+    }).catch((error) => {
+        console.log('fail to sign in.');
+        document.querySelector('#msg').textContent = 'fail to login...';
+    });
+}
+
+// logout
+function logout(){
+    firebase.auth().signOut().then((res)=>{
+        document.getElementById('msg').textContent = 'no login...';
+    });
+}
+</script>
+</head>
+<body>
+    <h1>Google アカウントでのログイン</h1>
+    <p id="msg">no login...</p>
+    <button onclick="login();">Login</button>
+    <button onclick="logout();">Logout</button>
+</body>
+</html>
