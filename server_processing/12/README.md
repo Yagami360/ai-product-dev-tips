@@ -18,8 +18,8 @@ Firebase を導入することで、主に以下のようなメリットが享�
     Firebase Hosting を使うことで、静的なウェブサイト（HTML）を Hosting にデプロイして公開することができる
 
 - Cloud Functions for Firebase<br>
-    Firebase で使う Cloud Functions 機能。<br>
-    Cloud Functions を使うことで、機能を使用することで、Node.js 使用した動的なウェブアプリを Hoisting にデプロイし、公開することができる。 
+    Google Cloud Functions を簡素化して Firebase で使えるようにした Cloud Functions。<br>
+    Cloud Functions を使うことで、Node.js 使用した動的なウェブアプリを Hoisting にデプロイし、公開することができる。 
 
 - Database<br>
     - Realtime Database<br>
@@ -33,3 +33,4 @@ Firebase を導入することで、主に以下のようなメリットが享�
 
 ## ■ 参考サイト
 - https://firebase.google.com/docs/guides?hl=ja
+- https://www.marketechlabo.com/google-cloud-functions/

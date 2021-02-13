@@ -1,7 +1,10 @@
 #!/bin/sh
 set -eu
 ROOT_DIR=${PWD}
-PROJECT_ID="sample-app-73cab"
+PROJECT_ID="fir-flask-sample-app"
+
+mkdir -p firebase
+cd firebase
 
 # npm のインストール（MacOSの場合）
 #brew install npm

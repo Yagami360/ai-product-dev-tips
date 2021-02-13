@@ -61,11 +61,12 @@
         - [【GKE】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/10)
         - 【GKE】Workload Identity を用いた GKE クラスタから GCP リソースへのアクセス
         - [【Firebase】Firebase の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/12)
-        - 【Firebase】Firebase でのウェブアプリのデプロイ処理
         - [【Firebase】Firebase Hosting を使用して静的なウェブサイトをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/14)
         - [【Firebase】Firebase Cloud Function を使用して動的なウェブアプリをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/15)
+        - 【Firebase】Firebase Cloud Function を JavaScript(`Node.js`) ではなく Google Cloud Function で登録した Python スクリプトで登録する
         - 【Firebase】Firebase での iOS アプリのデプロイ処理
-        - 【Firebase】Firebase Authentication を使用してウェブアプリに Authentication 機能を導入する
+        - [【Firebase】Firebase Authentication を使用してウェブアプリに Authentication 機能を導入する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/16)
+        - 【Firebase】Python & Flask で docker コンテナ化した Web-API を Firebase で使用する
 1. テーブルデータ処理
     - 【Python】pandas_profiling でテーブルデータの統計情報を確認する。
     - 【Python】pandas データ型に基づき、欠損値の埋め合わせとカテゴリデータのエンコードを一括して行う。
