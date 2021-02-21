@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "FDCA403E-CF9C-4BE6-A9C5-47331C4C3F0D"
+   type = "0"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "95C5E004-C886-4966-93DD-1319D28B70E0"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "sample-ios-app-project/ViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "18"
+            endingLineNumber = "18"
+            landmarkName = "ViewController"
+            landmarkType = "3">
+            <Locations>
+               <Location
+                  uuid = "95C5E004-C886-4966-93DD-1319D28B70E0 - 941a415ad107363a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "sample_ios_app_project.ViewController.functions.getter : __C.FIRFunctions"
+                  moduleName = "sample-ios-app-project"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/sakai/GitHub/MachineLearning_Tips/ios_app/3/sample-ios-app-project/sample-ios-app-project/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "18"
+                  endingLineNumber = "18"
+                  offsetFromSymbolStart = "217">
+               </Location>
+               <Location
+                  uuid = "95C5E004-C886-4966-93DD-1319D28B70E0 - 5fe8694fe1f6fe06"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "sample_ios_app_project.ViewController.functions.setter : __C.FIRFunctions"
+                  moduleName = "sample-ios-app-project"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/sakai/GitHub/MachineLearning_Tips/ios_app/3/sample-ios-app-project/sample-ios-app-project/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "18"
+                  endingLineNumber = "18"
+                  offsetFromSymbolStart = "164">
+               </Location>
+               <Location
+                  uuid = "95C5E004-C886-4966-93DD-1319D28B70E0 - 5d40a5bee8286a8b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "sample_ios_app_project.ViewController.functions.modify : __C.FIRFunctions"
+                  moduleName = "sample-ios-app-project"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/sakai/GitHub/MachineLearning_Tips/ios_app/3/sample-ios-app-project/sample-ios-app-project/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "26">
+               </Location>
+               <Location
+                  uuid = "95C5E004-C886-4966-93DD-1319D28B70E0 - 595a6e2976711598"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "sample_ios_app_project.ViewController.functions.modify : __C.FIRFunctions with unmangled suffix &quot;.resume.0&quot;"
+                  moduleName = "sample-ios-app-project"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/sakai/GitHub/MachineLearning_Tips/ios_app/3/sample-ios-app-project/sample-ios-app-project/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "18"
+                  endingLineNumber = "18"
+                  offsetFromSymbolStart = "26">
+               </Location>
+               <Location
+                  uuid = "95C5E004-C886-4966-93DD-1319D28B70E0 - b017d92cb4367cf"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "sample_ios_app_project.ViewController.init(nibName: Swift.Optional&lt;Swift.String&gt;, bundle: Swift.Optional&lt;__C.NSBundle&gt;) -&gt; sample_ios_app_project.ViewController"
+                  moduleName = "sample-ios-app-project"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/sakai/GitHub/MachineLearning_Tips/ios_app/3/sample-ios-app-project/sample-ios-app-project/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "18"
+                  endingLineNumber = "18"
+                  offsetFromSymbolStart = "600">
+               </Location>
+               <Location
+                  uuid = "95C5E004-C886-4966-93DD-1319D28B70E0 - e2fd62a133604df8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "sample_ios_app_project.ViewController.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;sample_ios_app_project.ViewController&gt;"
+                  moduleName = "sample-ios-app-project"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/sakai/GitHub/MachineLearning_Tips/ios_app/3/sample-ios-app-project/sample-ios-app-project/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "18"
+                  endingLineNumber = "18"
+                  offsetFromSymbolStart = "541">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

@@ -64,9 +64,13 @@
         - [【Firebase】Firebase Hosting を使用して静的なウェブサイトをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/14)
         - [【Firebase】Firebase Cloud Function を使用して動的なウェブアプリをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/15)
         - 【Firebase】Firebase Cloud Function を JavaScript(`Node.js`) ではなく Google Cloud Function で登録した Python スクリプトで登録する
-        - 【Firebase】Firebase での iOS アプリのデプロイ処理
         - [【Firebase】Firebase Authentication を使用してウェブアプリに Authentication 機能を導入する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/16)
         - 【Firebase】Python & Flask で docker コンテナ化した Web-API を Firebase で使用する
+1. iOS アプリ開発
+    - iOS アプリ開発の基本事項
+    - [【Firebase】iOS アプリ（Xcodeプロジェクト）に Firebase を登録する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ios_app/2)
+    - 【Firebase】iOS アプリから Firebase Cloud Functions を利用する
+    - 【Firebase】Firebase Authentication を使用して iOS アプリに Authentication 機能を導入する
 1. テーブルデータ処理
     - 【Python】pandas_profiling でテーブルデータの統計情報を確認する。
     - 【Python】pandas データ型に基づき、欠損値の埋め合わせとカテゴリデータのエンコードを一括して行う。
@@ -112,6 +116,7 @@
     - 【PyTorch】AMP [Automatic Mixed Precision] を使用した学習と推論の高速化
 1. WEB スクレイピング
     - [【Python】WEB 上の画像データを収集する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/web_scraping/1)
+    - 【Python】Selenium を用いてログインが必要な Web ページにログインし、スクレイピングを行う
 1. 自然言語処理
 1. 音声処理
 
