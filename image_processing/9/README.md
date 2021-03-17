@@ -6,7 +6,7 @@
 
 ## 実現方法
 
-- OpenCV の機能を利用したバイナリマスクの生成方法
+- OpenCV の機能を利用したバイナリマスクの生成方法１
     1. OpenCV の `cv2.threshold()` メソッドで、元画像をバイナリ化する。
     1. OpenCV の `cv2.findContours()` メソッドで、バイナリマスクの輪郭を抽出する。
     1. OpenCV の `cv2.drawContours()`  メソッドで、バイナリマスクの輪郭内部を塗りつぶす。
@@ -72,6 +72,8 @@
         # Pillow -> OpenCV
         original_mask = np.asarray(mask_img)
         return original_mask
-
-
     ```
+
+- OpenCV の機能を利用したバイナリマスクの生成方法２ : `cv2.grabCut()` の使用
+    - http://labs.eecs.tottori-u.ac.jp/sd/Member/oyamada/OpenCV/html/py_tutorials/py_imgproc/py_grabcut/py_grabcut.html
+    

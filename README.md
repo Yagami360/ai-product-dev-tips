@@ -45,6 +45,9 @@
     - 【Python】サーバー上での Python スクリプトをデバッグするときに、ブレークポイントを有効にする。（`import pdb; pdb.set_trace()`）
     - [【シェルスクリプト】シェルスクリプトで、GoogleDrive から大容量データをコピーする。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/3)
     - 【Python】スクリプトで GoogleDrive へデータを自動的に転送する。
+    - 【シェルスクリプト】ポートフォワーディングを使用した tensorboard 接続
+    - [【Flask】Flask での Web-API を https 化する（自己署名SSL認証を使用する場合）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/20)
+    - 【Flask】Flask での Web-API を https 化（SSL）する（認証局[CA]を使用する場合）
     - AWS
         - 【AWS】EC インスタンスのディスク容量を後から増設する。
     - <a id="GCP"></a>GCP
@@ -60,6 +63,7 @@
         - [【GKE】Kubernetes (k8s) と GKE [Google Kubernetes Engine] の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/9)
         - [【GKE】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/10)
         - 【GKE】Workload Identity を用いた GKE クラスタから GCP リソースへのアクセス
+        - [【GKE】GKE を用いた機械学習モデルの推論 API の構築](https://github.com/Yagami360/graphonomy_api-server_gke)
         - [【Firebase】Firebase の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/12)
         - [【Firebase】Firebase Hosting を使用して静的なウェブサイトをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/14)
         - [【Firebase】Firebase Cloud Function を使用して動的なウェブアプリをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/15)
@@ -131,9 +135,17 @@
         - 【PyTorch】特定の層のみ学習を行うようにする
             - `param.requires_grad = False` と optimizer の `params` 引数の設定
         - `add_module()` or `nn.ModuleList` or `nn.ModuleDict` でネットワークの段数を柔軟に可変出来るようにする
+        - AMP（混合精度）を使用した高速化
         <!-- 
         - 【PyTorch】データオーギュメントのランダム seed 値を固定することで入力画像の種類に応じた異なるDAを適用する
         -->
+    1. Tensorflow
+        - Dataset API を使用したデータローダー（tensorflow 1.4以降, tensoflow 2.x）
+        - tensor 値の確認方法（tensorflow 1.x, tensoflow 2.x <EagerMode>, tensoflow 2.x<GraphMode>）
+        - tf_debug CLI でのデバッグ処理
+        - tf_debug GUI でのデバッグ処理
+        - 複数 GPU での学習
+        - AMP（混合精度）を使用した高速化
     1. Keras
         - 【Keras】独自データセットの DataLoader
         - 【Keras】継承クラスで独自のネットワークを定義する 
@@ -148,12 +160,17 @@
         - Kubernetes (k8s)
             - [【GKE】Kubernetes (k8s) と GKE [Google Kubernetes Engine] の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/9)
             - [【GKE】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/10)
+            - [【GKE】GKE を用いた機械学習モデルの推論 API の構築](https://github.com/Yagami360/graphonomy_api-server_gke)
     - 認証基盤
         - [【GCP】GCP の認証システム](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/11)
     - サーバレス / FaaS [Function as a Service]
         - [【GCP】Cloud Functions を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/7)
-        - 【GCP】Cloud Functions の単体テスト＆結合テスト
+        - 【GCP】Cloud Functions の単体テスト＆結合テスト   
+        - 【GCP】Cloud Functions で GPU を使用可能にする
+        - 【GCP】Cloud Functions を用いた機械学習モデルの推論 API の構築
         - [【GCP】Cloud Run を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/8)
+        - 【GCP】Cloud Run で GPU を使用可能にする
+        - 【GCP】Cloud Run を用いた機械学習モデルの推論 API の構築
     - CI/CD
         - [CI/CD の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/4)
         - [GitHub Actions を用いた CI/CD](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/5)

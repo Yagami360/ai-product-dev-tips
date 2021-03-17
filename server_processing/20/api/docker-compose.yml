@@ -1,0 +1,21 @@
+version: '2.3'
+
+services:
+    sample_server:
+        container_name: flask-api-container
+        image: flask-api-image
+        build:
+            context: "."
+            dockerfile: Dockerfile
+        volumes:
+            - ${PWD}/api:/api
+            - /etc/group:/etc/group:ro
+            - /etc/passwd:/etc/passwd:ro
+        ports:
+            - "5000:5000"
+        tty: true
+        environment:
+            TZ: "Asia/Tokyo"
+            LC_ALL: C.UTF-8
+            LANG: C.UTF-8
+        command: bash -c "python3 app.py --host 0.0.0.0 --port 5000 --use_https --debug"

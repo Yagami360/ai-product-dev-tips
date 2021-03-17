@@ -3,7 +3,7 @@ set -eu
 
 PROJECT_ID=my-project2-303004
 REGION=us-central1
-FUNCTION_NAME=cloud-function-sample
+FUNCTION_NAME=cloud-function-gpu-sample
 ENTORY_NAME=hello_world
 
 # Cloud Function のデプロイ

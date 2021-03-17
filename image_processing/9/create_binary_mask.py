@@ -9,8 +9,8 @@ if __name__ == '__main__':
     OpenCV の機能を用いて画像のバイナリマスク画像を生成する。
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("in_image_dir", type=str)
-    parser.add_argument("out_image_dir", type=str)
+    parser.add_argument("--in_image_dir", type=str, default="in_images")
+    parser.add_argument("--out_image_dir", type=str, default="out_images")
     parser.add_argument('--binary_threshold', type=int, default=250)
     args = parser.parse_args()
 

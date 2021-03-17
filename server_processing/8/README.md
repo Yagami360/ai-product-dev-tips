@@ -1,7 +1,7 @@
 # 【GCP】Cloud Run を利用したサーバーレス Web-API
 
 - Cloud Run と Cloud Functions の違い
-    - Cloud Runは「**コンテナ**をサーバーレスで実行する」サービス
+    - Cloud Runは「**docker コンテナ**をサーバーレスで実行する」サービス
     - Cloud Functions は「**コード**をサーバレスで実行する」サービス
 
 - Cloud Run 導入のメリット
@@ -10,8 +10,10 @@
 
 - Cloud Run 導入のデメリット
     - GPU インスタンスは使えない？
+        - Cloud Run for Anthos では
     - デプロイ処理に時間がかかり、デバッグ作業が非効率になる
         - [コンテナ イメージをローカルでテストする](https://cloud.google.com/run/docs/testing/local?hl=ja) の方法で解決可能？
+    - サーバ上のファイルに書き込むことができるが、メモリ上の一時的なもののため、停止すると失われる
 
 ## 実現方法
 Cloud Run は、以下の手順で利用できる。
