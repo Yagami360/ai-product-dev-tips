@@ -46,8 +46,16 @@
     - [【シェルスクリプト】シェルスクリプトで、GoogleDrive から大容量データをコピーする。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/3)
     - 【Python】スクリプトで GoogleDrive へデータを自動的に転送する。
     - 【シェルスクリプト】ポートフォワーディングを使用した tensorboard 接続
-    - [【Flask】Flask での Web-API を https 化する（自己署名SSL認証を使用する場合）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/20)
-    - 【Flask】Flask での Web-API を https 化（SSL）する（認証局[CA]を使用する場合）
+    - Web サーバー
+        - [【nginx】nginx の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/22)
+        - [【nginx】nginx での Webサーバーを https 化する（自己署名SSL認証書を使用する場合）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/23)
+        - 【nginx】nginx をリバースプロキシとして利用する。
+        - 【nginx】nginx をロードバランサーとして利用する。
+        - 【nginx】docker + nginx + Flask を用いた Web-API の構築
+    - Web フレームワーク
+        - 【Flask】GCP インスタンス + docker + Flask を用いた Web-API の構築
+        - [【Flask】Flask での Web-API を https 化する（自己署名SSL認証を使用する場合）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/20)
+        - 【Flask】Flask での Web-API を https 化（SSL）する（認証局[CA]を使用する場合）
     - AWS
         - 【AWS】EC インスタンスのディスク容量を後から増設する。
     - <a id="GCP"></a>GCP
@@ -108,9 +116,6 @@
         - [【Python】OpenPose の関節点情報に基づき、人物画像が正面を向いているか後ろを向いているか判定する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/image_processing/openpose/2)
         - [【Python】OpenPose の関節点情報と人物パース画像に基づき、人物画像が半袖を着ているかを検出する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/image_processing/openpose/4)
         - [【Python】OpenPose の関節点情報に基づき、人物セグメンテーション画像に、他の人体部位のラベルを追加する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/image_processing/openpose/5)
-    1. waifu2x による画像の超解像度
-        - waifu2x のインストール
-        - waifu2x による画像の超解像度
     1. dlib による顔の landmark 検出
         - [【Python】dlib で顔の landmark 検出を検出し、画像上に表示する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/image_processing/15)
 1. 高速化処理
@@ -140,16 +145,18 @@
         - 【PyTorch】データオーギュメントのランダム seed 値を固定することで入力画像の種類に応じた異なるDAを適用する
         -->
     1. Tensorflow
-        - Dataset API を使用したデータローダー（tensorflow 1.4以降, tensoflow 2.x）
-        - tensor 値の確認方法（tensorflow 1.x, tensoflow 2.x <EagerMode>, tensoflow 2.x<GraphMode>）
-        - tf_debug CLI でのデバッグ処理
-        - tf_debug GUI でのデバッグ処理
-        - 複数 GPU での学習
-        - AMP（混合精度）を使用した高速化
+        - 【Tensorflow】Dataset API を使用したデータローダー（tensorflow 1.4以降, tensoflow 2.x）
+        - 【Tensorflow】tensor 値の確認方法（tensorflow 1.x, tensoflow 2.x <EagerMode>, tensoflow 2.x<GraphMode>）
+        - 【Tensorflow】tf_debug CLI でのデバッグ処理
+        - 【Tensorflow】tf_debug GUI でのデバッグ処理
+        - 【Tensorflow】複数 GPU での学習
+        - 【Tensorflow】AMP（混合精度）を使用した高速化
     1. Keras
         - 【Keras】独自データセットの DataLoader
         - 【Keras】継承クラスで独自のネットワークを定義する 
         - 【Keras】FineTuning
+        - 【Keras】複数 GPU での学習
+        - 【Keras】AMP（混合精度）を使用した高速化
 
 1. <a id="機械学習基盤"></a>機械学習基盤（MLOps）
     - クラウド環境一般
@@ -179,6 +186,9 @@
         - [【BigQuery】BigQuery を使用したデータ処理（GUI使用時）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/7)
         - [【BigQuery】BigQuery を使用したデータ処理（CLI使用時）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/8)
         - 【BigQuery】BigQuery を使用したデータ処理（Python 用 BigQuery Storage API ライブラリ使用時）
+    - Infrastructure as Code（インフラのコード化）
+        - 【Terraform】Terraform の基礎事項
+        - 【GCP】DeploymentManager の基礎事項
     - 機械学習ワークフロー
         - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/1)
         - [<In-progress>【Kubeflow】GKE クラスタに Kubeflow を構築する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/2)
