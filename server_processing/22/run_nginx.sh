@@ -48,6 +48,7 @@ sudo nginx -c ${NGINX_CONF_FILE_PATH}
 #sudo nginx -s reload
 
 # Nginx の Web サーバーにブラウザアクセス
+curl http://localhost:${PORT}
 if [ ${OS} = 'Mac' ]; then
     sleep 1
     open http://localhost:${PORT}

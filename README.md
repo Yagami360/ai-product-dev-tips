@@ -2,34 +2,22 @@
 機械学習のための Tips 集。<br>
 開発環境・クラウド処理・前処理・機械学習フレームワーク・アプリケーション別の処理（画像処理、テーブルデータ処理など）・機械学習基盤（MLOps）などの機械学習に関わる広い範囲の Tips 集になってます。
 
-<!--
-## ■ 動作環境
-
-- Python : 3.6
-- Anaconda : 5.0.1
-- IO関係
-    - xxx
-- 画像処理系
-    - OpenCV : 
-    - Pillow :
--->
-
 ## ■ 項目
 
 ### ◎ 基本事項
-1. 入出力処理
+- 入出力処理
     - [【シェルスクリプト】フォルダ内のファイル数を確認する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/io_processing/2)
     - [【Python】フォルダ内のファイル一覧を取得する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/io_processing/1)
     - [【Python】２つのフォルダのファイル数＆ファイル名の差分を確認する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/io_processing/3)
     - [【シェルスクリプト】ランダムに１００個のファイルをサンプリングする。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/io_processing/4)
 
-1. 開発環境
+- 開発環境
     - conda
         - [【シェルスクリプト】シェルスクリプト内で conda 環境を切り替える。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/conda_processing/1)
         - [【シェルスクリプト】conda 環境の自動的に作成する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/conda_processing/2)
     - [Docker](#Docker)
 
-1. サーバー処理一般
+- サーバー処理一般
     - 【シェルスクリプト】ssh 切れ対策のために `nohup` コマンドで実行する。
     - 【シェルスクリプト】サーバー間でデータを転送・コピーする。
     - 【シェルスクリプト】`curl` コマンドで WebAPI を直接たたく
@@ -74,7 +62,6 @@
         - [【nginx】nginx の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/22)
         - [【nginx】nginx での Webサーバーを https 化する（自己署名SSL認証書を使用する場合）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/23)
         - [【nginx】nginx をリバースプロキシとして利用する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/24)
-        - 【nginx】nginx をロードバランサーとして利用する。
         - 【nginx】docker + nginx + Flask を用いた Web-API の構築
 - Web フレームワーク
     - Flask
@@ -120,20 +107,20 @@
 
 ### ◎ アプリ開発
 
-1. iOS アプリ開発
+- iOS アプリ開発
     - iOS アプリ開発の基本事項
     - [【Firebase】iOS アプリ（Xcodeプロジェクト）に Firebase を登録する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ios_app/2)
     - [【Firebase】iOS アプリから Firebase Cloud Functions を利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ios_app/3)
     - 【Firebase】Firebase Authentication を使用して iOS アプリに Authentication 機能を導入する
 
-### ◎ 前処理・後処理
+### ◎ 前処理・後処理（アプリケーション別）
 
-1. テーブルデータ処理
+- テーブルデータ処理
     - 【Python】pandas_profiling でテーブルデータの統計情報を確認する。
     - 【Python】pandas データ型に基づき、欠損値の埋め合わせとカテゴリデータのエンコードを一括して行う。
     - 【Python】モデルの `feature_importances_` で重要特徴量を確認する。
 
-1. 画像処理
+- 画像処理
     - [【シェルスクリプト】画像ファイルの解像度を確認する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/image_processing/1)
     - [【Python】OpenCV ↔ Pillow ↔ numpy の変換対応](https://github.com/Yagami360/MachineLearning_Tips/tree/master/image_processing/4)
     - [【Python】画像の滑らかさを落とさないように拡張子を変更する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/image_processing/3)
@@ -165,15 +152,15 @@
     - dlib による顔の landmark 検出
         - [【Python】dlib で顔の landmark 検出を検出し、画像上に表示する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/image_processing/15)
 
-1. WEB スクレイピング
+- WEB スクレイピング
     - [【Python】WEB 上の画像データを収集する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/web_scraping/1)
     - 【Python】Selenium を用いてログインが必要な Web ページにログインし、スクレイピングを行う
 
-1. 自然言語処理
+- 自然言語処理
 
-1. 音声処理
+- 音声処理
 
-1. 高速化処理
+- 高速化処理
     - [【Python】for ループ内の処理を複数 CPU の並列処理で高速化する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/acceleration_processing/2)
     - [【Python】複数 GPU での並列化のために、フォルダ内のファイルを分割し別フォルダに保存し、その後１つのフォルダに再統合する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/acceleration_processing/1)
     - 【Python】for ではなく行列処理で画像処理を高速化する。
@@ -193,6 +180,7 @@
     <!-- 
     - 【PyTorch】データオーギュメントのランダム seed 値を固定することで入力画像の種類に応じた異なるDAを適用する
     -->
+
 - Tensorflow
     - 【Tensorflow】Dataset API を使用したデータローダー（tensorflow 1.4以降, tensoflow 2.x）
     - 【Tensorflow】tensor 値の確認方法（tensorflow 1.x, tensoflow 2.x <EagerMode>, tensoflow 2.x<GraphMode>）
@@ -200,6 +188,7 @@
     - 【Tensorflow】tf_debug GUI でのデバッグ処理
     - 【Tensorflow】複数 GPU での学習
     - 【Tensorflow】AMP（混合精度）を使用した高速化
+
 - Keras
     - 【Keras】独自データセットの DataLoader
     - 【Keras】継承クラスで独自のネットワークを定義する 
@@ -207,6 +196,8 @@
     - 【Keras】複数 GPU での学習
     - 【Keras】AMP（混合精度）を使用した高速化
 
+### ◎ その他
 
+- xxx
 
 ## ■ 参考文献＆サイト

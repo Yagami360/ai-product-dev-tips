@@ -51,6 +51,7 @@ sudo nginx
 #sudo nginx -s reload
 
 # Nginx の Web サーバーにブラウザアクセス
+curl http://localhost:8080
 if [ ${OS} = 'Mac' ]; then
     sleep 1
     open http://localhost:8080

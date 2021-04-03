@@ -2,7 +2,9 @@
 Nginx（エンジンエックス）とは、オープンソースのWebサーバ/リバースプロキシ。<br>
 
 > - リバースプロキシ（Reverse Proxy）<br>
-> クライアントとサーバの通信の間に入って、サーバの応答を「代理（proxy）」しつつ通信を中継する機能、あるいはその役割を担うサーバ。Webシステムのセキュリティ対策や性能向上、負荷分散、あるいはシステム構成の自由度向上などのためによく利用される。
+> クライアントとサーバの通信の間に入って、サーバの応答を「代理（proxy）」しつつ通信を中継する機能、あるいはその役割を担うサーバ。<br>
+> 具体的な役割としては、｛ロードバランシング・コンテンツキャッシュ、HTTPS通信の終端化、アクセス制御・リクエストの書き換え・gzip圧縮転送・ロギング・バッファリング｝など。<br>
+> Webシステムのセキュリティ対策や性能向上、負荷分散、あるいはシステム構成の自由度向上などのためによく利用される。
 
 同様のものとして Apache（Apache HTTP Server）があるが、Nginx は Apache より高速かつ高負荷に強いというメリットがある。
 
@@ -43,8 +45,11 @@ Nginx（エンジンエックス）とは、オープンソースのWebサーバ
     > ```
     > - 参考 : http://smot93516.hatenablog.jp/entry/2018/07/13/110400
 
-1. Web サーバーにブラウザアクセスする<br>
-    「Welcome to nginx!」が表示されれば成功
+1. Web サーバーにアクセスする<br>
+    ```sh
+    $ curl http://localhost:8080
+    ```
+    ブラウザアクセスする場合は、以下のコマンドを実行。「Welcome to nginx!」が表示されれば成功
     - MacOS の場合
         ```sh
         # 8080 版ポートの場合
@@ -99,6 +104,7 @@ http{
         listen 0.0.0.0:80;                  # IP アドレスとポート番号（ポート番号のみの指定も可能）
         server_name localhost;              # ドメイン名（www.example.com など）
         root /usr/local/var/www/;           # ドキュメントルート（トップページのHTML ファイルパス）/ MacOS の場合 : /usr/local/var/www/
+        #root html;                         # "/usr/local/var/www/" へのショートカット "html" で指定する場合
         index  index.html index.htm;        # 
         charset UTF-8;                      # レスポンスヘッダの Content-type
     }

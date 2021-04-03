@@ -117,3 +117,6 @@ openssl を用いて作成した自己署名SSL認証書（オレオレ証明書
         $ open https://localhost:8080
         ```
 
+## ■ 参考サイト
+- https://qiita.com/riita10069/items/5d36dfeb756e3b6c4978#tls%E8%A8%BC%E6%98%8E%E6%9B%B8%E3%81%A8%E9%8D%B5%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AE%E6%8C%87%E5%AE%9A
+- https://qiita.com/morrr/items/7c97f0d2e46f7a8ec967#sslhttps%E3%81%AB%E5%AF%BE%E5%BF%9C%E3%81%99%E3%82%8B
