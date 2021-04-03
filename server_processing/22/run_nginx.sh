@@ -1,7 +1,9 @@
 #!/bin/sh
 set -eu
-NGINX_CONF_FILE_PATH="nginx/nginx.conf"
+NGINX_CONF_FILE_PATH="${PWD}/nginx/nginx.conf"
+#NGINX_CONF_FILE_PATH="${PWD}/nginx/nginx_default.conf"
 PORT=80
+KILL_NGINX_PROCESS=1
 
 # OS 判定
 if [ "$(uname)" = 'Darwin' ]; then
@@ -26,12 +28,24 @@ fi
 # nginx のバージョン確認
 nginx -v
 
+# nginx プロセス確認
+#ps aux | grep nginx
+
 # nginx 停止
+set +e
 sudo nginx -s quit
+set -e
+
+# nginx 関連のプロセスを全て kill | sudo nginx -s quit でも停止できないときのための処理
+if [ ${KILL_NGINX_PROCESS} = 1 ] ; then
+    ps aux | grep [n]ginx | awk '{ print "sudo kill -9", $2 }'
+    sudo pkill nginx
+    sleep 1
+fi
 
 # Nginx の Web サーバーを起動
 sudo nginx -c ${NGINX_CONF_FILE_PATH}
-sudo nginx -s reload
+#sudo nginx -s reload
 
 # Nginx の Web サーバーにブラウザアクセス
 if [ ${OS} = 'Mac' ]; then

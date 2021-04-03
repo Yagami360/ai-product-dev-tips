@@ -25,31 +25,35 @@ Nginx（エンジンエックス）とは、オープンソースのWebサーバ
     # nginx のバージョン確認
     $ nginx -v
     ```
-1. `nginx` コマンドで Nginx の Web サーバーを起動する
+1. `nginx` コマンドで Nginx の Web サーバーを起動する<br>
+    以下のコマンドを実行することで `/usr/local/etc/nginx/nginx.conf` に保管されている `nginx.conf` の設定のもとで、Nginx の Web サーバーが起動される。デフォルトでは、ドメイン名（localhost） 8080 版ポートの Web サーバーが構築されることに注意<br>
     ```sh
-    # デフォルトでは、ドメイン名（localhost） 8080 版ポートの Web サーバーが構築される
-    $ nginx
+    $ sudo nginx
     ```
+    - `sudo` 付きで実行するのは、nginx 設定ファイルが `/usr` 以下の root 権限ディレクトリにるため？
 
     独自の `nginx.conf` を指定したい場合は、`-c` オプション付きでコマンド実行すればよい
     ```
-    $ nginx -c ${NGINX_CONF_FILE_PATH}
+    $ sudo nginx -c ${NGINX_CONF_FILE_PATH}
     ```
 
-    ※ 以下のエラーメッセージが出る場合は、`ps aux | grep nginx` で確認された nginx プロセスをすべて kii した後に、`nginx` コマンドを `sudo` コマンド付きで実行する解決法がある
-    ```sh
-    nginx: [error] open() "/usr/local/var/run/nginx.pid" failed (2: No such file or directory)
-    ```
+    > ※ 以下のエラーメッセージが出る場合は、`ps aux | grep nginx` で確認された nginx プロセスをすべて kii した後に、`sudo nginx` コマンドを実行する解決法がある
+    > ```sh
+    > nginx: [error] open() "/usr/local/var/run/nginx.pid" failed (2: No such file or directory)
+    > ```
+    > - 参考 : http://smot93516.hatenablog.jp/entry/2018/07/13/110400
 
 1. Web サーバーにブラウザアクセスする<br>
-    ```sh
-    # 8080 版ポートの場合
-    $ open http://localhost:8080
-    ```
     「Welcome to nginx!」が表示されれば成功
+    - MacOS の場合
+        ```sh
+        # 8080 版ポートの場合
+        $ open http://localhost:8080
+        ```
+
 1. Ngix サーバーを停止する場合は、以下のコマンドを実行
     ```sh
-    $ nginx -s quit
+    $ sudo nginx -s quit
     ```
 
 ## ■ Nginx 設定ファイル
@@ -90,15 +94,13 @@ events {
 # Web サーバーに関しての設定を行う
 #----------------
 http{
-    listen       8080;                      # IP アドレスとポート番号（ポート番号のみの指定も可能）
-    server_name  localhost;                 # ドメイン名（www.example.com など）
-    root /usr/local/var/www/;               # ドキュメントルート（トップページのHTML ファイルパス）/ MacOS の場合 : /usr/local/var/www/
-    charset UTF-8;                          # レスポンスヘッダの Content-type
-
-    # 仮想サーバの構築
+    # サーバの構築
     server {
-        listen 0.0.0.0:80;
-        server_name localhost;
+        listen 0.0.0.0:80;                  # IP アドレスとポート番号（ポート番号のみの指定も可能）
+        server_name localhost;              # ドメイン名（www.example.com など）
+        root /usr/local/var/www/;           # ドキュメントルート（トップページのHTML ファイルパス）/ MacOS の場合 : /usr/local/var/www/
+        index  index.html index.htm;        # 
+        charset UTF-8;                      # レスポンスヘッダの Content-type
     }
 }
 ```
