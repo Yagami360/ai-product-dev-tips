@@ -3,7 +3,7 @@ set -eu
 NGINX_CONF_FILE_PATH="${PWD}/nginx/nginx.conf"
 #NGINX_CONF_FILE_PATH="${PWD}/nginx/nginx_default.conf"
 PORT=80
-KILL_NGINX_PROCESS=1
+KILL_NGINX_PROCESS=0
 
 # OS 判定
 if [ "$(uname)" = 'Darwin' ]; then
@@ -40,7 +40,7 @@ set -e
 if [ ${KILL_NGINX_PROCESS} = 1 ] ; then
     ps aux | grep [n]ginx | awk '{ print "sudo kill -9", $2 }'
     sudo pkill nginx
-    sleep 1
+    sleep 5
 fi
 
 # Nginx の Web サーバーを起動

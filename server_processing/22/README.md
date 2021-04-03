@@ -102,6 +102,11 @@ http{
         index  index.html index.htm;        # 
         charset UTF-8;                      # レスポンスヘッダの Content-type
     }
+
+    # serverを復数記述することで、仮想サーバとして動作する
+    server {
+        ...
+    }
 }
 ```
 
