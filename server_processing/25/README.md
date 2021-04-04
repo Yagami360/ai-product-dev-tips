@@ -1,5 +1,11 @@
 # 【nginx】リバースプロキシとしての nginx をロードバランサーとして利用する。
 
+
+
+- ToDo
+    - リバースプロキシにアクセスしたときに、"Hello Server1!" しか表示されずロードバランシングしていない問題の解消。"Hello Server1!" or "Hello Server2!" が表示されるのが正しい動作
+
+
 ## ■ 使用法
 ここでの説明は、以下のような構成のシステムを構築する場合の手順を記載する。<br>
 <img src="https://user-images.githubusercontent.com/25688193/113479439-1a458380-94ca-11eb-98e0-e2df9f9264cc.png" width="400"><br>
@@ -45,7 +51,6 @@
                 charset UTF-8;                      # レスポンスヘッダの Content-type
 
                 # nginx をリバースプロキシとして利用するための設定
-                #proxy_redirect                          off;
                 proxy_set_header    Host                $host;
                 proxy_set_header    X-Real-IP           $remote_addr;
                 proxy_set_header    X-Forwarded-Host    $host;
@@ -57,6 +62,7 @@
                 # リバースプロキシとしての nginx をロードバランサーとして利用する場合は、location を利用して、upstream ディレクティブで設定した名前のリクエスト URL を設定する
                 location / {
                     proxy_pass    http://my_servers;       # upstream ディレクティブで指定した名前
+                    proxy_redirect default;
                 }
             }
         }
