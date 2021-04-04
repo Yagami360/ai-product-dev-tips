@@ -18,13 +18,15 @@ CORS(app, resources={r"*": {"origins": "*"}}, methods=['POST', 'GET'])  # OPTION
 app.config['JSON_AS_ASCII'] = False     # 日本語文字化け対策
 app.config["JSON_SORT_KEYS"] = False    # ソートをそのまま
 
+args = None
+
 #================================================================
 # "http://host_ip:port_id" リクエスト送信時の処理
 #================================================================
 @app.route('/')
 def hello_world():
-    target = os.environ.get('TARGET', 'World')
-    return 'Hello {}!\n'.format(target)
+    target = os.environ.get('TARGET', 'Flask-API Server')
+    return 'Hello Flask-API Server! (host={}, port={})'.format(args.host, args.port)
 
 #================================================================
 # "http://host_ip:port_id/api_server" にリクエスト送信時の処理
@@ -70,6 +72,7 @@ if __name__ == "__main__":
         for key, value in vars(args).items():
             print('%s: %s' % (str(key), str(value)))
 
+    args = args
     #--------------------------
     # Flask の起動
     #--------------------------

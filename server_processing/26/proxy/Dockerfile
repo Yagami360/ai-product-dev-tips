@@ -46,10 +46,9 @@ EXPOSE 8080
 #-----------------------------
 # コンテナ起動後に自動的に実行するコマンド
 #-----------------------------
-#CMD ["nginx","-c","/proxy/nginx/proxy.conf"]
+#CMD ["nginx","-c","/proxy/nginx/proxy.conf", "-g", "daemon off;"]
 
 #-----------------------------
 # コンテナ起動後の作業ディレクトリ
 #-----------------------------
-RUN mkdir -p /run/nginx
 WORKDIR /proxy

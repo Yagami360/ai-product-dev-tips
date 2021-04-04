@@ -1,12 +1,11 @@
 # 【nginx】リバースプロキシとしての nginx をロードバランサーとして利用する。
-
-
+xxx
 
 - ToDo
     - リバースプロキシにアクセスしたときに、"Hello Server1!" しか表示されずロードバランシングしていない問題の解消。"Hello Server1!" or "Hello Server2!" が表示されるのが正しい動作
 
 
-## ■ 使用法
+## ■ 手順
 ここでの説明は、以下のような構成のシステムを構築する場合の手順を記載する。<br>
 <img src="https://user-images.githubusercontent.com/25688193/113479439-1a458380-94ca-11eb-98e0-e2df9f9264cc.png" width="400"><br>
 

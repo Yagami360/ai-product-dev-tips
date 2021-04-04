@@ -45,7 +45,10 @@ services:
             - ${PWD}/proxy:/proxy
         ports:
             - "8080:8080"
-        depends_on:
+#        depends_on:
+#            - flask_api_server1
+#            - flask_api_server2
+        links:
             - flask_api_server1
             - flask_api_server2
         tty: true
