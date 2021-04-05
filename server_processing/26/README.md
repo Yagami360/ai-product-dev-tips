@@ -1,4 +1,5 @@
 # 【nginx】docker + nginx + Flask を用いた Web-API の構築
+xxx
 
 ## ■ 手順
 ここでの説明は、以下のような構成のシステムを構築する場合の手順を記載する。<br>
@@ -11,8 +12,8 @@
 
 1. リバースプロキシとしての nginx 設定<br>
     1. nginx の設定 conf ファイルを作成する<br>
-        nginx をリバースプロキシ（ロードバランサーあり）として動作させるために、「[【nginx】リバースプロキシとしての nginx をロードバランサーとして利用する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/25)」記載の方法で、nginx の設定 conf ファイルを作成する<br>
-        この際に、upstream ディレクティブ内では localhost は使えないことに注意が必要<br>
+        nginx をリバースプロキシ（ロードバランサーあり）として動作させるために、「[【nginx】リバースプロキシとしての nginx をロードバランサーとして利用する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/25)」記載の方法で、nginx の設定 conf ファイルを作成する。<br>
+        この際に、upstream ディレクティブ内では docker コンテナ化した Flask-API（localhostに構築）のホスト名として、localhost は使えないことに注意が必要。localhost だと nginx コンテナ内のホスト名になるため、localhost ではなく実際の IP アドレスを指定する必要ある。<br>
         ```conf
         #----------------
         # Core モジュール。
@@ -222,7 +223,6 @@ docker-compose などで docker コンテナをバックグラウンド実行し
     ```
 
 1. conf ファイルに `daemon off;` を追加する場合<br>
-    Core モジュールに `daemon off;` を追加することでも
     ```
     #----------------
     # Core モジュール。

@@ -65,8 +65,8 @@
         - [【nginx】リバースプロキシとしての nginx をロードバランサーとして利用する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/25)
         - [【nginx】docker + nginx + Flask を用いた Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/26)
     - WSGI/ uWSGI
-        - 【uWSGI】WSGI/ uWSGI の基本事項
-        - 【uWSGI】docker + nginx + Flask を用いた Web-API の構築
+        - [【uWSGI】WSGI / uWSGI の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/27)
+        - 【uWSGI】docker + nginx + uWSGI + Flask を用いた Web-API の構築
 - Web フレームワーク
     - REST API / RESTful API
         - REST API / RESTful API の理解
