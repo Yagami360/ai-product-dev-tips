@@ -1,9 +1,11 @@
 # 【nginx】docker + nginx + Flask を用いた Web-API の構築
-xxx
+ここでは以下の図のように、Flask を用いて作成した複数の Web-API サーバーに対して、ロードバランサー機能付きのリバースプロキシとしての nginx でロードバランシングを行い、更に nginx と Flask-API を docker コンテナとして起動する場合の構成方法を記載する。
+
+<img src="https://user-images.githubusercontent.com/25688193/113513147-19345500-95a3-11eb-9542-7bf19ba193c1.png" width="500"><br>
+
+尚、nginx + Flask を用いて、本番環境の Web システムを構築する場合は、nginx と Flask の間に uWSGI を導入するほうが望ましい。この場合の方法については、「[【uWSGI】docker + nginx + uWSGI + Flask を用いた Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/28)」を参照のこと
 
 ## ■ 手順
-ここでの説明は、以下のような構成のシステムを構築する場合の手順を記載する。<br>
-<img src="https://user-images.githubusercontent.com/25688193/113513147-19345500-95a3-11eb-9542-7bf19ba193c1.png" width="500"><br>
 
 1. Flask-API サーバーの構築<br>
     1. Flask-API のコード `app.py` を作成する。<br>

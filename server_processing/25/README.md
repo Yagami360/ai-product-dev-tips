@@ -1,14 +1,15 @@
 # 【nginx】リバースプロキシとしての nginx をロードバランサーとして利用する。
-xxx
+ここでの説明は、以下の図のように、Web サーバーとしての複数の nginx に対して、ロードバランサー機能付きのリバースプロキシとしての nginx でロードバランシングを行う場合の構成方法を記載する。<br>
+
+<img src="https://user-images.githubusercontent.com/25688193/113479439-1a458380-94ca-11eb-98e0-e2df9f9264cc.png" width="500"><br>
+
+Flask を用いたより実践的なロードバランシング機能付き Web-API を構築する場合の方法に関しては、「[【nginx】docker + nginx + Flask を用いた Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/26)」or「[【uWSGI】docker + nginx + uWSGI + Flask を用いた Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/28)」を参照のこと
 
 - ToDo
     - リバースプロキシにアクセスしたときに、"Hello Server1!" しか表示されずロードバランシングしていない問題の解消。"Hello Server1!" or "Hello Server2!" が表示されるのが正しい動作
 
 
 ## ■ 手順
-ここでの説明は、以下のような構成のシステムを構築する場合の手順を記載する。<br>
-<img src="https://user-images.githubusercontent.com/25688193/113479439-1a458380-94ca-11eb-98e0-e2df9f9264cc.png" width="400"><br>
-
 
 1. リバースプロキシ用 conf ファイルを作成する。<br>
     リバースプロキシとしての nginx を構築する場合は、以下のような conf ファイルを作成すればよい。HTTP モジュールに追加されている構文に注目<br>
