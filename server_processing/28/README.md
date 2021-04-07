@@ -13,6 +13,26 @@ Flask を用いれば、nginx や uWSGI がなくとも、Flaskの run メソッ
 xxx
 
 
+- `/etc/nginx/uwsgi_params` の中身
+    ```
+    uwsgi_param  QUERY_STRING       $query_string;
+    uwsgi_param  REQUEST_METHOD     $request_method;
+    uwsgi_param  CONTENT_TYPE       $content_type;
+    uwsgi_param  CONTENT_LENGTH     $content_length;
+
+    uwsgi_param  REQUEST_URI        $request_uri;
+    uwsgi_param  PATH_INFO          $document_uri;
+    uwsgi_param  DOCUMENT_ROOT      $document_root;
+    uwsgi_param  SERVER_PROTOCOL    $server_protocol;
+    uwsgi_param  REQUEST_SCHEME     $scheme;
+    uwsgi_param  HTTPS              $https if_not_empty;
+
+    uwsgi_param  REMOTE_ADDR        $remote_addr;
+    uwsgi_param  REMOTE_PORT        $remote_port;
+    uwsgi_param  SERVER_PORT        $server_port;
+    uwsgi_param  SERVER_NAME        $server_name;
+    ```
+
 ## ■ 参考サイト
 - https://serip39.hatenablog.com/entry/2020/07/06/070000
 - https://qiita.com/souchan-t/items/8fb5a5df85882c295d96

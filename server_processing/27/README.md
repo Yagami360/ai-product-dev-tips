@@ -14,13 +14,13 @@
         高速でアプリケーションサーバーとWebサーバー間の通信を行うことが可能であるが、直接リクエストしたりレスポンスを参照することができないため、トラブルが起きた際のデバッグコストが高い
 
     - HTTP<br>
-        http （非SSL）での通信。ソケット通信より速度面では劣るが、最新のサーバーでは殆ど問題とはならないので、基本的に HTTP 通信で行えば良い。
+        http （非SSL）での通信。ソケット通信より速度面では劣るが、最新のサーバーでは殆ど問題とはならないことが多い。
 
 - Gunicorn<br>
     WSGI サーバーの１種。
 
 ## ■ 手順
-ここでは、簡単な例として、nginx などの Web サーバーを経由しない場合での、uWSGI を用いた Web-API の構築方法を示す。<br>
+ここでは、簡単な例として、nginx などの Web サーバーを経由しない場合での、uWSGI + Flask を用いた Web-API の構築方法を示す。<br>
 より実践的な方法については、「[【uWSGI】docker + nginx + uWSGI + Flask を用いた Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/28)」を参照のこと。
 
 1. Flask-API サーバーの構築<br>
@@ -31,6 +31,7 @@
         ```
     1. Flask-API のコード `app.py` を作成する。<br>
         ここでは、簡単な例として `api/app.py` に "Hello Flask-API Server! (host=${ホスト名}, port=${ポート番号})" を表示するような Flask-API を作成する
+
     1. Flask-API 起動<br>
         ```sh
         $ cd api/
@@ -44,7 +45,6 @@
         ```
     1. uWSGI の起動<br>
         `uwsgi` コマンドを用いて、Flask-API のコード `app.py` を uWSGI 経由で起動する。<br>
-
         1. uWSGI の設定ファイル（`*.ini`形式）を用いない場合
             ```sh
             # http 通信で uWSGI を起動
@@ -73,28 +73,9 @@
             http=localhost:5001
             ```
 
-<!--
-        ここで、Flask-API のコード `app.py` において、`if __name__ == "__main__":` 内で `import argparse` での args 引数を取るようなコードでは、以下のようなエラーが発生し、うまく動作しないことに注意<br>
-        ```sh
-        Traceback (most recent call last):
-        File "app.py", line 3, in <module>
-            import argparse
-        File "/Users/sakai/.pyenv/versions/anaconda3-5.3.1/envs/py36/lib/python3.6/argparse.py", line 93, in <module>
-            from gettext import gettext as _, ngettext
-        File "/Users/sakai/.pyenv/versions/anaconda3-5.3.1/envs/py36/lib/python3.6/gettext.py", line 49, in <module>
-            import locale, copy, io, os, re, struct, sys
-        File "/Users/sakai/.pyenv/versions/anaconda3-5.3.1/envs/py36/lib/python3.6/struct.py", line 13, in <module>
-            from _struct import *
-        ImportError: dlopen(/Users/sakai/.pyenv/versions/anaconda3-5.3.1/envs/py36/lib/python3.6/lib-dynload/_struct.cpython-36m-darwin.so, 2): Symbol not found: _PyByteArray_Type
-        Referenced from: /Users/sakai/.pyenv/versions/anaconda3-5.3.1/envs/py36/lib/python3.6/lib-dynload/_struct.cpython-36m-darwin.so
-        Expected in: flat namespace
-        in /Users/sakai/.pyenv/versions/anaconda3-5.3.1/envs/py36/lib/python3.6/lib-dynload/_struct.cpython-36m-darwin.so
-        unable to load app 0 (mountpoint='') (callable not found or import error)
-        *** no app loaded. going in full dynamic mode ***
-        *** uWSGI is running in multiple interpreter mode ***
-        spawned uWSGI worker 1 (and the only) (pid: 97932, cores: 1)
-        ```
--->
+        > `uwsgi` コマンドを用いて `app.py` を実行する場合は、`app.py` で `import argparse` して定義しているコマンドライン引数は使えないことに注意。<br>
+        > `app.py` でコマンドライン引数を使いたい場合は、Python の `sys.argv` を使用し、uWSGI の設定ファイル（`*.ini`形式）内で、`pyargv "args1 args2"` という形式のオプションを追加する方法がある。<br>
+
 
 1. リクエスト処理<br>
     1. Flask-API サーバーに直接アクセスする場合<br>
@@ -105,6 +86,28 @@
         ```sh
         $ curl http://localhost:5001
         ```
+
+
+- Todo : uwsgi コマンドで Flask-API を実行する際に、app,py で以下のような import エラーが発生する問題の解消
+    ```sh
+    Traceback (most recent call last):
+    File "app.py", line 3, in <module>
+        import argparse
+    File "/Users/sakai/.pyenv/versions/anaconda3-5.3.1/envs/py36/lib/python3.6/argparse.py", line 93, in <module>
+        from gettext import gettext as _, ngettext
+    File "/Users/sakai/.pyenv/versions/anaconda3-5.3.1/envs/py36/lib/python3.6/gettext.py", line 49, in <module>
+        import locale, copy, io, os, re, struct, sys
+    File "/Users/sakai/.pyenv/versions/anaconda3-5.3.1/envs/py36/lib/python3.6/struct.py", line 13, in <module>
+        from _struct import *
+    ImportError: dlopen(/Users/sakai/.pyenv/versions/anaconda3-5.3.1/envs/py36/lib/python3.6/lib-dynload/_struct.cpython-36m-darwin.so, 2): Symbol not found: _PyByteArray_Type
+    Referenced from: /Users/sakai/.pyenv/versions/anaconda3-5.3.1/envs/py36/lib/python3.6/lib-dynload/_struct.cpython-36m-darwin.so
+    Expected in: flat namespace
+    in /Users/sakai/.pyenv/versions/anaconda3-5.3.1/envs/py36/lib/python3.6/lib-dynload/_struct.cpython-36m-darwin.so
+    unable to load app 0 (mountpoint='') (callable not found or import error)
+    *** no app loaded. going in full dynamic mode ***
+    *** uWSGI is running in multiple interpreter mode ***
+    spawned uWSGI worker 1 (and the only) (pid: 97932, cores: 1)
+    ```
 
 <a id="uWSGI設定ファイル"></a>
 

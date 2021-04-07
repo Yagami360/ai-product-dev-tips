@@ -1,0 +1,58 @@
+version: '2.3'
+
+services:
+    uwsgi_flask_api_server1:
+        container_name: uwsgi-flask-api-container1
+        image: uwsgi-flask-api-image
+        build:
+            context: "api/"
+            dockerfile: Dockerfile
+        volumes:
+            - ${PWD}/api:/api
+        ports:
+            - "5000:5000"
+        tty: true
+        environment:
+            TZ: "Asia/Tokyo"
+            LC_ALL: C.UTF-8
+            LANG: C.UTF-8
+        #command: bash -c "python3 app.py --host 0.0.0.0 --port 5000 --debug"
+        command: bash -c "uwsgi --ini uwsgi_server1.ini"
+
+    uwsgi_flask_api_server2:
+        container_name: uwsgi-flask-api-container2
+        image: uwsgi-flask-api-image
+        build:
+            context: "api/"
+            dockerfile: Dockerfile
+        volumes:
+            - ${PWD}/api:/api
+        ports:
+            - "5001:5001"
+        tty: true
+        environment:
+            TZ: "Asia/Tokyo"
+            LC_ALL: C.UTF-8
+            LANG: C.UTF-8
+        #command: bash -c "python3 app.py --host 0.0.0.0 --port 5001 --debug"
+        command: bash -c "uwsgi --ini uwsgi_server2.ini"
+
+    nginx_proxy_server:
+        container_name: nginx-proxy-container
+        image: nginx-proxy-image
+        build:
+            context: "proxy/"
+            dockerfile: Dockerfile
+        volumes:
+            - ${PWD}/proxy:/proxy
+        ports:
+            - "8080:8080"
+        links:
+            - uwsgi_flask_api_server1
+            - uwsgi_flask_api_server2
+        tty: true
+        environment:
+            TZ: "Asia/Tokyo"
+            LC_ALL: C.UTF-8
+            LANG: C.UTF-8
+        command: bash -c "sudo nginx -c /proxy/nginx/proxy.conf"
