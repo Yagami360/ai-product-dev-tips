@@ -17,6 +17,29 @@ Flask を用いれば、nginx や uWSGI がなくとも、Flaskの run メソッ
         > `api/app.py` の実行は、後述の docker-compose 内にて、`uwsgi` コマンドを用いて `app.py` を実行する形式になるが、`uwsgi` コマンドを用いて `app.py` を実行する場合はｍ`app.py` で `import argparse` して定義しているコマンドライン引数は使えないことに注意。<br>
         > `app.py` でコマンドライン引数を使いたい場合は、Python の `sys.argv` を使用し、uWSGI の設定ファイル（`*.ini`形式）内で、`pyargv "args1 args2"` という形式のオプションを追加する方法がある。<br>
 
+    1. uWSGI 設定ファイル `*.ini` を作成する。<br>
+        Flask-API サーバー１とFlask-API サーバー２用の uWSGI 設定ファイル `*.ini` を作成する。<br>
+        - Flask-API サーバー１用 uWSGI 設定ファイルの例 : `uwsgi_server1.ini`
+            ```ini
+            [uwsgi]
+            wsgi-file=app.py
+            callable=app
+            http=0.0.0.0:5000
+            #http-socket = :5000
+            processes = 1
+            threads = 1
+            ```
+        - Flask-API サーバー１用 uWSGI 設定ファイルの例 : `uwsgi_server2.ini`
+            ```ini
+            [uwsgi]
+            wsgi-file=app.py
+            callable=app
+            http=0.0.0.0:5001
+            #http-socket = :5000
+            processes = 1
+            threads = 1
+            ```
+
     1. uWSGI + Flask-API の `Dockerfle` を作成する<br>
         flask と uwsgi をインストールした dockerfile を作成する。<br>
         ```Dockerfile
