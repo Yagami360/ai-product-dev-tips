@@ -66,14 +66,15 @@
         - [【nginx】docker + nginx + Flask を用いた Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/26)
     - WSGI/ uWSGI
         - [【uWSGI】WSGI / uWSGI の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/27)
-        - [<In-progress>【uWSGI】docker + nginx + uWSGI + Flask を用いた Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/28)
+        - [【uWSGI】docker + nginx + uWSGI + Flask を用いた Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/28)
 - Web フレームワーク
     - REST API / RESTful API
-        - REST API / RESTful API の理解
+        - [REST API / RESTful API の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/29)
     - Flask
         - 【Flask】GCP インスタンス + docker + Flask を用いた Web-API の構築
         - [【Flask】Flask での Web-API を https 化する（自己署名SSL認証を使用する場合）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/20)
         - 【Flask】Flask での Web-API を https 化（SSL）する（認証局[CA]を使用する場合）
+        - 【Flask】Flask での非 REST API と REST API
     - Django
 - インフラのコード化 / Infrastructure as Code
     - 【Terraform】Terraform の基礎事項
