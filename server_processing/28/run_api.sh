@@ -35,10 +35,10 @@ echo "requst to proxy server"
 curl http://${PROXY_HOST}:${PROXY_PORT}               # nginx プロキシサーバにアクセス
 
 echo "requst to web server1"
-curl http://${API_SERVER1_HOST}:${API_SERVER1_PORT}   # Flask-API サーバー１にアクセス
+curl http://${API_SERVER1_HOST}:${API_SERVER1_PORT}   # uWSGI 経由で Flask-API サーバー１にアクセス
 
 echo "requst to web server2"
-curl http://${API_SERVER2_HOST}:${API_SERVER2_PORT}   # Flask-API サーバー２にアクセス
+curl http://${API_SERVER2_HOST}:${API_SERVER2_PORT}   # uWSGI 経由で Flask-API サーバー２にアクセス
 set -e
 
 docker-compose logs --tail=10
@@ -46,7 +46,7 @@ docker-compose logs --tail=10
 #<<COMMENTOUT
 if [ ${OS} = 'Mac' ]; then
     open http://${PROXY_HOST}:${PROXY_PORT}               # nginx プロキシサーバにアクセス
-    open http://${API_SERVER1_HOST}:${API_SERVER1_PORT}   # Flask-API サーバー１にアクセス
-    open http://${API_SERVER2_HOST}:${API_SERVER2_PORT}   # Flask-API サーバー２にアクセス
+    open http://${API_SERVER1_HOST}:${API_SERVER1_PORT}   # uWSGI 経由で Flask-API サーバー１にアクセス
+    open http://${API_SERVER2_HOST}:${API_SERVER2_PORT}   # uWSGI 経由で Flask-API サーバー２にアクセス
 fi
 #COMMENTOUT

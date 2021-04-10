@@ -66,7 +66,7 @@
         - [【nginx】docker + nginx + Flask を用いた Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/26)
     - WSGI/ uWSGI
         - [【uWSGI】WSGI / uWSGI の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/27)
-        - [【uWSGI】docker + nginx + uWSGI + Flask を用いた Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/28)
+        - [<In-progress>【uWSGI】docker + nginx + uWSGI + Flask を用いた Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/28)
 - Web フレームワーク
     - REST API / RESTful API
         - REST API / RESTful API の理解
