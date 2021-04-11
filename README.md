@@ -70,14 +70,16 @@
 - Web フレームワーク
     - REST API / RESTful API
         - [REST API / RESTful API の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/29)
+        - 【Flask】Flask での非 REST API と REST API
     - Flask
         - 【Flask】GCP インスタンス + docker + Flask を用いた Web-API の構築
         - [【Flask】Flask での Web-API を https 化する（自己署名SSL認証を使用する場合）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/20)
         - 【Flask】Flask での Web-API を https 化（SSL）する（認証局[CA]を使用する場合）
-        - 【Flask】Flask での非 REST API と REST API
     - Django
 - インフラのコード化 / Infrastructure as Code
-    - 【Terraform】Terraform の基礎事項
+    - [【Terraform】Terraform の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/10)
+    - [【Terraform】Terraform を利用して AWS インスタンスを自動的に構築する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/11)
+    - 【Terraform】Terraform を利用して GCP インスタンスを自動的に構築する。
     - 【GCP】DeploymentManager の基礎事項
 - サーバレス / FaaS [Function as a Service]
     - Cloud Functions

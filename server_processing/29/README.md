@@ -32,7 +32,6 @@
 
 - 非 RESTful API<br>
     例えば、ユーザーの登録・取得・更新・削除といった処理を別々の URL で行うようにした API は、非 RESTful API になる。（RESTful API はリソースに対応づいて URL が決まるのであって、ユーザーの登録・取得・更新・削除といった処理には URL は対応づかないため）<br>
-
     このような 非 RESTful API の Flask でのコード例は、以下のようになる。
     ```python
     # flask の @app.route() で別々の URL を設定することで、
@@ -59,8 +58,8 @@
     ```
 
 - RESTful API<br>
-    例えば、ユーザーの登録・取得・削除といった処理を同じ URL で行うようにした API は、RESTful API になる。<br>
-    このような RESTful API の Flask でのコード例は、以下のようになる。
+    例えば、ユーザーの登録・取得・削除といった処理を同じ URL で行うようにした API は、（その部分だけでいえば）RESTful API になる。<br>
+    このような RESTful API の Flask でのコード例は、以下のようになる。（実際にはこのコードだけでは、RESTful な API とまではいかないことに注意）
     ```python
     # flask の @app.route() での methods に HTTEP を設定することで、
     # ユーザーの登録・取得・更新・削除といった処理を同じ URL で行うようにしている
