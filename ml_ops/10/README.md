@@ -12,8 +12,10 @@
     インフラのコード化（Infrastructure as Code）を行うためのツール。<br>
     テンプレートファイル（*.tf形式）に HCL [HashiCorp Configuration Language] という json ライクな言語で記述することで、インフラの環境構築を自動的に行えるようになる。
 
+<!--
 ## ■ Terraform のテンプレートファイルの構成
 
+### ◎ リソースの設定
 - プロバイダーの設定
     ```
     provider "aws" {
@@ -21,6 +23,14 @@
     secret_key = "SECRET_KEY_HERE"
     region = "ap-northeast-1"
     ```
+
+### ◎ 他の属性の参照
+xxx
+
+### ◎ 変数の使用
+xxx
+
+-->
 
 ## ■ 参考サイト
 - https://qiita.com/Chanmoro/items/55bf0da3aaf37dc26f73
