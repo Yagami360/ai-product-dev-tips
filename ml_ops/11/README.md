@@ -42,7 +42,7 @@
     - Default region name : EC2インスタンスのリージョン（us-west-2 など）
     - Default output format : "text","json","table" のどれかを指定
 
-    上記コマンドで作成された認証情報は、`${HOME}/.aws/credentials` ファイル内に保管される。
+    > 上記コマンドで作成された認証情報は、`${HOME}/.aws/credentials` ファイル内に保管される。
 
 1. IAM ユーザーを追加する<br>
     GUI を 用いて作成する場合は、「[IAM ダッシュボード](https://console.aws.amazon.com/iam/home?#/home)」のページから作成できる。<br>
@@ -76,7 +76,7 @@
 
         - プロバイダーの設定<br>
             プロバイダーの設定は、`provider` ブロックで行う。AWS を使う場合は `provider` ブロックで `"aws"` を指定する。<br>
-            ```json
+            ```python
             provider "aws" {
                 version = "~> 2.0"
                 profile = "Yagami360"
@@ -86,7 +86,7 @@
             > デフォルトのプロファイルを使用する場合は `profile = "default"` を設定
 
             `aws configure` で AWS 認証情報を設定していない場合は、以下のような内容で、アクセスキー・シークレットキー・リージョンを指定する。（※但しこの方法作成したテンプレートファイルを GitHub などで公開する際には、情報漏えいに注意すること。）
-            ```json
+            ```python
             provider "aws" {
                 version = "~> 2.0"
                 access_key = "ACCESS_KEY_HERE"
@@ -100,7 +100,7 @@
             ソースの種類は、プロバイダーが AWS の場合は `"aws_*"` という名前で Terraform 側で予め定義されており、EC2 であれば `"aws_instance"` になる。
 
             例えば、Ubuntu 16.04 LST をベースイメージにした t2.micro のインスタンスを２台（名前 "terraform-0" と "terraform-1" ）作成する場合は、以下のようになる<br>
-            ```json
+            ```python
             resource "aws_instance" "terraform_instance" {
                 count         = 2
                 ami           = "ami-008b09448b998a562" # Ubuntu Server 16.04 LTS (HVM), SSD Volume Type
@@ -118,7 +118,7 @@
         - VPC リソースの設定<br>
             VPC リソースは、`resource` ブロックのリソース名 `"aws_vpc"` で設定可能。
             EC インスタンスは、この VPC に直接後述のサブネット内に
-            ```json
+            ```python
             resource "aws_vpc" "terraform_vpc" {
                 cidr_block = "10.0.0.0/16"
                 enable_dns_hostnames = true
@@ -138,7 +138,7 @@
 
             > `<リソースタイプ>.<リソース名>.<属性名>` で同じテンプレートファイル内の他リソースの属性を参照することができる。
 
-            ```json
+            ```python
             resource "aws_subnet" "terraform_subnet" {
                 cidr_block = "${cidrsubnet(aws_vpc.terraform_vpc.cidr_block, 3, 1)}"
                 vpc_id = "${aws_vpc.terraform_vpc.id}"
@@ -152,7 +152,7 @@
         - ゲートウェイの設定<br>
             インターネット ↔ VPC 間のゲートウェイを設定する。<br>
             AWS におけるゲートウェイは、`resource` ブロックのリソース名 `"aws_internet_gateway"` で設定可能。
-            ```json
+            ```python
             resource "aws_internet_gateway" "terraform_gateway" {
                 vpc_id = "${aws_vpc.terraform_vpc.id}"
             }
@@ -165,7 +165,7 @@
             VPC からゲートウェイまでのルーティングテーブルを設定する。<br>
             AWS でのルーティングテーブルは、`resource` ブロックのリソース名 `"aws_route_table"` で設定可能。
 
-            ```json
+            ```python
             resource "aws_route_table" "terraform_route_table" {
                 vpc_id = "${aws_vpc.terraform_vpc.id}"
                 route {
@@ -177,7 +177,7 @@
 
             設定したルーティングテーブルは、サブネットと関連づける必要がある。<br>
             ルーティングテーブルのサブネットへの関連付けは、`resource` ブロックのリソース名 `"aws_route_table_association"` で設定可能。
-            ```json
+            ```python
             resource "aws_route_table_association" "terraform_route_table_association" {
                 subnet_id = "${aws_subnet.terraform_subnet.id}"
                 route_table_id = "${aws_route_table.terraform_route_table.id}"
@@ -189,7 +189,7 @@
 
         - セキュリティーグループの設定<br>
             AWS でのセキュリティーグループは、`"aws_security_group"` ブロックで設定可能。
-            ```json
+            ```python
             resource "aws_security_group" "terraform_security_group" {
                 name = "terraform_security_group"
                 description = "Used in the terraform"
@@ -204,7 +204,7 @@
 
         - 固定 IP アドレスの設定<br>
             固定 IP アドレスを使用したい場合は、"aws_eip" ブロックで固定IPアドレスを設定可能。
-            ```json
+            ```python
             resource "aws_eip" "terraform_eip" {
                 instance = "${aws_instance.terraform_instance.id}"
                 vpc = true
@@ -214,7 +214,7 @@
         - EC2 インスタンスの設定<br>
             上記設定したサブネットやセキュリティーグループと関連付けを行った EC2 インスタンスを設定する。<br>
             例えば、Ubuntu 16.04 LST をベースイメージにした t2.micro のインスタンスを２台（名前 "terraform-0" と "terraform-1" ）作成する場合は、以下のようになる<br>
-            ```json
+            ```python
             resource "aws_instance" "terraform_instance" {
                 count         = 2
                 ami           = "ami-008b09448b998a562" # Ubuntu Server 16.04 LTS (HVM), SSD Volume Type
