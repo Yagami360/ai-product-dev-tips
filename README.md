@@ -27,6 +27,7 @@
     - [【シェルスクリプト】シェルスクリプトで、GoogleDrive から大容量データをコピーする。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/3)
     - 【Python】スクリプトで GoogleDrive へデータを自動的に転送する。
     - [【シェルスクリプト】ポートフォワーディングを使用した tensorboard 接続](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/21)
+    - VPN 接続
 
 ### ◎ 機械学習基盤（MLOps）
 - クラウド環境一般
@@ -80,6 +81,7 @@
     - [【Terraform】Terraform の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/10)
     - [【Terraform】Terraform を利用して AWS インスタンスを自動的に構築する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/11)
     - 【Terraform】Terraform を利用して GCP インスタンスを自動的に構築する。
+    - 【Terraform】Terraform を利用して機械学習環境の GCP インスタンスを自動的に構築する。
     - 【GCP】DeploymentManager の基礎事項
 - サーバレス / FaaS [Function as a Service]
     - Cloud Functions
@@ -108,6 +110,10 @@
         - [【BigQuery】BigQuery を使用したデータ処理（GUI使用時）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/7)
         - [【BigQuery】BigQuery を使用したデータ処理（CLI使用時）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/8)
         - 【BigQuery】BigQuery を使用したデータ処理（Python 用 BigQuery Storage API ライブラリ使用時）
+- ロギング/モニタリング
+    - docker logs, docker-compose logs
+    - Datadog
+    - 【GCP】Stackdriver
 - 機械学習ワークフロー
     - Kubeflow
         - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/1)

@@ -24,13 +24,6 @@ fi
 #brew update
 
 #=============================
-# Terraform のインストール
-#=============================
-if [ ${OS} = "Mac" ] ; then
-    brew install terraform
-fi
-
-#=============================
 # AWS の事前準備
 #=============================
 #-----------------------------
@@ -91,6 +84,11 @@ aws iam list-groups
 #=============================
 # Terraform を用いた AWS インスタンスの作成
 #=============================
+# Terraform のインストール
+if [ ${OS} = "Mac" ] ; then
+    brew install terraform
+fi
+
 cd ${TERRAFORM_DIR}
 #terraform destroy
 
@@ -112,6 +110,7 @@ terraform show
 #aws ec2 describe-instances
 if [ ${OS} = "Mac" ] ; then
     open https://${AWS_REGION}.console.aws.amazon.com/ec2/v2/home?region=${AWS_REGION}#Instances:
+    open https://${AWS_REGION}.console.aws.amazon.com/vpc/home?region=${AWS_REGION}#vpcs:
 fi
 
 # IP アドレス可能
