@@ -63,7 +63,8 @@ GKE を利用して Kubernetes クラスタを構築する際には、以下の 
 
 - Google Container Builder<br>
     Dockerfile を元に docker image を作成する作業を、ローカルPCやサーバー上で行うのでなく、GCP 上で行うことのできるサービス。作成した docker image は、Google Conatainer Registry に自動的にアップロードされる。<br>
-- Google Conatainer Registry
+
+- Google Conatainer Registry<br>
     docker image を GCP プロジェクト内で管理できるストレージサービス。docker image のアップロードとダウンロードができる。
 
 ## ■ GKE を利用した Kubernetes クラスターの構築手順
@@ -83,37 +84,38 @@ GKE を利用した Kubernetes クラスターの構築手順は、以下のよ�
 
 ### 0. 【事前準備】作成した api コードの docker image を作成し、GCP の Container Registry にアップロード
 
-- 作成済みの docker image を GCP の Container Registry にアップロード
-    ```sh
-    # docker image に TAG をつける
-    # TAG 名 : gcr.io/${PROJECT_ID}/${IMAGE_NAME}
-    $ docker tag ${IMAGE_NAME} gcr.io/${PROJECT_ID}/${IMAGE_NAME}
+#### 0-1. 作成済みの docker image を GCP の Container Registry にアップロードする場合
 
-    # Container Registry にアップロード（TAGを使用）
-    $ docker push gcr.io/${PROJECT_ID}/${IMAGE_NAME}
-    ```
-    - `${PROJECT_ID}` : GCP プロジェクト名
-    - `${IMAGE_NAME}` : docker image 名
-        - イメージ名にも `_` は使用できないことに注意
+```sh
+# docker image に TAG をつける
+# TAG 名 : gcr.io/${PROJECT_ID}/${IMAGE_NAME}
+$ docker tag ${IMAGE_NAME} gcr.io/${PROJECT_ID}/${IMAGE_NAME}
 
-- docker image を作成し、GCP の Container Registry にアップロード
-    ソースコードと Dockerfile が格納されているディレクトリから次のコマンドを実行。
-    ```sh
-    $ gcloud builds submit --tag gcr.io/${PROJECT_ID}/${IMAGE_NAME}
-    ```
+# Container Registry にアップロード（TAGを使用）
+$ docker push gcr.io/${PROJECT_ID}/${IMAGE_NAME}
+```
+- `${PROJECT_ID}` : GCP プロジェクト名
+- `${IMAGE_NAME}` : docker image 名
+    - イメージ名にも `_` は使用できないことに注意
 
-- `cloudbuild.yml` の設定情報を元に docker image を作成し、GCP の Container Registry にアップロード
-    ソースコードと Dockerfile が格納されているディレクトリから次のコマンドを実行。
-    ```sh
-    $ gcloud builds submit --config ${cloudbuildの設定ファイル名（.yml）}
+#### 0-2. ローカルPCで docker image を作成し、GCP の Container Registry にアップロードする場合
+ソースコードと Dockerfile が格納されているディレクトリから次のコマンドを実行。
+```sh
+$ gcloud builds submit --tag gcr.io/${PROJECT_ID}/${IMAGE_NAME}
+```
+
+#### 0-3. `cloudbuild.yml` の設定情報を元に、Google Container Builder 上で docker image を作成し、GCP の Container Registry にアップロードする場合
+ソースコードと Dockerfile が格納されているディレクトリから次のコマンドを実行。
+```sh
+$ gcloud builds submit --config ${cloudbuildの設定ファイル名（.yml）}
+```
+- `cloudbuild.yml` ファイルの中身
+    ```yml
+    steps:
+    - name: 'gcr.io/cloud-builders/docker'  # docker コマンドを実行するには必要
+        args: ['build', '-t', 'gcr.io/my-project2-303004/sample-image', './api']  # ./api に格納されている dockerfile を元に、docker image を作成
+    images: ['gcr.io/my-project2-303004/sample-image']
     ```
-    - `cloudbuild.yml` ファイルの中身
-        ```yml
-        steps:
-        - name: 'gcr.io/cloud-builders/docker'  # docker コマンドを実行するには必要
-            args: ['build', '-t', 'gcr.io/my-project2-303004/sample-image', './api']  # ./api に格納されている dockerfile を元に、docker image を作成
-        images: ['gcr.io/my-project2-303004/sample-image']
-        ```
 
 ※ Dockerfile 内では、`EXPOSE` 命令で使用するコンテナ通信ポートの設定をする必要があることに注意
 
