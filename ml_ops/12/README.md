@@ -1,7 +1,7 @@
 # 【GCP】Cloud Build を用いて GCE 上で CI/CD を行う
 Cloud Build　は、GCP での CI/CD サービスであるが、以下の図のように、GKE や Cloud Function, Cloud Run などの GCP が提供するサービスとの連携が容易であるというメリットがある。
 
-<img src="https://user-images.githubusercontent.com/25688193/115101675-14977580-9f81-11eb-9b38-a66e46cdea1a.png" width="500"><br>
+<img src="https://user-images.githubusercontent.com/25688193/115104771-94c7d600-9f95-11eb-913c-a43b578b75b5.png" width="500"><br>
 
 > 今回のケースでは、GCP サービスとして、GCE (ComputeEngine) のみ使用する。
 
@@ -65,6 +65,16 @@ Cloud Build　は、GCP での CI/CD サービスであるが、以下の図の�
 
     <img src="https://user-images.githubusercontent.com/25688193/115104516-e66f6100-9f93-11eb-985c-2077ffb99357.png" width="400"><br>
 
+1. CI/CD を行うトリガーを発行する
+    例えば、master ブランチへの push をトリガーとしている場合は、以下のコマンドを実行することで、CloudBuild がトリガー検知し、`cloudbuild.yml` に基づく CI/CD が自動的に実行される。
+    ```sh
+    $ git add .
+    $ git commit -m "a"
+    $ git push origin master
+    ```
+
+1. ビルドログを確認する
+    [ビルド履歴の画面](https://console.cloud.google.com/cloud-build/builds?project=my-project2-303004) からビルドログを確認し、うまく CI/CD できているか確認する
 
 ## ■ 参考サイト
 - https://cloud.google.com/build/docs/automating-builds/run-builds-on-github?hl=ja
