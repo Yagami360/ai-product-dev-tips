@@ -2,7 +2,8 @@
 他の一般的な CI/CD ツールと同様にして、リポジトリに対するプッシュやプルリクエストといった操作、もしくは指定した時刻になるといったイベントをトリガーとして、あらかじめ定義しておいた処理を実行することで CI/CD を実現できる。<br> 
 GitHub だけで CI/CD 的な機能を実現できるのがメリット。利用料金も無料。CI/CD ツールとしては、現状 GitHub Actions を使うのがベストっぽい。
 
-- GitHub Actions を用いた CI/CD のサンプルコード : https://github.com/Yagami360/github-actions_exercises<br>
+- GitHub Actions を用いた CI/CD のサンプルコード<br>
+  -  https://github.com/Yagami360/github-actions_exercises<br>
 
 ## ■ GitHub Actions の基礎事項
 

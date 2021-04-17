@@ -19,7 +19,9 @@
     - Circle CI<br>
     - **GitHub Actions**<br>
         GitHub だけで CI/CD 的な機能を実現できるのがメリット。利用料金も無料。現状 GitHub Actions を使うのがベストっぽい
-    
+    - **Cloud Build**<br>
+        GCP での CI/CD サービス。GKE や Cloud Function, Cloud Run などの GCP が提供するサービスとの連携が容易であるというメリットがある。
+
 - アジャイル開発<br>
     xxx
 

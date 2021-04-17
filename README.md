@@ -1,6 +1,6 @@
 # MachineLearning_Tips
 機械学習のための Tips 集。<br>
-開発環境・クラウド処理・前処理・機械学習フレームワーク・アプリケーション別の処理（画像処理、テーブルデータ処理など）・機械学習基盤（MLOps）などの機械学習に関わる広い範囲の Tips 集になってます。
+開発環境・クラウド処理・前処理・機械学習フレームワーク・アプリケーション別の処理（画像処理、テーブルデータ処理など）・機械学習基盤（MLOps） などの機械学習に関わる幅広い範囲の Tips 集になってます。
 
 ## ■ 項目
 
@@ -12,6 +12,7 @@
     - [【シェルスクリプト】ランダムに１００個のファイルをサンプリングする。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/io_processing/4)
 
 - 開発環境
+    - git
     - conda
         - [【シェルスクリプト】シェルスクリプト内で conda 環境を切り替える。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/conda_processing/1)
         - [【シェルスクリプト】conda 環境の自動的に作成する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/conda_processing/2)
@@ -78,11 +79,13 @@
         - 【Flask】Flask での Web-API を https 化（SSL）する（認証局[CA]を使用する場合）
     - Django
 - インフラのコード化 / Infrastructure as Code
-    - [【Terraform】Terraform の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/10)
-    - [【Terraform】Terraform を利用して AWS インスタンスを自動的に構築する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/11)
-    - 【Terraform】Terraform を利用して GCP インスタンスを自動的に構築する。
-    - 【Terraform】Terraform を利用して機械学習環境の GCP インスタンスを自動的に構築する。
-    - 【GCP】DeploymentManager の基礎事項
+    - Terraform
+        - [【Terraform】Terraform の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/10)
+        - [【Terraform】Terraform を利用して AWS インスタンスを自動的に構築する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/11)
+        - 【Terraform】Terraform を利用して GCP インスタンスを自動的に構築する。
+        - 【Terraform】Terraform を利用して機械学習環境の GCP インスタンスを自動的に構築する。
+    - DeploymentManager
+        - 【GCP】DeploymentManager の基礎事項
 - サーバレス / FaaS [Function as a Service]
     - Cloud Functions
         - [【GCP】Cloud Functions を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/7)
@@ -104,13 +107,19 @@
     - [CI/CD の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/4)
     - GitHub Actions
         - [GitHub Actions を用いた CI/CD](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/5)
+        - GitHub Actions を用いて機械学習の推論APIの CI/CD を行う
+    - Cloud Build
+        - [【GCP】Cloud Build を用いて GCE 上で CI/CD を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/12)
+        - 【GCP】Cloud Build を用いて GKE 上で CI/CD を行う
+        - 【GCP】Cloud Build を用いて Cloud Function 上で CI/CD を行う
+        - 【GCP】Cloud Build を用いて Cloud Run 上で CI/CD を行う
 - データ基盤 / データ分析基盤
     - BigQuery
         - [【BigQuery】BigQuery の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/6)
         - [【BigQuery】BigQuery を使用したデータ処理（GUI使用時）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/7)
         - [【BigQuery】BigQuery を使用したデータ処理（CLI使用時）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/8)
         - 【BigQuery】BigQuery を使用したデータ処理（Python 用 BigQuery Storage API ライブラリ使用時）
-- ロギング / モニタリング
+- サーバーのロギング / モニタリング
     - Datadog
     - 【GCP】Stackdriver
 - 機械学習ワークフロー
@@ -178,6 +187,9 @@
     - [【Python】for ループ内の処理を複数 CPU の並列処理で高速化する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/acceleration_processing/2)
     - [【Python】複数 GPU での並列化のために、フォルダ内のファイルを分割し別フォルダに保存し、その後１つのフォルダに再統合する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/acceleration_processing/1)
     - 【Python】for ではなく行列処理で画像処理を高速化する。
+    - Cuda
+    - cupy
+    - OpenCV (GPU版)
 
 ### ◎ 機械学習フレームワーク
 - PyTorch
@@ -214,4 +226,3 @@
 
 - xxx
 
-## ■ 参考文献＆サイト
