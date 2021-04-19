@@ -1,17 +1,15 @@
-# 【GCP】Cloud Build を用いて ローカルPC 上で CI/CD を行う
+# 【GCP】【GCP】Cloud Build を用いて Cloud Run 上で CI/CD を行う
 Cloud Build　は、GCP で提供されている docker image などのビルドサービスであるが、CI/CD ツールとしても利用できる。<br>
 Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cloud Function, Cloud Run などの GCP が提供するサービスとの連携が容易であるというメリットがある。
 
 <img src="https://user-images.githubusercontent.com/25688193/115104771-94c7d600-9f95-11eb-913c-a43b578b75b5.png" width="500"><br>
 
-> 今回のケースでは、ローカルPC で Ci/CD を行うので、GCP サービス（GCE,GKEなど）は利用しない
-
 - Cloud Build での CI/CD 練習用レポジトリ<br>
     - [cloud-build-exercises](https://github.com/Yagami360/cloud-build-exercises)
 
 ## ■ 手順
-ここでは、以下の図のように、Cloud Build と Cloud Build GitHub アプリを用いて、github での push トリガーを起点に、ローカルPC上で CI/CD する場合の手順を示す<br>
-<img src="https://user-images.githubusercontent.com/25688193/115118700-7be41280-9fdf-11eb-86f0-217be4c0ac88.png" width="500"><br>
+
+1. [各種API（Cloud Build, Cloud Run, Container Registry, Resource Manager API）](https://console.cloud.google.com/flows/enableapi?apiid=cloudbuild.googleapis.com%2Crun.googleapis.com%2Ccontainerregistry.googleapis.com%2Ccloudresourcemanager.googleapis.com&%3Bredirect=https%3A%2F%2Fcloud.google.com%2Fbuild%2Fdocs%2Fdeploying-builds%2Fdeploy-cloud-run&hl=ja&_ga=2.252325641.1289183255.1618713667-178468341.1618713667) を有効化する。
 
 1. CI/CD を行う GitHub のレポジトリを作成する
     - ここでは、例として「[cloud-build-exercises](https://github.com/Yagami360/cloud-build-exercises)」というレポジトリ作成する
@@ -37,75 +35,85 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
 
     > これらの処理を CLI で自動化できないか？
 
+1. CI/CD を行う GCP サービスの IAM 権限設定<br>
+    「[Cloud Build のサービス アカウント権限](https://console.cloud.google.com/cloud-build/settings/service-account?folder=&organizationId=&project=my-project2-303004)」のページで、Cloud Build で CI/CD を行う GCP サービスの IAM 権限を有効化する。<br>
+    
+    > 今回のケースでは、Cloud Run 上で CI/CD を行うので、Cloud Run サービスを有効化する
+
+    > これらの処理を CLI で自動化できないか？
+
 1. `cloudbuild.yml` の作成<br>
     Cloud Build がビルドを行うためのビルド構成ファイル `cloudbuild.yml` を作成する。
 
     > この `cloudbuild.yml` は、Container Registry で docker image を作成するためだけのビルド構成ファイルではなく、｛docker image の作成 ・GCE, GKE, CloudFunctioin などのリソース確保・APIコードの実行・テストコードの実行｝などを含めた、総合的な CI/CD パイプラインを定義したビルド構築ファイルになることに注意
-
-    > 但し、今回のケースでは、ローカルPC上で CI/CD を行うので、Container Registry に docker image を登録するだけの `cloudbuild.yml` になる。
 
     - `cloudbuild.yml` の構成例
         ```yaml
         # name タグ : コマンドを実行するコンテナイメージ
         # entrypoint タグ : name で指定したコンテナイメージのデフォルトのエントリーポイント（dockerコンテナなら docker コマンドなど）を使用しない場合に指定
         steps:
-          # Container Registry 上で docker image 作成
-          - name: 'gcr.io/cloud-builders/docker'  # Docker を実行するコンテナイメージ
+        # キャッシュされたイメージを Container Registry から pull
+        # 初めてイメージをビルドする際は docker pull で pull できる既存のイメージがないため、entrypoint を bash に設定し、コマンドの実行で返されるエラーを無視できるようにしている
+        - name: 'gcr.io/cloud-builders/docker'
+            entrypoint: 'bash'
+            args: ['-c', 'docker pull gcr.io/${PROJECT_ID}/api-sample-image:latest || exit 0']
+
+        # Container Registry 上で docker image 作成
+        - name: 'gcr.io/cloud-builders/docker'  # Docker を実行するコンテナイメージ
             id: docker build
             args: [
-              'build', 
-              '-t', 'gcr.io/${PROJECT_ID}/api-sample-image', 
-              '--cache-from', 'gcr.io/${PROJECT_ID}/api-sample-image:latest',
-              './api'
+                'build', 
+                '-t', 'gcr.io/${PROJECT_ID}/api-sample-image:latest', 
+                '--cache-from', 'gcr.io/${PROJECT_ID}/api-sample-image:latest',
+                './api'
             ]
 
-            # Container Registry 上で docker image を登録
-          - name: 'gcr.io/cloud-builders/docker'
+        # Container Registry 上で docker image を登録
+        - name: 'gcr.io/cloud-builders/docker'
             id: docker push
-            args: ['push', 'gcr.io/${PROJECT_ID}/api-sample-image']
+            args: ['push', 'gcr.io/${PROJECT_ID}/api-sample-image:latest']
+
+        # Cloud Run 作成し、docker image を Cloud Run にデプロイ
+        - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+            entrypoint: gcloud
+            args: [
+                'run', 'deploy', 'cloud-build-sample', 
+                '--image', 'gcr.io/${PROJECT_ID}/api-sample-image:latest', 
+                '--region', 'us-central1', 
+                '--platform', 'managed',
+                '--allow-unauthenticated'
+            ]
 
         # ビルド完了後の docker image を Container Registry に保管
-        images: ['gcr.io/${PROJECT_ID}/api-sample-image']
+        images: ['gcr.io/${PROJECT_ID}/api-sample-image:latest']
         ```
 
-1. CI/CD を行うトリガーと `cloudbuild.yml` の設定<br>
+1. CI/CD を行うトリガーと `cloudbuild.yml` の反映<br>
     1. [Cloud Build のコンソール画面](https://console.cloud.google.com/cloud-build/triggers?folder=&organizationId=&project=my-project2-303004) から、CI/CD を行うトリガー（git push など）の設定と作成した `cloudbuild.yml` の反映を行う。
 
-    > README.md や .gitignore などのトリガーに含またくないファイルに関しても、この画面の「無視されるファイルフィルタ」から設定できる。
+    > README.md や .gitignore などのトリガーに含またくないファイルに関しても、このコンソール画面の「無視されるファイルフィルタ」から設定できる。
 
-    <img src="https://user-images.githubusercontent.com/25688193/115104516-e66f6100-9f93-11eb-985c-2077ffb99357.png" width="400"><br>
+    > これらの処理を CLI で自動化できないか？
 
 1. CI/CD を行うトリガーを発行する
-    例えば、local ブランチへの push をトリガーとしている場合は、以下のコマンドを実行することで、CloudBuild がトリガー検知し、`cloudbuild.yml` に基づく CI/CD が自動的に実行される。
+    例えば、`cloud_run` ブランチへの push をトリガーとしている場合は、以下のコマンドを実行することで、CloudBuild がトリガー検知し、`cloudbuild.yml` に基づく CI/CD が自動的に実行される。
     ```sh
-    $ git checkout -b local
+    $ git checkout -b cloud_run
     $ git add .
     $ git commit -m "a"
     $ git push origin master
     ```
 
-1. ビルドログを確認する。
-    [ビルド履歴の画面](https://console.cloud.google.com/cloud-build/builds?project=my-project2-303004) からビルドログを確認し、うまく CI/CD できているか確認する。<br>
-    CLI で確認する場合は、以下のコマンドなどで確認できる
+1. ビルドログを確認する
+    [ビルド履歴の画面](https://console.cloud.google.com/cloud-build/builds?project=my-project2-303004) からビルドログを確認し、うまく CI/CD できているか確認する<br>
+    CLIで確認する場合は、以下のコマンドで確認できる
     ```sh
     $ gcloud builds describe ${BUILD_ID}
     ```
-    ```sh
-    $ BUILD_STATUS=`gcloud builds list | sed -n 2p | sed 's/ (+. more//g' | awk '{print $6}'`
-    $ echo ${BUILD_STATUS}
-    ```
 
-1. Container Registry 上の docker image から API を実行する<br>
-    ビルド成功後、以下のコマンドで docker image から API を実行する。
-    ```sh
-    $ docker run -it --rm -d --name ${CONTAINER_NAME} gcr.io/${PROJECT_ID}/${IMAGE_NAME}
-    $ docker logs ${CONTAINER_NAME}
-    ```
+1. テスト用コードを実行し、動作確認する<br>
+    ビルド成功後、テスト用コードを実行し動作確認する
 
-1. テスト用コードを実行し、動作確認する
 
 ## ■ 参考サイト
-- https://cloud.google.com/cloud-build/docs/how-to?hl=ja
-- https://cloud.google.com/build/docs/automating-builds/run-builds-on-github?hl=ja
-- https://cloud.google.com/kubernetes-engine/docs/tutorials/gitops-cloud-build?hl=ja#shell
-- https://cloud.google.com/cloud-build/docs/access-private-github-repos?hl=ja
+- https://cloud.google.com/build/docs/deploying-builds/deploy-cloud-run?hl=ja
