@@ -13,6 +13,23 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
 ここでは、以下の図のように、Cloud Build と Cloud Build GitHub アプリを用いて、github での push トリガーを起点に、ローカルPC上で CI/CD する場合の手順を示す<br>
 <img src="https://user-images.githubusercontent.com/25688193/115118700-7be41280-9fdf-11eb-86f0-217be4c0ac88.png" width="500"><br>
 
+1. 各種API（Cloud Build, Container Registry, Resource Manager API） を有効化する。
+    - GUI で行う場合
+        [APIを有効化](https://console.cloud.google.com/flows/enableapi?apiid=cloudbuild.googleapis.com%2Crun.googleapis.com%2Ccontainerregistry.googleapis.com%2Ccloudresourcemanager.googleapis.com&%3Bredirect=https%3A%2F%2Fcloud.google.com%2Fbuild%2Fdocs%2Fdeploying-builds%2Fdeploy-cloud-run&hl=ja&_ga=2.252325641.1289183255.1618713667-178468341.1618713667) ページにアクセス
+
+    - CLI で行う場合
+        ```sh
+        # cloudbuild.googleapis.com : Cloud Build API
+        # containerregistry.googleapis.com : Container Registry API
+        # cloudresourcemanager.googleapis.com : Cloud Resource Manager API
+        $ gcloud services enable \
+            cloudbuild.googleapis.com \
+            containerregistry.googleapis.com \
+            cloudresourcemanager.googleapis.com
+        ```
+
+        > 各種APIサービスは `gcloud services list` で確認可能
+
 1. CI/CD を行う GitHub のレポジトリを作成する
     - ここでは、例として「[cloud-build-exercises](https://github.com/Yagami360/cloud-build-exercises)」というレポジトリ作成する
     - このレポジトリには Flask での api コード `app.py` と、その `dockerfile`、及び Container Registry での docker image の作成や CloudBuild での CI/CD パイプラインを記載したビルド構成ファイル `cloudbuild.yml` が含まれている。
@@ -28,7 +45,6 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
     > これらの処理を CLI で自動化できないか？
 
 1. Cloud Build と GitHub の連携設定<br>
-    1. [Cloud Build API](https://console.cloud.google.com/flows/enableapi?apiid=cloudbuild.googleapis.com&hl=ja&_ga=2.133252557.250387494.1618392272-443250432.1618392272) を有効化<br>
     1. [Cloud Build GitHub アプリ](https://github.com/marketplace/google-cloud-build) を GitHub に認証する。<br>
         <img src="https://user-images.githubusercontent.com/25688193/115101875-7b695e80-9f82-11eb-8dd6-4107b46dbd18.png" width="300"><br>
     1. Cloud Build GitHub アプリの認証完了後、Cloud Build の GitHub レポジトリの接続設定画面が表示されるので、CI/CD を行う GitHub のレポジトリを設定する。<br>
@@ -46,34 +62,70 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
 
     - `cloudbuild.yml` の構成例
         ```yaml
+        # 変数値の置換
+        substitutions:
+        _IMAGE_NAME: api-sample-image       # docker image 名
+
         # name タグ : コマンドを実行するコンテナイメージ
         # entrypoint タグ : name で指定したコンテナイメージのデフォルトのエントリーポイント（dockerコンテナなら docker コマンドなど）を使用しない場合に指定
         steps:
-          # Container Registry 上で docker image 作成
-          - name: 'gcr.io/cloud-builders/docker'  # Docker を実行するコンテナイメージ
+        # キャッシュされたイメージを Container Registry から pull
+        # 初めてイメージをビルドする際は docker pull で pull できる既存のイメージがないため、entrypoint を bash に設定し、コマンドの実行で返されるエラーを無視できるようにしている
+        - name: 'gcr.io/cloud-builders/docker'
+            entrypoint: 'bash'
+            args: ['-c', 'docker pull gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${COMMIT_SHA} || exit 0']
+
+        # Container Registry 上で docker image 作成
+        - name: 'gcr.io/cloud-builders/docker'  # Docker を実行するコンテナイメージ
             id: docker build
             args: [
-              'build', 
-              '-t', 'gcr.io/${PROJECT_ID}/api-sample-image', 
-              '--cache-from', 'gcr.io/${PROJECT_ID}/api-sample-image:latest',
-              './api'
+                'build', 
+                '-t', 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${COMMIT_SHA}', 
+                '--cache-from', 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${COMMIT_SHA}',
+                './api'
             ]
 
-            # Container Registry 上で docker image を登録
-          - name: 'gcr.io/cloud-builders/docker'
+        # Container Registry 上で docker image を登録
+        - name: 'gcr.io/cloud-builders/docker'
             id: docker push
-            args: ['push', 'gcr.io/${PROJECT_ID}/api-sample-image']
-
+            args: ['push', 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${COMMIT_SHA}']
+        
         # ビルド完了後の docker image を Container Registry に保管
-        images: ['gcr.io/${PROJECT_ID}/api-sample-image']
+        images: ['gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${COMMIT_SHA}']
         ```
 
+        > デフォルトで用意されている定数
+        > - `${PROJECT_ID}` : GCP のプロジェクトの ID
+        > - `${BUILD_ID}` : ビルドの ID
+        > - `${COMMIT_SHA}` : ビルドに関連付けられた commit ID
+        >   - docker image 名の tag に指定することで、docker image の tag 名と commit ID を結びつけて管理できるようになる
+        > - `${REVISION_ID}` : ビルドに関連付けられた commit ID
+        > - `${SHORT_SHA}` : COMMIT_SHA の最初の 7 文字
+        > - `${REPO_NAME}` : リポジトリの名前
+        > - `${BRANCH_NAME}` : ブランチの名前
+        > - `${TAG_NAME}` : タグの名前
+
 1. CI/CD を行うトリガーと `cloudbuild.yml` の設定<br>
-    1. [Cloud Build のコンソール画面](https://console.cloud.google.com/cloud-build/triggers?folder=&organizationId=&project=my-project2-303004) から、CI/CD を行うトリガー（git push など）の設定と作成した `cloudbuild.yml` の反映を行う。
+    - GUI で行う場合<br>
+        [Cloud Build のコンソール画面](https://console.cloud.google.com/cloud-build/triggers?folder=&organizationId=&project=my-project2-303004) から、CI/CD を行うトリガー（git push など）の設定と作成した `cloudbuild.yml` の反映を行う。
+        
+        > README.md や .gitignore などのトリガーに含またくないファイルに関しても、この画面の「無視されるファイルフィルタ」から設定できる。
 
-    > README.md や .gitignore などのトリガーに含またくないファイルに関しても、この画面の「無視されるファイルフィルタ」から設定できる。
+        <img src="https://user-images.githubusercontent.com/25688193/115104516-e66f6100-9f93-11eb-985c-2077ffb99357.png" width="400"><br>
 
-    <img src="https://user-images.githubusercontent.com/25688193/115104516-e66f6100-9f93-11eb-985c-2077ffb99357.png" width="400"><br>
+    - CLI で行う場合<br>
+        ```sh
+        $ gcloud beta builds triggers create github \
+            --repo-name=${REPO_NAME} \
+            --repo-owner=${REPO_OWNER} \
+            --branch-pattern=${BRANCH_PATTERN} \
+            --build-config=${BUILD_CONFIG_FILE} \
+        ```
+        - `${TRUGER_NAME}` : トリガー名
+        - `${REPO_NAME}` : GitHub のレポジトリ名
+        - `${REPO_OWNER}` : GitHub のユーザー名
+        - `${BRANCH_PATTERN}` : CI/CD トリガーを発行する git ブランチ名
+        - `${BUILD_CONFIG_FILE}` : ビルド構成ファイル `cloudbuild.yml` のパス
 
 1. CI/CD を行うトリガーを発行する
     例えば、local ブランチへの push をトリガーとしている場合は、以下のコマンドを実行することで、CloudBuild がトリガー検知し、`cloudbuild.yml` に基づく CI/CD が自動的に実行される。
