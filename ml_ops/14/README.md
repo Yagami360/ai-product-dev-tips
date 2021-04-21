@@ -1,4 +1,4 @@
-# 【GCP】【GCP】Cloud Build を用いて Cloud Run 上で CI/CD を行う
+# 【GCP】Cloud Build を用いて Cloud Function 上で CI/CD を行う
 Cloud Build　は、GCP で提供されている docker image などのビルドサービスであるが、CI/CD ツールとしても利用できる。<br>
 Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cloud Function, Cloud Run などの GCP が提供するサービスとの連携が容易であるというメリットがある。
 
@@ -9,19 +9,19 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
 
 ## ■ 手順
 
-1. 各種API（Cloud Build, Cloud Run, Container Registry, Resource Manager API） を有効化する。
+1. 各種API（Cloud Build, Cloud Function, Container Registry, Resource Manager API） を有効化する。
     - GUI で行う場合
-        [APIを有効化](https://console.cloud.google.com/flows/enableapi?apiid=cloudbuild.googleapis.com%2Crun.googleapis.com%2Ccontainerregistry.googleapis.com%2Ccloudresourcemanager.googleapis.com&%3Bredirect=https%3A%2F%2Fcloud.google.com%2Fbuild%2Fdocs%2Fdeploying-builds%2Fdeploy-cloud-run&hl=ja&_ga=2.252325641.1289183255.1618713667-178468341.1618713667) ページにアクセス
+        [APIを有効化](https://console.cloud.google.com/apis/library/cloudfunctions.googleapis.com?hl=ja&_ga=2.124269898.1796367003.1618974731-791410022.1618974591&project=my-project2-303004&folder=&organizationId=) ページにアクセス
 
     - CLI で行う場合
         ```sh
         # cloudbuild.googleapis.com : Cloud Build API
-        # run.googleapis.com : Cloud Run Admin API
+        # cloudfunctions.googleapis.com : Cloud Functions API
         # containerregistry.googleapis.com : Container Registry API
         # cloudresourcemanager.googleapis.com : Cloud Resource Manager API
         $ gcloud services enable \
             cloudbuild.googleapis.com \
-            run.googleapis.com \
+            cloudfunctions.googleapis.com \
             containerregistry.googleapis.com \
             cloudresourcemanager.googleapis.com
         ```
@@ -30,9 +30,36 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
 
 1. CI/CD を行う GitHub のレポジトリを作成する
     - ここでは、例として「[cloud-build-exercises](https://github.com/Yagami360/cloud-build-exercises)」というレポジトリ作成する
-    - このレポジトリには Flask での api コード `app.py` と、その `dockerfile`、及び Container Registry での docker image の作成や CloudBuild での CI/CD パイプラインを記載したビルド構成ファイル `cloudbuild.yml` が含まれている。
+    - このレポジトリには Flask での api コード `main.py` と、その `requirements.txt`、及び CloudBuild での CI/CD パイプラインを記載したビルド構成ファイル `cloudbuild.yml` が含まれている。
 
-    > Cloud Run でのポート番号は、デフォルトで `8080` 番ポートになるので、dockerfile での開放ポート番号は `8080` 番ポートにする必要があることに注意
+    > Cloud Function を利用する場合は、エントリーポイントとなる関数を含むコード（APIコード）のファイル名は、`main.py` である必要があることに注意
+
+    > Cloud Function を利用する場合の Flask での API コードの形式は、以下のような引数をとらない一般的な形式ではなく、引数をとる形式にする変更する必要があることに注意<br>
+    > - Cloud Function 以外での Flask コードの一般的な形式<br>
+    >     ```python
+    >     import flask
+    >     # エントリーポイントの関数 responce() の引数は取らない
+    >     @app.route('/api_server', methods=['POST'])
+    >     def responce():
+    >         if( flask.request.headers["User-Agent"].split("/")[0] in "python-requests" ):
+    >             json_data = json.loads(flask.request.json)
+    >         else:
+    >             json_data = flask.request.get_json()
+    >         ...
+    >     ```
+    >
+    > - Cloud Function での Flask コードの一般的な形式
+    >     ```python
+    >     import flask
+    >     # エントリーポイントの関数 responce() の引数に request が入力される
+    >     @app.route('/api_server', methods=['POST'])
+    >     def responce(request):
+    >         if( flask.request.headers["User-Agent"].split("/")[0] in "python-requests" ):
+    >             json_data = json.loads(flask.request.json)
+    >         else:
+    >             json_data = flask.request.get_json()
+    >         ...
+    >     ```
 
 1. 作成したレポジトリの Cloud Source Repositories への登録（ミラーリング）<br>
     1. [Cloud Source Repositories のコンソール画面](https://source.cloud.google.com/onboarding/welcome?hl=ja) に移動し、「リポジトリの追加」画面で、「外部レポジトリを接続」を選択する。<br>
@@ -57,7 +84,7 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
     - GUI で行う場合
         「[Cloud Build のサービス アカウント権限](https://console.cloud.google.com/cloud-build/settings/service-account?folder=&organizationId=&project=my-project2-303004)」のページで、Cloud Build で CI/CD を行う GCP サービスの IAM 権限を有効化する。<br>
         
-        > 今回のケースでは、Cloud Run 上で CI/CD を行うので、Cloud Run サービスを有効化する
+        > 今回のケースでは、Cloud RFunctionun 上で CI/CD を行うので、Cloud Function サービスを有効化する
 
     - CLI で行う場合
         > これらの処理を CLI で自動化できないか？
@@ -71,54 +98,33 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
         ```yaml
         # 変数値の置換
         substitutions:
-        _IMAGE_NAME: api-sample-image       # docker image 名
-        _SERVICE_NAME: cloud-build-sample   # 作成する cloud run 名
-        _REGION: us-central1                # cloud run を作成するリージョン
+        _SERVICE_NAME: cloud-build-sample   # 作成する cloud function 名
+        _SOURCE_CODE_DIR: ./api             # API ソースコードのディレクトリ
+        _ENTRY_POINT: "responce"            # cloud function のエントリーポイント
+        _REGION: us-central1                # cloud function を作成するリージョン
 
         # name タグ : コマンドを実行するコンテナイメージ
         # entrypoint タグ : name で指定したコンテナイメージのデフォルトのエントリーポイント（dockerコンテナなら docker コマンドなど）を使用しない場合に指定
         steps:
-        # キャッシュされたイメージを Container Registry から pull
-        # 初めてイメージをビルドする際は docker pull で pull できる既存のイメージがないため、entrypoint を bash に設定し、コマンドの実行で返されるエラーを無視できるようにしている
-        - name: 'gcr.io/cloud-builders/docker'
-            entrypoint: 'bash'
-            args: ['-c', 'docker pull gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${COMMIT_SHA} || exit 0']
-
-        # Container Registry 上で docker image 作成
-        - name: 'gcr.io/cloud-builders/docker'  # Docker を実行するコンテナイメージ
-            id: docker build
-            args: [
-                'build', 
-                '-t', 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${COMMIT_SHA}', 
-                '--cache-from', 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${COMMIT_SHA}',
-                './api'
-            ]
-
-        # Container Registry 上で docker image を登録
-        - name: 'gcr.io/cloud-builders/docker'
-            id: docker push
-            args: ['push', 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${COMMIT_SHA}']
-
-        # Cloud Run 作成し、docker image を Cloud Run にデプロイ
+        # Cloud Function 作成し、API のソースコードを Cloud Function にデプロイ
         - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
             entrypoint: gcloud
             args: [
-                'run', 'deploy', '${_SERVICE_NAME}', 
-                '--image', 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${COMMIT_SHA}', 
+                'functions', 'deploy', '${_SERVICE_NAME}', 
+                '--source=${_SOURCE_CODE_DIR}',
+                '--entry-point=${_ENTRY_POINT}',
                 '--region', '${_REGION}', 
-                '--platform', 'managed',
+                '--memory', '128MB',
+                '--runtime', 'python37',
+                '--trigger-http',
                 '--allow-unauthenticated'   # IAM 認証なし
             ]
-
-        # ビルド完了後の docker image を Container Registry に保管
-        images: ['gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${COMMIT_SHA}']
         ```
 
         > デフォルトで用意されている定数
         > - `${PROJECT_ID}` : GCP のプロジェクトの ID
         > - `${BUILD_ID}` : ビルドの ID
         > - `${COMMIT_SHA}` : ビルドに関連付けられた commit ID
-        >   - docker image 名の tag に指定することで、docker image の tag 名と commit ID を結びつけて管理できるようになる
         > - `${REVISION_ID}` : ビルドに関連付けられた commit ID
         > - `${SHORT_SHA}` : COMMIT_SHA の最初の 7 文字
         > - `${REPO_NAME}` : リポジトリの名前
@@ -147,9 +153,9 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
         - `${BUILD_CONFIG_FILE}` : ビルド構成ファイル `cloudbuild.yml` のパス
 
 1. CI/CD を行うトリガーを発行する
-    例えば、`cloud_run` ブランチへの push をトリガーとしている場合は、以下のコマンドを実行することで、CloudBuild がトリガー検知し、`cloudbuild.yml` に基づく CI/CD が自動的に実行される。
+    例えば、`cloud_function` ブランチへの push をトリガーとしている場合は、以下のコマンドを実行することで、CloudBuild がトリガー検知し、`cloudbuild.yml` に基づく CI/CD が自動的に実行される。
     ```sh
-    $ git checkout -b cloud_run
+    $ git checkout -b cloud_function
     $ git add .
     $ git commit -m "a"
     $ git push origin master
@@ -163,14 +169,12 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
     ```
 
 1. テスト用コードを実行し、動作確認する<br>
-    ビルド成功後、テスト用コードを実行し動作確認する<br>
-    例えば、作成した Cloud Run に `curl` コマンドでリクエスト処理するテストコードの場合は、以下のコマンドで動作確認できる。
+    ビルド成功後、テスト用コードを実行し動作確認する。<br>
+    例えば、作成した Cloud Funtion に `curl` コマンドでリクエスト処理するテストコードの場合は、以下のコマンドで動作確認できる。
     ```sh
-    $ CLOUD_RUN_URL=`gcloud run services list --platform managed | grep ${SERVICE_NAME} | awk '{print $4}'`
-    $ curl -X POST ${CLOUD_RUN_URL} -H "Content-Type: application/json" -d '{"message" : "Hello Cloud functions"}'
+    $ curl -X POST https://${REGION}-${PROJECT_ID}.cloudfunctions.net/${SERVICE_NAME} -H "Content-Type: application/json" -d '{"message" : "Hello Cloud functions"}'
     ```
     - `${SERVICE_NAME}` : 作成した Cloud Run の名前
 
-
 ## ■ 参考サイト
-- https://cloud.google.com/build/docs/deploying-builds/deploy-cloud-run?hl=ja
+- https://cloud.google.com/build/docs/deploying-builds/deploy-functions?hl=ja

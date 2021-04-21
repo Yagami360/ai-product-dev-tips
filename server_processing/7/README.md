@@ -8,9 +8,7 @@
         - これにより、サーバー上で動作していたコードの IO 処理部分が Cloud Function では動作しなくなるケースが多々ある。
     - デプロイ処理に時間がかかり、デバッグ作業が非効率になる
         - [ローカルでの関数の実行](https://firebase.google.com/docs/functions/local-emulator?hl=ja) の方法で解決可能？
-
-- 確認中
-    - Cloud Functions でも GPU が必要な処理（PyTorch）などを実行できるのか？
+    - GPU が必要な処理（PyTorch）を実行できない
 
 ## ■ 実現方法
 Cloud Functions は、以下の手順で利用できる
@@ -18,7 +16,44 @@ Cloud Functions は、以下の手順で利用できる
 1. Cloud Functions の作成（＝作成したコードのデプロイ処理）
 1. Cloud Functions の動作テスト
 
-### 1&2. Cloud Functions 用のコードの作成＆Cloud Functions の作成（＝作成したコードのデプロイ処理）
+### 1. Cloud Functions 用のコードの作成
+1. Cloud Function 上で実行するコード（APIコード）を作成する。
+    例えば、Flask などを使用して、Cloud Function 上で実行するコード（APIコード） `main.py` を作成する。
+
+    このとき、Cloud Function を利用する場合の Flask での API コードの形式は、以下のようなエントリーポイント関数で引数をとらない一般的な形式ではなく、引数をとる形式にする変更する必要があることに注意
+
+    - Cloud Function 以外での Flask コードの一般的な形式
+        ```python
+        import flask
+        # エントリーポイントの関数 responce() の引数は取らない
+        @app.route('/api_server', methods=['POST'])
+        def responce():
+            if( flask.request.headers["User-Agent"].split("/")[0] in "python-requests" ):
+                json_data = json.loads(flask.request.json)
+            else:
+                json_data = flask.request.get_json()
+            ...
+        ```
+
+    - Cloud Function で動作する Flask コードの一般的な形式
+        ```python
+        import flask
+        # エントリーポイントの関数 responce() の引数に request が入力される
+        @app.route('/api_server', methods=['POST'])
+        def responce(request):
+            if( flask.request.headers["User-Agent"].split("/")[0] in "python-requests" ):
+                json_data = json.loads(flask.request.json)
+            else:
+                json_data = flask.request.get_json()
+            ...
+        ```
+
+1. `requirements.txt` を作成。
+    外部ライブラリを使用している場合は、それらのライブラリを `requirements.txt` に記載する必要がある。
+    Cloud Function デプロイ時に、この `requirements.txt` に従って外部ライブラリが Cloud Function 上にインストールされる。
+
+
+### 2. Cloud Functions の作成（＝作成したコードのデプロイ処理）
 
 #### ☆ GUI 使用時
 省略

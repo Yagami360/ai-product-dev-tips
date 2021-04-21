@@ -32,6 +32,8 @@ Cloud Run は、以下の手順で利用できる。
     $ docker build -t gcr.io/${PROJECT_ID}/${IMAGE_NAME} .
     ```
 
+> Cloud Run でのポート番号は、デフォルトで `8080` 番ポートになるので、Flask などの API コードを docker image 化する場合は、dockerfile での開放ポート番号は `8080` 番ポートにする必要があることに注意。
+
 ### 2. 作成した docker image を GCP の Container Registry にアップロード
 以下のコマンドを用いて、作成した docker image を GCP の Container Registry にアップロードする。
 

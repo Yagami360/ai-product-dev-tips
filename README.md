@@ -111,9 +111,9 @@
     - Cloud Build
         - [【GCP】Cloud Build を用いてローカルPC 上で CI/CD を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/12)
         - 【GCP】Cloud Build を用いて GCE 上で CI/CD を行う
-        - 【GCP】Cloud Build を用いて GKE 上で CI/CD を行う
-        - 【GCP】Cloud Build を用いて Cloud Function 上で CI/CD を行う
         - [【GCP】Cloud Build を用いて Cloud Run 上で CI/CD を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/13)
+        - [【GCP】Cloud Build を用いて Cloud Function 上で CI/CD を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/14)
+        - 【GCP】Cloud Build を用いて GKE 上で CI/CD を行う
 - データ基盤 / データ分析基盤
     - BigQuery
         - [【BigQuery】BigQuery の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/6)
