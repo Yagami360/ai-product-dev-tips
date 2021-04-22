@@ -88,6 +88,7 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
 
     - CLI で行う場合
         > これらの処理を CLI で自動化できないか？
+        > `gcloud projects add-iam-policy-binding ${PROJECT_NUMBER}` で可能？
 
 1. `cloudbuild.yml` の作成<br>
     Cloud Build がビルドを行うためのビルド構成ファイル `cloudbuild.yml` を作成する。

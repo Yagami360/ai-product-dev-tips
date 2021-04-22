@@ -1,4 +1,4 @@
-# 【GCP】【GCP】Cloud Build を用いて Cloud Run 上で CI/CD を行う
+# 【GCP】Cloud Build を用いて GKE 上で CI/CD を行う
 Cloud Build　は、GCP で提供されている docker image などのビルドサービスであるが、CI/CD ツールとしても利用できる。<br>
 Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cloud Function, Cloud Run などの GCP が提供するサービスとの連携が容易であるというメリットがある。
 
@@ -9,19 +9,19 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
 
 ## ■ 手順
 
-1. 各種API（Cloud Build, Cloud Run, Container Registry, Resource Manager API） を有効化する。
+1. 各種API（Cloud Build, Google Kubernetes Engine, Container Registry, Resource Manager API） を有効化する。
     - GUI で行う場合
         [APIを有効化](https://console.cloud.google.com/flows/enableapi?apiid=cloudbuild.googleapis.com%2Crun.googleapis.com%2Ccontainerregistry.googleapis.com%2Ccloudresourcemanager.googleapis.com&%3Bredirect=https%3A%2F%2Fcloud.google.com%2Fbuild%2Fdocs%2Fdeploying-builds%2Fdeploy-cloud-run&hl=ja&_ga=2.252325641.1289183255.1618713667-178468341.1618713667) ページにアクセス
 
     - CLI で行う場合
         ```sh
         # cloudbuild.googleapis.com : Cloud Build API
-        # run.googleapis.com : Cloud Run Admin API
+        # container.googleapis.com : Kubernetes Engine AP
         # containerregistry.googleapis.com : Container Registry API
         # cloudresourcemanager.googleapis.com : Cloud Resource Manager API
         $ gcloud services enable \
             cloudbuild.googleapis.com \
-            run.googleapis.com \
+            container.googleapis.com \
             containerregistry.googleapis.com \
             cloudresourcemanager.googleapis.com
         ```
@@ -32,7 +32,48 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
     - ここでは、例として「[cloud-build-exercises](https://github.com/Yagami360/cloud-build-exercises)」というレポジトリ作成する
     - このレポジトリには Flask での api コード `app.py` と、その `dockerfile`、及び Container Registry での docker image の作成や CloudBuild での CI/CD パイプラインを記載したビルド構成ファイル `cloudbuild.yml` が含まれている。
 
-    > Cloud Run でのポート番号は、デフォルトで `8080` 番ポートになるので、dockerfile での開放ポート番号は `8080` 番ポートにする必要があることに注意
+1. GKE 設定ファイルの作成<br>
+    上記 GitHub レポジトリ内に、各種 GKE 設定ファイル（デプロイメント定義ファイル、サービス定義ファイルなど）を作成する。
+
+    - デプロイメント定義ファイルの例<br>
+        ```yaml
+        apiVersion: apps/v1         # Deployment の API バージョン。kubectl api-resources | grep Deployment と kubectl api-versions  | grep apps で確認可能  
+        kind: Deployment            # デプロイメント定義ファイルであることを明示
+        metadata:
+        name: cloud-build-pod     # 識別名
+        spec:
+        replicas: 1               # Pod の数
+        selector:
+            matchLabels:
+            app: cloud-build-pod  # template:metadata:labels:app と同じ値にする必要がある
+        template:                 # Pod のテンプレート。このテンプレートをもとに ReplicaSet がレプリカ数の Pod を作成する
+            metadata:
+            labels:                 # Pod をクラスタ内で識別のするためのラベル。service.yml で Pod を識別するラベルとして使用される
+                app: cloud-build-pod  # 識別名。selector:matchLabels:app と同じ値にする必要がある
+            spec:
+            containers:           # Pod 内で動作させるコンテナ群の設定
+            - image: gcr.io/my-project2-303004/api-sample-image::latest     # Container Registry にアップロードした docker image
+                name: api-sample-container                                  # コンテナ名
+                ports:
+                - containerPort: 8080
+                name: http-server
+        ```
+
+    - サービス定義ファイルの例
+        ```yaml
+        apiVersion: v1
+        kind: Service
+        metadata:
+        name: cloud-build-service
+        spec:
+        type: LoadBalancer
+        ports:
+            - port: 8080
+            targetPort: 8080
+            protocol: TCP
+        selector:
+            app: cloud-build-pod  # デプロイメント定義ファイルで定義した Pod の識別名。app:sample-pod のラベルがつけられた Pod を通信先とする
+        ```
 
 1. 作成したレポジトリの Cloud Source Repositories への登録（ミラーリング）<br>
     1. [Cloud Source Repositories のコンソール画面](https://source.cloud.google.com/onboarding/welcome?hl=ja) に移動し、「リポジトリの追加」画面で、「外部レポジトリを接続」を選択する。<br>
@@ -54,14 +95,49 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
     > これらの処理を CLI で自動化できないか？
 
 1. CI/CD を行う GCP サービスの IAM 権限設定<br>
-    - GUI で行う場合
+    Cloud Build サービスアカウントに「Kubernetes Engine 開発者」と「Kubernetes Engine 管理者」のロールを追加する。
+
+    - GUI で行う場合<br>
         「[Cloud Build のサービス アカウント権限](https://console.cloud.google.com/cloud-build/settings/service-account?folder=&organizationId=&project=my-project2-303004)」のページで、Cloud Build で CI/CD を行う GCP サービスの IAM 権限を有効化する。<br>
         
-        > 今回のケースでは、Cloud Run 上で CI/CD を行うので、Cloud Run サービスを有効化する
+        > 今回のケースでは、GKE 上で CI/CD を行うので、Kubernetes Engine サービスを有効化する
+
+        上記 IAM 権限設定で「Kubernetes Engine 開発者」の権限は追加さえる、この権限のみでは `cloudbuild.yml` 内で GKE クラスタを作成するようにした場合に、以下のエラーが発生する。
+        ```sh
+        ERROR: (gcloud.container.clusters.create) ResponseError: code=403, message=Required "container.clusters.create" permission(s) for "projects/85607256401".
+        ```
+        そのため、「[IAM](https://console.cloud.google.com/iam-admin/iam?hl=ja&project=my-project2-303004)」のページから、Cloud Build サービスアカウント `xxx@cloudbuild.gserviceaccount.com` の編集ボタンをクリックし、「Kubernetes Engine 管理者」のロールも追加する必要がある。
 
     - CLI で行う場合<br>
-        > これらの処理を CLI で自動化できないか？<br>
-        > `gcloud projects add-iam-policy-binding ${PROJECT_NUMBER}` で可能？
+        ```sh
+        $ PROJECT_NUMBER="$(gcloud projects describe ${PROJECT_ID} --format='get(projectNumber)')"
+        # Cloud Build サービスアカウントに「Kubernetes Engine 開発者」のロールを追加
+        $ gcloud projects add-iam-policy-binding ${PROJECT_NUMBER} \
+            --member=serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
+            --role=roles/container.developer
+
+        # Cloud Build サービスアカウントに「Kubernetes Engine 管理者」のロールを追加
+        $ gcloud projects add-iam-policy-binding ${PROJECT_NUMBER} \
+            --member=serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
+            --role=roles/container.admin
+        ```
+
+<!--
+1. GKE クラスタを作成する
+    ```sh
+    $ gcloud container clusters create ${CLUSTER_NAME} \
+        --project=${PROJECT_ID} \
+        --zone=${REGION} \
+        --num-nodes=${NUM_NODES} \
+        --machine-type n1-standard-4
+    ```
+
+    > ビルド構成ファイル `cloudbuild.yml` 内で、GKE クラスタを作成するようにした場合、以下のエラーが発生したので、シェルスクリプトで　GKE クラスタを作成するようにしている。
+    > ```sh
+    > ERROR: (gcloud.container.clusters.create) ResponseError: code=403, message=Required "container.clusters.create" permission(s) for "projects/85607256401".
+    > ```
+    > このエラーは、GKE のサービスアカウント権限追加することで回避できる？
+-->
 
 1. `cloudbuild.yml` の作成<br>
     Cloud Build がビルドを行うためのビルド構成ファイル `cloudbuild.yml` を作成する。
@@ -72,9 +148,14 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
         ```yaml
         # 変数値の置換
         substitutions:
-        _IMAGE_NAME: api-sample-image       # docker image 名
-        _SERVICE_NAME: cloud-build-sample   # 作成する cloud run 名
-        _REGION: us-central1                # cloud run を作成するリージョン
+        _IMAGE_NAME: api-sample-image                 # docker image 名
+        _CLUSTER_NAME: cloud-build-cluster            # 作成する GKE クラスタ名
+        _POD_NAME: cloud-build-pod                    # ポッド名
+        _REGION: asia-northeast1-a                    # GKE クラスタを作成するリージョン
+        _NUM_NODE: "3"                                # クラスタのノード数
+        _DEPLOYMENT_FILE_PATH: ./k8s/deployment.yml   # Pod のデプロイメント定義ファイルのパス
+        _SERVICE_FILE_PATH: ./k8s/service.yml         # サービス定義ファイルのパス
+        _PORT: "8080"                                 # 公開ポート番号
 
         # name タグ : コマンドを実行するコンテナイメージ
         # entrypoint タグ : name で指定したコンテナイメージのデフォルトのエントリーポイント（dockerコンテナなら docker コマンドなど）を使用しない場合に指定
@@ -83,36 +164,80 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
         # 初めてイメージをビルドする際は docker pull で pull できる既存のイメージがないため、entrypoint を bash に設定し、コマンドの実行で返されるエラーを無視できるようにしている
         - name: 'gcr.io/cloud-builders/docker'
             entrypoint: 'bash'
-            args: ['-c', 'docker pull gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${COMMIT_SHA} || exit 0']
+            args: ['-c', 'docker pull gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:latest || exit 0']
 
         # Container Registry 上で docker image 作成
         - name: 'gcr.io/cloud-builders/docker'  # Docker を実行するコンテナイメージ
             id: docker build
             args: [
-                'build', 
-                '-t', 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${COMMIT_SHA}', 
-                '--cache-from', 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${COMMIT_SHA}',
-                './api'
+            'build', 
+            '-t', 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:latest', 
+            '--cache-from', 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:latest',
+            './api'
             ]
 
         # Container Registry 上で docker image を登録
         - name: 'gcr.io/cloud-builders/docker'
             id: docker push
-            args: ['push', 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${COMMIT_SHA}']
+            args: ['push', 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:latest']
 
-        # Cloud Run 作成し、docker image を Cloud Run にデプロイ
+        # docker image に SHORT_SHA タグを付与
+        - name: 'gcr.io/cloud-builders/gcloud'
+            id: Add tag to image
+            args:
+            - 'container'
+            - 'images'
+            - 'add-tag'
+            - 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:latest'
+            - 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${SHORT_SHA}'
+
+        # GKE クラスタ作成
         - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+            id: make gke cluster
             entrypoint: gcloud
             args: [
-                'run', 'deploy', '${_SERVICE_NAME}', 
-                '--image', 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${COMMIT_SHA}', 
-                '--region', '${_REGION}', 
-                '--platform', 'managed',
-                '--allow-unauthenticated'   # IAM 認証なし
+            'container', 'clusters', 'create', '${_CLUSTER_NAME}', 
+            '--project', '${PROJECT_ID}', 
+            '--zone', '${_REGION}',
+            '--num-nodes', '${_NUM_NODE}', 
+            '--machine-type', 'n1-standard-1',
+            '--preemptible'
             ]
 
+        # クラスタの認証情報を取得。作成したクラスタを使用するように kubectl が構成される
+        - name: 'gcr.io/cloud-builders/gcloud'
+            id: gcloud container clusters get-credentials
+            args: [ 
+            'container', 'clusters', 'get-credentials', '${_CLUSTER_NAME}', 
+            '--project', '${PROJECT_ID}',
+            '--zone', '${_REGION}', 
+            ]
+
+        # GKE の Pod と Deployment を作成する
+        # env を設定しないと、「No cluster is set. To set the cluster (and the region/zone where it is found), set the environment variables」のエラーが発生する。
+        - name: 'gcr.io/cloud-builders/kubectl'
+            id: make pod and deployment
+            args: [ 'apply', '-f', '${_DEPLOYMENT_FILE_PATH}' ]
+            env:
+            - "CLOUDSDK_COMPUTE_REGION=${_REGION}"
+            - "CLOUDSDK_COMPUTE_ZONE=${_REGION}"
+            - "CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER_NAME}"
+
+        # GKE のサービスを公開する
+        - name: 'gcr.io/cloud-builders/kubectl'
+            id: make service
+            args: [ 
+            'expose', 'deployment', '${_POD_NAME}', 
+            '--type', 'LoadBalancer', 
+            '--port', '${_PORT}', '--target-port', '${_PORT}'
+            ]
+            env:
+            - "CLOUDSDK_COMPUTE_REGION=${_REGION}"
+            - "CLOUDSDK_COMPUTE_ZONE=${_REGION}"
+            - "CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER_NAME}"
+
         # ビルド完了後の docker image を Container Registry に保管
-        images: ['gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${COMMIT_SHA}']
+        images: ['gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:latest']
         ```
 
         > デフォルトで用意されている定数
@@ -146,11 +271,11 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
         - `${REPO_OWNER}` : GitHub のユーザー名
         - `${BRANCH_PATTERN}` : CI/CD トリガーを発行する git ブランチ名
         - `${BUILD_CONFIG_FILE}` : ビルド構成ファイル `cloudbuild.yml` のパス
-
+    
 1. CI/CD を行うトリガーを発行する
-    例えば、`cloud_run` ブランチへの push をトリガーとしている場合は、以下のコマンドを実行することで、CloudBuild がトリガー検知し、`cloudbuild.yml` に基づく CI/CD が自動的に実行される。
+    例えば、`gke` ブランチへの push をトリガーとしている場合は、以下のコマンドを実行することで、CloudBuild がトリガー検知し、`cloudbuild.yml` に基づく CI/CD が自動的に実行される。
     ```sh
-    $ git checkout -b cloud_run
+    $ git checkout -b gke
     $ git add .
     $ git commit -m "a"
     $ git push origin master
@@ -167,11 +292,12 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
     ビルド成功後、テスト用コードを実行し動作確認する<br>
     例えば、作成した Cloud Run に `curl` コマンドでリクエスト処理するテストコードの場合は、以下のコマンドで動作確認できる。
     ```sh
-    $ CLOUD_RUN_URL=`gcloud run services list --platform managed | grep ${SERVICE_NAME} | awk '{print $4}'`
-    $ curl -X POST ${CLOUD_RUN_URL} -H "Content-Type: application/json" -d '{"message" : "Hello Cloud functions"}'
+    $ EXTERNAL_IP=`kubectl describe service ${SERVICE_NAME} | grep "LoadBalancer Ingress" | awk '{print $3}'`
+    $ curl -X POST http://${EXTERNAL_IP}:${PORT} -H "Content-Type: application/json" -d '{"message" : "Hello Cloud functions"}'
     ```
     - `${SERVICE_NAME}` : 作成した Cloud Run の名前
 
 
 ## ■ 参考サイト
-- https://cloud.google.com/build/docs/deploying-builds/deploy-cloud-run?hl=ja
+- https://cloud.google.com/build/docs/deploying-builds/deploy-gke?hl=ja
+- https://cloud.google.com/kubernetes-engine/docs/tutorials/gitops-cloud-build?hl=ja#shell

@@ -51,7 +51,7 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
         <img src="https://user-images.githubusercontent.com/25688193/115101942-e61a9a00-9f82-11eb-86a5-1026f41a5fdf.png" width="500"><br>
     1. 登録した GitHub レポジトリが、Private 公開の場合は、[非公開 GitHub リポジトリへのアクセス](https://cloud.google.com/cloud-build/docs/access-private-github-repos?hl=ja) 記載の方法で ssh 鍵等の設定を行い、Cloud Build からアクセスできるようにする。
 
-    > これらの処理を CLI で自動化できないか？
+    > これらの処理を CLI で自動化できないか？<br>
 
 1. `cloudbuild.yml` の作成<br>
     Cloud Build がビルドを行うためのビルド構成ファイル `cloudbuild.yml` を作成する。
