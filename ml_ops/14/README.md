@@ -173,7 +173,7 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
     ビルド成功後、テスト用コードを実行し動作確認する。<br>
     例えば、作成した Cloud Funtion に `curl` コマンドでリクエスト処理するテストコードの場合は、以下のコマンドで動作確認できる。
     ```sh
-    $ curl -X POST https://${REGION}-${PROJECT_ID}.cloudfunctions.net/${SERVICE_NAME} -H "Content-Type: application/json" -d '{"message" : "Hello Cloud functions"}'
+    $ curl -X POST https://${REGION}-${PROJECT_ID}.cloudfunctions.net/${SERVICE_NAME} -H "Content-Type: application/json" -d '{"message" : "Hello Cloud Build on Cloud functions !!!"}'
     ```
     - `${SERVICE_NAME}` : 作成した Cloud Run の名前
 

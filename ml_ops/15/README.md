@@ -1,4 +1,4 @@
-# 【GCP】Cloud Build を用いて GKE 上で CI/CD を行う
+# 【GCP】Cloud Build を用いて GKE（CPU動作）上で CI/CD を行う
 Cloud Build　は、GCP で提供されている docker image などのビルドサービスであるが、CI/CD ツールとしても利用できる。<br>
 Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cloud Function, Cloud Run などの GCP が提供するサービスとの連携が容易であるというメリットがある。
 
@@ -30,7 +30,7 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
 
 1. CI/CD を行う GitHub のレポジトリを作成する
     - ここでは、例として「[cloud-build-exercises](https://github.com/Yagami360/cloud-build-exercises)」というレポジトリ作成する
-    - このレポジトリには Flask での api コード `app.py` と、その `dockerfile`、及び Container Registry での docker image の作成や CloudBuild での CI/CD パイプラインを記載したビルド構成ファイル `cloudbuild.yml` が含まれている。
+    - このレポジトリには Flask での api コード `app.py` と、その `dockerfile`、k8s 用のデプロイメント定義ファイル `deployment.yml` とサービス定義ファイル `service.yml`、及び Container Registry での docker image の作成や CloudBuild での CI/CD パイプラインを記載したビルド構成ファイル `cloudbuild.yml` が含まれている。
 
 1. GKE 設定ファイルの作成<br>
     上記 GitHub レポジトリ内に、各種 GKE 設定ファイル（デプロイメント定義ファイル、サービス定義ファイルなど）を作成する。
@@ -52,12 +52,14 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
                 app: cloud-build-pod  # 識別名。selector:matchLabels:app と同じ値にする必要がある
             spec:
             containers:           # Pod 内で動作させるコンテナ群の設定
-            - image: gcr.io/my-project2-303004/api-sample-image::latest     # Container Registry にアップロードした docker image
-                name: api-sample-container                                  # コンテナ名
+            - image: gcr.io/my-project2-303004/api-sample-image:latest     # Container Registry にアップロードした docker image
+                name: api-sample-container                                 # コンテナ名
                 ports:
                 - containerPort: 8080
                 name: http-server
         ```
+
+        > ここでは、docker image のタグ名を `latest` にしているが、`cloudbuild.yml` の `${SHORT_SHA}` と同じ値にできないか？
 
     - サービス定義ファイルの例
         ```yaml
@@ -122,23 +124,6 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
             --role=roles/container.admin
         ```
 
-<!--
-1. GKE クラスタを作成する
-    ```sh
-    $ gcloud container clusters create ${CLUSTER_NAME} \
-        --project=${PROJECT_ID} \
-        --zone=${REGION} \
-        --num-nodes=${NUM_NODES} \
-        --machine-type n1-standard-4
-    ```
-
-    > ビルド構成ファイル `cloudbuild.yml` 内で、GKE クラスタを作成するようにした場合、以下のエラーが発生したので、シェルスクリプトで　GKE クラスタを作成するようにしている。
-    > ```sh
-    > ERROR: (gcloud.container.clusters.create) ResponseError: code=403, message=Required "container.clusters.create" permission(s) for "projects/85607256401".
-    > ```
-    > このエラーは、GKE のサービスアカウント権限追加することで回避できる？
--->
-
 1. `cloudbuild.yml` の作成<br>
     Cloud Build がビルドを行うためのビルド構成ファイル `cloudbuild.yml` を作成する。
 
@@ -146,98 +131,26 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
 
     - `cloudbuild.yml` の構成例
         ```yaml
-        # 変数値の置換
-        substitutions:
-        _IMAGE_NAME: api-sample-image                 # docker image 名
-        _CLUSTER_NAME: cloud-build-cluster            # 作成する GKE クラスタ名
-        _POD_NAME: cloud-build-pod                    # ポッド名
-        _REGION: asia-northeast1-a                    # GKE クラスタを作成するリージョン
-        _NUM_NODE: "3"                                # クラスタのノード数
-        _DEPLOYMENT_FILE_PATH: ./k8s/deployment.yml   # Pod のデプロイメント定義ファイルのパス
-        _SERVICE_FILE_PATH: ./k8s/service.yml         # サービス定義ファイルのパス
-        _PORT: "8080"                                 # 公開ポート番号
-
-        # name タグ : コマンドを実行するコンテナイメージ
-        # entrypoint タグ : name で指定したコンテナイメージのデフォルトのエントリーポイント（dockerコンテナなら docker コマンドなど）を使用しない場合に指定
-        steps:
-        # キャッシュされたイメージを Container Registry から pull
-        # 初めてイメージをビルドする際は docker pull で pull できる既存のイメージがないため、entrypoint を bash に設定し、コマンドの実行で返されるエラーを無視できるようにしている
-        - name: 'gcr.io/cloud-builders/docker'
-            entrypoint: 'bash'
-            args: ['-c', 'docker pull gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:latest || exit 0']
-
-        # Container Registry 上で docker image 作成
-        - name: 'gcr.io/cloud-builders/docker'  # Docker を実行するコンテナイメージ
-            id: docker build
-            args: [
-            'build', 
-            '-t', 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:latest', 
-            '--cache-from', 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:latest',
-            './api'
-            ]
-
-        # Container Registry 上で docker image を登録
-        - name: 'gcr.io/cloud-builders/docker'
-            id: docker push
-            args: ['push', 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:latest']
-
-        # docker image に SHORT_SHA タグを付与
-        - name: 'gcr.io/cloud-builders/gcloud'
-            id: Add tag to image
-            args:
-            - 'container'
-            - 'images'
-            - 'add-tag'
-            - 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:latest'
-            - 'gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:${SHORT_SHA}'
-
-        # GKE クラスタ作成
-        - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-            id: make gke cluster
-            entrypoint: gcloud
-            args: [
-            'container', 'clusters', 'create', '${_CLUSTER_NAME}', 
-            '--project', '${PROJECT_ID}', 
-            '--zone', '${_REGION}',
-            '--num-nodes', '${_NUM_NODE}', 
-            '--machine-type', 'n1-standard-1',
-            '--preemptible'
-            ]
-
-        # クラスタの認証情報を取得。作成したクラスタを使用するように kubectl が構成される
-        - name: 'gcr.io/cloud-builders/gcloud'
-            id: gcloud container clusters get-credentials
-            args: [ 
-            'container', 'clusters', 'get-credentials', '${_CLUSTER_NAME}', 
-            '--project', '${PROJECT_ID}',
-            '--zone', '${_REGION}', 
-            ]
-
-        # GKE の Pod と Deployment を作成する
-        # env を設定しないと、「No cluster is set. To set the cluster (and the region/zone where it is found), set the environment variables」のエラーが発生する。
-        - name: 'gcr.io/cloud-builders/kubectl'
-            id: make pod and deployment
-            args: [ 'apply', '-f', '${_DEPLOYMENT_FILE_PATH}' ]
-            env:
-            - "CLOUDSDK_COMPUTE_REGION=${_REGION}"
-            - "CLOUDSDK_COMPUTE_ZONE=${_REGION}"
-            - "CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER_NAME}"
-
-        # GKE のサービスを公開する
-        - name: 'gcr.io/cloud-builders/kubectl'
-            id: make service
-            args: [ 
-            'expose', 'deployment', '${_POD_NAME}', 
-            '--type', 'LoadBalancer', 
-            '--port', '${_PORT}', '--target-port', '${_PORT}'
-            ]
-            env:
-            - "CLOUDSDK_COMPUTE_REGION=${_REGION}"
-            - "CLOUDSDK_COMPUTE_ZONE=${_REGION}"
-            - "CLOUDSDK_CONTAINER_CLUSTER=${_CLUSTER_NAME}"
-
-        # ビルド完了後の docker image を Container Registry に保管
-        images: ['gcr.io/${PROJECT_ID}/${_IMAGE_NAME}:latest']
+        apiVersion: apps/v1         # Deployment の API バージョン。kubectl api-resources | grep Deployment と kubectl api-versions  | grep apps で確認可能  
+        kind: Deployment            # デプロイメント定義ファイルであることを明示
+        metadata:
+        name: cloud-build-pod     # 識別名
+        spec:
+        replicas: 1               # Pod の数
+        selector:
+            matchLabels:
+            app: cloud-build-pod  # template:metadata:labels:app と同じ値にする必要がある
+        template:                 # Pod のテンプレート。このテンプレートをもとに ReplicaSet がレプリカ数の Pod を作成する
+            metadata:
+            labels:                 # Pod をクラスタ内で識別のするためのラベル。service.yml で Pod を識別するラベルとして使用される
+                app: cloud-build-pod  # 識別名。selector:matchLabels:app と同じ値にする必要がある
+            spec:
+            containers:           # Pod 内で動作させるコンテナ群の設定
+            - image: gcr.io/my-project2-303004/api-sample-image:latest      # Container Registry にアップロードした docker image
+                name: api-sample-container                                    # コンテナ名
+                ports:
+                - containerPort: 8080
+                name: http-server
         ```
 
         > デフォルトで用意されている定数
@@ -250,6 +163,8 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
         > - `${REPO_NAME}` : リポジトリの名前
         > - `${BRANCH_NAME}` : ブランチの名前
         > - `${TAG_NAME}` : タグの名前
+
+        > デプロイメント定義ファイルの docker image のタグ名は、`latest` なので、タグ名として `${SHORT_SHA}` だけでなく、`latest` も付与している
 
 1. CI/CD を行うトリガーと `cloudbuild.yml` の反映<br>
     - GUI で行う場合<br>
@@ -293,7 +208,7 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
     例えば、作成した Cloud Run に `curl` コマンドでリクエスト処理するテストコードの場合は、以下のコマンドで動作確認できる。
     ```sh
     $ EXTERNAL_IP=`kubectl describe service ${SERVICE_NAME} | grep "LoadBalancer Ingress" | awk '{print $3}'`
-    $ curl -X POST http://${EXTERNAL_IP}:${PORT} -H "Content-Type: application/json" -d '{"message" : "Hello Cloud functions"}'
+    $ curl -X POST http://${EXTERNAL_IP}:${PORT} -H "Content-Type: application/json" -d '{"message" : "Hello Cloud Build on GKE !!!"}'
     ```
     - `${SERVICE_NAME}` : 作成した Cloud Run の名前
 

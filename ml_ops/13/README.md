@@ -168,7 +168,7 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
     例えば、作成した Cloud Run に `curl` コマンドでリクエスト処理するテストコードの場合は、以下のコマンドで動作確認できる。
     ```sh
     $ CLOUD_RUN_URL=`gcloud run services list --platform managed | grep ${SERVICE_NAME} | awk '{print $4}'`
-    $ curl -X POST ${CLOUD_RUN_URL} -H "Content-Type: application/json" -d '{"message" : "Hello Cloud functions"}'
+    $ curl -X POST ${CLOUD_RUN_URL} -H "Content-Type: application/json" -d '{"message" : "Hello Cloud Build on Cloud Run !!!"}'
     ```
     - `${SERVICE_NAME}` : 作成した Cloud Run の名前
 
