@@ -1,10 +1,5 @@
-# 【GCP】Cloud Build を用いて GKE（CPU動作）上で CI/CD を行う
-Cloud Build　は、GCP で提供されている docker image などのビルドサービスであるが、CI/CD ツールとしても利用できる。<br>
-Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cloud Function, Cloud Run などの GCP が提供するサービスとの連携が容易であるというメリットがある。
-
-<img src="https://user-images.githubusercontent.com/25688193/115104771-94c7d600-9f95-11eb-913c-a43b578b75b5.png" width="500"><br>
-
-ここでは、Cloud Build での CI/CD 処理のデプロイ先として GKE を選んだ場合の手順を示す。
+# 【GCP】Cloud Build を用いて GKE（GPU動作）上で CI/CD を行う
+Cloud Build を用いて GPU 動作可能な GKE クラスタで CI/CD する場合も、基本的に「[【GCP】Cloud Build を用いて GKE（CPU動作）上で CI/CD を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/15)」記載の方法と同じような手順になるが、k8s 用のデプロイメント定義ファイル `deployment.yml` とサービス定義ファイル `service.yml`、及び、ビルド構成ファイル `cloudbuild.yml` の内容が変わってくる。
 
 - 【参考】Cloud Build での CI/CD 練習用レポジトリ<br>
     - [cloud-build-exercises](https://github.com/Yagami360/cloud-build-exercises)
@@ -39,44 +34,12 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
 
     - デプロイメント定義ファイルの例<br>
         ```yaml
-        apiVersion: apps/v1         # Deployment の API バージョン。kubectl api-resources | grep Deployment と kubectl api-versions  | grep apps で確認可能  
-        kind: Deployment            # デプロイメント定義ファイルであることを明示
-        metadata:
-        name: cloud-build-pod     # 識別名
-        spec:
-        replicas: 1               # Pod の数
-        selector:
-            matchLabels:
-            app: cloud-build-pod  # template:metadata:labels:app と同じ値にする必要がある
-        template:                 # Pod のテンプレート。このテンプレートをもとに ReplicaSet がレプリカ数の Pod を作成する
-            metadata:
-            labels:                 # Pod をクラスタ内で識別のするためのラベル。service.yml で Pod を識別するラベルとして使用される
-                app: cloud-build-pod  # 識別名。selector:matchLabels:app と同じ値にする必要がある
-            spec:
-            containers:           # Pod 内で動作させるコンテナ群の設定
-            - image: gcr.io/my-project2-303004/api-sample-image:latest     # Container Registry にアップロードした docker image
-                name: api-sample-container                                 # コンテナ名
-                ports:
-                - containerPort: 8080
-                name: http-server
         ```
 
         > ここでは、docker image のタグ名を `latest` にしているが、`cloudbuild.yml` の `${SHORT_SHA}` と同じ値にできないか？
 
     - サービス定義ファイルの例
         ```yaml
-        apiVersion: v1
-        kind: Service
-        metadata:
-        name: cloud-build-service
-        spec:
-        type: LoadBalancer
-        ports:
-            - port: 8080
-            targetPort: 8080
-            protocol: TCP
-        selector:
-            app: cloud-build-pod  # デプロイメント定義ファイルで定義した Pod の識別名。app:sample-pod のラベルがつけられた Pod を通信先とする
         ```
 
 1. 作成したレポジトリの Cloud Source Repositories への登録（ミラーリング）<br>
@@ -127,32 +90,13 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
         ```
 
 1. `cloudbuild.yml` の作成<br>
-    Cloud Build がビルドを行うためのビルド構成ファイル `cloudbuild.yml` を作成する。
-
-    > この `cloudbuild.yml` は、Container Registry で docker image を作成するためだけのビルド構成ファイルではなく、｛docker image の作成 ・GCE, GKE, CloudFunctioin などのリソース確保・APIコードの実行・テストコードの実行｝などを含めた、総合的な CI/CD パイプラインを定義したビルド構築ファイルになることに注意
+    Cloud Build がビルドを行うためのビルド構成ファイル `cloudbuild.yml` を作成する。<br>
+    
+    > GPU 使用可能にするために、ノードプールの作成と DaemonSet での Pod 経由でノードプールに GPU ドライバーをインストールしている点がポイント<br>
+    他パイプライン処理は、「[【GCP】Cloud Build を用いて GKE（CPU動作）上で CI/CD を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/15)」での `cloudbuild.yml` と同じになる。
 
     - `cloudbuild.yml` の構成例
         ```yaml
-        apiVersion: apps/v1         # Deployment の API バージョン。kubectl api-resources | grep Deployment と kubectl api-versions  | grep apps で確認可能  
-        kind: Deployment            # デプロイメント定義ファイルであることを明示
-        metadata:
-        name: cloud-build-pod     # 識別名
-        spec:
-        replicas: 1               # Pod の数
-        selector:
-            matchLabels:
-            app: cloud-build-pod  # template:metadata:labels:app と同じ値にする必要がある
-        template:                 # Pod のテンプレート。このテンプレートをもとに ReplicaSet がレプリカ数の Pod を作成する
-            metadata:
-            labels:                 # Pod をクラスタ内で識別のするためのラベル。service.yml で Pod を識別するラベルとして使用される
-                app: cloud-build-pod  # 識別名。selector:matchLabels:app と同じ値にする必要がある
-            spec:
-            containers:           # Pod 内で動作させるコンテナ群の設定
-            - image: gcr.io/my-project2-303004/api-sample-image:latest      # Container Registry にアップロードした docker image
-                name: api-sample-container                                    # コンテナ名
-                ports:
-                - containerPort: 8080
-                name: http-server
         ```
 
         > デフォルトで用意されている定数
@@ -190,9 +134,9 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
         - `${BUILD_CONFIG_FILE}` : ビルド構成ファイル `cloudbuild.yml` のパス
     
 1. CI/CD を行うトリガーを発行する
-    例えば、`gke` ブランチへの push をトリガーとしている場合は、以下のコマンドを実行することで、CloudBuild がトリガー検知し、`cloudbuild.yml` に基づく CI/CD が自動的に実行される。
+    例えば、`gke_gpu` ブランチへの push をトリガーとしている場合は、以下のコマンドを実行することで、CloudBuild がトリガー検知し、`cloudbuild.yml` に基づく CI/CD が自動的に実行される。
     ```sh
-    $ git checkout -b gke
+    $ git checkout -b gke_gpu
     $ git add .
     $ git commit -m "a"
     $ git push origin master

@@ -117,15 +117,17 @@ Cloud Build を利用した CI/CD では、以下の図のように、GKE や Cl
         ```sh
         $ gcloud beta builds triggers create github \
             --repo-name=${REPO_NAME} \
+            --repo-name=${REPO_NAME} \
             --repo-owner=${REPO_OWNER} \
-            --branch-pattern=${BRANCH_PATTERN} \
+            --branch-pattern="^${TRIGER_BRANCH_NAME}$" \
             --build-config=${BUILD_CONFIG_FILE} \
         ```
         - `${TRUGER_NAME}` : トリガー名
         - `${REPO_NAME}` : GitHub のレポジトリ名
         - `${REPO_OWNER}` : GitHub のユーザー名
-        - `${BRANCH_PATTERN}` : CI/CD トリガーを発行する git ブランチ名
+        - `${BRANCH_PATTERN}` : CI/CD トリガーを発行する git ブランチ名（正規表現で複数のブランチも指定可能）
         - `${BUILD_CONFIG_FILE}` : ビルド構成ファイル `cloudbuild.yml` のパス
+
 
 1. CI/CD を行うトリガーを発行する
     例えば、local ブランチへの push をトリガーとしている場合は、以下のコマンドを実行することで、CloudBuild がトリガー検知し、`cloudbuild.yml` に基づく CI/CD が自動的に実行される。

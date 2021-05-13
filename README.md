@@ -114,7 +114,7 @@
         - [【GCP】Cloud Build を用いて Cloud Run 上で CI/CD を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/13)
         - [【GCP】Cloud Build を用いて Cloud Function 上で CI/CD を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/14)
         - [【GCP】Cloud Build を用いて GKE（CPU動作）上で CI/CD を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/15)
-        - 【GCP】Cloud Build を用いて GKE（GPU動作）上で CI/CD を行う
+        - [【GCP】Cloud Build を用いて GKE（GPU動作）上で CI/CD を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/16)
 - データ基盤 / データ分析基盤
     - BigQuery
         - [【BigQuery】BigQuery の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/6)
@@ -204,10 +204,12 @@
     - 【PyTorch】特定の層のみ学習を行うようにする
         - `param.requires_grad = False` と optimizer の `params` 引数の設定
     - `add_module()` or `nn.ModuleList` or `nn.ModuleDict` でネットワークの段数を柔軟に可変出来るようにする
+    - 【PyTorch】複数 GPU での並列学習を使用した高速化
     - 【PyTorch】AMP [Automatic Mixed Precision] を使用した学習と推論の高速化
-    <!-- 
-    - 【PyTorch】データオーギュメントのランダム seed 値を固定することで入力画像の種類に応じた異なるDAを適用する
-    -->
+    - 【PyTorch】ネットワークへの入力画像が複数存在する場合に入力画像毎に異なる seed 値での DA を適用する
+    - 【PyTorch】Random Erasing での DA
+    - 【PyTorch】CutMix での DA
+    - 【PyTorch】TPS 変換での DA
 
 - Tensorflow
     - 【Tensorflow】Dataset API を使用したデータローダー（tensorflow 1.4以降, tensoflow 2.x）
