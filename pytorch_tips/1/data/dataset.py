@@ -26,28 +26,22 @@ IMG_EXTENSIONS = (
 )
 
 class Dataset(data.Dataset):
-    def __init__(self, args, root_dir, datamode = "train", image_height = 128, image_width = 128, data_augument_types = "none", debug = False ):
+    def __init__(self, args, dataset_dir, pairs_file = "train_pairs.csv", datamode = "train", image_height = 128, image_width = 128, data_augument_types = "none", debug = False ):
         super(Dataset, self).__init__()
         self.args = args
+        self.dataset_dir = dataset_dir
         self.datamode = datamode
         self.data_augument_types = data_augument_types
         self.image_height = image_height
         self.image_width = image_width
         self.debug = debug
 
+        self.df_pairs = pd.read_csv( os.path.join(self.dataset_dir, pairs_file) )
+
         self.seed_da_inputA = args.seed
         self.seed_da_inputB = args.seed
         self.seed_da_inputC = args.seed
         self.seed_da_target = args.seed
-
-        self.inputA_dir = os.path.join( root_dir, "inputA" )
-        self.inputB_dir = os.path.join( root_dir, "inputB" )
-        self.inputC_dir = os.path.join( root_dir, "inputC" )
-        self.target_dir = os.path.join( root_dir, "target" )
-        self.inputA_names = sorted( [f for f in os.listdir(self.inputA_dir) if f.endswith(IMG_EXTENSIONS)], key=numerical_sort )
-        self.inputB_names = sorted( [f for f in os.listdir(self.inputB_dir) if f.endswith(IMG_EXTENSIONS)], key=numerical_sort )
-        self.inputC_names = sorted( [f for f in os.listdir(self.inputC_dir) if f.endswith(IMG_EXTENSIONS)], key=numerical_sort )
-        self.target_names = sorted( [f for f in os.listdir(self.target_dir) if f.endswith(IMG_EXTENSIONS)], key=numerical_sort )
 
         # transform
         transform_list = []
@@ -91,57 +85,57 @@ class Dataset(data.Dataset):
         self.transform_mask = transforms.Compose(transform_mask_list)
 
         if( self.debug ):
-            print( "self.inputA_dir :", self.inputA_dir)
-            print( "len(self.inputA_names) :", len(self.inputA_names))
-            print( "self.inputA_names[0:5] :", self.inputA_names[0:5])
+            print( self.df_pairs.head() )
+            print( "len(self.df_pairs) : ", len(self.df_pairs) )
             print( "self.transform :", self.transform)
             print( "self.transform_mask :", self.transform_mask)
 
         return
 
     def __len__(self):
-        return len(self.inputA_names)
+        return len(self.df_pairs)
 
     def __getitem__(self, index):
-        inputA_name = self.inputA_names[index]
-        inputB_name = self.inputB_names[index]
-        inputC_name = self.inputC_names[index]
-        target_name = self.target_names[index]
+        inputA_name = self.df_pairs["inputA_name"].iloc[index]
+        inputB_name = self.df_pairs["inputB_name"].iloc[index]
+        inputC_name = self.df_pairs["inputC_name"].iloc[index]
+        target_name = self.df_pairs["target_name"].iloc[index]
+
         self.seed_da_inputA = random.randint(0,10000)
         self.seed_da_inputB = self.seed_da_inputA
         self.seed_da_inputC = random.randint(0,10000)
         self.seed_da_target = self.seed_da_inputC
 
         # inputA
-        inputA = Image.open( os.path.join(self.inputA_dir,inputA_name) ).convert('RGB')
+        inputA = Image.open( os.path.join(self.dataset_dir, "inputA", inputA_name) ).convert('RGB')
         if not( "none" in self.data_augument_types ):
             set_random_seed( self.seed_da_inputA )
 
         inputA = self.transform(inputA)
 
         # inputB
-        inputB = Image.open( os.path.join(self.inputB_dir, inputB_name) ).convert('L')
+        inputB = Image.open( os.path.join(self.dataset_dir, "inputB", inputB_name) ).convert('L')
         if not( "none" in self.data_augument_types ):
             set_random_seed( self.seed_da_inputB )
 
         inputB = self.transform_mask(inputB)
 
         # inputC
-        inputC = Image.open( os.path.join(self.inputC_dir, inputC_name) ).convert('RGB')
+        inputC = Image.open( os.path.join(self.dataset_dir, "inputC", inputC_name) ).convert('RGB')
         if not( "none" in self.data_augument_types ):
             set_random_seed( self.seed_da_inputC )
 
         inputC = self.transform(inputC)
 
         # target
-        if( self.datamode == "train" ):
-            target = Image.open( os.path.join(self.target_dir, target_name) ).convert('RGB')
+        if( self.datamode == "train" or self.datamode == "valid" ):
+            target = Image.open( os.path.join(self.dataset_dir, "target", target_name) ).convert('RGB')
             if not( "none" in self.data_augument_types ):
                 set_random_seed( self.seed_da_target )
 
             target = self.transform(target)
 
-        if( self.datamode == "train" ):
+        if( self.datamode == "train" or self.datamode == "valid" ):
             results_dict = {
                 "inputA" : inputA,
                 "inputB" : inputB,

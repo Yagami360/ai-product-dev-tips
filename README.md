@@ -206,7 +206,7 @@
     - `add_module()` or `nn.ModuleList` or `nn.ModuleDict` でネットワークの段数を柔軟に可変出来るようにする
     - 【PyTorch】複数 GPU での並列学習を使用した高速化
     - 【PyTorch】AMP [Automatic Mixed Precision] を使用した学習と推論の高速化
-    - 【PyTorch】ネットワークへの入力画像が複数存在する場合に入力画像毎に異なる seed 値での DA を適用する
+    - [【PyTorch】ネットワークへの入力画像が複数存在する場合に入力画像毎に異なる seed 値での DA を適用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/pytorch_tips/1)
     - 【PyTorch】Random Erasing での DA
     - 【PyTorch】CutMix での DA
     - 【PyTorch】TPS 変換での DA
