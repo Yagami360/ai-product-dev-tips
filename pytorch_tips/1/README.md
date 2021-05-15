@@ -5,10 +5,7 @@
 
 <img src="https://user-images.githubusercontent.com/25688193/118274525-33494780-b500-11eb-8847-8396198e741f.png" width="350"><br>
 
-
-この場合は、seed 値を、各々の入力画像に対しての trans
-
-- 複数の入力画像の DA の仕方が同じになるデータローダー
+- 複数の入力画像の DA の仕方が同じになるデータローダーの構成例
     ```python
     class Dataset(data.Dataset):
         def __init__(self)
@@ -36,8 +33,16 @@
             return results_dict
     ```
 
-- 複数の入力画像の DA の仕方が同じになる
+- 複数の入力画像の DA の仕方が別々になるデータローダーの構成例
     ```python
+    def set_random_seed(seed=72):
+        np.random.seed(seed)
+        random.seed(seed)
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+        return
+
     class Dataset(data.Dataset):
         def __init__(self)
             ...

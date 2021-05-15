@@ -195,21 +195,34 @@
 
 ### ◎ 機械学習フレームワーク
 - PyTorch
-    - 【PyTorch】OpenCV ↔ Pillow ↔ numpy ↔ Tensor [PyTorch] の変換対応
-    - 【PyTorch】独自データセットの DataLoader 
-    - 【PyTorch】TensorBoard のヒストグラムにネットワークの重みを表示する。
-    - 【PyTorch】再現性確保のためのシード値固定処理
-    - 【PyTorch】k-fold CV での学習処理
-        - scikit-learn の `KFold` と PyTorch の `Subset` の使用
-    - 【PyTorch】特定の層のみ学習を行うようにする
-        - `param.requires_grad = False` と optimizer の `params` 引数の設定
-    - `add_module()` or `nn.ModuleList` or `nn.ModuleDict` でネットワークの段数を柔軟に可変出来るようにする
-    - 【PyTorch】複数 GPU での並列学習を使用した高速化
-    - 【PyTorch】AMP [Automatic Mixed Precision] を使用した学習と推論の高速化
-    - [【PyTorch】ネットワークへの入力画像が複数存在する場合に入力画像毎に異なる seed 値での DA を適用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/pytorch_tips/1)
-    - 【PyTorch】Random Erasing での DA
-    - 【PyTorch】CutMix での DA
-    - 【PyTorch】TPS 変換での DA
+    - 学習＆推論処理
+        - 【PyTorch】k-fold CV での学習処理
+            - scikit-learn の `KFold` と PyTorch の `Subset` の使用
+        - 【PyTorch】学習済みチェックポイント読み込み時に epoch 数や step 数も読み込めるようにする。
+        - 【PyTorch】学習用データセットと検証用データセットの分割
+    - ネットワーク定義
+        - `add_module()` or `nn.ModuleList` or `nn.ModuleDict` でネットワークの段数を柔軟に可変出来るようにする
+        - 【PyTorch】特定の層のみ学習を行うようにする : `param.requires_grad = False` と optimizer の `params` 引数の設定
+    - 高速化
+        - [【PyTorch】DP [DataParallel] を使用した 複数 GPU での並列学習と高速化](https://github.com/Yagami360/MachineLearning_Tips/tree/master/pytorch_tips/2)
+        - 【PyTorch】AMP [Automatic Mixed Precision] を使用した学習と推論の高速化
+        - 【PyTorch】DDP [DistributedDataParallel] を使用した高速化（`torch.nn.parallel.DistributedDataParallel()`使用）
+        - 【PyTorch】AMP + DDP を使用した高速化
+        - 【PyTorch】DDP + 複数 GPU を使用した高速化
+    - 表示処理
+        - 【PyTorch】tensorboard の画像出力を横軸縦軸に並べて表示する
+        - 【PyTorch】TensorBoard のヒストグラムにネットワークの重みを表示する。
+    - データローダー
+        - 【PyTorch】独自データセットでの DataLoader 
+        - 【PyTorch】複数種類の DA を args 引数でカスタマイズ可能にする
+        - 【PyTorch】データローダーでの前処理を GPU で動作させる（PyTorch 1.7 , torchvison 0.8 以降）
+        - [【PyTorch】ネットワークへの入力画像が複数存在する場合に入力画像毎に異なる seed 値での DA を適用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/pytorch_tips/1)
+        - 【PyTorch】Random Erasing での DA
+        - 【PyTorch】CutMix での DA
+        - 【PyTorch】TPS 変換での DA
+    - その他
+        - 【PyTorch】OpenCV ↔ Pillow ↔ numpy ↔ Tensor [PyTorch] の変換対応
+        - 【PyTorch】再現性確保のためのシード値固定処理
 
 - Tensorflow
     - 【Tensorflow】Dataset API を使用したデータローダー（tensorflow 1.4以降, tensoflow 2.x）
