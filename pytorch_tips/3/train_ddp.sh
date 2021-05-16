@@ -3,14 +3,16 @@
 set -eu
 mkdir -p _logs
 
-GPU_IDS="0"
+#GPU_IDS="0"
 #GPU_IDS="1"
-#GPU_IDS="0,1,2,3"
+GPU_IDS="0,1,2,3"
+#N_GPUS=1
+N_GPUS=4
 
 #----------------------
 # model
 #----------------------
-N_EPOCHES=5
+N_EPOCHES=100
 BATCH_SIZE=4
 IMAGE_HIGHT=128
 IMAGE_WIDTH=128

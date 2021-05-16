@@ -26,19 +26,19 @@ IMG_EXTENSIONS = (
 )
 
 class TempleteDataset(data.Dataset):
-    def __init__(self, args, root_dir, datamode = "train", image_height = 128, image_width = 128, data_augument_types = "none", debug = False ):
+    def __init__(self, args, dataset_dir, pairs_file = "train_pairs.csv", datamode = "train", image_height = 128, image_width = 128, batch_size = 4, data_augument_types = "none", use_ddp = False, n_gpus = 1, debug = False ):
         super(TempleteDataset, self).__init__()
         self.args = args
+        self.dataset_dir = dataset_dir
         self.datamode = datamode
-        self.data_augument_types = data_augument_types
         self.image_height = image_height
         self.image_width = image_width
+        self.batch_size = batch_size
+        self.data_augument_types = data_augument_types
+        self.use_ddp = use_ddp
+        self.n_gpus = n_gpus
         self.debug = debug
-
-        self.image_dir = os.path.join( root_dir, "image" )
-        self.target_dir = os.path.join( root_dir, "target" )
-        self.image_names = sorted( [f for f in os.listdir(self.image_dir) if f.endswith(IMG_EXTENSIONS)], key=numerical_sort )
-        self.target_names = sorted( [f for f in os.listdir(self.target_dir) if f.endswith(IMG_EXTENSIONS)], key=numerical_sort )
+        self.df_pairs = pd.read_csv( os.path.join(self.dataset_dir, pairs_file) )
 
         # transform
         transform_list = []
@@ -92,9 +92,8 @@ class TempleteDataset(data.Dataset):
         self.transform_mask_woToTensor = transforms.Compose(transform_mask_woToTensor_list)
 
         if( self.debug ):
-            print( "self.image_dir :", self.image_dir)
-            print( "len(self.image_names) :", len(self.image_names))
-            print( "self.image_names[0:5] :", self.image_names[0:5])
+            print( self.df_pairs.head() )
+            print( "len(self.df_pairs) : ", len(self.df_pairs) )
             print( "self.transform :", self.transform)
             print( "self.transform_mask :", self.transform_mask)
             print( "self.transform_mask_woToTensor :", self.transform_mask_woToTensor)
@@ -102,32 +101,34 @@ class TempleteDataset(data.Dataset):
         return
 
     def __len__(self):
-        return len(self.image_names)
+        if( self.use_ddp ):
+            return len(self.df_pairs) // (self.batch_size * self.n_gpus) * (self.batch_size * self.n_gpus)
+        else:
+            return len(self.df_pairs)
 
     def __getitem__(self, index):
-        image_name = self.image_names[index]
-        target_name = self.target_names[index]
+        image_name = self.df_pairs["image_name"].iloc[index]
+        target_name = self.df_pairs["target_name"].iloc[index]
         self.seed_da = random.randint(0,10000)
 
         # image
-        image = Image.open( os.path.join(self.image_dir,image_name) ).convert('RGB')
+        image = Image.open( os.path.join(self.dataset_dir, "image", image_name) ).convert('RGB')
         if not( "none" in self.data_augument_types ):
             set_random_seed( self.seed_da )
 
         image = self.transform(image)
 
         # target
-        if( self.datamode == "train" ):
-            target = Image.open( os.path.join(self.target_dir, target_name) )
+        if( self.datamode == "train" or self.datamode == "valid" ):
+            target = Image.open( os.path.join(self.dataset_dir, "target", target_name) )
             if not( "none" in self.data_augument_types ):
                 set_random_seed( self.seed_da )
 
             target = self.transform_mask(target)
             #target = torch.from_numpy( np.asarray(self.transform_mask_woToTensor(target)).astype("float32") ).unsqueeze(0)
 
-        if( self.datamode == "train" ):
+        if( self.datamode == "train" or self.datamode == "valid" ):
             results_dict = {
-                "image_name" : image_name,
                 "image" : image,
                 "target" : target,
             }

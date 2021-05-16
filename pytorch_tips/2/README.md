@@ -1,4 +1,4 @@
-# 【PyTorch】DP [DataParallel] を使用した 複数 GPU での並列学習と高速化
+# 【PyTorch】DP [DataParallel] を使用した単一プロセス + 複数 GPU での高速化
 pytorch では、以下のスクリプトのように `torch.nn.DataParallel()` を使って、簡単に複数の GPU での並列学習を実現できる。
 
 - DP [DataParallel] を使用した 複数 GPU での並列学習の実装例

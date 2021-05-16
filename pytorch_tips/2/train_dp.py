@@ -91,11 +91,7 @@ if __name__ == '__main__':
 
     # 実行 Device の設定
     if( torch.cuda.is_available() ):
-        if(len(args.gpu_ids) > 2 ):
-            device = torch.device(f'cuda:{args.gpu_ids[0]}')
-        else:
-            device = torch.device(f'cuda:{gpu_id}')
-
+        device = torch.device(f'cuda:{args.gpu_ids[0]}')
         print( "実行デバイス :", device)
         print( "GPU名 :", torch.cuda.get_device_name(device))
         print("torch.cuda.current_device() =", torch.cuda.current_device())

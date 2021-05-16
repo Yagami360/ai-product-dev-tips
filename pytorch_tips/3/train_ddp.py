@@ -22,8 +22,6 @@ from tensorboardX import SummaryWriter
 
 import torch.multiprocessing as mp
 import torch.distributed as dist
-from torch.utils.data.distributed import DistributedSampler
-from torch.nn.parallel import DistributedDataParallel as DDP
 
 try:
     from apex import amp
@@ -38,15 +36,19 @@ from utils.utils import board_add_image, board_add_images, save_image_w_norm
 
 
 def train(rank, args, group_name="gloo"):
+    """
+    rank : プロセス番号（0 ~ GPU数-1)
+    """
     if(args.use_ddp):
         dist.init_process_group(group_name, rank=rank, world_size=len(args.gpu_ids))
 
     # 実行 Device の設定
     if( torch.cuda.is_available() ):
-        if(len(args.gpu_ids) > 2 ):
-            device = torch.device(f'cuda:{args.gpu_ids[0]}')
+        if( args.use_ddp ):
+            torch.cuda.set_device(rank)
+            device = torch.device(f'cuda:{rank}')
         else:
-            device = torch.device(f'cuda:{gpu_id}')
+            device = torch.device(f'cuda:{args.gpu_ids[0]}')
 
         print( "実行デバイス :", device)
         print( "GPU名 :", torch.cuda.get_device_name(device))
@@ -71,49 +73,35 @@ def train(rank, args, group_name="gloo"):
         torch.autograd.set_detect_anomaly(True)
 
     # tensorboard 出力
-    board_train = SummaryWriter( log_dir = os.path.join(args.tensorboard_dir, args.exper_name) )
-    board_valid = SummaryWriter( log_dir = os.path.join(args.tensorboard_dir, args.exper_name + "_valid") )
+    if( rank == 0 ):
+        board_train = SummaryWriter( log_dir = os.path.join(args.tensorboard_dir, args.exper_name) )
+        board_valid = SummaryWriter( log_dir = os.path.join(args.tensorboard_dir, args.exper_name + "_valid") )
 
     #================================
     # データセットの読み込み
     #================================    
     # 学習用データセットとテスト用データセットの設定
-    ds_train = TempleteDataset( args, args.dataset_dir, datamode = "train", image_height = args.image_height, image_width = args.image_width, data_augument_types = args.data_augument_types, debug = args.debug )
-
-    # 学習用データセットとテスト用データセットの設定
-    index = np.arange(len(ds_train))
-    train_index, valid_index = train_test_split( index, test_size=args.val_rate, random_state=args.seed )
-    if( args.debug ):
-        print( "train_index.shape : ", train_index.shape )
-        print( "valid_index.shape : ", valid_index.shape )
-        print( "train_index[0:10] : ", train_index[0:10] )
-        print( "valid_index[0:10] : ", valid_index[0:10] )
-
-    dloader_train = torch.utils.data.DataLoader(Subset(ds_train, train_index), batch_size=args.batch_size, shuffle=True, num_workers = args.n_workers, pin_memory = True )
-    dloader_valid = torch.utils.data.DataLoader(Subset(ds_train, valid_index), batch_size=args.batch_size_valid, shuffle=False, num_workers = args.n_workers, pin_memory = True )
-    """
+    ds_train = TempleteDataset( args, args.dataset_dir, datamode = "train", image_height = args.image_height, image_width = args.image_width, batch_size = args.batch_size, data_augument_types = args.data_augument_types, use_ddp = args.use_ddp, n_gpus = len(args.gpu_ids), debug = args.debug )
+    ds_valid = TempleteDataset( args, args.dataset_dir, datamode = "valid", image_height = args.image_height, image_width = args.image_width, batch_size = args.batch_size_valid, data_augument_types = args.data_augument_types, use_ddp = args.use_ddp, n_gpus = len(args.gpu_ids), debug = args.debug )
     if(args.use_ddp):
-        sampler_train = DistributedSampler(Subset(ds_train, train_index), num_replicas=len(args.gpu_ids), rank=rank, shuffle=True)
-        sampler_valid = DistributedSampler(Subset(ds_train, valid_index), num_replicas=len(args.gpu_ids), rank=rank, shuffle=False)
-        #sampler_train = DistributedSampler(ds_train, num_replicas=len(args.gpu_ids), rank=rank, shuffle=True)
-        dloader_train = torch.utils.data.DataLoader(sampler_train, batch_size=args.batch_size, sampler=sampler_train, shuffle=False, num_workers = args.n_workers, pin_memory = True )
-        dloader_valid = torch.utils.data.DataLoader(sampler_valid, batch_size=args.batch_size_valid, sampler=sampler_valid, shuffle=False, num_workers = args.n_workers, pin_memory = True )
+        #sampler_train = torch.utils.data.distributed.DistributedSampler(ds_train, num_replicas=len(args.gpu_ids), rank=rank, shuffle=True)
+        #sampler_valid = torch.utils.data.distributed.DistributedSampler(ds_valid, num_replicas=len(args.gpu_ids), rank=rank, shuffle=False)
+        sampler_train = torch.utils.data.distributed.DistributedSampler(ds_train, num_replicas=len(args.gpu_ids), rank=rank)
+        sampler_valid = torch.utils.data.distributed.DistributedSampler(ds_valid, num_replicas=len(args.gpu_ids), rank=rank)
+        dloader_train = torch.utils.data.DataLoader(sampler_train, batch_size=args.batch_size, sampler=sampler_train, shuffle=False, num_workers = args.n_workers//len(args.gpu_ids), pin_memory = True )
+        dloader_valid = torch.utils.data.DataLoader(sampler_valid, batch_size=args.batch_size_valid, sampler=sampler_valid, shuffle=False, num_workers = 1, pin_memory = True )
     else:
-        dloader_train = torch.utils.data.DataLoader(Subset(ds_train, train_index), batch_size=args.batch_size, shuffle=True, num_workers = args.n_workers, pin_memory = True )
-        dloader_valid = torch.utils.data.DataLoader(Subset(ds_train, valid_index), batch_size=args.batch_size_valid, shuffle=False, num_workers = args.n_workers, pin_memory = True )
-    """
+        dloader_train = torch.utils.data.DataLoader(ds_train, batch_size=args.batch_size, shuffle=True, num_workers = args.n_workers, pin_memory = True )
+        dloader_valid = torch.utils.data.DataLoader(ds_valid, batch_size=args.batch_size_valid, shuffle=False, num_workers = 1, pin_memory = True )
 
     #================================
     # モデルの構造を定義する。
     #================================
-    #model_G = TempleteNetworks()
-    model_G = Pix2PixHDGenerator()
-
-    if not(args.use_ddp):
-        model_G.to(device)
-
+    #model_G = TempleteNetworks().to(device)
+    model_G = Pix2PixHDGenerator().to(device)
     if( args.debug ):
-        print( "model_G\n", model_G )
+        if( rank == 0 ):
+            print( "model_G\n", model_G )
 
     # モデルを読み込む
     if not args.load_checkpoints_path == '' and os.path.exists(args.load_checkpoints_path):
@@ -138,12 +126,13 @@ def train(rank, args, group_name="gloo"):
     #================================
     # マルチ GPU
     #================================
-    if len(args.gpu_ids) >= 2:
-        if( args.use_ddp == True and args.use_amp == False ):
-            model_G = DDP(model_G, device_ids=[gpu_id])
-        elif( args.use_ddp == True and args.use_amp == True ):
-            model_G = apex.parallel.DistributedDataParallel(model_G, device_ids=[gpu_id])
+    if( args.use_ddp ):
+        if( args.use_amp ):
+            model_G = apex.parallel.DistributedDataParallel(model_G, device_ids=[rank])
         else:
+            model_G = torch.nn.parallel.DistributedDataParallel(model_G, device_ids=[rank])
+    else:
+        if( len(args.gpu_ids) >= 2 ):
             model_G = torch.nn.DataParallel(model_G)
 
     #================================
@@ -166,12 +155,8 @@ def train(rank, args, group_name="gloo"):
                 break
 
             # ミニバッチデータを GPU へ転送
-            if (args.use_ddp and torch.cuda.is_available() ):
-                image = inputs["image"].to(rank)
-                target = inputs["target"].to(rank)
-            else:
-                image = inputs["image"].to(device)
-                target = inputs["target"].to(device)
+            image = inputs["image"].to(device)
+            target = inputs["target"].to(device)
 
             if( args.debug and n_print > 0):
                 print( "[image] shape={}, dtype={}, device={}, min={}, max={}".format(image.shape, image.dtype, image.device, torch.min(image), torch.max(image)) )
@@ -205,21 +190,23 @@ def train(rank, args, group_name="gloo"):
             # 学習過程の表示
             #====================================================
             if( step == 0 or ( step % args.n_diaplay_step == 0 ) ):
-                # lr
-                for param_group in optimizer_G.param_groups:
-                    lr = param_group['lr']
+                # 最初のプロセスのみで表示処理を行うようにする
+                if( rank == 0 ):
+                    # lr
+                    for param_group in optimizer_G.param_groups:
+                        lr = param_group['lr']
 
-                board_train.add_scalar('lr/learning rate', lr, step )
+                    board_train.add_scalar('lr/learning rate', lr, step )
 
-                # loss
-                board_train.add_scalar('G/loss_G', loss_G.item(), step)
-                print( "step={}, loss_G={:.5f}".format(step, loss_G.item()) )
+                    # loss
+                    board_train.add_scalar('G/loss_G', loss_G.item(), step)
+                    print( "step={}, loss_G={:.5f}".format(step, loss_G.item()) )
 
-                # visual images
-                visuals = [
-                    [ image.detach(), target.detach(), output.detach() ],
-                ]
-                board_add_images(board_train, 'train', visuals, step+1)
+                    # visual images
+                    visuals = [
+                        [ image.detach(), target.detach(), output.detach() ],
+                    ]
+                    board_add_images(board_train, 'train', visuals, step+1)
 
             #====================================================
             # valid データでの処理
@@ -235,12 +222,8 @@ def train(rank, args, group_name="gloo"):
                         break
 
                     # ミニバッチデータを GPU へ転送
-                    if (args.use_ddp and torch.cuda.is_available() ):
-                        image = inputs["image"].to(rank)
-                        target = inputs["target"].to(rank)
-                    else:
-                        image = inputs["image"].to(device)
-                        target = inputs["target"].to(device)
+                    image = inputs["image"].to(device)
+                    target = inputs["target"].to(device)
 
                     # 推論処理
                     with torch.no_grad():
@@ -252,16 +235,18 @@ def train(rank, args, group_name="gloo"):
 
                     # 生成画像表示
                     if( iter <= args.n_display_valid ):
-                        # visual images
-                        visuals = [
-                            [ image.detach(), target.detach(), output.detach() ],
-                        ]
-                        board_add_images(board_valid, 'valid/{}'.format(iter), visuals, step+1)
+                        if( rank == 0 ):
+                            # visual images
+                            visuals = [
+                                [ image.detach(), target.detach(), output.detach() ],
+                            ]
+                            board_add_images(board_valid, 'valid/{}'.format(iter), visuals, step+1)
 
                     n_valid_loop += 1
 
                 # loss 値表示
-                board_valid.add_scalar('G/loss_G', loss_G_total.item()/n_valid_loop, step)
+                if( rank == 0 ):
+                    board_valid.add_scalar('G/loss_G', loss_G_total.item()/n_valid_loop, step)
 
             step += 1
             n_print -= 1
@@ -270,12 +255,14 @@ def train(rank, args, group_name="gloo"):
         # モデルの保存
         #====================================================
         if( epoch % args.n_save_epoches == 0 ):
-            save_checkpoint( model_G, device, os.path.join(args.save_checkpoints_dir, args.exper_name, 'model_G_ep%03d.pth' % (epoch)) )
-            save_checkpoint( model_G, device, os.path.join(args.save_checkpoints_dir, args.exper_name, 'model_G_final.pth') )
-            print( "saved checkpoints" )
+            if( rank == 0 ):
+                save_checkpoint( model_G, device, os.path.join(args.save_checkpoints_dir, args.exper_name, 'model_G_ep%03d.pth' % (epoch)) )
+                save_checkpoint( model_G, device, os.path.join(args.save_checkpoints_dir, args.exper_name, 'model_G_final.pth') )
+                print( "saved checkpoints" )
 
     print("Finished Training Loop.")
-    save_checkpoint( model_G, device, os.path.join(args.save_checkpoints_dir, args.exper_name, 'model_G_final.pth') )
+    if( rank == 0 ):
+        save_checkpoint( model_G, device, os.path.join(args.save_checkpoints_dir, args.exper_name, 'model_G_final.pth') )
 
 
 if __name__ == '__main__':
@@ -348,4 +335,4 @@ if __name__ == '__main__':
             nprocs=len(args.gpu_ids), join=True
         )
     else:
-        train(gpu_id=0, args=args)
+        train(rank=0, args=args)

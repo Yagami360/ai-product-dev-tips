@@ -1,56 +1,24 @@
-# 【PyTorch】DDP [DistributedDataParallel] を使用した高速化
+# 【PyTorch】DDP [DistributedDataParallel] を使用した複数プロセス + 複数GPU での高速化
 
-DDP [DistributedDataParallel] を行う `torch.nn.parallel.DistributedDataParallel()` を使用すれば、DP [DataParallel] を行う `torch.nn.DataParallel()` を使用した高速化よりも更に高速化することができる。但し、DP を使用した場合に比べて、実装が少々面倒になるというデメリットはある。
+DP では、１つのプロセスを複数の GPU で動作させるような並列化処理であり、誤差逆伝播法の処理のみを並列化した処理になっている。<br>
+一方 DDP では、１つのプロセスに対して１つの GPU で動作させるような並列化処理になっている（例えば、４つの GPU で学習する場合は、４つのプロセスが動作し、各々のプロセスで１つの GPU が動作する処理となる。）また、誤差逆伝播の処理以外にもデータローダーでの処理も並列化するという違いもある。
 
-DP は
+これにより、DDP は DP を利用した高速化に比べて、より高速化することができる。
+但し、DP を使用した場合に比べて、実装が面倒になるというデメリットや消費メモリが多くなるというデメリットはある。
 
-DDP は単一のGPU
+PYtoch での DDP は、`torch.nn.parallel.DistributedDataParallel()`, `torch.utils.data.distributed.DistributedSampler()` を使用することで実現できる。
+また DDP を行うための複数プロセス化は、`torch.multiprocessing.spawn()` または `python -m torch.distributed.launch` を使用することで実現できる
 
-- DDP の実装例
-
+- `torch.multiprocessing.spawn()` でプロセスを複数個起動させる場合
     ```python
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--gpu_ids", default="0,1,2,3", help="使用GPU番号")
-    args = parser.parse_args()
-
-    #os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu_ids
-    str_gpu_ids = args.gpu_ids.split(',')
-    args.gpu_ids = []
-    for str_gpu_id in str_gpu_ids:
-        gpu_id = int(str_gpu_id)
-        if gpu_id >= 0:
-            args.gpu_ids.append(gpu_id)  
-
-    #-----------------------------
-    # 実行 Device の設定
-    #-----------------------------
-    if( torch.cuda.is_available() ):
-        if(len(args.gpu_ids) > 2 ):
-            device = torch.device(f'cuda:{args.gpu_ids[0]}')
-        else:
-            device = torch.device(f'cuda:{gpu_id}')
-
-        print( "実行デバイス :", device)
-        print( "GPU名 :", torch.cuda.get_device_name(device))
-        print("torch.cuda.current_device() =", torch.cuda.current_device())
-    else:
-        device = torch.device("cpu")
-        print( "実行デバイス :", device)
-
-    #-----------------------------
-    # モデル定義
-    #-----------------------------
-    model = Network().to(device)
-
-    #-----------------------------
-    # マルチ GPU
-    #-----------------------------
-    if len(args.gpu_ids) >= 2:
-
     ```
 
+- `python -m torch.distributed.launch` でプロセスを複数個起動させる場合
+    ```python
+    ```
 
 
 ## ■ 参考サイト
 - https://qiita.com/meshidenn/items/1f50246cca075fa0fce2
 - https://colab.research.google.com/github/YutaroOgawa/pytorch_tutorials_jp/blob/main/notebook/6_Parallel_Distributed/6_3_getting_started_with_distributed_data_parallel_jp.ipynb
+- https://qiita.com/kamo-naoyuki/items/2671768aa92c4efb4118
