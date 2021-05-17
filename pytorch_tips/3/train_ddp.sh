@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #conda activate pytorch11_py36
 set -eu
 mkdir -p _logs
@@ -6,8 +6,9 @@ mkdir -p _logs
 #GPU_IDS="0"
 #GPU_IDS="1"
 GPU_IDS="0,1,2,3"
-#N_GPUS=1
-N_GPUS=4
+
+GPU_IDS_=(${GPU_IDS//,/})
+N_GPUS="${#GPU_IDS_}"
 
 #----------------------
 # model

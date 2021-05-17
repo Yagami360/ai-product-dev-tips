@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #conda activate pytorch11_py36
 set -eu
 mkdir -p _logs
@@ -6,8 +6,9 @@ mkdir -p _logs
 #GPU_IDS="0"
 #GPU_IDS="1"
 GPU_IDS="0,1,2,3"
-#N_GPUS=1
-N_GPUS=4
+
+GPU_IDS_=(${GPU_IDS//,/})
+N_GPUS="${#GPU_IDS_}"
 
 #----------------------
 # model
@@ -29,10 +30,9 @@ else
 fi
 
 python -m torch.distributed.launch \
-    --nproc_per_node ${N_GPUS} \
-    --nnodes=2 --node_rank=0 \
-    --master_addr="192.168.1.1" --master_port=1234 \
-    python train_ddp2.py \
+    --nproc_per_node ${N_GPUS} --nnodes=1 --node_rank=0 \
+    --master_addr="localhost" --master_port=1234 \
+    train_ddp2.py \
         --exper_name ${EXPER_NAME} \
         --n_epoches ${N_EPOCHES} \
         --image_height ${IMAGE_HIGHT} --image_width ${IMAGE_WIDTH} --batch_size ${BATCH_SIZE} \

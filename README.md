@@ -208,7 +208,7 @@
         - 【PyTorch】AMP [Automatic Mixed Precision] を使用した学習と推論の高速化
         - [【PyTorch】DDP [DistributedDataParallel] を使用した複数プロセス + 複数GPU での高速化](https://github.com/Yagami360/MachineLearning_Tips/tree/master/pytorch_tips/3)
         - 【PyTorch】DDP + AMP を使用した高速化
-        - 【PyTorch】データローダーでの前処理を GPU 動作させて高速化する（PyTorch 1.7 , torchvison 0.8 以降）
+        - 【PyTorch】データローダーでの前処理を GPU 動作させて高速化する（PyTorch 1.7, torchvison 0.8 以降）
     - 表示処理
         - 【PyTorch】tensorboard の画像出力を横軸縦軸に並べて表示する
         - 【PyTorch】TensorBoard のヒストグラムにネットワークの重みを表示する。
