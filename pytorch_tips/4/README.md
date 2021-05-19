@@ -1,5 +1,7 @@
 # 【PyTorch】DDP + AMP を使用した高速化
 
+## ■ `apex.amp` 使用時
+
 AMP [Automatic Mixed Precision] と DDP を同時に使用する場合は、「[【PyTorch】DDP [DistributedDataParallel] を使用した複数プロセス + 複数GPU での高速化](https://github.com/Yagami360/MachineLearning_Tips/tree/master/pytorch_tips/3)」記載の方法に対して、`torch.nn.parallel.DistributedDataParallel` を `apex.parallel.DistributedDataParallel` に置き換えた上で、AMP の設定をすれば良い
 
 - 学習スクリプトのコード例（一部抜粋）
@@ -188,3 +190,7 @@ AMP [Automatic Mixed Precision] と DDP を同時に使用する場合は、「[
     optimizer_G.step()
     ```
     
+
+## ■ `torch.cuda.amp` 使用時（pytorch 1.6 以降のみ使用可能）
+
+xxx

@@ -1,6 +1,13 @@
 # 【PyTorch】AMP [Automatic Mixed Precision] を使用した学習と推論の高速化
 
-## 単一の optimerzer で構成されるモデルの場合
+
+## ■ `apex.amp` 使用時
+
+## ◎ AMP のインストール
+- https://github.com/NVIDIA/apex
+
+
+## ◎ 単一の optimerzer で構成されるモデルの場合
 
 - 学習スクリプトのコード例
     ```python
@@ -36,6 +43,10 @@
     ```python
     ```
 
-## 複数の optimizer で構成されるモデルの場合
-GAN のように複数モデル（生成器 + 識別器）と複数の optimizer（生成器の optimizer + 識別器の optimizer）が存在する場合は、
+### ◎ 複数の optimizer で構成されるモデルの場合
+GAN のように複数モデル（生成器 + 識別器）と複数の optimizer（生成器の optimizer + 識別器の optimizer）が存在する場合は、xxx
 
+
+## ■ `torch.cuda.amp` 使用時（pytorch 1.6 以降のみ使用可能）
+
+xxx
