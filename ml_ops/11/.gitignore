@@ -1,0 +1,6 @@
+aws_key
+terraform/.terraform
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+*.info

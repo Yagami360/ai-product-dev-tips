@@ -177,8 +177,7 @@ def train(rank, args, group_name="nccl"):
             # 生成器の更新処理
             #----------------------------------------------------
             # 損失関数を計算する
-            #loss_G = loss_fn( output, target )
-            loss_G = torch.zeros(1, requires_grad=True).float().to(device)
+            loss_G = loss_fn( output, target )
 
             # ネットワークの更新処理
             optimizer_G.zero_grad()

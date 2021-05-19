@@ -8,18 +8,15 @@
 *.code-workspace
 *.html
 *.pt
-*.json
 *.local
 *.out
 *.pth
-*.gif
 *.tfevents.*
 *.pyc
-*.dat
-*.bz2
 
 .vscode
-__pycache__
-_tmp/
-old/
-_old/
+tensorboard
+checkpoints
+results
+
+!dataset

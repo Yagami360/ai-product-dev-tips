@@ -1,0 +1,7 @@
+*.json
+*.rules
+*.log
+!*.html
+
+.firebaserc
+.firebase
