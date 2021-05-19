@@ -246,7 +246,16 @@ PYtoch での DDP は、`torch.nn.parallel.DistributedDataParallel()`, `torch.ut
     dist.init_process_group("gloo", rank=rank, world_size=len(args.gpu_ids))
     ```
 
-- `torch.utils.data.distributed.DistributedSampler` で<br>
+- `torch.cuda.set_device()` で使用 GPU 番号設定<br>
+    `torch.device()` の他にも、`torch.cuda.set_device()` でも使用 GPU 番号を設定する。
+    このとき、`rank` が GPU 番号と一致するので `rank` を指定することで、使用 GPU 番号が適切に設定される。
+    ```python
+    if( torch.cuda.is_available() ):
+        torch.cuda.set_device(rank)
+        device = torch.device(f'cuda:{rank}')
+    ```
+
+- `torch.utils.data.distributed.DistributedSampler` でデータローダー並列化<br>
     `DistributedSampler` によってデータローダーからの Mini-batch が自動的にプロセス数で分割されることでデータローダーでの並列化を実現する。
     `DistributedSampler` は、`torch.utils.data.DataLoader` の 引数 `sampler` に指定することで設定できる。
     ```python

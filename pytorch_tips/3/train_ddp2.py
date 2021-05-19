@@ -23,8 +23,10 @@ from tensorboardX import SummaryWriter
 import torch.distributed as dist
 
 try:
+    import apex
     from apex import amp
 except ImportError:
+    apex = None
     amp = None
 
 # 自作モジュール
@@ -184,7 +186,7 @@ if __name__ == '__main__':
             model_G, 
             optimizer_G, 
             opt_level = args.opt_level,
-            num_losses = 2
+            num_losses = 1
         )
 
     #================================
@@ -192,7 +194,7 @@ if __name__ == '__main__':
     #================================
     if( args.use_ddp ):
         if( args.use_amp ):
-            model_G = apex.parallel.DistributedDataParallel(model_G, device_ids=[args.local_rank])
+            model_G = apex.parallel.DistributedDataParallel(model_G)
         else:
             model_G = torch.nn.parallel.DistributedDataParallel(model_G, device_ids=[args.local_rank])
     else:

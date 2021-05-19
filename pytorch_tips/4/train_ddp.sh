@@ -18,10 +18,10 @@ BATCH_SIZE=4
 IMAGE_HIGHT=128
 IMAGE_WIDTH=128
 
-EXPER_NAME=debug_ddp
+EXPER_NAME=debug_ddp_amp
 rm -rf tensorboard/${EXPER_NAME}
 rm -rf tensorboard/${EXPER_NAME}_valid
-if [ ${EXPER_NAME} = "debug_ddp" ] ; then
+if [ ${EXPER_NAME} = "debug_ddp_amp" ] ; then
     N_DISPLAY_STEP=10
     N_DISPLAY_VALID_STEP=50
 else
@@ -37,6 +37,7 @@ python train_ddp.py \
     --data_augument_types "resize,crop,hflip,vflip,perspect,affine,color,erase,tps" \
     --gpu_ids ${GPU_IDS} \
     --use_ddp \
+    --use_amp \
     --debug
 
 if [ $1 = "poweroff" ] ; then

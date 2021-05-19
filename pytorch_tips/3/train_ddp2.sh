@@ -18,10 +18,10 @@ BATCH_SIZE=4
 IMAGE_HIGHT=128
 IMAGE_WIDTH=128
 
-EXPER_NAME=debug
+EXPER_NAME=debug_ddp2
 rm -rf tensorboard/${EXPER_NAME}
 rm -rf tensorboard/${EXPER_NAME}_valid
-if [ ${EXPER_NAME} = "debug" ] ; then
+if [ ${EXPER_NAME} = "debug_ddp2" ] ; then
     N_DISPLAY_STEP=10
     N_DISPLAY_VALID_STEP=50
 else

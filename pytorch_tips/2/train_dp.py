@@ -160,7 +160,7 @@ if __name__ == '__main__':
             model_G, 
             optimizer_G, 
             opt_level = args.opt_level,
-            num_losses = 2
+            num_losses = 1
         )
 
     #================================

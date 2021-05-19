@@ -26,15 +26,15 @@ except ImportError:
     amp = None
 
 # 自作モジュール
-from data.dataset import Dataset, DataLoader
-from models.networks import Pix2PixHDGenerator
+from data.dataset import TempleteDataset, TempleteDataLoader
+from models.generators import Pix2PixHDGenerator
 from utils.utils import save_checkpoint, load_checkpoint
 from utils.utils import board_add_image, board_add_images, save_image_w_norm
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--exper_name", default="debug", help="実験名")
-    parser.add_argument("--dataset_dir", type=str, default="dataset/sample_dataset_n10")
+    parser.add_argument("--dataset_dir", type=str, default="dataset/templete_dataset")
     parser.add_argument("--results_dir", type=str, default="results")
     parser.add_argument('--save_checkpoints_dir', type=str, default="checkpoints", help="モデルの保存ディレクトリ")
     parser.add_argument('--load_checkpoints_path', type=str, default="", help="モデルの読み込みファイルのパス")
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     parser.add_argument('--n_display_valid', type=int, default=8, help="valid データの tensorboard への表示数")
     parser.add_argument('--data_augument_types', type=str, default="resize,crop")
     parser.add_argument("--seed", type=int, default=71)
-    parser.add_argument('--device', choices=['cpu', 'gpu'], default="gpu", help="使用デバイス (CPU or GPU)")
+    parser.add_argument("--gpu_ids", default="0", help="使用GPU番号")
     parser.add_argument('--n_workers', type=int, default=4, help="CPUの並列化数（0 で並列化なし）")
     parser.add_argument('--use_cuda_benchmark', action='store_true', help="torch.backends.cudnn.benchmark の使用有効化")
     parser.add_argument('--use_cuda_deterministic', action='store_true', help="再現性確保のために cuDNN に決定論的振る舞い有効化")
@@ -63,7 +63,18 @@ if __name__ == '__main__':
     parser.add_argument('--opt_level', choices=['O0','O1','O2','O3'], default='O1', help='mixed precision calculation mode')
     parser.add_argument('--debug', action='store_true')
     args = parser.parse_args()
+
+    # args 引数の分解
     args.data_augument_types = args.data_augument_types.split(',')
+
+    #os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu_ids
+    str_gpu_ids = args.gpu_ids.split(',')
+    args.gpu_ids = []
+    for str_gpu_id in str_gpu_ids:
+        gpu_id = int(str_gpu_id)
+        if gpu_id >= 0:
+            args.gpu_ids.append(gpu_id)  
+
     if( args.debug ):
         for key, value in vars(args).items():
             print('%s: %s' % (str(key), str(value)))
@@ -79,20 +90,13 @@ if __name__ == '__main__':
         os.mkdir( os.path.join(args.save_checkpoints_dir, args.exper_name) )
 
     # 実行 Device の設定
-    if( args.device == "gpu" ):
-        use_cuda = torch.cuda.is_available()
-        if( use_cuda == True ):
-            device = torch.device( "cuda" )
-            #torch.cuda.set_device(args.gpu_ids[0])
-            print( "実行デバイス :", device)
-            print( "GPU名 :", torch.cuda.get_device_name(device))
-            print("torch.cuda.current_device() =", torch.cuda.current_device())
-        else:
-            print( "can't using gpu." )
-            device = torch.device( "cpu" )
-            print( "実行デバイス :", device)
+    if( torch.cuda.is_available() ):
+        device = torch.device(f'cuda:{args.gpu_ids[0]}')
+        print( "実行デバイス :", device)
+        print( "GPU名 :", torch.cuda.get_device_name(device))
+        print("torch.cuda.current_device() =", torch.cuda.current_device())
     else:
-        device = torch.device( "cpu" )
+        device = torch.device("cpu")
         print( "実行デバイス :", device)
 
     # seed 値の固定
@@ -118,16 +122,19 @@ if __name__ == '__main__':
     # データセットの読み込み
     #================================    
     # 学習用データセットとテスト用データセットの設定
-    ds_train = Dataset( args, args.dataset_dir, pairs_file = "train_pairs.csv", datamode = "train", image_height = args.image_height, image_width = args.image_width, data_augument_types = args.data_augument_types, debug = args.debug )
-    ds_valid = Dataset( args, args.dataset_dir, pairs_file = "valid_pairs.csv", datamode = "valid", image_height = args.image_height, image_width = args.image_width, data_augument_types = "none", debug = args.debug )
+    ds_train = TempleteDataset( args, args.dataset_dir, datamode = "train", image_height = args.image_height, image_width = args.image_width, data_augument_types = args.data_augument_types, debug = args.debug )
 
-    dloader_train = torch.utils.data.DataLoader(ds_train, batch_size=args.batch_size, shuffle=True, num_workers = args.n_workers, pin_memory = True )
-    dloader_valid = torch.utils.data.DataLoader(ds_valid, batch_size=args.batch_size_valid, shuffle=False, num_workers = args.n_workers, pin_memory = True )
+    # 学習用データセットとテスト用データセットの設定
+    index = np.arange(len(ds_train))
+    train_index, valid_index = train_test_split( index, test_size=args.val_rate, random_state=args.seed )
+
+    dloader_train = torch.utils.data.DataLoader(Subset(ds_train, train_index), batch_size=args.batch_size, shuffle=True, num_workers = args.n_workers, pin_memory = True )
+    dloader_valid = torch.utils.data.DataLoader(Subset(ds_train, valid_index), batch_size=args.batch_size_valid, shuffle=False, num_workers = args.n_workers, pin_memory = True )
 
     #================================
     # モデルの構造を定義する。
     #================================
-    model_G = Pix2PixHDGenerator(input_nc=3+1+3, output_nc=3).to(device)
+    model_G = Pix2PixHDGenerator().to(device)
     if( args.debug ):
         print( "model_G\n", model_G )
 
@@ -152,6 +159,12 @@ if __name__ == '__main__':
         )
 
     #================================
+    # マルチ GPU
+    #================================
+    if len(args.gpu_ids) >= 2:
+        model_G = torch.nn.DataParallel(model_G)
+
+    #================================
     # loss 関数の設定
     #================================
     loss_fn = nn.L1Loss()
@@ -167,24 +180,20 @@ if __name__ == '__main__':
             model_G.train()
 
             # 一番最後のミニバッチループで、バッチサイズに満たない場合は無視する（後の計算で、shape の不一致をおこすため）
-            if inputs["inputA"].shape[0] != args.batch_size:
+            if inputs["image_s"].shape[0] != args.batch_size:
                 break
 
             # ミニバッチデータを GPU へ転送
-            inputA = inputs["inputA"].to(device)
-            inputB = inputs["inputB"].to(device)
-            inputC = inputs["inputC"].to(device)
-            target = inputs["target"].to(device)
+            image_s = inputs["image_s"].to(device)
+            image_t = inputs["image_t"].to(device)
             if( args.debug and n_print > 0):
-                print( "[inputA] shape={}, dtype={}, min={}, max={}".format(inputA.shape, inputA.dtype, torch.min(inputA), torch.max(inputA)) )
-                print( "[inputB] shape={}, dtype={}, min={}, max={}".format(inputB.shape, inputB.dtype, torch.min(inputB), torch.max(inputB)) )
-                print( "[inputC] shape={}, dtype={}, min={}, max={}".format(inputC.shape, inputC.dtype, torch.min(inputC), torch.max(inputC)) )
-                print( "[target] shape={}, dtype={}, min={}, max={}".format(target.shape, target.dtype, torch.min(target), torch.max(target)) )
+                print( "[image_s] shape={}, dtype={}, device={}, min={}, max={}".format(image_s.shape, image_s.dtype, image_s.device, torch.min(image_s), torch.max(image_s)) )
+                print( "[image_t] shape={}, dtype={}, device={}, min={}, max={}".format(image_t.shape, image_t.dtype, image_t.device, torch.min(image_t), torch.max(image_t)) )
 
             #----------------------------------------------------
             # 生成器 の forword 処理
             #----------------------------------------------------
-            output = model_G( torch.cat((inputA,inputB,inputC),dim=1) )
+            output = model_G( image_s )
             if( args.debug and n_print > 0 ):
                 print( "output.shape : ", output.shape )
 
@@ -192,7 +201,7 @@ if __name__ == '__main__':
             # 生成器の更新処理
             #----------------------------------------------------
             # 損失関数を計算する
-            loss_G = loss_fn( output, target )
+            loss_G = loss_fn( output, image_t )
 
             # ネットワークの更新処理
             optimizer_G.zero_grad()
@@ -220,7 +229,7 @@ if __name__ == '__main__':
 
                 # visual images
                 visuals = [
-                    [ inputA.detach(), inputB.detach(), inputC.detach(), output.detach(), target.detach() ],
+                    [ image_s.detach(), image_t.detach(), output.detach() ],
                 ]
                 board_add_images(board_train, 'train', visuals, step+1)
 
@@ -234,28 +243,27 @@ if __name__ == '__main__':
                     model_G.eval()            
 
                     # 一番最後のミニバッチループで、バッチサイズに満たない場合は無視する（後の計算で、shape の不一致をおこすため）
-                    if inputs["inputA"].shape[0] != args.batch_size_valid:
+                    if inputs["image_s"].shape[0] != args.batch_size_valid:
                         break
 
                     # ミニバッチデータを GPU へ転送
-                    inputA = inputs["inputA"].to(device)
-                    inputB = inputs["inputB"].to(device)
-                    inputC = inputs["inputC"].to(device)
-                    target = inputs["target"].to(device)
+                    image_s = inputs["image_s"].to(device)
+                    image_t = inputs["image_t"].to(device)
 
                     # 推論処理
                     with torch.no_grad():
-                        output = model_G( torch.cat((inputA,inputB,inputC),dim=1) )
+                        output = model_G( image_s )
 
                     # 損失関数を計算する
-                    loss_G = loss_fn( output, target )
+                    #loss_G = loss_fn( output, image_t )
+                    loss_G = torch.zeros(1, requires_grad=True).float().to(device)
                     loss_G_total += loss_G
 
                     # 生成画像表示
                     if( iter <= args.n_display_valid ):
                         # visual images
                         visuals = [
-                            [ inputA.detach(), inputB.detach(), inputC.detach(), output.detach(), target.detach() ],
+                            [ image_s.detach(), image_t.detach(), output.detach() ],
                         ]
                         board_add_images(board_valid, 'valid/{}'.format(iter), visuals, step+1)
 
