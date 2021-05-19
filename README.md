@@ -2,9 +2,7 @@
 機械学習のための Tips 集。<br>
 開発環境・クラウド処理・前処理・機械学習フレームワーク・アプリケーション別の処理（画像処理、テーブルデータ処理など）・機械学習基盤（MLOps） などの機械学習に関わる幅広い範囲の Tips 集になってます。
 
-## ■ 項目
-
-### ◎ 基本事項
+## ■ 基本事項
 - 入出力処理
     - [【シェルスクリプト】フォルダ内のファイル数を確認する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/io_processing/2)
     - [【Python】フォルダ内のファイル一覧を取得する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/io_processing/1)
@@ -30,7 +28,7 @@
     - [【シェルスクリプト】ポートフォワーディングを使用した tensorboard 接続](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/21)
     - VPN 接続
 
-### ◎ 機械学習基盤（MLOps）
+## ■ 機械学習基盤（MLOps）
 - クラウド環境一般
     - AWS
         - 【AWS】EC インスタンスのディスク容量を後から増設する。
@@ -130,7 +128,7 @@
         - [<In-progress>【Kubeflow】GKE クラスタに Kubeflow を構築する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/2)
         - [【Kubeflow】Google AI Platform Pipelines を利用して Kubeflow Pipelines の構築する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/3)
 
-### ◎ アプリ開発
+## ■ アプリ開発
 
 - iOS アプリ開発
     - iOS アプリ開発の基本事項
@@ -138,7 +136,7 @@
     - [【Firebase】iOS アプリから Firebase Cloud Functions を利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ios_app/3)
     - 【Firebase】Firebase Authentication を使用して iOS アプリに Authentication 機能を導入する
 
-### ◎ 前処理・後処理（アプリケーション別）
+## ■ 前処理・後処理（アプリケーション別）
 
 - テーブルデータ処理
     - 【Python】pandas_profiling でテーブルデータの統計情報を確認する。
@@ -193,7 +191,7 @@
     - cupy
     - OpenCV (GPU版)
 
-### ◎ 機械学習フレームワーク
+## ■ 機械学習フレームワーク
 - PyTorch
     - 学習＆推論処理
         - 【PyTorch】学習用データセットと検証用データセットの分割
@@ -238,7 +236,7 @@
     - 【Keras】複数 GPU での学習
     - 【Keras】AMP（混合精度）を使用した高速化
 
-### ◎ その他
+## ■ その他
 
 - xxx
 

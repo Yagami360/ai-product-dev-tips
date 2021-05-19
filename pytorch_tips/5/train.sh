@@ -9,8 +9,8 @@ GPU_IDS="0"
 #----------------------
 # model
 #----------------------
-N_EPOCHES=10
-BATCH_SIZE=1
+N_EPOCHES=100
+BATCH_SIZE=4
 IMAGE_HIGHT=128
 IMAGE_WIDTH=128
 
@@ -30,7 +30,7 @@ python train.py \
     --n_epoches ${N_EPOCHES} \
     --image_height ${IMAGE_HIGHT} --image_width ${IMAGE_WIDTH} --batch_size ${BATCH_SIZE} \
     --n_diaplay_step ${N_DISPLAY_STEP} --n_display_valid_step ${N_DISPLAY_VALID_STEP} \
-    --data_augument_types "resize,crop,hflip,vflip,perspect,affine,color,erase,tps" \
+    --data_augument_types "resize,crop,hflip,vflip,perspect,affine,color,tps" \
     --gpu_ids ${GPU_IDS} \
     --use_amp \
     --debug

@@ -5,7 +5,6 @@ mkdir -p _logs
 
 GPU_IDS="0"
 #GPU_IDS="1"
-#GPU_IDS="0,1,2,3"
 
 #----------------------
 # model
@@ -29,6 +28,7 @@ python test.py \
     --n_samplings ${N_SAMPLING} \
     --image_height ${IMAGE_HIGHT} --image_width ${IMAGE_WIDTH} --batch_size_test 1 \
     --gpu_ids ${GPU_IDS} \
+    --use_amp \
     --debug
 
 if [ $1 = "poweroff" ] ; then

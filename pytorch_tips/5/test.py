@@ -20,9 +20,14 @@ import torchvision
 from torchvision.utils import save_image
 from tensorboardX import SummaryWriter
 
+try:
+    from apex import amp
+except ImportError:
+    amp = None
+
 # 自作モジュール
 from data.dataset import TempleteDataset, TempleteDataLoader
-from models.networks import TempleteNetworks
+from models.generators import Pix2PixHDGenerator
 from utils.utils import save_checkpoint, load_checkpoint
 from utils.utils import board_add_image, board_add_images, save_image_w_norm
 
@@ -43,6 +48,8 @@ if __name__ == '__main__':
     parser.add_argument('--use_cuda_benchmark', action='store_true', help="torch.backends.cudnn.benchmark の使用有効化")
     parser.add_argument('--use_cuda_deterministic', action='store_true', help="再現性確保のために cuDNN に決定論的振る舞い有効化")
     parser.add_argument('--detect_nan', action='store_true')
+    parser.add_argument('--use_amp', action='store_true', help="AMP [Automatic Mixed Precision] の使用有効化")
+    parser.add_argument('--opt_level', choices=['O0','O1','O2','O3'], default='O1', help='mixed precision calculation mode')
     parser.add_argument('--debug', action='store_true')
     args = parser.parse_args()
 
@@ -68,11 +75,7 @@ if __name__ == '__main__':
 
     # 実行 Device の設定
     if( torch.cuda.is_available() ):
-        if(len(args.gpu_ids) > 2 ):
-            device = torch.device(f'cuda:{args.gpu_ids[0]}')
-        else:
-            device = torch.device(f'cuda:{gpu_id}')
-
+        device = torch.device(f'cuda:{args.gpu_ids[0]}')
         print( "実行デバイス :", device)
         print( "GPU名 :", torch.cuda.get_device_name(device))
         print("torch.cuda.current_device() =", torch.cuda.current_device())
@@ -108,7 +111,7 @@ if __name__ == '__main__':
     #================================
     # モデルの構造を定義する。
     #================================
-    model_G = TempleteNetworks().to(device)
+    model_G = Pix2PixHDGenerator().to(device)
     if( args.debug ):
         print( "model_G\n", model_G )
 
@@ -133,7 +136,6 @@ if __name__ == '__main__':
             num_losses = 1
         )
 
-
     #================================
     # マルチ GPU
     #================================
@@ -147,31 +149,31 @@ if __name__ == '__main__':
     n_print = 1
     model_G.eval()
     for step, inputs in enumerate( tqdm( dloader_test, desc = "Samplings" ) ):
-        if inputs["image"].shape[0] != args.batch_size_test:
+        if inputs["image_s"].shape[0] != args.batch_size_test:
             break
 
         # ミニバッチデータを GPU へ転送
-        image_name = inputs["image_name"]
-        image = inputs["image"].to(device)
+        image_s_name = inputs["image_s_name"]
+        image_s = inputs["image_s"].to(device)
         if( args.debug and n_print > 0):
-            print( "image.shape : ", image.shape )
+            print( "image_s.shape : ", image_s.shape )
 
         #----------------------------------------------------
         # 生成器の推論処理
         #----------------------------------------------------
         with torch.no_grad():
-            output = model_G( image )
+            output = model_G( image_s )
             if( args.debug and n_print > 0 ):
                 print( "output.shape : ", output.shape )
 
         #====================================================
         # 推論結果の保存
         #====================================================
-        save_image_w_norm( output, os.path.join( args.results_dir, args.exper_name, "output", image_name[0] ) )
+        save_image_w_norm( output, os.path.join( args.results_dir, args.exper_name, "output", image_s_name[0] ) )
 
         # tensorboard
         visuals = [
-            [ image, output ],
+            [ image_s, output ],
         ]
         board_add_images(board_test, 'test', visuals, step+1)
 
