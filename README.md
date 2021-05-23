@@ -172,6 +172,11 @@
         - [【Python】OpenPose の関節点情報に基づき、人物画像が正面を向いているか後ろを向いているか判定する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/image_processing/openpose/2)
         - [【Python】OpenPose の関節点情報と人物パース画像に基づき、人物画像が半袖を着ているかを検出する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/image_processing/openpose/4)
         - [【Python】OpenPose の関節点情報に基づき、人物セグメンテーション画像に、他の人体部位のラベルを追加する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/image_processing/openpose/5)
+    - DensePose による姿勢推定
+        - [DensePose の推論 API](https://github.com/Yagami360/densepose_wrapper)
+        - [DensePose の IUV 画像から人物パース画像を取得する](https://github.com/Yagami360/densepose_wrapper/blob/master/visualization.py)
+        - [DensePose の IUV 画像から UV 値の等高線画像を取得する](https://github.com/Yagami360/densepose_wrapper/blob/master/visualization.py)
+        - [DensePose と人物パースモデルを用いて、人物画像における手領域の画像を取得する](https://github.com/Yagami360/hand-image-extractor-api)
     - dlib による顔の landmark 検出
         - [【Python】dlib で顔の landmark 検出を検出し、画像上に表示する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/image_processing/15)
 
