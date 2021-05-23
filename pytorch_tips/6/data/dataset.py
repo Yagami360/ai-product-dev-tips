@@ -53,19 +53,24 @@ class TempleteDataset(data.Dataset):
         transform_mask_woToTensor_list = []
 
         if( "resize" in data_augument_types ):
-            transform_list.append(transforms.Resize( (args.image_height, args.image_width), interpolation=Image.LANCZOS ))
-            transform_mask_list.append(transforms.Resize( (args.image_height, args.image_width), interpolation=Image.NEAREST ))
-            transform_mask_woToTensor_list.append(transforms.Resize( (args.image_height, args.image_width), interpolation=Image.NEAREST ))
+            if( int(torchvision.__version__.split(".")[0]) >= 0 and int(torchvision.__version__.split(".")[1]) >= 8 and self.args.use_transforms_gpus ):
+                transform_list.append(transforms.Resize( (args.image_height, args.image_width), interpolation=transforms.functional.InterpolationMode.BICUBIC ))
+                transform_mask_list.append(transforms.Resize( (args.image_height, args.image_width), interpolation=transforms.functional.InterpolationMode.NEAREST ))
+                transform_mask_woToTensor_list.append(transforms.Resize( (args.image_height, args.image_width), interpolation=transforms.functional.InterpolationMode.NEAREST ))
+            else:
+                transform_list.append(transforms.Resize( (args.image_height, args.image_width), interpolation=Image.LANCZOS ))
+                transform_mask_list.append(transforms.Resize( (args.image_height, args.image_width), interpolation=Image.NEAREST ))
+                transform_mask_woToTensor_list.append(transforms.Resize( (args.image_height, args.image_width), interpolation=Image.NEAREST ))
         if( "crop" in data_augument_types ):
             transform_list.append(transforms.CenterCrop( size = (args.image_height, args.image_width) ))
             transform_mask_list.append(transforms.CenterCrop( size = (args.image_height, args.image_width) ))
             transform_mask_woToTensor_list.append(transforms.CenterCrop( size = (args.image_height, args.image_width) ))
-        """
         if( "tps" in data_augument_types ):
-            transform_list.append(TPSTransform(tps_points_per_dim=5))
-            transform_mask_list.append(TPSTransform(tps_points_per_dim=5))
-            transform_mask_woToTensor_list.append(TPSTransform(tps_points_per_dim=5))
-        """
+            if not( int(torchvision.__version__.split(".")[0]) >= 0 and int(torchvision.__version__.split(".")[1]) >= 8 ):
+                if not( args.use_transforms_gpus ):
+                    transform_list.append(TPSTransform(tps_points_per_dim=5))
+                    transform_mask_list.append(TPSTransform(tps_points_per_dim=5))
+                    transform_mask_woToTensor_list.append(TPSTransform(tps_points_per_dim=5))
         if( "hflip" in data_augument_types ):
             transform_list.append(transforms.RandomHorizontalFlip())
             transform_mask_list.append(transforms.RandomHorizontalFlip())
@@ -75,9 +80,14 @@ class TempleteDataset(data.Dataset):
             transform_mask_list.append(transforms.RandomVerticalFlip())
             transform_mask_woToTensor_list.append(transforms.RandomVerticalFlip())
         if( "affine" in data_augument_types ):
-            transform_list.append(transforms.RandomAffine(degrees = (-10,10),  translate=(0.15, 0.15), scale = (0.85,1.25), resample=Image.BICUBIC))
-            transform_mask_list.append(transforms.RandomAffine(degrees = (-10,10),  translate=(0.15, 0.15), scale = (0.85,1.25), resample=Image.NEAREST))
-            transform_mask_woToTensor_list.append(transforms.RandomAffine(degrees = (-10,10),  translate=(0.15, 0.15), scale = (0.85,1.25), resample=Image.NEAREST))
+            if( int(torchvision.__version__.split(".")[0]) >= 0 and int(torchvision.__version__.split(".")[1]) >= 8 and self.args.use_transforms_gpus ):
+                transform_list.append(transforms.RandomAffine(degrees = (-10,10),  translate=(0.15, 0.15), scale = (0.85,1.25), interpolation=transforms.functional.InterpolationMode.BILINEAR))
+                transform_mask_list.append(transforms.RandomAffine(degrees = (-10,10),  translate=(0.15, 0.15), scale = (0.85,1.25), interpolation=transforms.functional.InterpolationMode.NEAREST))
+                transform_mask_woToTensor_list.append(transforms.RandomAffine(degrees = (-10,10),  translate=(0.15, 0.15), scale = (0.85,1.25), interpolation=transforms.functional.InterpolationMode.NEAREST))
+            else:
+                transform_list.append(transforms.RandomAffine(degrees = (-10,10),  translate=(0.15, 0.15), scale = (0.85,1.25), resample=Image.BICUBIC))
+                transform_mask_list.append(transforms.RandomAffine(degrees = (-10,10),  translate=(0.15, 0.15), scale = (0.85,1.25), resample=Image.NEAREST))
+                transform_mask_woToTensor_list.append(transforms.RandomAffine(degrees = (-10,10),  translate=(0.15, 0.15), scale = (0.85,1.25), resample=Image.NEAREST))
         if( "perspect" in data_augument_types ):
             transform_list.append(transforms.RandomPerspective())
             transform_mask_list.append(transforms.RandomPerspective())
@@ -85,7 +95,7 @@ class TempleteDataset(data.Dataset):
         if( "color" in data_augument_types ):
             transform_list.append(transforms.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5))
 
-        if( int(torchvision.__version__.split(".")[0]) >= 0 and int(torchvision.__version__.split(".")[1]) >= 8  ):
+        if( int(torchvision.__version__.split(".")[0]) >= 0 and int(torchvision.__version__.split(".")[1]) >= 8 and self.args.use_transforms_gpus ):
             transform_list.append(transforms.ConvertImageDtype(torch.float32))
             transform_mask_list.append(transforms.ConvertImageDtype(torch.float32))
         else:
@@ -95,13 +105,14 @@ class TempleteDataset(data.Dataset):
         transform_list.append(transforms.Normalize([0.5,0.5,0.5],[0.5,0.5,0.5]))
         transform_mask_list.append(transforms.Normalize([0.5],[0.5]))
 
-        """
         if( "erase" in data_augument_types ):
-            transform_list.append(RandomErasing( probability = 0.5, sl = 0.02, sh = 0.2, r1 = 0.3, mean=[-1.0, -1.0, -1.0] ))
-            transform_mask_list.append(RandomErasing( probability = 0.5, sl = 0.02, sh = 0.2, r1 = 0.3, mean=[-1.0] ))
-            transform_mask_woToTensor_list.append(RandomErasing( probability = 0.5, sl = 0.02, sh = 0.2, r1 = 0.3, mean=[-1.0] ))
-        """
-        if( int(torchvision.__version__.split(".")[0]) >= 0 and int(torchvision.__version__.split(".")[1]) >= 8  ):
+            if not( int(torchvision.__version__.split(".")[0]) >= 0 and int(torchvision.__version__.split(".")[1]) >= 8 ):
+                if not( args.use_transforms_gpus ):
+                    transform_list.append(RandomErasing( probability = 0.5, sl = 0.02, sh = 0.2, r1 = 0.3, mean=[-1.0, -1.0, -1.0] ))
+                    transform_mask_list.append(RandomErasing( probability = 0.5, sl = 0.02, sh = 0.2, r1 = 0.3, mean=[-1.0] ))
+                    transform_mask_woToTensor_list.append(RandomErasing( probability = 0.5, sl = 0.02, sh = 0.2, r1 = 0.3, mean=[-1.0] ))
+
+        if( int(torchvision.__version__.split(".")[0]) >= 0 and int(torchvision.__version__.split(".")[1]) >= 8 and args.use_transforms_gpus ):
             self.transform = nn.Sequential(*transform_list)
             self.transform_mask = nn.Sequential(*transform_mask_list)
             self.transform_mask_woToTensor = nn.Sequential(*transform_mask_woToTensor_list)
@@ -129,8 +140,7 @@ class TempleteDataset(data.Dataset):
         self.seed_da = random.randint(0,10000)
 
         # image
-        #image = Image.open( os.path.join(self.image_dir,image_name) ).convert('RGB')
-        if( int(torchvision.__version__.split(".")[0]) >= 0 and int(torchvision.__version__.split(".")[1]) >= 8  ):
+        if( int(torchvision.__version__.split(".")[0]) >= 0 and int(torchvision.__version__.split(".")[1]) >= 8 and self.args.use_transforms_gpus ):
             image = read_image( os.path.join(self.image_dir,image_name) )
         else:
             image = Image.open( os.path.join(self.image_dir,image_name) ).convert('RGB')
@@ -142,8 +152,7 @@ class TempleteDataset(data.Dataset):
 
         # target
         if( self.datamode == "train" ):
-            #target = Image.open( os.path.join(self.target_dir, target_name) )
-            if( int(torchvision.__version__.split(".")[0]) >= 0 and int(torchvision.__version__.split(".")[1]) >= 8  ):
+            if( int(torchvision.__version__.split(".")[0]) >= 0 and int(torchvision.__version__.split(".")[1]) >= 8 and self.args.use_transforms_gpus ):
                 target = read_image( os.path.join(self.target_dir, target_name) )
             else:
                 target = Image.open( os.path.join(self.target_dir, target_name) )

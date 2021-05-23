@@ -61,6 +61,7 @@ if __name__ == '__main__':
     parser.add_argument('--detect_nan', action='store_true')
     parser.add_argument('--use_amp', action='store_true', help="AMP [Automatic Mixed Precision] の使用有効化")
     parser.add_argument('--opt_level', choices=['O0','O1','O2','O3'], default='O1', help='mixed precision calculation mode')
+    parser.add_argument('--use_transforms_gpus', action='store_true', help="GPU での前処理有効化（torch vison 0.8 以降のみ有効）")
     parser.add_argument('--debug', action='store_true')
     args = parser.parse_args()
 

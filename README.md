@@ -206,7 +206,7 @@
         - [【PyTorch】AMP [Automatic Mixed Precision] を使用した学習と推論の高速化](https://github.com/Yagami360/MachineLearning_Tips/tree/master/pytorch_tips/5)
         - [【PyTorch】DDP [DistributedDataParallel] を使用した複数プロセス + 複数GPU での高速化](https://github.com/Yagami360/MachineLearning_Tips/tree/master/pytorch_tips/3)
         - [【PyTorch】DDP + AMP を使用した高速化](https://github.com/Yagami360/MachineLearning_Tips/tree/master/pytorch_tips/4)
-        - 【PyTorch】データローダーでの前処理を GPU 動作させて高速化する（PyTorch 1.7, torchvison 0.8 以降）
+        - [【PyTorch】データローダーでの前処理を GPU 動作させて高速化する（PyTorch 1.7, torchvison 0.8 以降）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/pytorch_tips/6)
     - 表示処理
         - 【PyTorch】tensorboard の画像出力を横軸縦軸に並べて表示する
         - 【PyTorch】TensorBoard のヒストグラムにネットワークの重みを表示する。
@@ -220,6 +220,7 @@
     - その他
         - 【PyTorch】OpenCV ↔ Pillow ↔ numpy ↔ Tensor [PyTorch] の変換対応
         - 【PyTorch】再現性確保のためのシード値固定処理
+        - 【PyTorch】GPU での処理時間を計測する : `torch.cuda.Event()` 使用する方法
 
 - Tensorflow
     - 【Tensorflow】Dataset API を使用したデータローダー（tensorflow 1.4以降, tensoflow 2.x）
