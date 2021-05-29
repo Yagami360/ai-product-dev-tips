@@ -35,7 +35,6 @@
     - GCP
         - [【シェルスクリプト】GCP に DeepLearning 環境を自動的に構築する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/6)
         - 【GCP】GCP ディスクを `gcsfuse` コマンドでマウントする。
-        - [【GCP】Cloud Scheduler 機能を用いて、サーバーを一定の時間間隔で起動・停止する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/4)
         - [【GCP】サーバー起動後に自動的に実行するスクリプトを設定する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/5)
         - 【GCP】インスタンスグループを利用したオートスケーリング、ロードバランサーの導入
 - コンテナ基盤
@@ -122,6 +121,13 @@
 - サーバーのロギング / モニタリング
     - Datadog
     - 【GCP】Stackdriver
+- メッセージングサービス・キューサービス
+    - [メッセージングサービス・キューサービスの基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/17)
+    - [【GCP】Google Cloud Pub/Sub の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/18)
+    - [【GCP】Google Cloud Pub/Sub を Python スクリプト上で利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/19)
+    - [【GCP】Cloud Scheduler と Google Pub/Sub を用いて、サーバーを一定の時間間隔で起動・停止する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/4)
+    - docker + Flask での Web-API を Cloud Pub/Sub を利用して非同期実行する
+    - 機械学習モデルの推論 API を Cloud Pub/Sub を利用して非同期実行する
 - 機械学習ワークフロー
     - Kubeflow
         - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/1)
