@@ -4,6 +4,9 @@ import time, datetime
 from google.cloud import pubsub_v1
 
 def callback(message):
+    """
+    トピックにメッセージが届いたときに呼び出されるコールバック関数
+    """
     now = datetime.datetime.now()
     print( "msg = \"" + message.data.decode("utf-8") + "\"" +  "  [" + now.isoformat(" ") + "]")
 

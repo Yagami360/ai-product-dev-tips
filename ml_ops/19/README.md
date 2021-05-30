@@ -1,4 +1,4 @@
-# 【GCP】Google Cloud Pub/Sub を Python スクリプト上で利用する
+# 【GCP】Google Cloud Pub/Sub を Python スクリプト上で利用する（PULL 方式）
 
 ## ■ 使用法
 
@@ -111,6 +111,9 @@
     from google.cloud import pubsub_v1
 
     def callback(message):
+        """
+        トピックにメッセージが届いたときに呼び出されるコールバック関数
+        """
         now = datetime.datetime.now()
         print( "msg = \"" + message.data.decode("utf-8") + "\"" +  "  [" + now.isoformat(" ") + "]")
 
@@ -148,6 +151,8 @@
     # サブスクライバーの Python スクリプトを実行する
     python sub.py --project_id ${PROJECT_ID} --sub_name ${SUBSCRIPTION_NAME} --credentials_file_path ${CREDENTIALS_FILE_PATH
     ```
+    > ここでの処理は、PULL 方式（受信側が一定間隔でトピックをサンプリング）でのやりとりになっていることに注意
+
 
 ## ■ 参考サイト
 - https://ohshige.hatenablog.com/entry/2019/03/25/190000

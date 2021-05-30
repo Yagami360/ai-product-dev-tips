@@ -118,16 +118,24 @@
         - [【BigQuery】BigQuery を使用したデータ処理（GUI使用時）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/7)
         - [【BigQuery】BigQuery を使用したデータ処理（CLI使用時）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/8)
         - 【BigQuery】BigQuery を使用したデータ処理（Python 用 BigQuery Storage API ライブラリ使用時）
+    - Redis
+        - Redis の基礎事項
+        - Redis を Python スクリプトで使用する
+        - Redis を Python でのジョブキューとして利用する
 - サーバーのロギング / モニタリング
     - Datadog
     - 【GCP】Stackdriver
 - メッセージングサービス・キューサービス
     - [メッセージングサービス・キューサービスの基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/17)
-    - [【GCP】Google Cloud Pub/Sub の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/18)
-    - [【GCP】Google Cloud Pub/Sub を Python スクリプト上で利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/19)
-    - [【GCP】Cloud Scheduler と Google Pub/Sub を用いて、サーバーを一定の時間間隔で起動・停止する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/4)
-    - docker + Flask での Web-API を Cloud Pub/Sub を利用して非同期実行する
-    - 機械学習モデルの推論 API を Cloud Pub/Sub を利用して非同期実行する
+    - 【GCP】Google Cloud Pub/Sub
+        - [【GCP】Google Cloud Pub/Sub の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/18)
+        - [【GCP】Google Cloud Pub/Sub を Python スクリプト上で利用する（PULL 方式）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/19)
+        - 【GCP】Google Cloud Pub/Sub を Python スクリプト上で利用する（PUSH 方式）
+        - [【GCP】Cloud Scheduler と Google Pub/Sub を用いて、サーバーを一定の時間間隔で起動・停止する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/4)
+        - docker + Flask での Web-API を Cloud Pub/Sub を利用して非同期実行する（PULL方式）
+        - 機械学習モデルの推論 API を Cloud Pub/Sub を利用して非同期実行する（PULL方式）
+    - Redis
+        - Redis を Python でのジョブキューとして利用する
 - 機械学習ワークフロー
     - Kubeflow
         - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/1)
