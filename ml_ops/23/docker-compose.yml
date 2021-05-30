@@ -1,0 +1,14 @@
+version: '2.3'
+
+services:
+  redis_server:
+    container_name: redis_container
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    command: bash -c "redis-server"
