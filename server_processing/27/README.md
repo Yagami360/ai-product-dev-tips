@@ -6,6 +6,10 @@
     Python で記述された Web アプリケーションと Web サーバー間との通信仕様を定めた通信プロトコル。この WSGI に従ったアプリケーションを動作させたサーバーを WSGI サーバーという<br>
     Flask や Django などのほとんどの Python 製 Web フレームワークは、この WSGI という通信プロトコルに則っている。<br>
 
+- ASGI [Asynchronous Server Gateway Interface]<br>
+    WSGI の拡張プ通信ロトコルで、非同期処理に対応した通信プロトコル。この ASGI に従ったアプリケーションを動作させたサーバーを ASGI サーバーという。<br>
+    FastAPI は、ASGI に準拠した Web フレームワークになっている
+
 - uWSGI<br>
     WSGI サーバーの１種で、アプリケーションサーバー（Flask, Django など）とウェブサーバ（nginxなど）をつなぐサーバ。<br>
     uWSGI は、Web サーバーとアプリケーションサーバーに対して、HTTP 通信と UNIXドメインソケット通信の方法で通信することができる

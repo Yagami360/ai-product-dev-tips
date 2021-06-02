@@ -56,7 +56,7 @@
         - 【GKE】Workload Identity を用いた GKE クラスタから GCP リソースへのアクセス
 - 認証基盤
     - [【GCP】GCP の認証システム](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/11)
-- Web サーバー
+- Web サーバー / WSGI サーバー
     - nginx
         - [【nginx】nginx の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/22)
         - [【nginx】nginx での Webサーバーを https 化する（自己署名SSL認証書を使用する場合）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/23)
@@ -66,6 +66,7 @@
     - WSGI/ uWSGI
         - [【uWSGI】WSGI / uWSGI の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/27)
         - [【uWSGI】docker + nginx + uWSGI + Flask を用いた Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/28)
+    - Gunicorn
 - Web フレームワーク
     - REST API / RESTful API
         - [REST API / RESTful API の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/29)
@@ -75,6 +76,13 @@
         - [【Flask】Flask での Web-API を https 化する（自己署名SSL認証を使用する場合）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/20)
         - 【Flask】Flask での Web-API を https 化（SSL）する（認証局[CA]を使用する場合）
     - Django
+    - FastAPI
+        - [FastAPI の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/30)
+        - [FastAPI + uvicorn での構成](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/31)
+        - [FastAPI + uvicorn + gunicorn での構成（本番環境想定時）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/32)
+        - [FastAPI + uvicorn + gunicorn + docker を用いた Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/33)
+        - FastAPI + uvicorn + gunicorn + docker を用いた Web-API での非同期処理
+        - FastAPI + uvicorn + gunicorn + nginx + docker を用いた Web-API の構築
 - インフラのコード化 / Infrastructure as Code
     - Terraform
         - [【Terraform】Terraform の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/10)
