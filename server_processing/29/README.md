@@ -28,6 +28,37 @@
     RESTful API とほぼ同意味
 
 
+## ■ エンドポイントとパラメーター
+
+- エンドポイント<br>
+
+
+- URL パラメータ / リクエストパラメータ / GETパラメータ<br>
+    Web サーバや API サーバーに送信するデータを、送信先を指定する URL の末尾に特定の形式で表記したもの。<br>
+    URL パラメータは、パスパラメータ・クエリパラメータ・リクエストボディで構成される
+
+- パスパラメータ<br>
+    API サーバーの URL の末端に付与して送るデータで、API サーバーの URL のドメイン名 〜 "?" の間の部分に追加する。<br>
+    例えば、
+    ```sh
+    https://example.com/hoge/${path_parameter}?${query_parameter1}=hogehoge&${query_parameter2}=fugafuga
+    ```
+    の場合は、`${path_parameter}` の部分がパスパラメーターになる<br>
+    パスパラメーターには、特定のリソースを識別するために必要な情報（例えば、ユーザーのIDやジョブIDなど）を入力する。
+
+- クエリパラメータ<br>
+    API サーバーの URL の末端に付与して送るデータで、API サーバーの URL の "?" の後に追加する。<br>
+    例えば、
+    ```sh
+    https://example.com/hoge/${path_parameter}?${query_parameter1}=hogehoge&${query_parameter2}=fugafuga
+    ```
+    の場合は、"?" の後の `${query_parameter1}`, `${query_parameter2}` の部分がクエリパラメーターになる。<br>
+    クエリパラメータには、特定のリソースを操作して取得する際に必要な情報（例えば、ユーザーの検索など）を入力する。
+
+- リクエストボディ<br>
+    API のエンドポイントに送る実際の json データ
+
+
 ## 非 REST API と REST API の具体例
 
 - 非 RESTful API<br>

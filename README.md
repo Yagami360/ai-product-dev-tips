@@ -81,7 +81,8 @@
         - [FastAPI + uvicorn での構成](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/31)
         - [FastAPI + uvicorn + gunicorn での構成（本番環境想定時）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/32)
         - [FastAPI + uvicorn + gunicorn + docker を用いた Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/33)
-        - FastAPI + uvicorn + gunicorn + docker を用いた Web-API での非同期処理
+        - [FastAPI での GET / POST 処理](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/35)
+        - [<In-progress> FastAPI での非同期処理](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/34)
         - FastAPI + uvicorn + gunicorn + nginx + docker を用いた Web-API の構築
 - インフラのコード化 / Infrastructure as Code
     - Terraform
@@ -136,7 +137,7 @@
         - [【GCP】Google Cloud Pub/Sub を Python スクリプト上で利用する（PULL 方式）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/19)
         - 【GCP】Google Cloud Pub/Sub を Python スクリプト上で利用する（PUSH 方式）
         - [【GCP】Cloud Scheduler と Google Pub/Sub を用いて、サーバーを一定の時間間隔で起動・停止する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/4)
-        - docker + Flask での Web-API を Cloud Pub/Sub を利用して非同期実行する（PULL方式）
+        - [<In-progress> docker + Flask での Web-API を Cloud Pub/Sub を利用して非同期実行する（PULL方式）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/20)
         - 機械学習モデルの推論 API を Cloud Pub/Sub を利用して非同期実行する（PULL方式）
     - Redis
         - Redis の基礎事項
