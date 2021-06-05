@@ -20,7 +20,6 @@ class Job(BaseModel):
     非同期処理での Job を定義したジョブクラス
     """
     job_id: int
-    n_steps: int = 10
     job_status: str = "RUNNING"
     is_cancelled: bool = False
 
@@ -30,6 +29,7 @@ class Job(BaseModel):
         print('[Job] time {} | step {} | Job {} が開始されました'.format(f"{datetime.now():%H:%M:%S}", 0, self.job_id))
         logger.info('[Job] time {} | step {} | Job {} が開始されました'.format(f"{datetime.now():%H:%M:%S}", 0, self.job_id))
 
+        """
         for step in range(self.n_steps):
             # ジョブの処理
             sleep(1)
@@ -41,6 +41,7 @@ class Job(BaseModel):
                 print('[Job] time {} | step {} | Job {} が中断されました'.format(f"{datetime.now():%H:%M:%S}", step, self.job_id))
                 logger.info('[Job] time {} | step {} | Job {} が中断されました'.format(f"{datetime.now():%H:%M:%S}", step, self.job_id))
                 break
+        """
 
         #del jobs[self.job_id]
         self.job_status = "FINISHED"
@@ -52,7 +53,7 @@ jobs : Dict[int, Job] = {}
 
 @app.get("/")
 async def root():
-    return 'Hello Flask-API Server!\n'
+    return 'Hello Proxy Server!\n'
 
 @app.get("/health")
 async def health():
@@ -74,11 +75,10 @@ async def get_job(
 @app.post("/start_job/{job_id}")
 async def start_job(
     job_id: int,                        # パスパラメーター
-    n_steps: int,                       # クエリパラメーター
     background_tasks: BackgroundTasks,  # BackgroundTasks
 ):
     # ジョブクラスのオブジェクト作成
-    task = Job(job_id=job_id, n_steps=n_steps)
+    task = Job(job_id=job_id)
 
     # BackgroundTasks にジョブを追加
     background_tasks.add_task(task)

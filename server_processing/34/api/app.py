@@ -1,8 +1,4 @@
-import asyncio
-
 from fastapi import FastAPI
-from fastapi import BackgroundTasks
-from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -19,13 +15,9 @@ users_db = {
     },
 }
 
-# `pydantic.BaseModel` 継承クラスでリクエストボディを定義
-class UserData(BaseModel):
-    id: int
-    name: str
-    age: str
-
-
+#======================================
+# GET method
+#======================================
 @app.get("/")
 def root():
     return 'Hello Flask-API Server!\n'
@@ -39,26 +31,36 @@ def metadata():
     return users_db
 
 @app.get("/users_name/{users_id}")
-async def get_user_name_by_path_parameter(
+def get_user_name_by_path_parameter(
     users_id: int,  # パスパラメーター
 ):
     return users_db["name"][users_id]
 
 @app.get("/users_name/")
-async def get_user_name_by_query_parameter(
+def get_user_name_by_query_parameter(
     users_id: int, # クエリパラメーター
 ):
     return users_db["name"][users_id]
 
 @app.get("/users/{attribute}")
-async def get_user_by_path_and_query_parameter(
+def get_user_by_path_and_query_parameter(
     attribute: str, # パスパラメーター
     users_id: int,  # クエリパラメーター
 ):
     return users_db[attribute][users_id]
 
+#======================================
+# POST method
+#======================================
+from pydantic import BaseModel
+# `pydantic.BaseModel` 継承クラスでリクエストボディを定義
+class UserData(BaseModel):
+    id: int
+    name: str
+    age: str
+
 @app.post("/add_users/")
-async def add_user(
+def add_user(
     user_data: UserData,     # リクエストボディ
 ):
     users_db["name"][user_data.id] = user_data.name

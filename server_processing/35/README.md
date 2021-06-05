@@ -1,128 +1,137 @@
-# FastAPI での GET / POST 処理
+# FastAPI での非同期処理（FastAPI + uvicorn + gunicorn + docker での構成）
 
-## ■ FastAPI を使用した GET 処理の実装
-    
-- FastAPI を使用した GET 処理の実装例（`Path`, `Query` クラス不使用）<br>
+FastAPI を使用すれば、Flask では困難であった非同期処理を手軽に行うことができる。<br>
+
+この方法を用いて例えば Web-API を非同期処理にした場合は、API での処理が終わるまでクライアント側で別の処理を行えるようになるメリットがある。
+但し、クライアント側で処理が完了したかのポーリング処理は必要になる
+
+- FastAPI で非同期処理を行うコード例
     ```python
+    import asyncio
+    from datetime import datetime
+    from time import sleep
+    import logging
+
     from fastapi import FastAPI
+    from fastapi import BackgroundTasks
+    from pydantic import BaseModel
+    from typing import Dict
 
     app = FastAPI()
-    users_db = {
-        "name" : {
-            0 : "user1",
-            1 : "user2",
-            2 : "user3",
-        },
-        "age" : {
-            0 : "24",
-            1 : "30",
-            2 : "18",
-        }
-    }
 
-    @app.get("/users_name/{users_id}")
-    def get_user_name_by_path_parameter(
-        users_id: int,  # パスパラメーター
-    ):
-        return users_db["name"][users_id]
+    logger = logging.getLogger(__name__)
+    logger.setLevel(10)
+    logger_fh = logging.FileHandler( __name__ + '.log')
+    logger.addHandler(logger_fh)
 
-    @app.get("/users_name/")
-    def get_user_name_by_query_parameter(
-        users_id: int,  # クエリパラメーター
-    ):
-        return users_db["name"][users_id]
+    class Job(BaseModel):
+        """
+        非同期処理での Job を定義したジョブクラス
+        """
+        job_id: int
+        n_steps: int = 10
+        job_status: str = "RUNNING"
+        is_cancelled: bool = False
 
-    @app.get("/users/{attribute}")
-    def get_user_by_path_and_query_parameter(
-        attribute: str, # パスパラメーター
-        users_id: int,  # クエリパラメーター
+        def __call__(self):
+            jobs[self.job_id] = self
+            self.job_status = "RUNNING"
+            print('[Job] time {} | step {} | Job {} が開始されました'.format(f"{datetime.now():%H:%M:%S}", 0, self.job_id))
+            logger.info('[Job] time {} | step {} | Job {} が開始されました'.format(f"{datetime.now():%H:%M:%S}", 0, self.job_id))
+
+            for step in range(self.n_steps):
+                # ジョブの処理
+                sleep(1)
+                print('[Job] time {} | step {} | Job {} を実行中です'.format(f"{datetime.now():%H:%M:%S}", step, self.job_id))
+                logger.info('[Job] time {} | step {} | Job {} を実行中です'.format(f"{datetime.now():%H:%M:%S}", step, self.job_id))
+                if self.is_cancelled:
+                    del jobs[self.job_id]
+                    self.job_status = "CANCELLED"
+                    print('[Job] time {} | step {} | Job {} が中断されました'.format(f"{datetime.now():%H:%M:%S}", step, self.job_id))
+                    logger.info('[Job] time {} | step {} | Job {} が中断されました'.format(f"{datetime.now():%H:%M:%S}", step, self.job_id))
+                    break
+
+            #del jobs[self.job_id]
+            self.job_status = "FINISHED"
+            print('[Job] time {} | step {} | Job {} が終了しました'.format(f"{datetime.now():%H:%M:%S}", step, self.job_id))
+            logger.info('[Job] time {} | step {} | Job {} が終了しました'.format(f"{datetime.now():%H:%M:%S}", step, self.job_id))
+            return
+
+    jobs : Dict[int, Job] = {}
+
+    @app.get("/")
+    async def root():
+        return 'Hello Flask-API Server!\n'
+
+    @app.get("/health")
+    async def health():
+        return {"health": "ok"}
+
+    @app.get("/metadata")
+    async def metadata():
+        return jobs
+
+    @app.get("/get_job/{job_id}")
+    async def get_job(
+        job_id: int,  # パスパラメーター
     ):
-        return users_db[attribute][users_id]
+        if job_id in jobs:
+            return jobs[job_id]
+        else:
+            return {"message", "ジョブID : {} のジョブは実行されていません".format(job_id)}
+
+    @app.post("/start_job/{job_id}")
+    async def start_job(
+        job_id: int,                        # パスパラメーター
+        n_steps: int,                       # クエリパラメーター
+        background_tasks: BackgroundTasks,  # BackgroundTasks
+    ):
+        # ジョブクラスのオブジェクト作成
+        task = Job(job_id=job_id, n_steps=n_steps)
+
+        # BackgroundTasks にジョブを追加
+        background_tasks.add_task(task)
+
+        return {"message", "ジョブID : {} のジョブを開始しました".format(job_id)}
+
+    @app.post("/stop_job/{job_id}")
+    async def stop_job(
+        job_id: int,                        # パスパラメーター
+        background_tasks: BackgroundTasks,  # BackgroundTasks
+    ):
+        # job のリストから作成済みのジョブオブジェクトを取得
+        # dict の get() を使用することで、キーが存在しない場合にエラーを発生させずに任意の値（デフォルト値）を取得する
+        task = jobs.get(job_id)
+        if task is None:
+            return {"message", "ジョブID : {} のジョブは実行されていません".format(job_id)}
+                    
+        # ジョブの中断フラグを ON にする
+        task.is_cancelled = True
+        return {"message", "ジョブID : {} のジョブを中断しました".format(job_id)}
     ```
 
     ```sh
-    # パスパラメーターで指定
-    $ curl http://${HOST}:${PORT}/users_name/0
-    $ curl http://${HOST}:${PORT}/users_name/1
-    $ curl http://${HOST}:${PORT}/users_name/2
+    # ジョブ開始
+    curl -X POST http://${HOST}:${PORT}/start_job/0?n_steps=100
+    curl -X POST http://${HOST}:${PORT}/start_job/1?n_steps=10
+    curl -X POST http://${HOST}:${PORT}/start_job/2?n_steps=20
     ```
     ```sh
-    # クエリパラメーターで指定
-    $ curl http://${HOST}:${PORT}/users_name/?users_id=0
-    $ curl http://${HOST}:${PORT}/users_name/?users_id=1
-    $ curl http://${HOST}:${PORT}/users_name/?users_id=2
+    # ジョブ中断
+    curl -X POST http://${HOST}:${PORT}/stop_job/0
     ```
     ```sh
-    # パスパラメーター & クエリパラメーターで指定
-    $ curl http://${HOST}:${PORT}/users/name?users_id=0
-    $ curl http://${HOST}:${PORT}/users/age?users_id=0
-    $ curl http://${HOST}:${PORT}/users/name?users_id=1
-    $ curl http://${HOST}:${PORT}/users/age?users_id=1
-    $ curl http://${HOST}:${PORT}/users/name?users_id=2
-    $ curl http://${HOST}:${PORT}/users/age?users_id=2
+    # ジョブの確認
+    curl -X GET http://${HOST}:${PORT}/get_job/0
+    curl -X GET http://${HOST}:${PORT}/get_job/1 
+    curl -X GET http://${HOST}:${PORT}/get_job/2       
     ```
 
-    ポイントは、以下の通り<br>
-    > - GET method は、`@app.get` デコレーションをつけた関数で定義できる。
-    > - パスパラメータは `@app.get` で指定した GET method のエンドポイントに `{パスパラメーター名}` をつけることで指定できる。
-    > - クエリパラメーターは、`@app.get` で指定した GET method の エンドポイントに `{}` をつけずに指定することで指定できる
-    > - パスパラメータ・クエリパラメーターは、全て関数の引数として定義する。また、引数には型のヒントをつけるようにする
+ポイントは、以下の通り
 
-
-- FastAPI を使用した GET 処理の実装例（`Path`, `Query` クラス使用）<br>
-    xxx
-
-## ■ FastAPI を使用した POST 処理の実装
-
-- FastAPI を使用した POST 処理の実装例<br>
-    ```python
-    from fastapi import FastAPI
-    from pydantic import BaseModel
-
-    app = FastAPI()
-    users_db = {
-        "name" : {
-            0 : "user1",
-            1 : "user2",
-            2 : "user3",
-        },
-        "age" : {
-            0 : "24",
-            1 : "30",
-            2 : "18",
-        }
-    }
-
-    from pydantic import BaseModel
-    # `pydantic.BaseModel` 継承クラスでリクエストボディを定義
-    class UserData(BaseModel):
-        id: int
-        name: str
-        age: str
-
-    @app.post("/add_users/")
-    def add_user(
-        user_data: UserData,     # リクエストボディ
-    ):
-        users_db["name"][user_data.id] = user_data.name
-        users_db["age"][user_data.id] = user_data.age
-        return users_db
-    ```
-
-    ```sh
-    $ curl -X POST -H "Content-Type: application/json" \
-        -d '{"id":4, "name":"user4", "age":"100"}' \
-        http://${HOST}:${PORT}/add_users
-    ```
-
-    ポイントは、以下の通り<br>
-    > - POST method は、`@app.post` デコレーションをつけた関数で定義できる。
-    > - パスパラメータは `@app.post` で指定した GET method のエンドポイントに `{パスパラメーター名}` をつけることで指定できる。
-    > - クエリパラメーターは、`@app.post` で指定した GET method の エンドポイントに `{}` をつけずに指定することで指定できる
-    > - パスパラメータ・クエリパラメーター・リクエストボディは、全て関数の引数として定義する。また、引数には型のヒントをつけるようにする
-    > - リクエストボディは、`pydantic.BaseModel` 継承クラスで定義する
-
+- python3 の `asyncio` モジュールの機能である `async def` を使用して GET, POST などの関数を定義する。ここで、`async def` 単体では、非同期処理（マルチスレッド処理）にはならないことに注意。
+- 非同期処理（バックグラウンド処理）したい Job の内容を `pydantic.BaseModel` 継承クラスとして定義する
+- FastAPI の `BackgroundTask` モジュールの `add_task()` メソッドを使用して、作成した Job をバックグラウンド処理として追加する
 
 ## ■ 参考サイト
-- https://qiita.com/kida_kun_/items/a144ce42bb04a344ac6b
-- https://qiita.com/uezo/items/847e1911ac486f5a89c4
+- https://qiita.com/juri-t/items/91e561509aa7ca6e7d38

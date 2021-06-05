@@ -20,11 +20,11 @@ curl http://${HOST}:${PORT}/metadata
 echo "\n"
 
 # ジョブ開始
-curl -X POST http://${HOST}:${PORT}/start_job/0?n_steps=100
+curl -X POST http://${HOST}:${PORT}/start_job/0
 echo "\n"
-curl -X POST http://${HOST}:${PORT}/start_job/1?n_steps=10
+curl -X POST http://${HOST}:${PORT}/start_job/1
 echo "\n"
-curl -X POST http://${HOST}:${PORT}/start_job/2?n_steps=20
+curl -X POST http://${HOST}:${PORT}/start_job/2
 echo "\n"
 
 # ジョブ中断

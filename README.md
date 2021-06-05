@@ -81,8 +81,10 @@
         - [FastAPI + uvicorn での構成](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/31)
         - [FastAPI + uvicorn + gunicorn での構成（本番環境想定時）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/32)
         - [FastAPI + uvicorn + gunicorn + docker を用いた Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/33)
-        - [FastAPI での GET / POST 処理](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/35)
-        - [<In-progress> FastAPI での非同期処理](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/34)
+        - [FastAPI での GET / POST 処理（FastAPI + uvicorn + gunicorn + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/34)
+        - [FastAPI での非同期処理（FastAPI + uvicorn + gunicorn + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/35)
+        - FastAPI を使用した非同期処理の Web-API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成）
+        - FastAPI を使用した非同期処理の機械学習モデル推論 API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成）
         - FastAPI + uvicorn + gunicorn + nginx + docker を用いた Web-API の構築
 - インフラのコード化 / Infrastructure as Code
     - Terraform
