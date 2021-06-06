@@ -39,6 +39,7 @@ RUN pip3 install fastapi
 RUN pip3 install uvicorn
 RUN pip3 install Gunicorn
 RUN pip3 install requests
+RUN pip3 install redis
 
 #-----------------------------
 # ソースコードの書き込み

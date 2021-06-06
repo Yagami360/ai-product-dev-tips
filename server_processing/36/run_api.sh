@@ -20,20 +20,15 @@ curl http://${HOST}:${PORT}/metadata
 echo "\n"
 
 # ジョブ開始
-curl -X POST http://${HOST}:${PORT}/start_job/0
+curl -X POST http://${HOST}:${PORT}/start_job/
 echo "\n"
-curl -X POST http://${HOST}:${PORT}/start_job/1
+curl -X POST http://${HOST}:${PORT}/start_job/
 echo "\n"
-curl -X POST http://${HOST}:${PORT}/start_job/2
-echo "\n"
-
-# ジョブ中断
-curl -X POST http://${HOST}:${PORT}/stop_job/0
-echo "\n"
-curl http://${HOST}:${PORT}/metadata
+curl -X POST http://${HOST}:${PORT}/start_job/
 echo "\n"
 
 # ポーリング処理
+<<COMMENTOUT
 for i in `seq ${N_POLLING}`
 do
     curl -X GET http://${HOST}:${PORT}/get_job/0
@@ -44,5 +39,6 @@ do
     echo "\n"
     sleep 1
 done
+COMMENTOUT
 
-docker-compose logs --tail 50
+docker-compose logs --tail 10

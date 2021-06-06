@@ -1,29 +1,25 @@
 version: '2.3'
 
 services:
-  proxy_server:
-    container_name: proxy-container
-    image: proxy-image
-    build:
-      context: "proxy/"
-      dockerfile: Dockerfile
-    volumes:
-      - ${PWD}/proxy:/proxy
-    ports:
-      - "5000:5000"
-    tty: true
-    environment:
-      TZ: "Asia/Tokyo"
-      LC_ALL: C.UTF-8
-      LANG: C.UTF-8
-    command: bash -c "gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"
-    depends_on:
-      - redis_server
-      - batch_server
-      - api_server
+    api_server:
+      container_name: api-container
+      image: api-image
+      build:
+        context: "api/"
+        dockerfile: Dockerfile
+      volumes:
+        - ${PWD}/api:/api
+      ports:
+        - "5001:5001"
+      tty: true
+      environment:
+        TZ: "Asia/Tokyo"
+        LC_ALL: C.UTF-8
+        LANG: C.UTF-8
+      command: bash -c "gunicorn app:app --bind 0.0.0.0:5001 -w 1 -k uvicorn.workers.UvicornWorker --reload"
 
     redis_server:
-      container_name: redis_container
+      container_name: redis-container
       image: redis:latest
       ports:
         - "6379:6379"
@@ -42,30 +38,36 @@ services:
         dockerfile: Dockerfile
       volumes:
         - ${PWD}/batch:/batch
-      ports:
-        - "5001:5001"
+        - ${PWD}/redis:/redis
+        - ${PWD}/config:/config
       tty: true
       environment:
         TZ: "Asia/Tokyo"
         LC_ALL: C.UTF-8
         LANG: C.UTF-8
-      command: bash -c "gunicorn app:app --bind 0.0.0.0:5001 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+      command: bash -c "python batch_server.py"
       depends_on:
         - redis_server
-        
-    api_server:
-      container_name: api-container
-      image: api-image
+
+    proxy_server:
+      container_name: proxy-container
+      image: proxy-image
       build:
-        context: "api/"
+        context: "proxy/"
         dockerfile: Dockerfile
       volumes:
-        - ${PWD}/api:/api
+        - ${PWD}/proxy:/proxy
+        - ${PWD}/redis:/redis
+        - ${PWD}/config:/config
       ports:
-        - "5002:5002"
+        - "5000:5000"
       tty: true
       environment:
         TZ: "Asia/Tokyo"
         LC_ALL: C.UTF-8
         LANG: C.UTF-8
-      command: bash -c "gunicorn app:app --bind 0.0.0.0:5002 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+      command: bash -c "gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+      depends_on:
+        - redis_server
+        - batch_server
+        - api_server

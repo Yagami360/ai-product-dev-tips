@@ -1,55 +1,52 @@
-import asyncio
+import os
+import logging
 from datetime import datetime
 from time import sleep
-import logging
+import asyncio
+import redis
+import uuid
 
 from fastapi import FastAPI
 from fastapi import BackgroundTasks
 from pydantic import BaseModel
 from typing import Dict
 
+import sys
+sys.path.append(os.path.join(os.getcwd(), '../redis'))
+from redis_client import redis_client
+
 app = FastAPI()
 
+# logger
 logger = logging.getLogger(__name__)
 logger.setLevel(10)
 logger_fh = logging.FileHandler( __name__ + '.log')
 logger.addHandler(logger_fh)
 
-class Job(BaseModel):
+class SetDataRedisJob(BaseModel):
     """
     非同期処理での Job を定義したジョブクラス
     """
-    job_id: int
+    job_id: str
     job_status: str = "RUNNING"
-    is_cancelled: bool = False
 
     def __call__(self):
         jobs[self.job_id] = self
         self.job_status = "RUNNING"
-        print('[Job] time {} | step {} | Job {} が開始されました'.format(f"{datetime.now():%H:%M:%S}", 0, self.job_id))
-        logger.info('[Job] time {} | step {} | Job {} が開始されました'.format(f"{datetime.now():%H:%M:%S}", 0, self.job_id))
+        try:
+            # Redis キューの先頭に値を追加
+            redis_client.lpush("job_id", self.job_id)
+            print('[{}] time {} | Job {} を登録しました'.format(self.__class__.__name__, f"{datetime.now():%H:%M:%S}", self.job_id))
+            logger.info('[{}] time {} | Job {} を登録しました'.format(self.__class__.__name__, f"{datetime.now():%H:%M:%S}", self.job_id))
+            self.job_status = "SUCCEED"
+        except Exception:
+            print('[{}] time {} | Job {} の登録に失敗しました'.format(self.__class__.__name__, f"{datetime.now():%H:%M:%S}", self.job_id))
+            logger.info('[{}] time {} | Job {} の登録に失敗しました'.format(self.__class__.__name__, f"{datetime.now():%H:%M:%S}", self.job_id))
+            self.job_status = "FAILED"
 
-        """
-        for step in range(self.n_steps):
-            # ジョブの処理
-            sleep(1)
-            print('[Job] time {} | step {} | Job {} を実行中です'.format(f"{datetime.now():%H:%M:%S}", step, self.job_id))
-            logger.info('[Job] time {} | step {} | Job {} を実行中です'.format(f"{datetime.now():%H:%M:%S}", step, self.job_id))
-            if self.is_cancelled:
-                del jobs[self.job_id]
-                self.job_status = "CANCELLED"
-                print('[Job] time {} | step {} | Job {} が中断されました'.format(f"{datetime.now():%H:%M:%S}", step, self.job_id))
-                logger.info('[Job] time {} | step {} | Job {} が中断されました'.format(f"{datetime.now():%H:%M:%S}", step, self.job_id))
-                break
-        """
-
-        #del jobs[self.job_id]
-        self.job_status = "FINISHED"
-        print('[Job] time {} | step {} | Job {} が終了しました'.format(f"{datetime.now():%H:%M:%S}", step, self.job_id))
-        logger.info('[Job] time {} | step {} | Job {} が終了しました'.format(f"{datetime.now():%H:%M:%S}", step, self.job_id))
         return
 
-jobs : Dict[int, Job] = {}
+jobs : Dict[str, SetDataRedisJob] = {}
 
 @app.get("/")
 async def root():
@@ -60,42 +57,32 @@ async def health():
     return {"health": "ok"}
 
 @app.get("/metadata")
-async def metadata():
-    return jobs
+async def metadata():    
+    return {
+        "jobs" : jobs,
+    }
 
 @app.get("/get_job/{job_id}")
 async def get_job(
-    job_id: int,  # パスパラメーター
+    job_id: str,  # パスパラメーター
 ):
-    if job_id in jobs:
-        return jobs[job_id]
-    else:
-        return {"message", "ジョブID : {} のジョブは実行されていません".format(job_id)}
+    try:
+        data = redis_client.get(job_id)
+        return data
+    except Exception:
+        return {"message", "ジョブ {} は実行されていません".format(job_id)}
 
-@app.post("/start_job/{job_id}")
+@app.post("/start_job/")
 async def start_job(
-    job_id: int,                        # パスパラメーター
     background_tasks: BackgroundTasks,  # BackgroundTasks
 ):
+    # job_id を自動生成
+    job_id = str(uuid.uuid4())[:6]
+
     # ジョブクラスのオブジェクト作成
-    task = Job(job_id=job_id)
+    task = SetDataRedisJob(job_id=job_id)
 
     # BackgroundTasks にジョブを追加
     background_tasks.add_task(task)
 
-    return {"message", "ジョブID : {} のジョブを開始しました".format(job_id)}
-
-@app.post("/stop_job/{job_id}")
-async def stop_job(
-    job_id: int,                        # パスパラメーター
-    background_tasks: BackgroundTasks,  # BackgroundTasks
-):
-    # job のリストから作成済みのジョブオブジェクトを取得
-    # dict の get() を使用することで、キーが存在しない場合にエラーを発生させずに任意の値（デフォルト値）を取得する
-    task = jobs.get(job_id)
-    if task is None:
-        return {"message", "ジョブID : {} のジョブは実行されていません".format(job_id)}
-                
-    # ジョブの中断フラグを ON にする
-    task.is_cancelled = True
-    return {"message", "ジョブID : {} のジョブを中断しました".format(job_id)}
+    return job_id
