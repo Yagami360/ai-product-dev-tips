@@ -9,7 +9,7 @@
 
 > API 構成図を追加
 
-<img src="https://user-images.githubusercontent.com/25688193/121330685-342f9680-c951-11eb-9036-dcac39a4e5df.png" width="300"><br>
+<img src="https://user-images.githubusercontent.com/25688193/121330685-342f9680-c951-11eb-9036-dcac39a4e5df.png" width="500"><br>
 
 ## ■ 使用法
 
