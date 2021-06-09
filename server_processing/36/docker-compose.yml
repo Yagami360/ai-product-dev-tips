@@ -1,14 +1,14 @@
 version: '2.3'
 
 services:
-    api_server:
-      container_name: api-container
-      image: api-image
+    predict_server:
+      container_name: predict-container
+      image: predict-image
       build:
-        context: "api/"
+        context: "predict/"
         dockerfile: Dockerfile
       volumes:
-        - ${PWD}/api:/api
+        - ${PWD}/predict:/predict
         - ${PWD}/utils:/utils
         - ${PWD}/config:/config
       ports:
@@ -51,6 +51,7 @@ services:
       command: bash -c "python batch_server.py"
       depends_on:
         - redis_server
+        - predict_server
 
     proxy_server:
       container_name: proxy-container
@@ -74,4 +75,4 @@ services:
       depends_on:
         - redis_server
         - batch_server
-        - api_server
+        - predict_server

@@ -9,16 +9,18 @@ import requests
 import sys
 sys.path.append(os.path.join(os.getcwd(), '../config'))
 from config import BatchServerConfig
-from config import APIServerConfig
+from config import PredictServerConfig
 
 sys.path.append(os.path.join(os.getcwd(), '../redis'))
 from redis_client import redis_client
-from redis_utils import get_image_pillow_redis, get_image_base64_redis
+from redis_utils import set_image_pillow_redis, set_image_base64_redis, get_image_pillow_redis, get_image_base64_redis
 
 sys.path.append(os.path.join(os.getcwd(), '../utils'))
 from utils import conv_base64_to_pillow, conv_pillow_to_base64
 
 # logger
+if( os.path.exists(__name__ + '.log') ):
+    os.remove(__name__ + '.log')
 logger = logging.getLogger(__name__)
 logger.setLevel(10)
 logger_fh = logging.FileHandler( __name__ + '.log')
@@ -35,22 +37,32 @@ def polling():
         logger.info('[{}] time {} | Job {} を pop しました'.format(__name__, f"{datetime.now():%H:%M:%S}", job_id))
 
         if job_id is not None:
+            job_id = job_id.decode()
+            
             # job_id に対応した 画像データを取得
-            img_base64 = get_image_base64_redis( redis_client=redis_client, key_name=job_id )
+            img_base64 = get_image_base64_redis( redis_client=redis_client, key_name=job_id+"_image_in" )
 
-            # Resdis の画像データ削除
-            #redis_client.delete(job_id)
-
-            # API サーバーにリクエスト処理
+            # 推論サーバーのヘルスチェック
             try:
-                api_msg = {'image': img_base64}
-                api_responce = requests.post( "http://" + APIServerConfig.host + ":" + APIServerConfig.port + "/api", json=api_msg )
-                api_responce = api_responce.json()
-                print( "api_responce : ", api_responce )
-                logger.info('[{}] time {} | api_responce {}'.format(__name__, f"{datetime.now():%H:%M:%S}", api_responce))
+                health = requests.get( "http://" + PredictServerConfig.host + ":" + PredictServerConfig.port + "/health" ).json()
+                print( "health : ", health )
+                logger.info('[{}] time {} | health {}'.format(__name__, f"{datetime.now():%H:%M:%S}", health))
             except Exception as e:
                 print( "Exception : ", e )
                 logger.info('[{}] time {} | Exception {}'.format(__name__, f"{datetime.now():%H:%M:%S}", e))
+
+            # 推論サーバーにリクエスト処理
+            try:
+                api_msg = {'image': img_base64}
+                api_responce = requests.post( "http://" + PredictServerConfig.host + ":" + PredictServerConfig.port + "/predict", json=api_msg )
+                api_responce = api_responce.json()
+                logger.info('[{}] time {} | api_responce["status"] {}'.format(__name__, f"{datetime.now():%H:%M:%S}", api_responce["status"]))
+            except Exception as e:
+                print( "Exception : ", e )
+                logger.info('[{}] time {} | Exception {}'.format(__name__, f"{datetime.now():%H:%M:%S}", e))
+
+            # Redis の画像データに登録
+            set_image_base64_redis( redis_client=redis_client, key_name=job_id+"_image_out", img_base64=api_responce["img_none_bg_base64"])
 
         # ポーリング間隔
         sleep(BatchServerConfig.polling_time)

@@ -15,7 +15,7 @@ from typing import Any, Dict
 import sys
 sys.path.append(os.path.join(os.getcwd(), '../redis'))
 from redis_client import redis_client
-from redis_utils import set_image_pillow_redis, set_image_base64_redis
+from redis_utils import set_image_pillow_redis, set_image_base64_redis, get_image_pillow_redis, get_image_base64_redis
 
 sys.path.append(os.path.join(os.getcwd(), '../utils'))
 from utils import conv_base64_to_pillow, conv_pillow_to_base64
@@ -23,9 +23,11 @@ from utils import conv_base64_to_pillow, conv_pillow_to_base64
 app = FastAPI()
 
 # logger
+if( os.path.exists(__name__ + '.log') ):
+    os.remove(__name__ + '.log')
 logger = logging.getLogger(__name__)
 logger.setLevel(10)
-logger_fh = logging.FileHandler( __name__ + '.log')
+logger_fh = logging.FileHandler(__name__ + '.log')
 logger.addHandler(logger_fh)
 
 
@@ -40,7 +42,7 @@ class SetDataRedisJob(BaseModel):
     非同期処理での Job を定義したジョブクラス
     """
     job_id: str
-    img_pillow: Any
+    img_base64: Any
     job_status: str = "RUNNING"
 
     def __call__(self):
@@ -53,7 +55,8 @@ class SetDataRedisJob(BaseModel):
             logger.info('[{}] time {} | Job {} を登録しました'.format(self.__class__.__name__, f"{datetime.now():%H:%M:%S}", self.job_id))
 
             # 画像を追加
-            set_image_pillow_redis(redis_client=redis_client, key_name=self.job_id, img_pillow=self.img_pillow)
+            set_image_base64_redis(redis_client=redis_client, key_name=self.job_id+"_image_in", img_base64=self.img_base64)
+
             self.job_status = "SUCCEED"
         except Exception:
             print('[{}] time {} | Job {} の登録に失敗しました'.format(self.__class__.__name__, f"{datetime.now():%H:%M:%S}", self.job_id))
@@ -77,22 +80,31 @@ async def metadata():
     return {
         "status": "ok",
         "jobs" : jobs,
+        "job_id_redis" : redis_client.lrange("job_id",0,-1),
     }
 
 @app.get("/get_job/{job_id}")
 async def get_job(
     job_id: str,  # パスパラメーター
 ):
+    status = "ok"
     try:
-        img_base64 = redis_client.get(job_id)
+        img_in_base64 = get_image_base64_redis( redis_client=redis_client, key_name=job_id+"_image_in" )
     except Exception:
-        return {"status", "ジョブ {} は実行されていません".format(job_id)}
+        img_in_base64 = None
+        status = "ng"
+    try:
+        img_out_base64 = get_image_base64_redis( redis_client=redis_client, key_name=job_id+"_image_out" )
+    except Exception:
+        img_out_base64 = None
+        status = "ng"
 
     return {
-        "status": "ok",
+        "status": status,
         "job_id" : jobs[job_id].job_id,
         "job_status" : jobs[job_id].job_status,
-        "img_base64" : img_base64,
+        "img_in_base64" : img_in_base64,
+        "img_out_base64" : img_out_base64,
     }
 
 @app.post("/start_job")
@@ -103,11 +115,8 @@ async def start_job(
     # job_id を自動生成
     job_id = str(uuid.uuid4())[:6]
 
-    # base64 -> Pillow への変換
-    img_data.image = conv_base64_to_pillow(img_data.image)
-
     # ジョブクラスのオブジェクト作成
-    task = SetDataRedisJob(job_id=job_id, img_pillow=img_data.image)
+    task = SetDataRedisJob(job_id=job_id, img_base64=img_data.image)
 
     # BackgroundTasks にジョブを追加
     background_tasks.add_task(task)

@@ -4,19 +4,19 @@
 
 - プロキシサーバー（uvicorn + gunicorn + FastAPI）で非同期処理を行うジョブを定義
 - redis をジョブキューとして使用
-- バッチサーバー（＝ジョブの投入から終了までを管理するサーバー）で、redis のジョブキューを定期的にポーリングして、キューにデータが存在すれば API サーバーにリクエストする
+- バッチサーバー（＝ジョブの投入から終了までを管理するサーバー）で、redis のジョブキューを定期的にポーリングして、キューにデータが存在すれば推論サーバーにリクエストする
 
 
 > API 構成図を追加
 
-<img src="https://user-images.githubusercontent.com/25688193/121313477-646f3900-c941-11eb-9c01-30fee4ca72f8.png" width="300"><br>
+<img src="https://user-images.githubusercontent.com/25688193/121330685-342f9680-c951-11eb-9036-dcac39a4e5df.png" width="300"><br>
 
 ## ■ 使用法
 
 1. プロキシサーバーの構築
 1. redis の構築
 1. バッチサーバーの構築
-1. API サーバーの構築
+1. 推論サーバーの構築
 1. docker-compose で API 構成
 1. リクエスト処理
 

@@ -39,5 +39,5 @@ def get_image_base64_redis( redis_client, key_name ):
     """
     Redis の 画像データを Base64 形式で取得
     """
-    img_base64 = redis_client.get(key_name)
+    img_base64 = redis_client.get(key_name).decode()
     return img_base64
