@@ -10,3 +10,10 @@ class ResidConfig:
 class BatchServerConfig:
     # クラス変数
     n_workers=2
+    #polling_time=1  # ポーリング間隔時間 (sec単位)
+    polling_time=5  # ポーリング間隔時間 (sec単位)
+
+class APIServerConfig:
+    # クラス変数
+    host="api_server"
+    port=5001

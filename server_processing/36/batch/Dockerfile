@@ -37,6 +37,9 @@ ENV PYTHONIOENCODING utf-8
 #-----------------------------
 RUN pip3 install redis
 RUN pip3 install asyncio
+RUN pip3 install Pillow
+RUN pip3 install opencv-python
+RUN pip3 install requests
 
 #-----------------------------
 # ソースコードの書き込み

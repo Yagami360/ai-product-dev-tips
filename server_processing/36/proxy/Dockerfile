@@ -40,6 +40,8 @@ RUN pip3 install uvicorn
 RUN pip3 install Gunicorn
 RUN pip3 install requests
 RUN pip3 install redis
+RUN pip3 install Pillow
+RUN pip3 install opencv-python
 
 #-----------------------------
 # ソースコードの書き込み

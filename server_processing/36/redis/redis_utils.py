@@ -17,6 +17,14 @@ def set_image_pillow_redis( redis_client, key_name, img_pillow ):
     redis_client.set(key_name, img_base64)
     return
 
+def set_image_base64_redis( redis_client, key_name, img_base64 ):
+    """
+    Base64 での画像データを Redis に追加
+    """
+    # base64 形式での画像データを追加
+    redis_client.set(key_name, img_base64)
+    return    
+
 def get_image_pillow_redis( redis_client, key_name ):
     """
     Redis の 画像データを Pillow 形式で取得
@@ -27,3 +35,9 @@ def get_image_pillow_redis( redis_client, key_name ):
     img_pillow = Image.open(io_bytes)
     return img_pillow
     
+def get_image_base64_redis( redis_client, key_name ):
+    """
+    Redis の 画像データを Base64 形式で取得
+    """
+    img_base64 = redis_client.get(key_name)
+    return img_base64

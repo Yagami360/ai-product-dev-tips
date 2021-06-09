@@ -54,6 +54,13 @@
         - [【GKE】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/10)
         - [【GKE】GKE を用いた機械学習モデルの推論 API の構築](https://github.com/Yagami360/graphonomy_api-server_gke)
         - 【GKE】Workload Identity を用いた GKE クラスタから GCP リソースへのアクセス
+        - 【GKE】GKE の外部公開サービスの IP アドレスを固定する
+
+<!--
+        - 【GKE】複数のコンテナをもつ Pod において、コンテナの起動順を設定する
+        - 【GKE】複数のコンテナをもつ Pod において、同一 Pod 内のコンテナ間で通信する
+-->
+
 - 認証基盤
     - [【GCP】GCP の認証システム](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/11)
 - Web サーバー / WSGI サーバー

@@ -9,6 +9,8 @@ services:
         dockerfile: Dockerfile
       volumes:
         - ${PWD}/api:/api
+        - ${PWD}/utils:/utils
+        - ${PWD}/config:/config
       ports:
         - "5001:5001"
       tty: true
@@ -39,6 +41,7 @@ services:
       volumes:
         - ${PWD}/batch:/batch
         - ${PWD}/redis:/redis
+        - ${PWD}/utils:/utils
         - ${PWD}/config:/config
       tty: true
       environment:
@@ -58,6 +61,7 @@ services:
       volumes:
         - ${PWD}/proxy:/proxy
         - ${PWD}/redis:/redis
+        - ${PWD}/utils:/utils
         - ${PWD}/config:/config
       ports:
         - "5000:5000"

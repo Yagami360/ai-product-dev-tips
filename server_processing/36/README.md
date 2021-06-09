@@ -9,5 +9,18 @@
 
 > API 構成図を追加
 
+<img src="https://user-images.githubusercontent.com/25688193/121313477-646f3900-c941-11eb-9c01-30fee4ca72f8.png" width="300"><br>
+
+## ■ 使用法
+
+1. プロキシサーバーの構築
+1. redis の構築
+1. バッチサーバーの構築
+1. API サーバーの構築
+1. docker-compose で API 構成
+1. リクエスト処理
+
+    > `requests` モジュールを用いて POST メリットでリクエストボディ（jsonデータ）を送信する際に、Flask では `json.dumps()` を用いて dict 型データを JSON 形式に変換する必要する必要があったが、FastAPI では、`json.dumps()` を行う必要がないことに注意
+
 ## ■ 参考サイト
 - https://qiita.com/icoxfog417/items/07cbf5110ca82629aca0
