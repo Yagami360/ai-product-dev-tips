@@ -55,11 +55,9 @@
         - [【GKE】GKE を用いた機械学習モデルの推論 API の構築](https://github.com/Yagami360/graphonomy_api-server_gke)
         - 【GKE】Workload Identity を用いた GKE クラスタから GCP リソースへのアクセス
         - 【GKE】GKE の外部公開サービスの IP アドレスを固定する
-
-<!--
-        - 【GKE】複数のコンテナをもつ Pod において、コンテナの起動順を設定する
-        - 【GKE】複数のコンテナをもつ Pod において、同一 Pod 内のコンテナ間で通信する
--->
+        - 【GKE】Pod 間で通信する
+        - 【GKE】Pod 内のコンテナ間で通信する
+        - 【GKE】Pod でのコンテナの起動順を設定する
 
 - 認証基盤
     - [【GCP】GCP の認証システム](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/11)
@@ -90,7 +88,7 @@
         - [FastAPI + uvicorn + gunicorn + docker を用いた Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/33)
         - [FastAPI での GET / POST 処理（FastAPI + uvicorn + gunicorn + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/34)
         - [FastAPI での非同期処理（FastAPI + uvicorn + gunicorn + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/35)
-        - [[In-progress] FastAPI を使用した非同期処理での Web-API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/36)
+        - [FastAPI を使用した非同期処理での Web-API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/36)
         - FastAPI を使用した非同期処理での機械学習モデル推論 API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成）
         - FastAPI + uvicorn + gunicorn + nginx + docker を用いた Web-API の構築
 - インフラのコード化 / Infrastructure as Code
