@@ -4,7 +4,7 @@ GKE で構成した Web API（FastAPI + uvicorn + gunicorn + docker での構成
 
 ここでの構成例では、vegeta atteck を Pod として構成して Pod のコンテナ内部から負荷テストを行っているが、ローカル PC から vegeta atteck で負荷テストを行う方法もある。Pod 内部から負荷テストを行っているのは、負荷処理実施側のリソース使用量を固定にして、正確な負荷耐性を計測するためである。
 
-> API 構成図を追加
+<img src="https://user-images.githubusercontent.com/25688193/121772124-786ba280-cbae-11eb-8477-93b08df5d61e.png" width="800"><br>
 
 ## 手順
 
@@ -179,7 +179,7 @@ GKE で構成した Web API（FastAPI + uvicorn + gunicorn + docker での構成
                     memory: "300Mi"
         ```
 
-        > 負荷耐性を計測するために、`resources:limits` タグで、各 Pod の CPU リソース量を固定にしている
+        > 負荷耐性を正解に計測するために、`resources:limits` タグで、各 Pod の CPU リソース量を固定にしている
 
     1. API のサービス定義ファイルを作成する<br>
         ```yaml
