@@ -1,0 +1,41 @@
+apiVersion: apps/v1         # Deployment の API バージョン。kubectl api-resources | grep Deployment と kubectl api-versions  | grep apps で確認可能  
+kind: Deployment            # デプロイメント定義ファイルであることを明示
+metadata:
+  name: vegeta-attack-pod        # 識別名
+spec:
+  replicas: 1                    # Pod の数
+  selector:
+    matchLabels:
+      app: vegeta-attack-pod     # template:metadata:labels:app と同じ値にする必要がある
+  template:                      # Pod のテンプレート。このテンプレートをもとに ReplicaSet がレプリカ数の Pod を作成する
+    metadata:
+      labels:                    # Pod をクラスタ内で識別のするためのラベル。service.yml で Pod を識別するラベルとして使用される
+        app: vegeta-attack-pod   # 識別名。selector:matchLabels:app と同じ値にする必要がある
+    spec:
+      containers:                # Pod 内で動作させるコンテナ群の設定
+      - name: vegeta-attack-container                                     # コンテナ名
+        image: gcr.io/my-project2-303004/vegeta-attack-image-gke:latest   # Container Registry にアップロードした docker image
+        imagePullPolicy: Always
+        command: ["tail","-f","/dev/null"]          # 
+        resources:
+          requests:
+            cpu: 1000m
+            memory: "1000Mi"
+        volumeMounts:
+          - name: vegeta-attack-configmap-volumes
+            mountPath: "/vegeta/configmap"
+            readOnly: true
+      volumes:                      # ConfigMap 用のボリューム | ConfigMap は、ファイルとしてマウントすることで Pod から使用できる
+        - name: vegeta-attack-configmap-volumes
+          configMap:
+            name: vegeta-attack-configmap
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vegeta-attack-configmap
+data:
+  # kye: value 形式で設定情報を定義する 
+  get-health-target: "GET http://fast-api-server:5000/health"
+  get-metadata-target: "GET http://fast-api-server:5000/metadata"
+  post-add_users-target: "POST http://fast-api-server:5000/add_users Content-Type: application/json {'id':4, 'name':'user4', 'age':'100'}"

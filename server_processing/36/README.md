@@ -13,7 +13,7 @@
     ここでは、簡単のため推論サーバーとして OpenCV の `cv2.grabCut()` を用いた画像の背景除去を使用しているが、機械学習 API の場合は、この推論サーバーの部分が機械学習モデル（画像分類モデルや image-to-image モデルなど）の推論処理になる
 
 ## ■ API 構成図
-<img src="https://user-images.githubusercontent.com/25688193/121532869-b8117d80-ca3a-11eb-9860-5c7b4f28fcab.png" width="800"><br>
+<img src="https://user-images.githubusercontent.com/25688193/121532869-b8117d80-ca3a-11eb-9860-5c7b4f28fcab.png" width="1000"><br>
 
 <img src="https://user-images.githubusercontent.com/25688193/121330685-342f9680-c951-11eb-9036-dcac39a4e5df.png" width="800"><br>
 
@@ -553,4 +553,5 @@
 -->
 
 ## ■ 参考サイト
+- https://github.com/shibuiwilliam/ml-system-in-actions/tree/main/chapter4_serving_patterns/asynchronous_pattern
 - https://qiita.com/icoxfog417/items/07cbf5110ca82629aca0

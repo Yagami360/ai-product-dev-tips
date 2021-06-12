@@ -58,7 +58,10 @@
         - 【GKE】Pod 間で通信する
         - 【GKE】Pod 内のコンテナ間で通信する
         - 【GKE】Pod でのコンテナの起動順を設定する
-
+        - 【GKE】水平 Pod オートスケーリングでのオートスケール
+        - 【GKE】垂直 Pod オートスケーリングでのオートスケール
+        - 【GKE】水平 Node オートスケーリングでのオートスケール
+        - 【GKE】垂直 Node オートスケーリングでのオートスケール
 - 認証基盤
     - [【GCP】GCP の認証システム](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/11)
 - Web サーバー / WSGI サーバー
@@ -134,9 +137,6 @@
         - [【BigQuery】BigQuery を使用したデータ処理（GUI使用時）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/7)
         - [【BigQuery】BigQuery を使用したデータ処理（CLI使用時）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/8)
         - 【BigQuery】BigQuery を使用したデータ処理（Python 用 BigQuery Storage API ライブラリ使用時）
-- サーバーのロギング / モニタリング
-    - Datadog
-    - 【GCP】Stackdriver
 - メッセージングサービス・キューサービス
     - [メッセージングサービス・キューサービスの基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/17)
     - 【GCP】Google Cloud Pub/Sub
@@ -157,6 +157,13 @@
         - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/1)
         - [[In-progress]【Kubeflow】GKE クラスタに Kubeflow を構築する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/2)
         - [【Kubeflow】Google AI Platform Pipelines を利用して Kubeflow Pipelines の構築する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/3)
+- サーバーのロギング / モニタリング
+    - Datadog
+    - 【GCP】Stackdriver
+- 品質テスト
+    - 機械学習 API サーバーの負荷テストの基礎事項
+    - [GKE で構成した Web API に vegeta atteck を使用して負荷テストする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/25)
+    - GKE で構成した機械学習 API に vegeta atteck を使用して負荷テストする
 
 ## ■ アプリ開発
 
