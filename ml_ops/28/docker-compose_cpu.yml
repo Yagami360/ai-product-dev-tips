@@ -17,4 +17,4 @@ services:
       LC_ALL: C.UTF-8
       LANG: C.UTF-8
     #command: bash -c "python3 app.py --host 0.0.0.0 --port 5000 --device cpu --debug"
-    command: bash -c "gunicorn app2:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+    command: bash -c "gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"

@@ -8,7 +8,7 @@ from tqdm import tqdm
 import requests
 
 # 自作モジュール
-from api.utils import conv_base64_to_pillow, conv_pillow_to_base64
+from api.utils.utils import conv_base64_to_pillow, conv_pillow_to_base64
 
 # グローバル変数
 IMG_EXTENSIONS = (

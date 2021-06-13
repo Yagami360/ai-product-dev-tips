@@ -29,20 +29,24 @@ sys.path.append(os.path.join(os.getcwd(), '../Graphonomy'))
 from networks import deeplab_xception_transfer
 
 # 自作モジュール
-from utils import conv_base64_to_pillow, conv_pillow_to_base64
 from inference_all import inference
+from utils.utils import conv_base64_to_pillow, conv_pillow_to_base64
+from utils.logger import log_decorator
 
+#--------------------------
 # logger
-"""
+#--------------------------
 if( os.path.exists(__name__ + '.log') ):
     os.remove(__name__ + '.log')
 logger = logging.getLogger(__name__)
 logger.setLevel(10)
 logger_fh = logging.FileHandler( __name__ + '.log')
 logger.addHandler(logger_fh)
-"""
+logger.info("{} {} start api server".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", __name__))
 
+#--------------------------
 # FastAPI
+#--------------------------
 app = FastAPI()
 
 class ImageData(BaseModel):
@@ -51,6 +55,72 @@ class ImageData(BaseModel):
     """
     pose_img_base64: Any
 
+#--------------------------
+# モデルの初期化処理
+#--------------------------
+parser = argparse.ArgumentParser()
+parser.add_argument('--host', type=str, default="0.0.0.0", help="ホスト名（コンテナ名 or コンテナ ID）")
+parser.add_argument('--port', type=str, default="5000", help="ポート番号")
+parser.add_argument('--device', choices=['cpu', 'gpu'], default="gpu", help="使用デバイス (CPU or GPU)")
+parser.add_argument('--load_checkpoints_path', default='../checkpoints/universal_trained.pth', type=str, help="学習済みモデルのチェックポイントへのパス")
+parser.add_argument('--use_amp', action='store_true', help="AMP [Automatic Mixed Precision] の使用有効化")
+parser.add_argument('--opt_level', choices=['O0','O1','O2','O3'], default='O1', help='mixed precision calculation mode')
+parser.add_argument('--debug', action='store_true', help="デバッグモード有効化")
+#args = parser.parse_args()
+args, unknown = parser.parse_known_args()   # uWSGI or gnicorn で API を起動した場合に argparse を有効にするための処理
+if( args.debug ):
+    for key, value in vars(args).items():
+        print('%s: %s' % (str(key), str(value)))
+
+if not os.path.exists("_debug"):
+    os.mkdir("_debug")
+    
+# 実行 Device の設定
+if( args.device == "gpu" ):
+    use_cuda = torch.cuda.is_available()
+    if( use_cuda == True ):
+        device = torch.device( "cuda" )
+        print( "実行デバイス :", device)
+        print( "GPU名 :", torch.cuda.get_device_name(device))
+        print("torch.cuda.current_device() =", torch.cuda.current_device())
+    else:
+        print( "can't using gpu." )
+        device = torch.device( "cpu" )
+        print( "実行デバイス :", device)
+else:
+    device = torch.device( "cpu" )
+    print( "実行デバイス :", device)
+
+# モデルの定義
+model = deeplab_xception_transfer.deeplab_xception_transfer_projection_savemem(
+    n_classes=20,
+    hidden_layers=128,
+    source_classes=7, 
+).to(device)
+
+print( "load_checkpoints_path : ", args.load_checkpoints_path )
+if not args.load_checkpoints_path == '':
+    if( args.device == "gpu" ):
+        model.load_state_dict( torch.load(args.load_checkpoints_path), strict=False )
+    else:
+        model.load_state_dict( torch.load(args.load_checkpoints_path, map_location="cpu"), strict=False )
+else:
+    print('no model load !!!!!!!!')
+    raise RuntimeError('No model!!!!')
+
+# AMP の適用（使用メモリ削減効果）
+if( args.use_amp ):
+    # dummy の optimizer
+    optimizer = optim.Adam( params = model.parameters(), lr = 0.0001, betas = (0.5,0.999) )
+
+    # amp initialize
+    model, optimizer = amp.initialize(
+        model, 
+        optimizer, 
+        opt_level = args.opt_level,
+        num_losses = 1
+    )
+
 #======================================
 # GET method
 #======================================
@@ -58,9 +128,13 @@ class ImageData(BaseModel):
 def root():
     return 'Hello Fast-API Server!\n'
 
+@log_decorator(logger=logger)
+def _health():
+    return {"health": "ok"}
+
 @app.get("/health")
 def health():
-    return {"health": "ok"}
+    return _health()
 
 @app.get("/metadata")
 def metadata():
@@ -90,11 +164,9 @@ def predict(
     #------------------------------------------
     # 入力データのチェック
     #------------------------------------------
-    """
     img_w, img_h =pose_img_pillow.size
     if( img_h >= 1024 or img_w >= 1024 ):
         raise HTTPException(status_code=404, detail="Invalid input data")
-    """
 
     #------------------------------------------
     # Graphonomy の実行
@@ -122,80 +194,6 @@ def predict(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--host', type=str, default="0.0.0.0", help="ホスト名（コンテナ名 or コンテナ ID）")
-    parser.add_argument('--port', type=str, default="5000", help="ポート番号")
-    parser.add_argument('--device', choices=['cpu', 'gpu'], default="gpu", help="使用デバイス (CPU or GPU)")
-    parser.add_argument('--load_checkpoints_path', default='../checkpoints/universal_trained.pth', type=str, help="学習済みモデルのチェックポイントへのパス")
-    parser.add_argument('--use_amp', action='store_true', help="AMP [Automatic Mixed Precision] の使用有効化")
-    parser.add_argument('--opt_level', choices=['O0','O1','O2','O3'], default='O1', help='mixed precision calculation mode')
-    parser.add_argument('--debug', action='store_true', help="デバッグモード有効化")
-    args = parser.parse_args()
-    if( args.debug ):
-        for key, value in vars(args).items():
-            print('%s: %s' % (str(key), str(value)))
-
-    if( args.debug ):
-        if not os.path.exists("_debug"):
-            os.mkdir("_debug")
-        
-    # グローバル変数に引数を反映
-    device = args.device
-    load_checkpoints_path = args.load_checkpoints_path
-    debug = args.debug
-
-    #--------------------------
-    # 実行 Device の設定
-    #--------------------------
-    if( device == "gpu" ):
-        use_cuda = torch.cuda.is_available()
-        if( use_cuda == True ):
-            device = torch.device( "cuda" )
-            print( "実行デバイス :", device)
-            print( "GPU名 :", torch.cuda.get_device_name(device))
-            print("torch.cuda.current_device() =", torch.cuda.current_device())
-        else:
-            print( "can't using gpu." )
-            device = torch.device( "cpu" )
-            print( "実行デバイス :", device)
-    else:
-        device = torch.device( "cpu" )
-        print( "実行デバイス :", device)
-
-    #--------------------------
-    # モデルの定義
-    #--------------------------
-    model = deeplab_xception_transfer.deeplab_xception_transfer_projection_savemem(
-        n_classes=20,
-        hidden_layers=128,
-        source_classes=7, 
-    ).to(device)
-
-    print( "load_checkpoints_path : ", load_checkpoints_path )
-    if not load_checkpoints_path == '':
-        if( device == "gpu" ):
-            model.load_state_dict( torch.load(load_checkpoints_path), strict=False )
-        else:
-            model.load_state_dict( torch.load(load_checkpoints_path, map_location="cpu"), strict=False )
-    else:
-        print('no model load !!!!!!!!')
-        raise RuntimeError('No model!!!!')
-
-    #-------------------------------
-    # AMP の適用（使用メモリ削減効果）
-    #-------------------------------
-    if( args.use_amp ):
-        # dummy の optimizer
-        optimizer = optim.Adam( params = model.parameters(), lr = 0.0001, betas = (0.5,0.999) )
-
-        # amp initialize
-        model, optimizer = amp.initialize(
-            model, 
-            optimizer, 
-            opt_level = args.opt_level,
-            num_losses = 1
-        )
-
     #--------------------------
     # FastAPI の起動
     #--------------------------

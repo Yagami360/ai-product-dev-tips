@@ -9,7 +9,7 @@ services:
       context: "api"
       dockerfile: Dockerfile_dev
     volumes:
-      - ${PWD}:/25
+      - ${PWD}:/28
     ports:
       - "5000:5000"
     tty: true
@@ -17,4 +17,5 @@ services:
       TZ: "Asia/Tokyo"
       LC_ALL: C.UTF-8
       LANG: C.UTF-8
-    command: bash -c "python3 app.py --host 0.0.0.0 --port 5000 --device gpu --use_amp --debug"
+    #command: bash -c "python3 app.py --host 0.0.0.0 --port 5000 --device gpu --use_amp --debug"
+    command: bash -c "gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"

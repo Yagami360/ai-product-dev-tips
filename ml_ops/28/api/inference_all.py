@@ -94,8 +94,7 @@ def img_transform(img, transform=None):
     sample = transform(sample)
     return sample
 
-#def inference(net, img, device ):
-def inference(net, img_path, device ):
+def inference(net, img, device ):
     # adj
     adj2_ = torch.from_numpy(graph.cihp2pascal_nlp_adj).float()
     adj2_test = adj2_.unsqueeze(0).unsqueeze(0).expand(1, 1, 7, 20).to(device).transpose(2, 3)
@@ -109,8 +108,7 @@ def inference(net, img_path, device ):
 
     # multi-scale
     scale_list = [1, 0.5, 0.75, 1.25, 1.5, 1.75]
-    img = read_img(img_path)
-    print("img.size : ", img.size)
+    #img = read_img(img_path)
     testloader_list = []
     testloader_flip_list = []
     for pv in scale_list:
@@ -134,7 +132,6 @@ def inference(net, img_path, device ):
 
     # One testing epoch
     net.eval()
-    print("start eval")
 
     # 1 0.5 0.75 1.25 1.5 1.75 ; flip:
     for iii, sample_batched in enumerate(zip(testloader_list, testloader_flip_list)):
@@ -162,8 +159,6 @@ def inference(net, img_path, device ):
                 outputs_final = outputs_final + outputs
             else:
                 outputs_final = outputs.clone()
-
-            print("outputs_final.shape :", outputs_final.shape )
 
     ################ plot pic
     predictions = torch.max(outputs_final, 1)[1]

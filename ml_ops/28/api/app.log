@@ -1,0 +1,3 @@
+2021-06-13 07:59:45 INFO 推論サーバーを起動しました
+2021-06-13 07:59:50 INFO _health START args=() kwds={}
+2021-06-13 07:59:50 INFO _health END return {'health': 'ok'}
