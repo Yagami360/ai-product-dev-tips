@@ -1,36 +1,22 @@
 #!/bin/sh
 set -eu
-SERVICE_NAME=fast-api-server
+SERVICE_NAME=graphonomy-server
 PORT=5000
+
+IN_IMAGE_DIR=sample_n5
+RESULTS_DIR=results_gke
+if [ -d "${RESULTS_DIR}" ] ; then
+    rm -r ${RESULTS_DIR}
+fi
 
 # 公開外部アドレス取得
 EXTERNAL_IP=`kubectl describe service ${SERVICE_NAME} | grep "LoadBalancer Ingress" | awk '{print $3}'`
 
-# 公開外部アドレスの URL にアドレスして動作確認する
-echo "[GET method] ヘルスチェック\n"
+# リクエスト処理
 curl http://${EXTERNAL_IP}:${PORT}/health
-echo "\n"
 
-echo "[GET method] metadata 取得\n"
-curl http://${EXTERNAL_IP}:${PORT}/metadata
-echo "\n"
-
-echo "[GET method] パスパラメーターで指定\n"
-curl http://${EXTERNAL_IP}:${PORT}/users_name/0
-curl http://${EXTERNAL_IP}:${PORT}/users_name/1
-curl http://${EXTERNAL_IP}:${PORT}/users_name/2
-echo "\n"
-
-echo "[GET method] クエリパラメーターで指定\n"
-curl http://${EXTERNAL_IP}:${PORT}/users_name/?users_id=0
-curl http://${EXTERNAL_IP}:${PORT}/users_name/?users_id=1
-curl http://${EXTERNAL_IP}:${PORT}/users_name/?users_id=2
-echo "\n"
-
-# POST method でのリクエスト処理
-echo "[POST method] ユーザー追加\n"
-curl -X POST -H "Content-Type: application/json" \
-    -d '{"id":4, "name":"user4", "age":"100"}' \
-    http://${EXTERNAL_IP}:${PORT}/add_users/
-
-echo "\n"
+python request.py \
+    --host ${EXTERNAL_IP} --port ${PORT} \
+    --in_image_dir ${IN_IMAGE_DIR} \
+    --results_dir ${RESULTS_DIR} \
+    --debug

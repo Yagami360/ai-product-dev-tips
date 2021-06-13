@@ -161,6 +161,7 @@
     - サーバーのロギング / モニタリング
         - Datadog
         - 【GCP】Stackdriver
+    - Fluentd を用いてログ集約する
     - 【Python】デコレーターを用いてロギング処理を共通化する
     - [機械学習 API のロギングの基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/27)
     - 機械学習 API のロギング

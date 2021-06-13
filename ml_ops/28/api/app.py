@@ -8,6 +8,7 @@ import numpy as np
 
 from datetime import datetime
 import logging
+import uuid
 
 # fastAPI
 from fastapi import FastAPI
@@ -31,7 +32,7 @@ from networks import deeplab_xception_transfer
 # 自作モジュール
 from inference_all import inference
 from utils.utils import conv_base64_to_pillow, conv_pillow_to_base64
-from utils.logger import log_decorator
+from utils.logger import log_base_decorator,log_decorator
 
 #--------------------------
 # logger
@@ -128,7 +129,7 @@ if( args.use_amp ):
 def root():
     return 'Hello Fast-API Server!\n'
 
-@log_decorator(logger=logger)
+@log_base_decorator(logger=logger)
 def _health():
     return {"health": "ok"}
 
@@ -136,9 +137,13 @@ def _health():
 def health():
     return _health()
 
+@log_base_decorator(logger=logger)
+def _metadata():
+    return
+
 @app.get("/metadata")
 def metadata():
-    return
+    return _metadata()
 
 #======================================
 # POST method
@@ -150,9 +155,10 @@ class UserData(BaseModel):
     name: str
     age: str
 
-@app.post("/predict/")
-def predict(
-    img_data: ImageData,        # リクエストボディ  
+@log_decorator(logger=logger)
+def _predict(
+    job_id: str,            # ロギングでリクエスト処理を識別するための job_id
+    img_data: ImageData,
 ):
     #------------------------------------------
     # 送信された画像データの変換
@@ -166,7 +172,15 @@ def predict(
     #------------------------------------------
     img_w, img_h =pose_img_pillow.size
     if( img_h >= 1024 or img_w >= 1024 ):
+        logger.info("{} {} {} job_id={} img_w={} img_h={} 入力画像サイズが大きすぎます".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", sys._getframe().f_code.co_name, job_id, img_h, img_w))
         raise HTTPException(status_code=404, detail="Invalid input data")
+        """
+        return {
+            "status": "ng",
+            "pose_parse_img_base64" : None,
+            "pose_parse_img_RGB_base64" : None,
+        }
+        """
 
     #------------------------------------------
     # Graphonomy の実行
@@ -191,6 +205,13 @@ def predict(
         "pose_parse_img_base64" : pose_parse_img_base64,
         "pose_parse_img_RGB_base64" : pose_parse_img_RGB_base64,
     }
+
+@app.post("/predict/")
+def predict(
+    img_data: ImageData,        # リクエストボディ  
+):
+    job_id = str(uuid.uuid4())[:6]
+    return _predict(job_id=job_id, img_data=img_data)
 
 
 if __name__ == "__main__":

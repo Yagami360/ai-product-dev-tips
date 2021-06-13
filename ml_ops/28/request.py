@@ -49,7 +49,7 @@ if __name__ == "__main__":
         #----------------------------------
         graphonomy_msg = {'pose_img_base64': pose_img_base64 }
         try:
-            graphonomy_responce = requests.post( graphonomy_server_url, json=graphonomy_msg, timeout=(10.0, 60.0))
+            graphonomy_responce = requests.post( graphonomy_server_url, json=graphonomy_msg, timeout=(10.0, args.timeout))
             graphonomy_responce = graphonomy_responce.json()
         except Exception as e:
             print( "通信失敗 [Graphonomy]" )
@@ -59,11 +59,12 @@ if __name__ == "__main__":
         #----------------------------------
         # ファイルに保存
         #----------------------------------
-        pose_parse_img_base64 = graphonomy_responce["pose_parse_img_base64"]
-        pose_parse_img_RGB_base64 = graphonomy_responce["pose_parse_img_RGB_base64"]
+        if( graphonomy_responce.status_code == 200 ):
+            pose_parse_img_base64 = graphonomy_responce["pose_parse_img_base64"]
+            pose_parse_img_RGB_base64 = graphonomy_responce["pose_parse_img_RGB_base64"]
 
-        pose_parse_img_pillow = conv_base64_to_pillow(pose_parse_img_base64)
-        pose_parse_img_RGB_pillow = conv_base64_to_pillow(pose_parse_img_RGB_base64)
+            pose_parse_img_pillow = conv_base64_to_pillow(pose_parse_img_base64)
+            pose_parse_img_RGB_pillow = conv_base64_to_pillow(pose_parse_img_RGB_base64)
 
-        pose_parse_img_pillow.save( os.path.join( args.results_dir, img_name.split(".")[0] + ".png" ) )
-        pose_parse_img_RGB_pillow.save( os.path.join( args.results_dir, img_name.split(".")[0] + "_vis.png" ) )
+            pose_parse_img_pillow.save( os.path.join( args.results_dir, img_name.split(".")[0] + ".png" ) )
+            pose_parse_img_RGB_pillow.save( os.path.join( args.results_dir, img_name.split(".")[0] + "_vis.png" ) )
