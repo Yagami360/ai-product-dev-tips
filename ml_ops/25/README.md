@@ -4,7 +4,7 @@ GKE で構成した Web API（FastAPI + uvicorn + gunicorn + docker での構成
 
 ここでの構成例では、vegeta atteck を Pod として構成して Pod のコンテナ内部から負荷テストを行っているが、ローカル PC から vegeta atteck で負荷テストを行う方法もある。Pod 内部から負荷テストを行っているのは、負荷処理実施側のリソース使用量を固定にして、正確な負荷耐性を計測するためである。
 
-<img src="https://user-images.githubusercontent.com/25688193/121772124-786ba280-cbae-11eb-8477-93b08df5d61e.png" width="800"><br>
+<img src="https://user-images.githubusercontent.com/25688193/121793742-3fc6da00-cc3d-11eb-956f-40f408215570.png" width="800"><br>
 
 ## 手順
 

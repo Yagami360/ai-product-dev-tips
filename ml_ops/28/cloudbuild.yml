@@ -1,0 +1,28 @@
+steps:
+  #------------------------------------------------------
+  # Fast API
+  #------------------------------------------------------
+  # キャッシュされたイメージを Container Registry から pull
+  # 初めてイメージをビルドする際は docker pull で pull できる既存のイメージがないため、entrypoint を bash に設定し、コマンドの実行で返されるエラーを無視できるようにしている
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args: ['-c', 'docker pull gcr.io/${PROJECT_ID}/fastapi-graphonomy-image-gke:latest || exit 0']
+
+  # Container Registry 上で docker image 作成 
+  - name: 'gcr.io/cloud-builders/docker'
+    id: docker build fast api
+    args: [
+      'build', 
+      '-t', 'gcr.io/${PROJECT_ID}/fastapi-graphonomy-image-gke:latest', 
+      '--cache-from', 'gcr.io/${PROJECT_ID}/fastapi-graphonomy-image-gke:latest',
+      '-f', 'api/Dockerfile',
+      '.'
+    ]
+
+  # Container Registry 上に docker image を登録
+  - name: 'gcr.io/cloud-builders/docker'
+    id: docker push fast api
+    args: ['push', 'gcr.io/${PROJECT_ID}/fastapi-graphonomy-image-gke:latest']
+
+#images: ['gcr.io/${PROJECT_ID}/fastapi-graphonomy-image-gke:latest']
+timeout: 3600s

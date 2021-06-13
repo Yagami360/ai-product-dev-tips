@@ -157,13 +157,19 @@
         - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/1)
         - [[In-progress]【Kubeflow】GKE クラスタに Kubeflow を構築する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/2)
         - [【Kubeflow】Google AI Platform Pipelines を利用して Kubeflow Pipelines の構築する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/3)
-- サーバーのロギング / モニタリング
-    - Datadog
-    - 【GCP】Stackdriver
+- ロギング / モニタリング
+    - サーバーのロギング / モニタリング
+        - Datadog
+        - 【GCP】Stackdriver
+    - 【Python】デコレーターを用いてロギング処理を共通化する
+    - [機械学習 API のロギングの基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/27)
+    - 機械学習 API のロギング
+
 - 品質テスト
-    - 機械学習 API サーバーの負荷テストの基礎事項
-    - [GKE で構成した Web API に vegeta atteck を使用して負荷テストする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/25)
-    - GKE で構成した機械学習 API に vegeta atteck を使用して負荷テストする
+    - 負荷テスト
+        - 機械学習 API サーバーの負荷テストの基礎事項
+        - [GKE で構成した Web API に vegeta atteck を使用して負荷テストする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/25)
+        - GKE で構成した機械学習 API に vegeta atteck を使用して負荷テストする
 
 ## ■ アプリ開発
 

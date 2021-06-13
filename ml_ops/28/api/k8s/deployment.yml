@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: graphonomy-pod-gpu
+  labels:
+    app: graphonomy-pod-gpu
+spec:
+  restartPolicy: OnFailure
+  containers:
+  - name: graphonomy-container-gpu
+    image: gcr.io/myproject-292103/graphonomy-image-gke
+    imagePullPolicy: Always
+    ports:
+    - containerPort: 5000
+      name: http-server
+    command: ["/bin/sh","-c"]
+    args: ["nvidia-smi && python3 app.py --host 0.0.0.0 --port 5000 --device gpu --debug"]
+    #args: ["gunicorn app:app --bind 0.0.0.0:5000 -w 4 -k uvicorn.workers.UvicornWorker --reload"]
+    resources:
+      limits:
+        nvidia.com/gpu: 1
