@@ -8,8 +8,8 @@ Fluentd を使用して Web-API からのログデータを転送する方法を
 	- Web-API には fluentd をインストールしない
 	- fluentd サーバーのコンテナを別途作成
 	- Web-API の log ファイルの転送は、fluentd サーバーではなくディレクトリのマウントで行う。詳細には、Web-API の log ファイルを docker-compose の `volumes` タグでローカル環境のディレクトリにマウントし、ローカル環境のディレクトリを更に fluentd サーバーのログディレクトリ `/var/log` にマウントする。
-	- fluentd サーバーで `/var/log` 内のログデータを `/fluentd/log` に転送する
-	- 【Option】fluentd サーバーで `/fluentd/log` 内のログデータを GCP に転送する
+	- fluentd サーバーで `/var/log` 内のログデータを `/fluentd/log` に転送する<br>
+	- 【Option】fluentd サーバーで `/fluentd/log` 内のログデータを GCP に転送する<br>
 
 	> k8s で API を構成する場合は、ローカル環境のディレクトリのマウントはできないので、同じような構成で API を構成できなくなる。
 	> その場合は、k8s のサイドカーを使って、Web-API サーバーのコンテナと fluentd サーバーのコンテナ間でディスクを共有すればよい
@@ -20,7 +20,7 @@ Fluentd を使用して Web-API からのログデータを転送する方法を
 	- Web-API のコンテナ内で fluentd サーバーで Web-API の log ファイルを fluentd サーバーのログディレクトリ `/fluentd/log` に転送する
 	- Web-API コンテナ内の fluentd サーバーのログディレクトリ `/fluentd/log` をローカル環境のディレクトリにマウントする
 	- 【Option】Web-API コンテナ内の fluentd サーバーで `/fluentd/log` 内のログデータを GCP に転送する
-	- 複数の Web-API のコンテナが存在する場合は、それぞれの fluentd サーバーのログディレクトリ `/fluentd/log` を、それぞれ異なるローカル環境のディレクトリにマウントする
+	- 複数の Web-API のコンテナが存在する場合は、それぞれの fluentd サーバーのログディレクトリ `/fluentd/log` を、それぞれ異なるローカル環境のディレクトリにマウントする<br>
 
 	> Web-API の dockerfile にわざわざ fluentd のインストールを追加する必要がある
 
@@ -280,40 +280,40 @@ Fluentd を使用して Web-API からのログデータを転送する方法を
     ```yaml
     version: '2.3'
     services:
-		fast-api-server:
-			container_name: fast-api-container
-			image: fast-api-image
-			build:
-				context: "api/"
-				dockerfile: Dockerfile
-			volumes:
-				- ${PWD}/api:/api
-			ports:
-				- "5000:5000"
-			tty: true
-			environment:
-				TZ: "Asia/Tokyo"
-				LC_ALL: C.UTF-8
-				LANG: C.UTF-8
-			depends_on:
-				- fluentd-server
-			command: bash -c "gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+	  fast-api-server:
+	    container_name: fast-api-container
+	    image: fast-api-image
+	    build:
+  	      context: "api/"
+	      dockerfile: Dockerfile
+	    volumes:
+		  - ${PWD}/api:/api
+	    ports:
+	      - "5000:5000"
+	    tty: true
+	    environment:
+	      TZ: "Asia/Tokyo"
+	      LC_ALL: C.UTF-8
+	      LANG: C.UTF-8
+		depends_on:
+	      - fluentd-server
+	    command: bash -c "gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"
 
-        fluentd-server:
-            container_name: fluentd-container
-            image: fluent/fluentd:latest
-            volumes:
-                - ${PWD}/fluentd/log:/fluentd/log
-				- ${PWD}/api/log:/var/log/
-                - ${PWD}/fluentd/fluent.conf:/fluentd/etc/fluent.conf:ro
-            ports:
-                - "127.0.0.1:24224:24224"
-                - "127.0.0.1:24224:24224/udp"
-            tty: true
-            environment:
-                TZ: "Asia/Tokyo"
-                LC_ALL: C.UTF-8
-                LANG: C.UTF-8
+	  fluentd-server:
+	    container_name: fluentd-container
+	    image: fluent/fluentd:latest
+	    volumes:
+	      - ${PWD}/fluentd/log:/fluentd/log
+	      - ${PWD}/api/log:/var/log/
+	      - ${PWD}/fluentd/fluent.conf:/fluentd/etc/fluent.conf:ro
+	    ports:
+	      - "127.0.0.1:24224:24224"
+	      - "127.0.0.1:24224:24224/udp"
+	    tty: true
+	    environment:
+	      TZ: "Asia/Tokyo"
+	      LC_ALL: C.UTF-8
+	      LANG: C.UTF-8
     ```
 
 	ポイントは、以下の通り
