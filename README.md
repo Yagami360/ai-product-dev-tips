@@ -163,7 +163,7 @@
         - 【GCP】Cloud logging（旧 Stackdriver）
     - ログフォワーダ
         - [Fluentd (td-​agent) を使用してログデータを転送する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/29)
-        - [[In-progress] Fluentd を使用して Web-API からのログデータを転送する（FastAPI + uvicorn + gunicorn + Fluentd + docker + docker-compose での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/30)
+        - [Fluentd を使用して Web-API からのログデータを転送する（FastAPI + uvicorn + gunicorn + Fluentd + docker + docker-compose での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/30)
         - Fluentd を使用して Web-API でのログデータを Cloud logging に転送する（FastAPI + uvicorn + gunicorn + Fluentd + docker + docker-compose での構成）
         - Fluentd を使用して Python スクリプトからログ集約する
 

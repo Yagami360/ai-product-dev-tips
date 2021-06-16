@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-TAG_NAME=debug.test
+TAG_NAME=debug
 
 # API を起動する
 HOST=0.0.0.0

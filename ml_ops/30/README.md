@@ -1,6 +1,30 @@
 # Fluentd を使用して Web-API からのログデータを転送する（FastAPI + uvicorn + gunicorn + Fluentd + docker + docker-compose での構成）
 
-> API 構成図を追加
+Fluentd を使用して Web-API からのログデータを転送する方法を実現するためには、以下のようにいくつかの構成パターンが考えられるが、ここでは、API 構成パターン１（Web-API のコンテナ + fluentd サーバーのコンテナ）での　API を構成する
+
+- API 構成パターン１（Web-API のコンテナ + fluentd サーバーのコンテナ）<br>
+	<img src="https://user-images.githubusercontent.com/25688193/122184459-30f35800-cec7-11eb-8656-283946cf359d.png" width="500"><br>
+
+	- Web-API には fluentd をインストールしない
+	- fluentd サーバーのコンテナを別途作成
+	- Web-API の log ファイルの転送は、fluentd サーバーではなくディレクトリのマウントで行う。詳細には、Web-API の log ファイルを docker-compose の `volumes` タグでローカル環境のディレクトリにマウントし、ローカル環境のディレクトリを更に fluentd サーバーのログディレクトリ `/var/log` にマウントする。
+	- fluentd サーバーで `/var/log` 内のログデータを `/fluentd/log` に転送する
+	- 【Option】fluentd サーバーで `/fluentd/log` 内のログデータを GCP に転送する
+
+	> k8s で API を構成する場合は、ローカル環境のディレクトリのマウントはできないので、同じような構成で API を構成できなくなる。
+	> その場合は、k8s のサイドカーを使って、Web-API サーバーのコンテナと fluentd サーバーのコンテナ間でディスクを共有すればよい
+
+- API 構成パターン２（Web-API のコンテナ に fluentd をインストール）<br>
+	- Web-API に fluentd をインストールし、Web-API のコンテナ内で fluentd サーバーを起動する
+	- fluentd サーバーのコンテナは別途作成しない
+	- Web-API のコンテナ内で fluentd サーバーで Web-API の log ファイルを fluentd サーバーのログディレクトリ `/fluentd/log` に転送する
+	- Web-API コンテナ内の fluentd サーバーのログディレクトリ `/fluentd/log` をローカル環境のディレクトリにマウントする
+	- 【Option】Web-API コンテナ内の fluentd サーバーで `/fluentd/log` 内のログデータを GCP に転送する
+	- 複数の Web-API のコンテナが存在する場合は、それぞれの fluentd サーバーのログディレクトリ `/fluentd/log` を、それぞれ異なるローカル環境のディレクトリにマウントする
+
+	> Web-API の dockerfile にわざわざ fluentd のインストールを追加する必要がある
+
+	> Web-API のログデータを `/fluentd/log` に転送するだけなら、わざわざ fluentd サーバーを用いなくても、cp や mv でも可能
 
 ## 方法
 
@@ -218,8 +242,38 @@
 		WORKDIR /api
 		```
 
-1. fluentd の設定<br>
-	1. xxx
+1. fluentd の設定ファイル `fluent.conf` を作成する<br>
+	```conf
+	# 標準入力 -> fluentd 集約ログファイル（デバッグ用）
+	<source>
+	type forward
+	port 24224
+	</source>
+
+	<match debug.**>
+	type file
+	path /fluentd/log/debug.*.log
+	</match>
+
+	# Web-API のログファイル -> fluentd 集約ログファイル
+	<source>
+	type tail
+	format none
+	path /var/log/app.log
+	tag app.log
+	</source>
+
+	<match app.**>
+	type file
+	path /fluentd/log/app.*.log
+	</match>
+	```
+
+	ポイントは、以下の通り
+
+	- `<source>` の `type` で `tail` を指定することで、Web-API からローカル環境経由で `/var/log/app.log` にマウントした Web-API のログファイルを入力データそして指定している。
+	- 更に `<match app.**>` で、`type file` を指定して `path` として `/fluentd/log/app.*.log` を指定することで、`/var/log/app.log` を `/fluentd/log/app.*.log` ファイルに転送する設定にしている
+	- デバッグ用に `echo '{"log_message":"sample"}' | fluent-cat debug` などのコマンドで、標準入力から `/fluentd/log/debug.*.log` ファイルへの書き込みを行うことも可能にしている
 
 1. `docker-compose.yml` を作成する<br>
 	Web-API と fluentd サーバー用の `docker-compose.yml` を作成する。
@@ -250,6 +304,7 @@
             image: fluent/fluentd:latest
             volumes:
                 - ${PWD}/fluentd/log:/fluentd/log
+				- ${PWD}/api/log:/var/log/
                 - ${PWD}/fluentd/fluent.conf:/fluentd/etc/fluent.conf:ro
             ports:
                 - "127.0.0.1:24224:24224"
@@ -265,8 +320,9 @@
 
     - fluent コンテナに関しては、Dockerfile を作成するのではなく、`fluent/fluentd:latest` の docker image を直接使用している
 
-	- fluent コンテナ内でのログデータは、`/fluentd/log` 以下に出力されるので、`volumes:` タグで `${PWD}/fluentd/log:/fluentd/log` として、ローカル環境の `${PWD}/fluentd/log` にマウントされるようにしている。<br>
-	これにより、ローカル環境の `${PWD}/fluentd/log` ディレクトリを確認すれば、全ログデータを確認できるようになる
+	- Web-API コンテナ内のログデータ `/api/log/app.log` は、`fast-api-server` の `volumes:` タグの `${PWD}/api:/api` で、ローカル環境のディレクトリ `api/log/app.log` にマンうとされる。更に、このローカル環境での Web-API のログファイル `api/log/app.log` は、`fluentd-server` の `volumes:` タグの `${PWD}/api/log:/var/log/` で、fluent コンテナ内の `/var/log/app.log` にマウントされる。最後に、このディレクトリ内のログファイルは、`fluent.conf` で指定した設定により、fluent サーバーで `/fluentd/log` に転送される
+
+	- fluent コンテナ内でのログデータは、`/fluentd/log` 以下に出力されるので、`volumes:` タグで `${PWD}/fluentd/log:/fluentd/log` として、ローカル環境の `${PWD}/fluentd/log` にマウントされるようにしている。これにより、ローカル環境の `${PWD}/fluentd/log` ディレクトリを確認すれば、全ログデータを確認できるようになる
 
 	- fluent コンテナ内での設定ファイル `fluent.conf` は、`/fluentd/etc/fluent.conf` にあるファイルで実行されるので、`volumes:` タグで `${PWD}/fluentd/fluent.conf:/fluentd/etc/fluent.conf:ro` で、ローカル環境での `fluent.conf` にマウントしている（※ `ro` は ReadOnly 属性）。<br>
 	これにより、ローカル環境での `fluent.conf` を編集すれば、fluent コンテナのもローカル環境で編集された `fluent.conf` で動作するようになる
@@ -304,16 +360,25 @@
 
 	これらのリクエスト処理により、ローカル環境の `api/log/app.log` には、以下のようなログデータが書き込まれる
 	```sh
-	2021-06-16 11:38:17 INFO start api server
-	2021-06-16 11:38:22 INFO _health START args=() kwds={}
-	2021-06-16 11:38:22 INFO _health END elapsed_time [ms]=0.94771, return {'health': 'ok'}
-	2021-06-16 11:38:22 INFO _metadata START args=() kwds={}
-	2021-06-16 11:38:22 INFO _metadata END elapsed_time [ms]=0.50950, return {'name': {0: 'user1', 1: 'user2', 2: 'user3'}, 'age': {0: '24', 1: '30', 2: '18'}}
-	2021-06-16 11:38:22 INFO _add_user START args=() kwds={'user_data': UserData(id=4, name='user4', age='100')}
-	2021-06-16 11:38:22 INFO _add_user END elapsed_time [ms]=0.65494, return {'name': {0: 'user1', 1: 'user2', 2: 'user3', 4: 'user4'}, 'age': {0: '24', 1: '30', 2: '18', 4: '100'}}
+	2021-06-16 16:54:49 INFO start api server
+	2021-06-16 16:54:54 INFO _health START args=() kwds={}
+	2021-06-16 16:54:54 INFO _health END elapsed_time [ms]=0.81348, return {'health': 'ok'}
+	2021-06-16 16:54:54 INFO _metadata START args=() kwds={}
+	2021-06-16 16:54:54 INFO _metadata END elapsed_time [ms]=0.74697, return {'name': {0: 'user1', 1: 'user2', 2: 'user3'}, 'age': {0: '24', 1: '30', 2: '18'}}
+	2021-06-16 16:54:54 INFO _add_user START args=() kwds={'user_data': UserData(id=4, name='user4', age='100')}
+	2021-06-16 16:54:54 INFO _add_user END elapsed_time [ms]=0.81968, return {'name': {0: 'user1', 1: 'user2', 2: 'user3', 4: 'user4'}, 'age': {0: '24', 1: '30', 2: '18', 4: '100'}}
 	```
 
-1. fluentd サーバーに Web-API のログデータが転送されていることを確認する<br>
+1. fluentd サーバー経由で Web-API のログデータが転送されていることを確認する<br>
+	上記のローカル環境での `api/log/app.log` は、fluentd コンテナの `var/log/app.log` にマウントされる。<br>
+	その後、fluentd サーバーにより fluentd コンテナの `/fluentd/log` に転送される。<br>
+	fluentd コンテナの `/fluentd/log` は、ローカル環境の `fluentd/log` にマウントされているので、ローカル環境の `fluentd/log/app.log` には、以下のようなログデータが書き込まれる
 
-
-
+	```sh
+	2021-06-16T07:54:54+00:00	app.log	{"message":"2021-06-16 16:54:54 INFO _health START args=() kwds={}"}
+	2021-06-16T07:54:54+00:00	app.log	{"message":"2021-06-16 16:54:54 INFO _health END elapsed_time [ms]=0.81348, return {'health': 'ok'}"}
+	2021-06-16T07:54:54+00:00	app.log	{"message":"2021-06-16 16:54:54 INFO _metadata START args=() kwds={}"}
+	2021-06-16T07:54:54+00:00	app.log	{"message":"2021-06-16 16:54:54 INFO _metadata END elapsed_time [ms]=0.74697, return {'name': {0: 'user1', 1: 'user2', 2: 'user3'}, 'age': {0: '24', 1: '30', 2: '18'}}"}
+	2021-06-16T07:54:54+00:00	app.log	{"message":"2021-06-16 16:54:54 INFO _add_user START args=() kwds={'user_data': UserData(id=4, name='user4', age='100')}"}
+	2021-06-16T07:54:54+00:00	app.log	{"message":"2021-06-16 16:54:54 INFO _add_user END elapsed_time [ms]=0.81968, return {'name': {0: 'user1', 1: 'user2', 2: 'user3', 4: 'user4'}, 'age': {0: '24', 1: '30', 2: '18', 4: '100'}}"}
+	```

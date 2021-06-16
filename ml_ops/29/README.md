@@ -33,8 +33,8 @@ Fluentd と td-​agent の違いは、以下の通り
     $ fluentd -c fluent/fluent.conf 
     ```
 
-1. Fluentd にログ送信<br>
-    Fluentd サーバーが起動されている状態で、`fluent-cat` コマンドを使用することで、tcp 経由でログデータを送信できる
+1. Fluentd を用いて標準入力からログデータを転送する<br>
+    Fluentd サーバーが起動されている状態で、`fluent-cat` コマンドを使用することで、標準入力から tcp 経由でログデータを送信できる
     ```sh
     $ echo ${VALUE_DATA} | fluent-cat ${TAG_NAME}
     ```
@@ -44,8 +44,15 @@ Fluentd と td-​agent の違いは、以下の通り
         $ echo '{"log_message":"sample"}' | fluent-cat debug.test
         ```
 
-        > この例での tag 名 `debug.test` は、`fluent.conf` 内の以下の部分に対応したものになっている
+        このコマンドでログ転送が可能であるためには、`fluent.conf` 内の以下のような設定が行われている必要があることに注意
         > ```conf
+        >## built-in TCP input
+        >## $ echo <json> | fluent-cat <tag>
+        ><source>
+        >  @type forward
+        >  @id forward_input
+        ></source>
+        >
         > ## match tag=debug.** and dump to console
         > <match debug.**>
         >   @type stdout
@@ -59,28 +66,23 @@ Fluentd と td-​agent の違いは、以下の通り
     ```
 
 ### ◎ td-agent の場合
+xxx
 
-
-## ■ Fluentd 設定ファイル `fluent.conf` の中身
+## ■ Fluentd 設定ファイル `fluent.conf`
 
 `<source></<source>` でログの入力方法を指定し、`<match></<match>` でログの出力方法を指定する
 
-1. ログデータをファイルに出力する場合<br>
+1. 標準入力から標準出力へログデータを転送する場合<br>
     ```yaml
-    <source>
-    type forward
-    </source>
-
-    <match log.**>
-        type file
-        path /var/log/fluentd/out
-    </match>
     ```
 
-1. ログデータを転送する場合<br>
-    ```
+1. 標準入力から外部ファイルにログデータを転送する場合<br>
+    ```yaml
     ```
 
+1. 外部ファイルから外部ファイルにログデータを転送する場合<br>
+    ```yaml
+    ```
 
 ## ■ 参考サイト
 - https://qiita.com/zaburo/items/dbd943d370afe8e4a304
