@@ -1,5 +1,30 @@
+# coding=utf-8
+import os
+import sys
+import argparse
+from datetime import datetime
+import logging
+import uuid
+
 from fastapi import FastAPI
 
+# 自作モジュール
+from utils.logger import log_base_decorator
+
+#--------------------------
+# logger
+#--------------------------
+if( os.path.exists(os.path.join("log", __name__ + '.log')) ):
+    os.remove(os.path.join("log", __name__ + '.log'))
+logger = logging.getLogger(__name__)
+logger.setLevel(10)
+logger_fh = logging.FileHandler(os.path.join("log", __name__ + '.log'))
+logger.addHandler(logger_fh)
+logger.info("{} {} start api server".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", __name__))
+
+#--------------------------
+# FastAPI
+#--------------------------
 app = FastAPI()
 
 users_db = {
@@ -22,13 +47,21 @@ users_db = {
 def root():
     return 'Hello Flask-API Server!\n'
 
+@log_base_decorator(logger=logger)
+def _health():
+    return {"health": "ok"}
+
 @app.get("/health")
 def health():
-    return {"health": "ok"}
+    return _health()
+
+@log_base_decorator(logger=logger)
+def _metadata():
+    return users_db
 
 @app.get("/metadata")
 def metadata():
-    return users_db
+    return _metadata()
 
 @app.get("/users_name/{users_id}")
 def get_user_name_by_path_parameter(
@@ -59,10 +92,16 @@ class UserData(BaseModel):
     name: str
     age: str
 
-@app.post("/add_users/")
-def add_user(
-    user_data: UserData,     # リクエストボディ
+@log_base_decorator(logger=logger)
+def _add_user(
+    user_data: UserData,
 ):
     users_db["name"][user_data.id] = user_data.name
     users_db["age"][user_data.id] = user_data.age
     return users_db
+
+@app.post("/add_users/")
+def add_user(
+    user_data: UserData,     # リクエストボディ
+):
+    return _add_user(user_data=user_data)

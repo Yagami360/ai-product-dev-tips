@@ -1,6 +1,16 @@
-# Fluentd を使用してログ集約する
+# Fluentd (td-​agent) を使用してログデータを転送する
 
-## 方法
+Fluentd (td-​agent) は、ログデータの転送や集約を行うためのツールである。<br>
+Fluentd を使用することで、例えば、複数の Web-API からのログデータを１箇所に集約し、各種クラウドのログサービス（Cloud logging など）に転送するような処理が可能になる
+
+Fluentd と td-​agent の違いは、以下の通り
+
+- fluentd: コミュニティによって開発が進められている ruby gem のパッケージ
+- td-agent: fluentd の安定版 + 各OS用インストーラ
+
+## ■ 方法
+
+### ◎ fluentd の場合
 
 1. Fluentd をインストールする<br>
     ```sh
@@ -47,6 +57,9 @@
     ```
     2021-06-14 19:14:24.947341000 +0900 debug.test: {"log_message":"sample"}
     ```
+
+### ◎ td-agent の場合
+
 
 ## ■ Fluentd 設定ファイル `fluent.conf` の中身
 

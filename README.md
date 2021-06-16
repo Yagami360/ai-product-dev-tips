@@ -53,15 +53,12 @@
         - [【GKE】Kubernetes (k8s) と GKE [Google Kubernetes Engine] の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/9)
         - [【GKE】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/10)
         - [【GKE】GKE を用いた機械学習モデルの推論 API の構築](https://github.com/Yagami360/graphonomy_api-server_gke)
+        - [[In-progress]【GKE】GKE でのオートスケールの基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/31)
         - 【GKE】Workload Identity を用いた GKE クラスタから GCP リソースへのアクセス
         - 【GKE】GKE の外部公開サービスの IP アドレスを固定する
         - 【GKE】Pod 間で通信する
         - 【GKE】Pod 内のコンテナ間で通信する
         - 【GKE】Pod でのコンテナの起動順を設定する
-        - 【GKE】水平 Pod オートスケーリングでのオートスケール
-        - 【GKE】垂直 Pod オートスケーリングでのオートスケール
-        - 【GKE】水平 Node オートスケーリングでのオートスケール
-        - 【GKE】垂直 Node オートスケーリングでのオートスケール
 - 認証基盤
     - [【GCP】GCP の認証システム](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/11)
 - Web サーバー / WSGI サーバー
@@ -164,9 +161,10 @@
     - サーバーのロギング / モニタリング
         - Datadog
         - 【GCP】Cloud logging（旧 Stackdriver）
-    - Fluentd
-        - [Fluentd を使用してログデータを転送する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/29)
-        - [[In-progress] Fluentd を使用して Web-API でのログデータを転送する（FastAPI + uvicorn + gunicorn + Fluentd + docker + docker-compose での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/30)
+    - ログフォワーダ
+        - [Fluentd (td-​agent) を使用してログデータを転送する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/29)
+        - [[In-progress] Fluentd を使用して Web-API からのログデータを転送する（FastAPI + uvicorn + gunicorn + Fluentd + docker + docker-compose での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/30)
+        - Fluentd を使用して Web-API でのログデータを Cloud logging に転送する（FastAPI + uvicorn + gunicorn + Fluentd + docker + docker-compose での構成）
         - Fluentd を使用して Python スクリプトからログ集約する
 
 - 品質テスト
