@@ -1,0 +1,50 @@
+# Fast API
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fast-api-pod
+  labels:
+    app: fast-api-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fast-api-pod
+  template:
+    metadata:
+      labels:
+        app: fast-api-pod
+    spec:
+      containers:
+      - name: fast-api-container
+        image: gcr.io/my-project2-303004/fast-api-image-gke:latest
+        ports:
+        - containerPort: 5000
+          name: http-server
+        command: ["/bin/sh","-c"]
+        args: ["gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"]
+        volumeMounts:                         
+          - name: varlog-volume               # /var/log ディレクトリを fluentd コンテナと共有
+            mountPath: /var/log
+          - name: apilog-volume               # /api/log ディレクトリを fluentd コンテナと共有
+            mountPath: /api/log            
+      - name: fluentd-container               # FastAPI コンテナのサイドカー（FastAPI コンテナとディスクを共有するコンテナ）
+        image: k8s.gcr.io/fluentd-gcp:1.30
+        env:
+          - name: FLUENTD_ARGS                # /fluentd/fluentd.conf にある設定ファイルで fluentd サーバーを起動するための環境変数
+            value: -c /etc/fluentd-config/fluentd.conf   
+        volumeMounts:
+          - name: varlog-volume               # /var/log ディレクトリを FastAPI コンテナと共有
+            mountPath: /var/log
+          - name: apilog-volume               # /api/log ディレクトリを FastAPI コンテナと共有
+            mountPath: /api/log            
+          - name: fluentd-configmap-volume    # fluentd-configmap を /fluentd ディレクトリにマウント
+            mountPath: /etc/fluentd-config
+      volumes:
+        - name: varlog-volume
+          emptyDir: {}
+        - name: apilog-volume
+          emptyDir: {}
+        - name: fluentd-configmap-volume
+          configMap:
+            name: fluentd-configmap

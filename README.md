@@ -156,17 +156,16 @@
         - [【Kubeflow】Google AI Platform Pipelines を利用して Kubeflow Pipelines の構築する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/3)
 - ロギング / モニタリング
     - 【Python】デコレーターを用いてロギング処理を共通化する
-    - [機械学習 API のロギングの基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/27)
-    - [[In-progress] 機械学習 API のロギング](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/28)
     - サーバーのロギング / モニタリング
         - Datadog
         - 【GCP】Cloud logging（旧 Stackdriver）
     - ログフォワーダ
         - [Fluentd (td-​agent) を使用してログデータを転送する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/29)
         - [Fluentd を使用して Web-API からのログデータを転送する（FastAPI + uvicorn + gunicorn + Fluentd + docker + docker-compose での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/30)
-        - Fluentd を使用して Web-API でのログデータを Cloud logging に転送する（FastAPI + uvicorn + gunicorn + Fluentd + docker + docker-compose での構成）
+        - [[In-progress] Fluentd を使用して GKE 上の Web-API でのログデータを Cloud logging に転送する（FastAPI + uvicorn + gunicorn + Fluentd + docker + GKE での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/32)
+        - [[In-progress] Fluentd を使用して機械学習 API のログデータを転送する（FastAPI + uvicorn + gunicorn + Fluentd + docker + docker-compose での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/28)
         - Fluentd を使用して Python スクリプトからログ集約する
-
+        
 - 品質テスト
     - 負荷テスト
         - 機械学習 API サーバーの負荷テストの基礎事項

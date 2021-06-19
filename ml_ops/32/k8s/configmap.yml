@@ -1,0 +1,26 @@
+# fluentd.conf の ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-configmap
+data:
+  fluentd.conf: |
+    # Web-API log file -> fluentd log file
+    <source>
+      type tail
+      format none
+      #path /var/log/app.log
+      path /api/log/app.log
+      pos_file /api/log/app.log
+      tag app.log
+    </source>
+
+    #<match app.**>
+    #  type file
+    #  path /etc/fluentd-config/log/app.*.log
+    #</match>
+
+    # Web-API logfile -> Cloud logging
+    <match **>
+      type google_cloud
+    </match>

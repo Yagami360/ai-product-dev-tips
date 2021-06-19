@@ -11,6 +11,8 @@ Fluentd を使用して Web-API からのログデータを転送する方法を
 	- fluentd サーバーで `/var/log` 内のログデータを `/fluentd/log` に転送する<br>
 	- 【Option】fluentd サーバーで `/fluentd/log` 内のログデータを GCP に転送する<br>
 
+	<br>
+
 	> k8s で API を構成する場合は、ローカル環境のディレクトリのマウントはできないので、同じような構成で API を構成できなくなる。
 	> その場合は、k8s のサイドカーを使って、Web-API サーバーのコンテナと fluentd サーバーのコンテナ間でディスクを共有すればよい
 
@@ -22,6 +24,8 @@ Fluentd を使用して Web-API からのログデータを転送する方法を
 	- 【Option】Web-API コンテナ内の fluentd サーバーで `/fluentd/log` 内のログデータを GCP に転送する
 	- 複数の Web-API のコンテナが存在する場合は、それぞれの fluentd サーバーのログディレクトリ `/fluentd/log` を、それぞれ異なるローカル環境のディレクトリにマウントする<br>
 
+	<br>
+	
 	> Web-API の dockerfile にわざわざ fluentd のインストールを追加する必要がある
 
 	> Web-API のログデータを `/fluentd/log` に転送するだけなら、わざわざ fluentd サーバーを用いなくても、cp や mv でも可能
@@ -287,7 +291,7 @@ Fluentd を使用して Web-API からのログデータを転送する方法を
   	      context: "api/"
 	      dockerfile: Dockerfile
 	    volumes:
-		  - ${PWD}/api:/api
+	      - ${PWD}/api:/api
 	    ports:
 	      - "5000:5000"
 	    tty: true
@@ -295,7 +299,7 @@ Fluentd を使用して Web-API からのログデータを転送する方法を
 	      TZ: "Asia/Tokyo"
 	      LC_ALL: C.UTF-8
 	      LANG: C.UTF-8
-		depends_on:
+	    depends_on:
 	      - fluentd-server
 	    command: bash -c "gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"
 

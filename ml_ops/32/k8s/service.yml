@@ -1,0 +1,14 @@
+# Fast API
+apiVersion: v1
+kind: Service
+metadata:
+  name: fast-api-server
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 5000
+      targetPort: 5000
+      protocol: TCP
+  selector:
+    app: fast-api-pod
+    

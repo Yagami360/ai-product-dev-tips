@@ -254,7 +254,11 @@ GKE で構成した Web API（FastAPI + uvicorn + gunicorn + docker での構成
             post-add_users-target: "POST http://fast-api-server:5000/add_users Content-Type: application/json {'id':4, 'name':'user4', 'age':'100'}"
         ```
 
+        > vegeta-attack CLI コマンド `vegeta attack` 後に続くコマンドは、テキストファイル (or echo "xxx") で指定する必要があるが、k8s で行う場合は ConfigMap で定義するのが最適になる
+
+        <!--
         > ここでは、k8s v1.2 以降に導入された ConfigMap を使用して、vegeta-attack CLI で使用する "GET xxx" などの値を、key: value 形式の設定情報として定義しているが、ConfigMap を使用しなくとも、vegeta-attack CLI 実行時にこれらの値を直接指定すれば、負荷テストは行える
+        -->
 
         > ConfigMap を Pod から使用するためには、環境変数に設定する方法と、ファイルとしてマウントする(Volume)方法の2つの方式がある。ここでは、後者の　ConfigMap をファイルとしてマウントする方法で、Pod から使用している
 
