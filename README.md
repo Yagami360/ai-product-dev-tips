@@ -165,12 +165,13 @@
         - [[In-progress] Fluentd を使用して GKE 上の Web-API でのログデータを Cloud logging に転送する（FastAPI + uvicorn + gunicorn + Fluentd + docker + GKE での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/32)
         - [[In-progress] Fluentd を使用して機械学習 API のログデータを転送する（FastAPI + uvicorn + gunicorn + Fluentd + docker + docker-compose での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/28)
         - Fluentd を使用して Python スクリプトからログ集約する
-        
+
 - 品質テスト
     - 負荷テスト
         - 機械学習 API サーバーの負荷テストの基礎事項
         - [GKE で構成した Web API に vegeta atteck を使用して負荷テストする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/25)
         - GKE で構成した機械学習 API に vegeta atteck を使用して負荷テストする
+    - GKE で構成した Web API にサーキットブレーカーを導入する
 
 ## ■ アプリ開発
 

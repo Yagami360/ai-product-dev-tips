@@ -1,0 +1,10 @@
+# vegeta attack
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vegeta-attack-configmap
+data:
+  # kye: value 形式で設定情報を定義する 
+  get-health-target: "GET http://fast-api-server:5000/health"
+  get-metadata-target: "GET http://fast-api-server:5000/metadata"
+  post-add_users-target: "POST http://fast-api-server:5000/add_users Content-Type: application/json {'id':4, 'name':'user4', 'age':'100'}"
