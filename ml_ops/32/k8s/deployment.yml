@@ -18,6 +18,7 @@ spec:
       containers:
       - name: fast-api-container
         image: gcr.io/my-project2-303004/fast-api-image-gke:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
           name: http-server
@@ -31,15 +32,15 @@ spec:
       - name: fluentd-container               # FastAPI コンテナのサイドカー（FastAPI コンテナとディスクを共有するコンテナ）
         image: k8s.gcr.io/fluentd-gcp:1.30
         env:
-          - name: FLUENTD_ARGS                # /fluentd/fluentd.conf にある設定ファイルで fluentd サーバーを起動するための環境変数
-            value: -c /etc/fluentd-config/fluentd.conf   
+          - name: FLUENTD_ARGS                # /etc/fluentd/fluentd.conf にある設定ファイルで fluentd サーバーを起動するための環境変数
+            value: -c /etc/fluentd/fluentd.conf   
         volumeMounts:
           - name: varlog-volume               # /var/log ディレクトリを FastAPI コンテナと共有
             mountPath: /var/log
           - name: apilog-volume               # /api/log ディレクトリを FastAPI コンテナと共有
             mountPath: /api/log            
-          - name: fluentd-configmap-volume    # fluentd-configmap を /fluentd ディレクトリにマウント
-            mountPath: /etc/fluentd-config
+          - name: fluentd-configmap-volume    # fluentd-configmap を /etc/fluentd ディレクトリにマウント
+            mountPath: /etc/fluentd
       volumes:
         - name: varlog-volume
           emptyDir: {}

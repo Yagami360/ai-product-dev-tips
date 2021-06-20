@@ -1,0 +1,37 @@
+version: '2.3'
+
+services:
+  fast-api-server:
+      container_name: fast-api-container
+      image: fast-api-image
+      build:
+        context: "api/"
+        dockerfile: Dockerfile_dev
+      volumes:
+        - ${PWD}/api:/api
+      ports:
+        - "5000:5000"
+      tty: true
+      environment:
+        TZ: "Asia/Tokyo"
+        LC_ALL: C.UTF-8
+        LANG: C.UTF-8
+      depends_on:
+        - fluentd-server
+      command: bash -c "gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+
+  fluentd-server:
+    container_name: fluentd-container
+    image: fluent/fluentd:latest
+    volumes:
+      - ${PWD}/fluentd/log:/fluentd/log
+      - ${PWD}/api/log:/var/log/
+      - ${PWD}/fluentd/fluent.conf:/fluentd/etc/fluent.conf:ro
+    ports:
+      - "127.0.0.1:24224:24224"
+      - "127.0.0.1:24224:24224/udp"
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8

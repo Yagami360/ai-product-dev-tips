@@ -17,7 +17,7 @@ data:
 
     #<match app.**>
     #  type file
-    #  path /etc/fluentd-config/log/app.*.log
+    #  path /etc/fluentd/log/app.*.log
     #</match>
 
     # Web-API logfile -> Cloud logging

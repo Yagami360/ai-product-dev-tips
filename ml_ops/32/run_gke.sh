@@ -13,6 +13,9 @@ NUM_NODES=1
 MIN_NODES=1
 MAX_NODES=1
 
+ENABLE_BUILD=0
+#ENABLE_BUILD=1
+
 HOST=0.0.0.0
 PORT=5000
 
@@ -22,29 +25,11 @@ gcloud config set compute/region ${REGION}
 gcloud config set compute/zone ${ZONE}
 gcloud config list
 
-<<COMMENTOUT
-# Cloud logging でロギングを行うためのサービスアカウントを作成する
-if [ ! "$(gcloud iam service-accounts list | grep ${SERVICE_ACCOUNT_NAME})" ] ;then
-    gcloud iam service-accounts create ${SERVICE_ACCOUNT_NAME}
-fi
-
-# サービスアカウントにロギング権限を付与する
-gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" --role="roles/logging.logWriter"
-gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" --role="roles/monitoring.metricWriter"
-
-# サービスアカウントの秘密鍵 (json) を生成する
-if [ ! -e "key/key.json" ] ; then
-    mkdir -p key
-    gcloud iam service-accounts keys create key/key.json --iam-account=${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com
-fi
-
-# 作成した json 鍵を環境変数に反映
-export GOOGLE_APPLICATION_CREDENTIALS=key/key.json
-COMMENTOUT
-
 # docker image を Cloud Build 上でビルドし、GCP Container Registry にアップロード
 cd api/
-gcloud builds submit --config cloudbuild.yml
+if [ ! ${ENABLE_BUILD} = 0 ] ; then
+    gcloud builds submit --config cloudbuild.yml
+fi
 cd ..
 
 # クラスタを作成
@@ -58,6 +43,8 @@ gcloud container clusters create ${CLUSTER_NAME} \
     --num-nodes ${NUM_NODES} \
     --min-nodes ${MIN_NODES} --max-nodes ${MAX_NODES} \
     --enable-autoscaling
+
+#    --scopes=gke-default,logging-write
 
 # Config Map を作成する
 kubectl apply -f k8s/configmap.yml
