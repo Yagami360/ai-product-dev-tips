@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 SERVICE_NAME=fast-api-server
-EXTERNAL_IP=`kubectl describe service ${SERVICE_NAME} | grep "LoadBalancer Ingress" | awk '{print $3}'`
+EXTERNAL_IP=`kubectl get services | grep ${SERVICE_NAME} | awk '{print $4}'`
 PORT=5000
 
 # 公開外部アドレスの URL にアドレスして動作確認する

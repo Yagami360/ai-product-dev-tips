@@ -11,18 +11,3 @@ spec:
       protocol: TCP
   selector:
     app: fast-api-pod  # デプロイメント定義ファイルで定義した Pod の識別名。app:sample-pod のラベルがつけられた Pod を通信先とする
----
-# Istio
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: fast-api-server
-spec:
-  hosts:
-    - fast-api-server
-  http:
-    - route:
-        - destination:
-            host: fast-api-server
-            subset: svc
-          weight: 100

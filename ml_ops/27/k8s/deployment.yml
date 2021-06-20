@@ -12,12 +12,12 @@ spec:
     metadata:
       labels:                   
         app: fast-api-pod       
-        version: svc                      #
-      annotations:                        # Istio を使用するためのアノテーション
-        sidecar.istio.io/inject: "true"
-        sidecar.istio.io/proxyCPU: "128m"
-        sidecar.istio.io/proxyMemory: "128Mi"
-        proxy.istio.io/config: "{'concurrency':'4'}"
+        version: svc                                    #
+      annotations:                                      # Istio を使用するためのアノテーション（key: value 形式の metadata）
+        sidecar.istio.io/inject: "true"                 # Istio の Envoy（プロキシサーバー）サイドカーの挿入を行うかフラグ
+        sidecar.istio.io/proxyCPU: "128m"               # Istio の Envoy（プロキシサーバー）サイドカーの使用 CPU 量
+        sidecar.istio.io/proxyMemory: "128Mi"           # Istio の Envoy（プロキシサーバー）サイドカーの使用 CPU メモリ
+        proxy.istio.io/config: "{'concurrency':'4'}"    # Istio の Envoy（プロキシサーバー）サイドカーの並列スレッド数
     spec:
       containers:
       - name: fast-api-container
@@ -48,11 +48,11 @@ spec:
     metadata:
       labels:                    
         app: vegeta-attack-pod   
-      annotations:               # Istio を使用するためのアノテーション
-        sidecar.istio.io/inject: "true"
-        sidecar.istio.io/proxyCPU: "128m"
-        sidecar.istio.io/proxyMemory: "128Mi"
-        proxy.istio.io/config: "{'concurrency':'16'}"
+      annotations:                                      # Istio を使用するためのアノテーション（key: value 形式の metadata）
+        sidecar.istio.io/inject: "true"                 # Istio の Envoy（プロキシサーバー）サイドカーの挿入を行うかフラグ
+        sidecar.istio.io/proxyCPU: "128m"               # Istio の Envoy（プロキシサーバー）サイドカーの使用 CPU 量
+        sidecar.istio.io/proxyMemory: "128Mi"           # Istio の Envoy（プロキシサーバー）サイドカーの使用 CPU メモリ
+        proxy.istio.io/config: "{'concurrency':'16'}"   # Istio の Envoy（プロキシサーバー）サイドカーの並列スレッド数
     spec:
       containers:               
       - name: vegeta-attack-container

@@ -9,7 +9,7 @@ CPU_TYPE=n1-standard-4
 
 NUM_NODES=1
 MIN_NODES=1
-MAX_NODES=1
+MAX_NODES=3
 
 ENABLE_BUILD=0
 #ENABLE_BUILD=1
@@ -30,15 +30,22 @@ if [ "$(gcloud container clusters list | grep "${CLUSTER_NAME}")" ] ;then
     gcloud container clusters delete ${CLUSTER_NAME} --region ${ZONE}
 fi
 
-gcloud container clusters create ${CLUSTER_NAME} \
+gcloud beta container clusters create ${CLUSTER_NAME} \
     --region ${ZONE} \
     --machine-type ${CPU_TYPE} \
-    --cluster-version=1.4.10-gke.8 \
-    --addons=Istio --istio-config=auth=MTLS_STRICT
+    --num-nodes ${NUM_NODES} \
+    --min-nodes ${MIN_NODES} --max-nodes ${MAX_NODES} \
+    --enable-autoscaling \
+    --addons=Istio --istio-config=auth=MTLS_PERMISSIVE
 
-#    --num-nodes ${NUM_NODES} \
-#    --min-nodes ${MIN_NODES} --max-nodes ${MAX_NODES} \
-#    --enable-autoscaling \
+#    --addons=Istio --istio-config=auth=MTLS_STRICT
+
+# 作成した GKE クラスタに Istio が正常にインストールされているかを確認する
+kubectl get pods -n istio-system
+kubectl get service -n istio-system
+
+# Istio の Envoy（プロキシサーバー）サイドカーを有効化する
+kubectl label namespace default istio-injection=enabled
 
 # ConfigMap を作成する
 kubectl apply -f k8s/configmap.yml
@@ -46,14 +53,20 @@ kubectl apply -f k8s/configmap.yml
 # DestinationRule を作成する
 kubectl apply -f k8s/destination_rule.yml
 
+# VirtualService を作成する
+kubectl apply -f k8s/virtual_service.yml
+
 # Pod を作成する
 kubectl apply -f k8s/deployment.yml
+kubectl get pods
 
 # Service を公開する
 kubectl apply -f k8s/service.yml
+kubectl get services
 
 # 作成した Pod のコンテナログを確認
-#kubectl logs `kubectl get pods | grep "fast-api-pod" | awk '{print $1}'`
+#kubectl logs `kubectl get pods | grep "fast-api-pod" | awk '{print $1}' | sed -n 1P` fast-api-container
+#kubectl logs `kubectl get pods | grep "fast-api-pod" | awk '{print $1}' | sed -n 1P` istio-proxy
 
 # 作成した Pod のコンテナにアクセス
-#kubectl exec -it `kubectl get pods | grep "fast-api-pod" | awk '{print $1}'` /bin/bash
+#kubectl exec -it `kubectl get pods | grep "fast-api-pod" | awk '{print $1}' | sed -n 1P` /bin/bash
