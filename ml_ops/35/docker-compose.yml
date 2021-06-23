@@ -1,0 +1,17 @@
+version: '2.3'
+
+services:
+  mysql_server:
+    container_name: mysql-container
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    command: bash -c "mysql.server start"
+
+
+#    /etc/my.cnf
