@@ -7,11 +7,19 @@ services:
     ports:
       - "3306:3306"
     tty: true
+    volumes:
+      - ${PWD}/mysql/my.cnf:/etc/my.cnf
+      - ${PWD}/mysql/db/data:/var/lib/mysql
+      - ${PWD}/mysql/db/initdb.d:/docker-entrypoint-initdb.d
     environment:
       TZ: "Asia/Tokyo"
       LC_ALL: C.UTF-8
       LANG: C.UTF-8
-    command: bash -c "mysql.server start"
-
-
-#    /etc/my.cnf
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_HOST: "localhost"
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: "test_db"
+    command: bash -c "mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci"
+    #command: bash -c "mysql.server start"
