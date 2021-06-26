@@ -11,9 +11,10 @@ from fastapi import FastAPI
 # 自作モジュール
 from utils.logger import log_base_decorator
 
-sys.path.append(os.path.join(os.getcwd(), '../mysql_utils'))
-from setting import session
-from crud import insert, select_first, select_all
+sys.path.append(os.path.join(os.getcwd(), '../'))
+from mysql_utils.setting import global_session, get_context_session
+from mysql_utils import crud
+from mysql_utils import converter
 
 #--------------------------
 # logger
@@ -46,6 +47,11 @@ users_db = {
         2 : "18",
     },
 }
+
+#--------------------------
+# MySQL (SQLAlchemy)
+#--------------------------
+crud.init()
 
 #======================================
 # GET method
@@ -93,9 +99,9 @@ def get_user_by_path_and_query_parameter(
 def get_log(
     log_id: int, # パスパラメーター
 ):
-    data = select_all(session)
-    print( "data", data )
-    return 
+    with get_context_session() as session:
+        data = crud.select_all(session)
+    return converter.convert_table_to_json(data)
 
 #======================================
 # POST method
@@ -116,10 +122,15 @@ def _add_user(
     users_db["age"][user_data.id] = user_data.age
 
     # MySQL にログデータ追加
-    log = {
-        "users_db" : users_db,
-    }
-    insert(session=session, id=job_id, data=log)
+    with get_context_session() as session:
+        log = {
+            "job_id" : job_id,
+            "id": user_data.id,
+            "name": user_data.name, 
+            "age": user_data.age,
+            "users_db" : users_db,
+        }
+        crud.insert(session=session, id=job_id, data=log)
 
     return users_db
 
