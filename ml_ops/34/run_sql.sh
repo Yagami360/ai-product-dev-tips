@@ -46,7 +46,7 @@ mysql.server stop
 mysql.server start
 
 # Python スクリプトの実行
-python main.py --debug
+python crud.py --debug
 
 # MySQL サーバーの停止
 mysql.server stop

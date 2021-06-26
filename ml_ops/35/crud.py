@@ -2,7 +2,9 @@
 import os
 import argparse
 from sqlalchemy import Column, Integer, String, Float, DateTime
+
 from setting import engine, session, Base
+from config import MySQLConfig
 
 class UserData(Base):
     """
@@ -20,6 +22,11 @@ if __name__ == "__main__":
     if( args.debug ):
         for key, value in vars(args).items():
             print('%s: %s' % (str(key), str(value)))
+    if( args.debug ):
+        print("[MySQLConfig]")
+        for key, value in MySQLConfig.__dict__.items():
+            if not( key in ["__module__", "__dict__", "__weakref__", "__doc__"] ):
+                print('%s: %s' % (str(key), str(value)))
 
     # テーブルデータをデータベースに作成する
     Base.metadata.create_all(bind=engine)

@@ -24,7 +24,9 @@ SQLAlchemy は、Python から MySQL に接続するための ORM 指向の Pyth
     ```
 
 1. SQLAlchemy の Python コードを作成する<br>
-    - `config.py`<br>
+    SQLAlchemy を使用して、MySQL サーバーのデータベースに、CRUD 処理 [Create + Read + Update + Destory] するための Python スクリプトを作成する
+
+    - `config.py` : MySQL の各種設定情報を定義<br>
         ```python
         # coding=utf-8
         class MySQLConfig:
@@ -37,7 +39,9 @@ SQLAlchemy は、Python から MySQL に接続するための ORM 指向の Pyth
             database_url = f"mysql+pymysql://{username}:{password}@{host}/{db_name}?charset=utf8"
         ```
 
-    - `setting.py`<br>
+    - `setting.py` : SQLAlchemy での初期化処理<br>
+        SQLAlchemy での初期化処理として、Engine や Session, Base クラス（独自に定義するテーブルデータに対応するモデルクラスの基底クラス）の作成を行う
+
         ```python
         # coding=utf-8
         from sqlalchemy import create_engine
@@ -67,7 +71,7 @@ SQLAlchemy は、Python から MySQL に接続するための ORM 指向の Pyth
         Base.query = session.query_property()
         ```
 
-    - `main.py`
+    - `crud.py` : MySQL サーバーのデータベースへの
         ```python
         # coding=utf-8
         import os
