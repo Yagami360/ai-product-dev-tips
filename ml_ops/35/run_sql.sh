@@ -14,7 +14,7 @@ fi
 # API 起動
 docker-compose -f docker-compose.yml stop
 docker-compose -f docker-compose.yml up -d
-#docker logs mysql-container
+sleep 5
 
 # Python スクリプトの実行
 python crud.py --debug

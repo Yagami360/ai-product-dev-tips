@@ -1,6 +1,7 @@
 version: '2.3'
 
 services:
+  # MySQL サーバー
   mysql-server:
     container_name: mysql-container
     image: mysql:5.7
@@ -22,3 +23,31 @@ services:
       MYSQL_USER: user                                          # [オプション] MySQL サーバー起動時に作成するデータベース名
       MYSQL_PASSWORD: password                                  # [オプション] 新規ユーザーに対しての MySQL ログインパスワード            
       MYSQL_DATABASE: "test_db"                                 # [オプション] MySQL サーバー起動時に作成するデータベース名
+
+  # Web-API サーバー
+  fast-api-mysql-server:
+    container_name: fast-api-mysql-container
+    image: fast-api-mysql-image
+    build:
+      context: "api/"
+      dockerfile: Dockerfile_dev
+    volumes:
+      - ${PWD}/api:/api
+      - ${PWD}/mysql_utils:/mysql_utils
+    ports:
+      - "5000:5000"
+    tty: true
+    environment:                                                # config.py のための環境変数を追加
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+      MYSQL_ROOT_PASSWORD: password                             
+      MYSQL_USER: user                                          
+      MYSQL_PASSWORD: password                                           
+      MYSQL_DATABASE: "test_db"  
+      MYSQL_HOST: "mysql-server"                               # コンテナ間で接続する場合は、MySQL サーバーのホスト名は、localhost ではなく `services` タグで定義したサービス名で指定                              
+      MYSQL_PORT: "3306"
+    depends_on:
+      - mysql-server
+    command: bash -c "gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+  

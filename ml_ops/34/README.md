@@ -71,7 +71,7 @@ SQLAlchemy は、Python から MySQL に接続するための ORM 指向の Pyth
         Base.query = session.query_property()
         ```
 
-    - `crud.py` : MySQL サーバーのデータベースへの
+    - `crud.py` : MySQL サーバーのデータベースへの CRUD 処理
         ```python
         # coding=utf-8
         import os
