@@ -5,7 +5,6 @@ services:
   mysql-server:
     container_name: mysql-container
     image: mysql:5.7
-    #image: mysql:latest
     ports:
       - "3306:3306"
     tty: true

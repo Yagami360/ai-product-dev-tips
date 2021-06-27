@@ -20,8 +20,6 @@ def insert(session, id=0, data=None, commit=True):
     """
     MySQL データベースにテーブルデータを INSERT する（書き込む）
     """
-    Base.metadata.create_all(bind=engine)
-
     data = LogTable(log_id=id, log=data)
     session.add(data)
     if(commit):

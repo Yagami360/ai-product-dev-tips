@@ -12,6 +12,6 @@ class LogTable(Base):
     """
     # クラス変数
     __tablename__ = "log_table"
+    datetime = Column( DateTime(timezone=True), server_default=current_timestamp(), nullable=False)     # タイムスタンプ
     log_id = Column( String(255), primary_key=True)     # ログデータの識別 ID
     log = Column( JSON, nullable=False)                 # ログデータ（json）
-    datetime = Column( DateTime(timezone=True), server_default=current_timestamp(), nullable=False)     # タイムスタンプ
