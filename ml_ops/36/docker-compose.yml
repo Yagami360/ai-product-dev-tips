@@ -29,7 +29,7 @@ services:
     image: fast-api-mysql-image
     build:
       context: "api/"
-      dockerfile: Dockerfile_dev
+      dockerfile: Dockerfile
     volumes:
       - ${PWD}/api:/api
       - ${PWD}/mysql_utils:/mysql_utils

@@ -43,12 +43,14 @@ RUN pip3 install requests
 RUN pip3 install PyMySQL
 RUN pip3 install sqlalchemy
 
+RUN pip3 install Pillow
+
 #-----------------------------
 # ソースコードの書き込み
 #-----------------------------
-COPY *.py /api/
-COPY utils/*.py /api/utils/
-COPY log/*.log /api/log/
+#COPY *.py /api/
+#COPY utils/*.py /api/utils/
+#COPY log/*.log /api/log/
 
 #-----------------------------
 # ポート開放
@@ -58,7 +60,7 @@ EXPOSE 5000
 #-----------------------------
 # コンテナ起動後に自動的に実行するコマンド
 #-----------------------------
-# k8s デプロイメントファイルで起動定義するのでコメントアウト
+# docker-compose で起動定義するのでコメントアウト
 #CMD ["gunicorn","app:app","--bind","0.0.0.0:5000","-w","1","-k","uvicorn.workers.UvicornWorker","--reload"]
 
 #-----------------------------
