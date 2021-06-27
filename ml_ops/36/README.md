@@ -650,3 +650,6 @@
         },
         ...
     ```
+
+## ■ 参考サイト
+- https://github.com/shibuiwilliam/ml-system-in-actions/tree/main/chapter5_operations/prediction_monitoring_pattern

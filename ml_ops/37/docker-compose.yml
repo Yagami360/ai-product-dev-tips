@@ -1,0 +1,80 @@
+version: '2.3'
+
+services:
+  # MySQL サーバー
+  mysql-server:
+    container_name: mysql-container
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    tty: true
+    volumes:
+      - ${PWD}/mysql/my.cnf:/etc/my.cnf                         # 作成した MySQL の設定ファイル `my.cnf` を `mysql:latest` の設定ファイル `/etc/my.cnf` にマウントして差し替える
+      - ${PWD}/mysql/db/data:/var/lib/mysql                     # MySQL のデータが保存されているディレクトリ `/var/lib/mysql` をローカルディレクトリにマウント
+      - ${PWD}/mysql/db/initdb.d:/docker-entrypoint-initdb.d    # 
+    restart: always                                             # 終了ステータスが異常の場合も常に再起動
+    stdin_open: true                                            # コンテナの標準入力をオープンしたままにする。`docker run` での `-i` オプションに対応
+    environment:                                                # MySQL の docker image `mysql` で使用される環境変数を追加
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+      MYSQL_ROOT_PASSWORD: password                             # [必須] root ユーザーに対しての MySQL ログインパスワード
+      MYSQL_USER: user                                          # [オプション] MySQL サーバー起動時に作成するデータベース名
+      MYSQL_PASSWORD: password                                  # [オプション] 新規ユーザーに対しての MySQL ログインパスワード            
+      MYSQL_DATABASE: "test_db"                                 # [オプション] MySQL サーバー起動時に作成するデータベース名
+    
+  # Web-API サーバー
+  fast-api-mysql-server:
+    container_name: fast-api-mysql-container
+    image: fast-api-mysql-image
+    build:
+      context: "api/"
+      dockerfile: Dockerfile
+    volumes:
+      - ${PWD}/api:/api
+      - ${PWD}/utils:/utils
+      - ${PWD}/mysql_utils:/mysql_utils
+    ports:
+      - "5000:5000"
+    tty: true
+    environment:                                                # config.py のための環境変数を追加
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+      MYSQL_ROOT_PASSWORD: password                             
+      MYSQL_USER: user                                          
+      MYSQL_PASSWORD: password                                           
+      MYSQL_DATABASE: "test_db"  
+      MYSQL_HOST: "mysql-server"                               # コンテナ間で接続する場合は、MySQL サーバーのホスト名は、localhost ではなく `services` タグで定義したサービス名で指定                              
+      MYSQL_PORT: "3306"
+    depends_on:
+      - mysql-server
+    command: bash -c "gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+  
+  # バッチ管理サーバー
+  batch-mysql-server:
+    container_name: batch-mysql-container
+    image: batch-mysql-image
+    build:
+      context: "batch/"
+      dockerfile: Dockerfile
+    volumes:
+      - ${PWD}/batch:/batch
+      - ${PWD}/utils:/utils
+      - ${PWD}/mysql_utils:/mysql_utils
+    tty: true
+    environment:                                                # config.py のための環境変数を追加
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+      MYSQL_ROOT_PASSWORD: password                             
+      MYSQL_USER: user                                          
+      MYSQL_PASSWORD: password                                           
+      MYSQL_DATABASE: "test_db"  
+      MYSQL_HOST: "mysql-server"                               # コンテナ間で接続する場合は、MySQL サーバーのホスト名は、localhost ではなく `services` タグで定義したサービス名で指定                              
+      MYSQL_PORT: "3306"
+    depends_on:
+      - mysql-server
+      - fast-api-mysql-server
+    command: bash -c "python batch_server.py"
+    
