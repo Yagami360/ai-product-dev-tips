@@ -22,6 +22,8 @@ if __name__ == "__main__":
     parser.add_argument('--port', type=str, default="5000", help="API サーバーのポート番号")
     parser.add_argument('--in_images_dir', type=str, default="in_images", help="入力画像のディレクトリ")
     parser.add_argument('--out_images_dir', type=str, default="out_images", help="出力ディレクトリ")
+    parser.add_argument('--n_pollings', type=int, default=100, help="ポーリング回数")
+    parser.add_argument('--sleep', type=int, default=0.1, help="ポーリング間隔[sec単位]")
     parser.add_argument('--debug', action='store_true', help="デバッグモード有効化")
     args = parser.parse_args()
     if( args.debug ):
@@ -56,7 +58,6 @@ if __name__ == "__main__":
         # リクエスト処理
         api_msg = {'image': img_base64}
         #api_msg = json.dumps(api_msg)  # Fast API では、json.dump() で dict 型データを JSON 形式に変換する必要はない
-
         try:
             api_responce = requests.post( "http://" + args.host + ":" + args.port + "/predict", json=api_msg )
             api_responce = api_responce.json()
@@ -65,9 +66,17 @@ if __name__ == "__main__":
             time.sleep(1)
             continue
 
+        print( "api_responce : ", api_responce )
+
     #----------------------------------
     # ポーリング
     #----------------------------------
+    for i in range(args.n_pollings):
+        # リクエスト処理
+        log_all_data = requests.get( "http://" + args.host + ":" + args.port + "/get_log_all" ).json()
+        print( "log_all_data", log_all_data )
+        time.sleep(args.sleep)
+        
     #img_out_pillow = conv_base64_to_pillow(api_responce["img_base64"])
     #img_out_pillow.save(os.path.join(args.out_images_dir,img_name))
             

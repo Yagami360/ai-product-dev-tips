@@ -77,4 +77,3 @@ services:
       - mysql-server
       - fast-api-mysql-server
     command: bash -c "python batch_server.py"
-    

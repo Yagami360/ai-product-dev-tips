@@ -20,7 +20,8 @@ def insert(session, job_id=0, image_in=None, image_out=None, elapsed_time=None, 
     """
     MySQL データベースにテーブルデータを INSERT する（書き込む）
     """
-    data = JobTable(job_id=job_id, image_in=image_in, image_out=image_out, elapsed_time=elapsed_time)
+    #data = JobTable(job_id=job_id, image_in=image_in, image_out=image_out, elapsed_time=elapsed_time)
+    data = JobTable(job_id=job_id, elapsed_time=elapsed_time)
     session.add(data)
     if(commit):
         session.commit()
@@ -42,3 +43,9 @@ def select_all(session):
     # テーブルデータの全レコードのオブジェクトが入った配列で返す
     data = session.query(JobTable).all()
     return data
+
+def select_job_id(session, job_id):
+    """
+    指定した Job ID 値に一致する MySQL データベースに保存されているテーブルデータを SELECT する（読み込む）
+    """
+    return session.query(JobTable).filter(JobTable.job_id == job_id).first()
