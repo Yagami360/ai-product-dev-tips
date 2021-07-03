@@ -2,6 +2,7 @@
 set -eu
 HOST=0.0.0.0
 PORT=5000
+N_POLLINGS=100
 
 # API 起動
 docker-compose -f docker-compose.yml stop
@@ -9,7 +10,7 @@ docker-compose -f docker-compose.yml up -d
 sleep 5
 
 # リクエスト処理
-python request.py --host ${HOST} --port ${PORT} --in_images_dir in_images --out_images_dir out_images --debug
+python request.py --host ${HOST} --port ${PORT} --in_images_dir in_images --out_images_dir out_images --n_pollings ${N_POLLINGS} --debug
 
 #docker logs fast-api-mysql-container
 #docker logs batch-mysql-container

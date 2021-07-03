@@ -11,5 +11,10 @@
 
 ## ■ 方法
 
+
+> 現状の構成では、`models.py` の `JobTable` のクラス変数を変更しても、MySQL データベースのテーブルデータを削除しない限りは、変更したクラス変数は反映されないことに注意
+
+> ジョブIDは重複のない値になるので、`job_id = Column( String(255), primary_key=True)` の `primary_key=True` 引数でプライマリーキーとして設定している。これにより、job_id の値に一致するテーブルを選択するメソッド `select_job_id()` が実現可能になる。
+
 ## ■ 参考サイト
 - https://github.com/shibuiwilliam/ml-system-in-actions/tree/main/chapter4_serving_patterns/batch_pattern

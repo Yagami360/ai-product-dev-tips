@@ -94,7 +94,7 @@ def process_job():
             selct_table = crud.select_job_id(session=session, job_id=table.job_id)
             selct_table.elapsed_time = elapsed_time_batch[i]
             session.commit()
-            session.refresh(JobTable)
+            #session.refresh(JobTable)
 
     return
 

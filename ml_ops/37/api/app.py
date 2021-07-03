@@ -4,6 +4,7 @@ import sys
 import argparse
 import time
 from datetime import datetime
+import json
 import logging
 import uuid
 from typing import Any, Dict
@@ -51,6 +52,8 @@ class ImageData(BaseModel):
 # MySQL (SQLAlchemy)
 #--------------------------
 crud.init()
+with get_context_session() as session:
+    crud.delete_all(session)
 
 #======================================
 # GET method
@@ -82,14 +85,18 @@ def metadata():
 @app.get("/log_all")
 def get_log_all():
     with get_context_session() as session:
-        data = crud.select_all(session)
-    return converter.convert_table_to_json(data)
+        tables = crud.select_all(session)
+
+    json_tables = []
+    for table in tables:
+        json_tables.append(converter.convert_table_to_json(table))
+    return json.dumps(json_tables)
 
 @app.get("/log_first")
 def get_log_first():
     with get_context_session() as session:
-        data = crud.select_first(session)
-    return converter.convert_table_to_json(data)
+        table = crud.select_first(session)
+    return converter.convert_table_to_json(table)
 
 #======================================
 # POST method

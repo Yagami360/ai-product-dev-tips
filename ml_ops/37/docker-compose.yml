@@ -22,7 +22,7 @@ services:
       MYSQL_USER: user                                          # [オプション] MySQL サーバー起動時に作成するデータベース名
       MYSQL_PASSWORD: password                                  # [オプション] 新規ユーザーに対しての MySQL ログインパスワード            
       MYSQL_DATABASE: "test_db"                                 # [オプション] MySQL サーバー起動時に作成するデータベース名
-    
+
   # Web-API サーバー
   fast-api-mysql-server:
     container_name: fast-api-mysql-container

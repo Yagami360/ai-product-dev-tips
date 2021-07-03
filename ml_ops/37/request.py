@@ -73,8 +73,12 @@ if __name__ == "__main__":
     #----------------------------------
     for i in range(args.n_pollings):
         # リクエスト処理
-        log_all_data = requests.get( "http://" + args.host + ":" + args.port + "/get_log_all" ).json()
+        log_all_data = requests.get( "http://" + args.host + ":" + args.port + "/log_all" ).json()
         print( "log_all_data", log_all_data )
+
+        #log_first_data = requests.get( "http://" + args.host + ":" + args.port + "/log_first" ).json()
+        #print( "log_first_data", log_first_data )
+
         time.sleep(args.sleep)
         
     #img_out_pillow = conv_base64_to_pillow(api_responce["img_base64"])

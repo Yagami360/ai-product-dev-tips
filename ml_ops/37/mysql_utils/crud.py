@@ -16,33 +16,39 @@ def init(checkfirst=True):
     Base.metadata.create_all(bind=engine, checkfirst=checkfirst)
     return
 
+def delete_all(session, commit=True):
+    session.query(JobTable).delete()
+    if(commit):
+        session.commit()
+    return
+
 def insert(session, job_id=0, image_in=None, image_out=None, elapsed_time=None, commit=True):
     """
     MySQL データベースにテーブルデータを INSERT する（書き込む）
     """
-    #data = JobTable(job_id=job_id, image_in=image_in, image_out=image_out, elapsed_time=elapsed_time)
-    data = JobTable(job_id=job_id, elapsed_time=elapsed_time)
-    session.add(data)
+    #table = JobTable(job_id=job_id, image_in=image_in, image_out=image_out, elapsed_time=elapsed_time)
+    table = JobTable(job_id=job_id, elapsed_time=elapsed_time)
+    session.add(table)
     if(commit):
         session.commit()
-        session.refresh(data)
-    return data
+        session.refresh(table)
+    return table
 
 def select_first(session):
     """
     MySQL データベースに保存されている最初のレコードのテーブルデータを SELECT する（読み込む）
     """
     # テーブルデータの最初のレコードのオブジェクトで返す
-    data = session.query(JobTable).first()
-    return data
+    table = session.query(JobTable).first()
+    return table
 
 def select_all(session):
     """
     MySQL データベースに保存されている全レコードのテーブルデータを SELECT する（読み込む）
     """
     # テーブルデータの全レコードのオブジェクトが入った配列で返す
-    data = session.query(JobTable).all()
-    return data
+    table = session.query(JobTable).all()
+    return table
 
 def select_job_id(session, job_id):
     """
