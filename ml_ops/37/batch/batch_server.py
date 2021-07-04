@@ -81,9 +81,9 @@ def process_job():
             img_out_base64_batch.append(result[0])
             elapsed_time_batch.append(result[1])
 
-    print( "len(tables)", len(tables) )
-    print( "len(img_out_base64_batch)", len(img_out_base64_batch) )
-    print( "len(elapsed_time_batch)", len(elapsed_time_batch) )
+    #print( "len(tables)", len(tables) )
+    #print( "len(img_out_base64_batch)", len(img_out_base64_batch) )
+    #print( "len(elapsed_time_batch)", len(elapsed_time_batch) )
 
     # MySQL に推論結果を保存する
     with get_context_session() as session:

@@ -26,8 +26,8 @@ def insert(session, job_id=0, image_in=None, image_out=None, elapsed_time=None, 
     """
     MySQL データベースにテーブルデータを INSERT する（書き込む）
     """
-    #table = JobTable(job_id=job_id, image_in=image_in, image_out=image_out, elapsed_time=elapsed_time)
     table = JobTable(job_id=job_id, elapsed_time=elapsed_time)
+    #table = JobTable(job_id=job_id, image_in=image_in, image_out=image_out, elapsed_time=elapsed_time)
     session.add(table)
     if(commit):
         session.commit()

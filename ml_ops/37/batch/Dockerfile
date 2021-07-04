@@ -19,6 +19,7 @@ RUN set -x && apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     libx11-6 \
     python3-pip \
+    imagemagick \
     # imageのサイズを小さくするためにキャッシュ削除
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -39,7 +40,7 @@ RUN pip3 install requests
 
 RUN pip3 install PyMySQL
 RUN pip3 install sqlalchemy
-
+RUN pip3 install SQLAlchemy-ImageAttach
 RUN pip3 install Pillow
 
 #-----------------------------

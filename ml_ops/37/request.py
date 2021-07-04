@@ -73,12 +73,18 @@ if __name__ == "__main__":
     #----------------------------------
     for i in range(args.n_pollings):
         # リクエスト処理
-        log_all_data = requests.get( "http://" + args.host + ":" + args.port + "/log_all" ).json()
-        print( "log_all_data", log_all_data )
+        #log_all_tables = requests.get( "http://" + args.host + ":" + args.port + "/log_all" ).json()
+        #print( "log_all_tables", log_all_tables )
+        log_first_table = requests.get( "http://" + args.host + ":" + args.port + "/log_first" ).json()
+        print( "log_first_table", log_first_table )
+        """
+        for table in log_all_tables[0]:
+            print("table : ", table)
+            print('table["elapsed_time"] : ', table["elapsed_time"])
 
-        #log_first_data = requests.get( "http://" + args.host + ":" + args.port + "/log_first" ).json()
-        #print( "log_first_data", log_first_data )
-
+            if(table["elapsed_time"]):
+                break
+        """
         time.sleep(args.sleep)
         
     #img_out_pillow = conv_base64_to_pillow(api_responce["img_base64"])
