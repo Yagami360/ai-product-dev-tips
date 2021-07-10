@@ -92,7 +92,8 @@
         - [FastAPI での非同期処理（FastAPI + uvicorn + gunicorn + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/35)
         - [FastAPI を使用した非同期処理での Web-API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/36)
         - FastAPI を使用した非同期処理での機械学習モデル推論 API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成）
-        - FastAPI + uvicorn + gunicorn + nginx + docker を用いた Web-API の構築
+        - FastAPI を使用した複数の非同期 Web-API を並列処理する（FastAPI + uvicorn + gunicorn + docker での構成）
+    - httpx を用いて複数の　Web-API に並列実行でリクエストする
 - インフラのコード化 / Infrastructure as Code
     - Terraform
         - [【Terraform】Terraform の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/10)

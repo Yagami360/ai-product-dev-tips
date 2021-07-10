@@ -35,11 +35,13 @@ ENV PYTHONIOENCODING utf-8
 #-----------------------------
 # 追加ライブラリのインストール
 #-----------------------------
+RUN pip3 install fastapi
+RUN pip3 install uvicorn
+RUN pip3 install Gunicorn
+RUN pip3 install requests
 RUN pip3 install redis
-RUN pip3 install asyncio
 RUN pip3 install Pillow
 RUN pip3 install opencv-python
-RUN pip3 install requests
 
 #-----------------------------
 # ソースコードの書き込み
@@ -56,4 +58,4 @@ RUN pip3 install requests
 #-----------------------------
 # コンテナ起動後の作業ディレクトリ
 #-----------------------------
-WORKDIR /batch
+WORKDIR /proxy

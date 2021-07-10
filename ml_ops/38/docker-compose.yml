@@ -1,0 +1,85 @@
+version: '2.3'
+
+services:
+    predict_server1:
+      container_name: predict-container1
+      image: predict-image
+      build:
+        context: "predict/"
+        dockerfile: Dockerfile
+      volumes:
+        - ${PWD}/predict:/predict
+        - ${PWD}/utils:/utils
+        - ${PWD}/config:/config
+      ports:
+        - "5001:5001"
+      tty: true
+      environment:
+        - TZ: "Asia/Tokyo"
+        - LC_ALL: C.UTF-8
+        - LANG: C.UTF-8
+      command: bash -c "gunicorn app:app --bind 0.0.0.0:5001 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+
+    predict_server2:
+      container_name: predict-container2
+      image: predict-image
+      build:
+        context: "predict/"
+        dockerfile: Dockerfile
+      volumes:
+        - ${PWD}/predict:/predict
+        - ${PWD}/utils:/utils
+        - ${PWD}/config:/config
+      ports:
+        - "5002:5002"
+      tty: true
+      environment:
+        - TZ: "Asia/Tokyo"
+        - LC_ALL: C.UTF-8
+        - LANG: C.UTF-8
+      command: bash -c "gunicorn app:app --bind 0.0.0.0:5002 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+
+    predict_server3:
+      container_name: predict-container3
+      image: predict-image
+      build:
+        context: "predict/"
+        dockerfile: Dockerfile
+      volumes:
+        - ${PWD}/predict:/predict
+        - ${PWD}/utils:/utils
+        - ${PWD}/config:/config
+      ports:
+        - "5003:5003"
+      tty: true
+      environment:
+        - TZ: "Asia/Tokyo"
+        - LC_ALL: C.UTF-8
+        - LANG: C.UTF-8
+      command: bash -c "gunicorn app:app --bind 0.0.0.0:5003 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+
+    proxy_server:
+      container_name: proxy-container
+      image: proxy-image
+      build:
+        context: "proxy/"
+        dockerfile: Dockerfile
+      volumes:
+        - ${PWD}/proxy:/proxy
+        - ${PWD}/utils:/utils
+        - ${PWD}/config:/config
+      ports:
+        - "5000:5000"
+      tty: true
+      environment:
+        - TZ: "Asia/Tokyo"
+        - LC_ALL: C.UTF-8
+        - LANG: C.UTF-8
+        - PREDICT_SERVER1_URL: "predict-container1:5001"
+        - PREDICT_SERVER2_URL: "predict-container2:5002"
+        - PREDICT_SERVER3_URL: "predict-container2:5003"
+      command: bash -c "gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+      depends_on:
+        - predict_server1
+        - predict_server2
+        - predict_server3
