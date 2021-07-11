@@ -92,7 +92,7 @@
         - [FastAPI での非同期処理（FastAPI + uvicorn + gunicorn + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/35)
         - [FastAPI を使用した非同期処理での Web-API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/36)
         - FastAPI を使用した非同期処理での機械学習モデル推論 API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成）
-        - [FastAPI を使用した複数の同期処理での Web-API を並列処理する（FastAPI + uvicorn + gunicorn + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/38)
+        - [FastAPI を使用した複数の同期処理での Web-API を並列処理する（FastAPI + uvicorn + gunicorn + docker + docker-compose での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/38)
     - httpx を用いて複数の　Web-API に並列実行でリクエストする
 - インフラのコード化 / Infrastructure as Code
     - Terraform
@@ -157,7 +157,7 @@
         - [Redis を Python スクリプトで使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/22)
         - [docker + Redis + Python での Redis の構成](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/23)
         - docker + Flask での Web-API を Redis を利用して非同期実行する
-        - Redis を Python でのジョブキューとして利用する
+        - [[In-progress] 推論結果を Redis にキャッシュし、同じ入力データでの Web-API の推論処理を高速化する（FastAPI + uvicorn + gunicorn + redis + docker + docker-compose での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/39)
 - 機械学習ワークフロー
     - Kubeflow
         - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/1)
