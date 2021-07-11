@@ -57,14 +57,16 @@ if __name__ == "__main__":
         #api_msg = json.dumps(api_msg)  # Fast API では、json.dump() で dict 型データを JSON 形式に変換する必要はない
 
         try:
-            api_responce = requests.post( "http://" + args.host + ":" + args.port + "/start_job", json=api_msg )
-            api_responce = api_responce.json()
-            print( "api_responce : ", api_responce )
+            api_responces = requests.post( "http://" + args.host + ":" + args.port + "/predict", json=api_msg )
+            api_responces = api_responces.json()
         except Exception as e:
             print( "Exception : ", e )
             time.sleep(1)
             continue
 
-        # 
-        time.sleep(0.1)
+        for i,api_responce in enumerate(api_responces):
+            if( api_responce["status"] == "ok" ):
+                img_out_pillow = conv_base64_to_pillow(api_responce["img_none_bg_base64"])
+                img_out_pillow.save(os.path.join(args.out_images_dir,img_name.split(".jpg")[0] + "@{}.png".format(i) ))
 
+        time.sleep(0.1)
