@@ -1,0 +1,19 @@
+2021-07-14 18:40:45 INFO _health START args=() kwds={}
+2021-07-14 18:40:45 INFO _health END elapsed_time [ms]=34.39856, return {'proxy_server': {'health': 'ok'}, 'predict_server1': {'health': 'ok'}, 'predict_server2': {'health': 'ok'}, 'predict_server3': {'health': 'ok'}}
+2021-07-14 18:40:45 INFO _health START args=() kwds={}
+2021-07-14 18:40:45 INFO _health END elapsed_time [ms]=20.14780, return {'proxy_server': {'health': 'ok'}, 'predict_server1': {'health': 'ok'}, 'predict_server2': {'health': 'ok'}, 'predict_server3': {'health': 'ok'}}
+2021-07-14 18:40:46 INFO predict START job_id=35954e
+[app] time 18:40:46 | api_responce["status"] ok
+2021-07-14 18:40:46 INFO predict END job_id=35954e, elapsed_time [ms]=433.26354
+2021-07-14 18:40:46 INFO predict START job_id=425837
+[app] time 18:40:46 | api_responce["status"] ok
+2021-07-14 18:40:46 INFO predict END job_id=425837, elapsed_time [ms]=263.05652
+2021-07-14 18:40:46 INFO predict START job_id=a02a1d
+[app] time 18:40:47 | api_responce["status"] ok
+2021-07-14 18:40:47 INFO predict END job_id=a02a1d, elapsed_time [ms]=947.30139
+2021-07-14 18:40:48 INFO predict START job_id=1ac2b3
+[app] time 18:40:48 | api_responce["status"] ok
+2021-07-14 18:40:48 INFO predict END job_id=1ac2b3, elapsed_time [ms]=345.52288
+2021-07-14 18:40:48 INFO predict START job_id=c9b397
+[app] time 18:40:48 | api_responce["status"] ok
+2021-07-14 18:40:48 INFO predict END job_id=c9b397, elapsed_time [ms]=335.91533

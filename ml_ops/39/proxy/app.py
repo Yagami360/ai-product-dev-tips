@@ -44,6 +44,9 @@ class ImageData(BaseModel):
     img_base64: Any
 
 class CacheDataRedisJob(BaseModel):
+    """
+    バックグラウンドで推論データのキャッシュを Redis に保存するための Job
+    """
     file_name: str
     img_base64: Any
 

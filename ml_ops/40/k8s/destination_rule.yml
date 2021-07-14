@@ -1,0 +1,25 @@
+# Istio
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: fast-api-server
+spec:
+  host: fast-api-server
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+    connectionPool:
+      tcp:
+        maxConnections: 100
+      http:
+        http1MaxPendingRequests: 100
+        maxRequestsPerConnection: 100
+    outlierDetection:
+      consecutiveErrors: 100
+      interval: 1s
+      baseEjectionTime: 10m
+      maxEjectionPercent: 10
+  subsets:
+    - name: svc
+      labels:
+        version: svc

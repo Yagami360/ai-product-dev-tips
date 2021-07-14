@@ -1,0 +1,13 @@
+# Fast API
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxy-server
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 5000
+      targetPort: 5000
+      protocol: TCP
+  selector:
+    app: proxy-pod  # デプロイメント定義ファイルで定義した Pod の識別名。app:sample-pod のラベルがつけられた Pod を通信先とする

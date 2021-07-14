@@ -61,6 +61,7 @@
         - 【GKE】Pod でのコンテナの起動順を設定する
         - 【k8s】Istio の基礎事項
         - [【GKE】GKE で構成した Web API に Istio を使用したサーキットブレーカーを導入する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/27)
+        - [In-progress]【GKE】Istio の VirtualSevice を使用してリクエストデータのヘッダーに応じて異なる Web-API で推論する
 - 認証基盤
     - [【GCP】GCP の認証システム](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/11)
 - Web サーバー / WSGI サーバー
@@ -157,7 +158,7 @@
         - [Redis を Python スクリプトで使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/22)
         - [docker + Redis + Python での Redis の構成](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/23)
         - docker + Flask での Web-API を Redis を利用して非同期実行する
-        - [[In-progress] 推論結果を Redis にキャッシュし、同じ入力データでの Web-API の推論処理を高速化する（FastAPI + uvicorn + gunicorn + redis + docker + docker-compose での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/39)
+        - [推論結果を Redis にキャッシュし、同じ入力データでの Web-API の推論処理を高速化する（FastAPI + uvicorn + gunicorn + redis + docker + docker-compose での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/39)
 - 機械学習ワークフロー
     - Kubeflow
         - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/1)

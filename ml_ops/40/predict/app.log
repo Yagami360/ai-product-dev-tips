@@ -1,0 +1,124 @@
+[app] time 18:32:46 | 推論サーバーを起動しました
+[app] time 18:32:46 | 推論サーバーを起動しました
+[app] time 18:32:47 | 推論サーバーを起動しました
+2021-07-14 18:32:52 INFO _health START args=() kwds={}
+2021-07-14 18:32:52 INFO _health END elapsed_time [ms]=0.71311, return {'health': 'ok'}
+2021-07-14 18:32:52 INFO _health START args=() kwds={}
+2021-07-14 18:32:52 INFO _health END elapsed_time [ms]=0.70119, return {'health': 'ok'}
+2021-07-14 18:32:52 INFO _health START args=() kwds={}
+2021-07-14 18:32:52 INFO _health END elapsed_time [ms]=0.82064, return {'health': 'ok'}
+[app] time 18:34:11 | 推論サーバーを起動しました
+[app] time 18:34:11 | 推論サーバーを起動しました
+[app] time 18:34:11 | 推論サーバーを起動しました
+2021-07-14 18:34:16 INFO _health START args=() kwds={}
+2021-07-14 18:34:16 INFO _health END elapsed_time [ms]=0.76938, return {'health': 'ok'}
+2021-07-14 18:34:16 INFO _health START args=() kwds={}
+2021-07-14 18:34:16 INFO _health END elapsed_time [ms]=1.94430, return {'health': 'ok'}
+2021-07-14 18:34:16 INFO _health START args=() kwds={}
+2021-07-14 18:34:16 INFO _health END elapsed_time [ms]=1.08957, return {'health': 'ok'}
+2021-07-14 18:34:17 INFO _health START args=() kwds={}
+2021-07-14 18:34:17 INFO _health END elapsed_time [ms]=0.83399, return {'health': 'ok'}
+2021-07-14 18:34:17 INFO _health START args=() kwds={}
+2021-07-14 18:34:17 INFO _health END elapsed_time [ms]=0.76270, return {'health': 'ok'}
+2021-07-14 18:34:17 INFO _health START args=() kwds={}
+2021-07-14 18:34:17 INFO _health END elapsed_time [ms]=0.84829, return {'health': 'ok'}
+[app] time 18:34:38 | 推論サーバーを起動しました
+[app] time 18:34:38 | 推論サーバーを起動しました
+[app] time 18:34:38 | 推論サーバーを起動しました
+2021-07-14 18:34:43 INFO _health START args=() kwds={}
+2021-07-14 18:34:43 INFO _health END elapsed_time [ms]=1.97792, return {'health': 'ok'}
+2021-07-14 18:34:43 INFO _health START args=() kwds={}
+2021-07-14 18:34:43 INFO _health END elapsed_time [ms]=0.89049, return {'health': 'ok'}
+2021-07-14 18:34:43 INFO _health START args=() kwds={}
+2021-07-14 18:34:43 INFO _health END elapsed_time [ms]=0.71812, return {'health': 'ok'}
+2021-07-14 18:34:43 INFO _health START args=() kwds={}
+2021-07-14 18:34:43 INFO _health END elapsed_time [ms]=0.67830, return {'health': 'ok'}
+2021-07-14 18:34:43 INFO _health START args=() kwds={}
+2021-07-14 18:34:43 INFO _health END elapsed_time [ms]=0.55146, return {'health': 'ok'}
+2021-07-14 18:34:43 INFO _health START args=() kwds={}
+2021-07-14 18:34:43 INFO _health END elapsed_time [ms]=0.59795, return {'health': 'ok'}
+[app] time 18:35:56 | 推論サーバーを起動しました
+[app] time 18:35:56 | 推論サーバーを起動しました
+[app] time 18:35:56 | 推論サーバーを起動しました
+2021-07-14 18:36:01 INFO _health START args=() kwds={}
+2021-07-14 18:36:01 INFO _health END elapsed_time [ms]=1.92356, return {'health': 'ok'}
+2021-07-14 18:36:01 INFO _health START args=() kwds={}
+2021-07-14 18:36:01 INFO _health END elapsed_time [ms]=0.87500, return {'health': 'ok'}
+2021-07-14 18:36:01 INFO _health START args=() kwds={}
+2021-07-14 18:36:01 INFO _health END elapsed_time [ms]=0.67115, return {'health': 'ok'}
+2021-07-14 18:36:02 INFO _health START args=() kwds={}
+2021-07-14 18:36:02 INFO _health END elapsed_time [ms]=0.72813, return {'health': 'ok'}
+2021-07-14 18:36:02 INFO _health START args=() kwds={}
+2021-07-14 18:36:02 INFO _health END elapsed_time [ms]=0.77605, return {'health': 'ok'}
+2021-07-14 18:36:02 INFO _health START args=() kwds={}
+2021-07-14 18:36:02 INFO _health END elapsed_time [ms]=0.83518, return {'health': 'ok'}
+[app] time 18:36:20 | 推論サーバーを起動しました
+[app] time 18:36:20 | 推論サーバーを起動しました
+[app] time 18:36:20 | 推論サーバーを起動しました
+2021-07-14 18:36:25 INFO _health START args=() kwds={}
+2021-07-14 18:36:25 INFO _health END elapsed_time [ms]=0.98038, return {'health': 'ok'}
+2021-07-14 18:36:25 INFO _health START args=() kwds={}
+2021-07-14 18:36:25 INFO _health END elapsed_time [ms]=0.93126, return {'health': 'ok'}
+2021-07-14 18:36:25 INFO _health START args=() kwds={}
+2021-07-14 18:36:25 INFO _health END elapsed_time [ms]=1.35350, return {'health': 'ok'}
+2021-07-14 18:36:26 INFO _health START args=() kwds={}
+2021-07-14 18:36:26 INFO _health END elapsed_time [ms]=0.60296, return {'health': 'ok'}
+2021-07-14 18:36:26 INFO _health START args=() kwds={}
+2021-07-14 18:36:26 INFO _health END elapsed_time [ms]=0.58603, return {'health': 'ok'}
+2021-07-14 18:36:26 INFO _health START args=() kwds={}
+2021-07-14 18:36:26 INFO _health END elapsed_time [ms]=0.51379, return {'health': 'ok'}
+[app] time 18:37:53 | 推論サーバーを起動しました
+[app] time 18:37:53 | 推論サーバーを起動しました
+[app] time 18:37:53 | 推論サーバーを起動しました
+2021-07-14 18:37:58 INFO _health START args=() kwds={}
+2021-07-14 18:37:58 INFO _health END elapsed_time [ms]=1.23835, return {'health': 'ok'}
+2021-07-14 18:37:58 INFO _health START args=() kwds={}
+2021-07-14 18:37:58 INFO _health END elapsed_time [ms]=1.27792, return {'health': 'ok'}
+2021-07-14 18:37:58 INFO _health START args=() kwds={}
+2021-07-14 18:37:58 INFO _health END elapsed_time [ms]=0.87500, return {'health': 'ok'}
+2021-07-14 18:37:59 INFO _health START args=() kwds={}
+2021-07-14 18:37:59 INFO _health END elapsed_time [ms]=0.65899, return {'health': 'ok'}
+2021-07-14 18:37:59 INFO _health START args=() kwds={}
+2021-07-14 18:37:59 INFO _health END elapsed_time [ms]=0.65446, return {'health': 'ok'}
+2021-07-14 18:37:59 INFO _health START args=() kwds={}
+2021-07-14 18:37:59 INFO _health END elapsed_time [ms]=0.52905, return {'health': 'ok'}
+[app] time 18:40:01 | 推論サーバーを起動しました
+[app] time 18:40:01 | 推論サーバーを起動しました
+[app] time 18:40:01 | 推論サーバーを起動しました
+2021-07-14 18:40:06 INFO _health START args=() kwds={}
+2021-07-14 18:40:06 INFO _health END elapsed_time [ms]=1.25623, return {'health': 'ok'}
+2021-07-14 18:40:06 INFO _health START args=() kwds={}
+2021-07-14 18:40:06 INFO _health END elapsed_time [ms]=0.81539, return {'health': 'ok'}
+2021-07-14 18:40:06 INFO _health START args=() kwds={}
+2021-07-14 18:40:06 INFO _health END elapsed_time [ms]=0.82874, return {'health': 'ok'}
+2021-07-14 18:40:07 INFO _health START args=() kwds={}
+2021-07-14 18:40:07 INFO _health END elapsed_time [ms]=0.83041, return {'health': 'ok'}
+2021-07-14 18:40:07 INFO _health START args=() kwds={}
+2021-07-14 18:40:07 INFO _health END elapsed_time [ms]=0.58341, return {'health': 'ok'}
+2021-07-14 18:40:07 INFO _health START args=() kwds={}
+2021-07-14 18:40:07 INFO _health END elapsed_time [ms]=0.59795, return {'health': 'ok'}
+[app] time 18:40:40 | 推論サーバーを起動しました
+[app] time 18:40:40 | 推論サーバーを起動しました
+[app] time 18:40:40 | 推論サーバーを起動しました
+2021-07-14 18:40:45 INFO _health START args=() kwds={}
+2021-07-14 18:40:45 INFO _health END elapsed_time [ms]=0.60558, return {'health': 'ok'}
+2021-07-14 18:40:45 INFO _health START args=() kwds={}
+2021-07-14 18:40:45 INFO _health END elapsed_time [ms]=0.59557, return {'health': 'ok'}
+2021-07-14 18:40:45 INFO _health START args=() kwds={}
+2021-07-14 18:40:45 INFO _health END elapsed_time [ms]=0.54145, return {'health': 'ok'}
+2021-07-14 18:40:45 INFO _health START args=() kwds={}
+2021-07-14 18:40:45 INFO _health END elapsed_time [ms]=1.20473, return {'health': 'ok'}
+2021-07-14 18:40:45 INFO _health START args=() kwds={}
+2021-07-14 18:40:45 INFO _health END elapsed_time [ms]=0.59104, return {'health': 'ok'}
+2021-07-14 18:40:45 INFO _health START args=() kwds={}
+2021-07-14 18:40:45 INFO _health END elapsed_time [ms]=0.48232, return {'health': 'ok'}
+2021-07-14 18:40:46 INFO predict START job_id=35954e
+2021-07-14 18:40:46 INFO predict END job_id=35954e, elapsed_time [ms]=418.82896
+2021-07-14 18:40:46 INFO predict START job_id=425837
+2021-07-14 18:40:46 INFO predict END job_id=425837, elapsed_time [ms]=254.00734
+2021-07-14 18:40:46 INFO predict START job_id=a02a1d
+2021-07-14 18:40:47 INFO predict END job_id=a02a1d, elapsed_time [ms]=932.76978
+2021-07-14 18:40:48 INFO predict START job_id=1ac2b3
+2021-07-14 18:40:48 INFO predict END job_id=1ac2b3, elapsed_time [ms]=337.36396
+2021-07-14 18:40:48 INFO predict START job_id=c9b397
+2021-07-14 18:40:48 INFO predict END job_id=c9b397, elapsed_time [ms]=326.68996
