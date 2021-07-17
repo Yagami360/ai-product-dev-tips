@@ -39,11 +39,14 @@ RUN pip3 install fastapi
 RUN pip3 install uvicorn
 RUN pip3 install Gunicorn
 RUN pip3 install requests
+RUN pip3 install Pillow
 
 #-----------------------------
 # ソースコードの書き込み
 #-----------------------------
-COPY api/*.py /api/
+COPY proxy/*.py /proxy/
+COPY config/*.py /config/
+COPY utils/*.py /utils/
 
 #-----------------------------
 # ポート開放
@@ -57,4 +60,4 @@ EXPOSE 5000
 #-----------------------------
 # コンテナ起動後の作業ディレクトリ
 #-----------------------------
-WORKDIR /api
+WORKDIR /proxy

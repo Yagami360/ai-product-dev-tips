@@ -69,7 +69,7 @@ def graph_cut(img_pillow, binary_threshold=100, back_ground_color="black"):
     return binary_mask_pillow, img_none_bg_pillow
 """
 
-def graph_cut(img_pillow, binary_threshold=250, back_ground_color="black"):
+def graph_cut(img_pillow, iters=5):
     # Pillow -> OpenCV への変換
     img_org_cv = conv_pillow_to_cv2(img_pillow, mask = False)
 
@@ -80,7 +80,7 @@ def graph_cut(img_pillow, binary_threshold=250, back_ground_color="black"):
     fgdModel = np.zeros((1,65),np.float64)
 
     rect = (50,50,450,290)
-    cv2.grabCut(img_org_cv,mask,rect,bgdModel,fgdModel,5,cv2.GC_INIT_WITH_RECT)
+    cv2.grabCut(img_org_cv,mask,rect,bgdModel,fgdModel,iters,cv2.GC_INIT_WITH_RECT)
 
     mask2 = np.where((mask==2)|(mask==0),0,1).astype('uint8')
     img = img_org_cv * mask2[:,:,np.newaxis]

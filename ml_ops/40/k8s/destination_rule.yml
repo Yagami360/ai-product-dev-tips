@@ -2,24 +2,16 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: fast-api-server
+  name: proxy-server
 spec:
-  host: fast-api-server
+  host: proxy-server
   trafficPolicy:
     loadBalancer:
       simple: ROUND_ROBIN
-    connectionPool:
-      tcp:
-        maxConnections: 100
-      http:
-        http1MaxPendingRequests: 100
-        maxRequestsPerConnection: 100
-    outlierDetection:
-      consecutiveErrors: 100
-      interval: 1s
-      baseEjectionTime: 10m
-      maxEjectionPercent: 10
-  subsets:
-    - name: svc
+  subsets:                            # デプロイメント定義ファイルの `spec.template.metadata.labels.version` タグで定義した値を設定
+    - name: proxy-pod-subset1
       labels:
-        version: svc
+        version: proxy-pod-version1
+    - name: proxy-pod-subset2
+      labels:
+        version: proxy-pod-version2

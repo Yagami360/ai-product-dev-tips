@@ -20,6 +20,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--host', type=str, default="localhost", help="API サーバーのホスト名（コンテナ名 or コンテナ ID）")
     parser.add_argument('--port', type=str, default="5000", help="API サーバーのポート番号")
+    parser.add_argument('--headers_target_value', type=str, default="condition1", help="リクエストヘッダーの値")
     parser.add_argument('--in_images_dir', type=str, default="in_images", help="入力画像のディレクトリ")
     parser.add_argument('--out_images_dir', type=str, default="out_images", help="出力ディレクトリ")
     parser.add_argument('--debug', action='store_true', help="デバッグモード有効化")
@@ -55,9 +56,12 @@ if __name__ == "__main__":
         # リクエスト処理
         api_msg = {'image': img_base64}
         #api_msg = json.dumps(api_msg)  # Fast API では、json.dump() で dict 型データを JSON 形式に変換する必要はない
-
+        headers = {
+            "Content-Type": "application/json",
+            "target": args.headers_target_value,
+        }
         try:
-            api_responce = requests.post( "http://" + args.host + ":" + args.port + "/predict", json=api_msg )
+            api_responce = requests.post( "http://" + args.host + ":" + args.port + "/predict", json=api_msg, headers=headers )
             api_responce = api_responce.json()
         except Exception as e:
             print( "Exception : ", e )

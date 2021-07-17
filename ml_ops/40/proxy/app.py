@@ -5,7 +5,6 @@ import time
 import time
 import requests
 import uuid
-from PIL import Image
 
 from fastapi import FastAPI, params
 from fastapi import BackgroundTasks
@@ -42,25 +41,13 @@ def root():
 @log_base_decorator(logger=logger)
 def _health():
     try:
-        health_predict_server1 = requests.get(ProxyServerConfig.predict_server1_url + "/health").json()
+        health_predict_server = requests.get(ProxyServerConfig.predict_server_url + "/health").json()
     except Exception as e:
-        health_predict_server1 = {"health": "ng"}
-
-    try:
-        health_predict_server2 = requests.get(ProxyServerConfig.predict_server2_url + "/health").json()
-    except Exception as e:
-        health_predict_server2 = {"health": "ng"}
-
-    try:
-        health_predict_server3 = requests.get(ProxyServerConfig.predict_server3_url + "/health").json()
-    except Exception as e:
-        health_predict_server3 = {"health": "ng"}
+        health_predict_server = {"health": "ng"}
 
     return {
         "proxy_server" : {"health": "ok"},
-        "predict_server1" : health_predict_server1,
-        "predict_server2" : health_predict_server2,
-        "predict_server3" : health_predict_server3,
+        "predict_server" : health_predict_server,
     }
 
 @app.get("/health")
@@ -83,7 +70,7 @@ def predict(
 
     # 推論サーバーにリクエスト処理
     try:
-        api_responce = requests.post( ProxyServerConfig.predict_server1_url + "/predict", json={'image': img_data.image}, params={"job_id": job_id} )
+        api_responce = requests.post( ProxyServerConfig.predict_server_url + "/predict", json={'image': img_data.image}, params={"job_id": job_id} )
         api_responce = api_responce.json()
         logger.info('[{}] time {} | api_responce["status"] {}'.format(__name__, f"{datetime.now():%H:%M:%S}", api_responce["status"]))
     except Exception as e:
@@ -93,7 +80,6 @@ def predict(
             "status" : "ng",
             "img_none_bg_base64" : None,
         }
-
 
     elapsed_time = 1000 * (time.time() - start_time)
     logger.info("{} {} {} {} job_id={}, elapsed_time [ms]={:.5f}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", sys._getframe().f_code.co_name, "END", job_id, elapsed_time))

@@ -61,7 +61,7 @@
         - 【GKE】Pod でのコンテナの起動順を設定する
         - 【k8s】Istio の基礎事項
         - [【GKE】GKE で構成した Web API に Istio を使用したサーキットブレーカーを導入する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/27)
-        - [In-progress]【GKE】Istio の VirtualSevice を使用してリクエストデータのヘッダーに応じて異なる Web-API で推論する
+        - [【GKE】Istio の VirtualSevice を使用してリクエストデータのヘッダーに応じて異なる Web-API で推論する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/40)
 - 認証基盤
     - [【GCP】GCP の認証システム](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/11)
 - Web サーバー / WSGI サーバー

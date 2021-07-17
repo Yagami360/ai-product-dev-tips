@@ -4,7 +4,7 @@ PROJECT_ID=my-project2-303004
 REGION=asia-northeast1
 ZONE=asia-northeast1-a
 
-CLUSTER_NAME=fast-api-cluster
+CLUSTER_NAME=api-cluster
 CPU_TYPE=n1-standard-4
 
 NUM_NODES=1
@@ -50,12 +50,6 @@ kubectl label namespace default istio-injection=enabled
 # ConfigMap を作成する
 #kubectl apply -f k8s/configmap.yml
 
-# DestinationRule を作成する
-kubectl apply -f k8s/destination_rule.yml
-
-# VirtualService を作成する
-kubectl apply -f k8s/virtual_service.yml
-
 # Pod を作成する
 kubectl apply -f k8s/deployment.yml
 kubectl get pods
@@ -64,9 +58,19 @@ kubectl get pods
 kubectl apply -f k8s/service.yml
 kubectl get services
 
+# DestinationRule を作成する
+kubectl apply -f k8s/destination_rule.yml
+
+# VirtualService を作成する
+kubectl apply -f k8s/virtual_service.yml
+sleep 60
+
 # 作成した Pod のコンテナログを確認
-#kubectl logs `kubectl get pods | grep "fast-api-pod" | awk '{print $1}' | sed -n 1P` fast-api-container
-#kubectl logs `kubectl get pods | grep "fast-api-pod" | awk '{print $1}' | sed -n 1P` istio-proxy
+kubectl logs `kubectl get pods | grep "proxy-pod" | awk '{print $1}' | sed -n 1P` proxy-container1
+kubectl logs `kubectl get pods | grep "predict-pod1" | awk '{print $1}' | sed -n 1P` predict-container1
+kubectl logs `kubectl get pods | grep "predict-pod2" | awk '{print $1}' | sed -n 1P` predict-container2
 
 # 作成した Pod のコンテナにアクセス
-#kubectl exec -it `kubectl get pods | grep "fast-api-pod" | awk '{print $1}' | sed -n 1P` /bin/bash
+#kubectl exec -it `kubectl get pods | grep "proxy-pod" | awk '{print $1}' | sed -n 1P` /bin/bash
+#kubectl exec -it `kubectl get pods | grep "predict-pod1" | awk '{print $1}' | sed -n 1P` /bin/bash
+#kubectl exec -it `kubectl get pods | grep "predict-pod2" | awk '{print $1}' | sed -n 1P` /bin/bash

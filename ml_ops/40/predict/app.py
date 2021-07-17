@@ -64,7 +64,7 @@ async def predict(
     img_data.image = conv_base64_to_pillow(img_data.image)
 
     # OpenCV を用いて背景除去
-    _, img_none_bg_pillow = graph_cut(img_data.image, binary_threshold=PredictServerConfig.binary_threshold)
+    _, img_none_bg_pillow = graph_cut(img_data.image, iters=PredictServerConfig.grab_cut_iters)
 
     # Pillow -> base64 への変換
     img_none_bg_base64 = conv_pillow_to_base64(img_none_bg_pillow)

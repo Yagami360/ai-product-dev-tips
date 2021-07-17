@@ -1,4 +1,4 @@
-# Fast API
+# プロキシサーバー
 apiVersion: v1
 kind: Service
 metadata:
@@ -11,3 +11,31 @@ spec:
       protocol: TCP
   selector:
     app: proxy-pod  # デプロイメント定義ファイルで定義した Pod の識別名。app:sample-pod のラベルがつけられた Pod を通信先とする
+---
+# 推論サーバー1
+apiVersion: v1
+kind: Service
+metadata:
+  name: predict-server1
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 5010
+      targetPort: 5010
+      protocol: TCP
+  selector:
+    app: predict-pod1
+---
+# 推論サーバー2
+apiVersion: v1
+kind: Service
+metadata:
+  name: predict-server2
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 5011
+      targetPort: 5011
+      protocol: TCP
+  selector:
+    app: predict-pod2
