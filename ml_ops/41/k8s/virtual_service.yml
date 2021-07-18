@@ -1,0 +1,19 @@
+# Istio
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: predict-server
+spec:
+  hosts:
+    - predict-server
+  http:
+    - route:
+        - destination:
+            host: predict-server
+            subset: predict-pod-subset-a      # DestinationRule 定義ファイルの spec.subsets.name タグで定義した値
+          weight: 100
+      # ミラーリングを行うリクエスト先  
+      mirror:
+        host: predict-server
+        subset: predict-pod-subset-b          # DestinationRule 定義ファイルの spec.subsets.name タグで定義した値
+      mirror_percent: 100                     # ミラーリングを行う割合

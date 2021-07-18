@@ -62,7 +62,7 @@
         - 【k8s】Istio の基礎事項
         - [【GKE】GKE で構成した Web API に Istio を使用したサーキットブレーカーを導入する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/27)
         - [【GKE】Istio の VirtualSevice を使用してリクエストデータのヘッダーに応じて異なる Web-API で推論する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/40)
-- 認証基盤
+- 認証基盤      
     - [【GCP】GCP の認証システム](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/11)
 - Web サーバー / WSGI サーバー
     - nginx
@@ -181,6 +181,8 @@
         - 機械学習 API サーバーの負荷テストの基礎事項
         - [GKE で構成した Web API に vegeta atteck を使用して負荷テストする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/25)
         - GKE で構成した機械学習 API に vegeta atteck を使用して負荷テストする
+    - [Istio の VirtualSevice のトラフィックミラーリング機能を使用して Web-API のシャドウA/Bテストを行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/41)
+    - Istio の VirtualSevice のトラフィック分割機能を使用して、Web-API のオンラインA/Bテストを行う
 
 ## ■ アプリ開発
 

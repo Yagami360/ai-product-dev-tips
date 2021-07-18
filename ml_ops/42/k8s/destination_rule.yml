@@ -1,0 +1,17 @@
+# Istio
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: predict-server
+spec:
+  host: predict-server
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+  subsets:                            # デプロイメント定義ファイルの `spec.template.metadata.labels.version` タグで定義した値を設定
+    - name: predict-pod-subset-a
+      labels:
+        version: predict-pod-version-a
+    - name: predict-pod-subset-b
+      labels:
+        version: predict-pod-version-b

@@ -1,0 +1,75 @@
+# 推論サーバー A
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: predict-pod-a
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: predict-pod
+  template:
+    metadata:
+      labels:                   
+        app: predict-pod       
+        version: predict-pod-version-a                  # DestinationRule 定義ファイルの spec.subsets.name.labels.version で使用
+      annotations:                                      # Istio を使用するためのアノテーション（key: value 形式の metadata）
+        sidecar.istio.io/inject: "true"                 # Istio の Envoy（プロキシサーバー）サイドカーの挿入を行うかフラグ
+        sidecar.istio.io/proxyCPU: "128m"               # Istio の Envoy（プロキシサーバー）サイドカーの使用 CPU 量
+        sidecar.istio.io/proxyMemory: "128Mi"           # Istio の Envoy（プロキシサーバー）サイドカーの使用 CPU メモリ
+        proxy.istio.io/config: "{'concurrency':'1'}"    # Istio の Envoy（プロキシサーバー）サイドカーの並列スレッド数
+    spec:
+      containers:
+      - name: predict-container-a
+        image: gcr.io/my-project2-303004/predict-image-gke:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+          name: http-server
+        env:
+          - name: GRAB_CUT_ITERS
+            value: "1"
+        command: ["/bin/sh","-c"]
+        args: ["gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"]
+        resources:
+          limits:
+            cpu: 500m
+            memory: "300Mi"
+---
+# 推論サーバー B
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: predict-pod-b
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: predict-pod
+  template:
+    metadata:
+      labels:                   
+        app: predict-pod     
+        version: predict-pod-version-b                  # DestinationRule 定義ファイルの spec.subsets.name.labels.version で使用  
+      annotations:                                      # Istio を使用するためのアノテーション（key: value 形式の metadata）
+        sidecar.istio.io/inject: "true"                 # Istio の Envoy（プロキシサーバー）サイドカーの挿入を行うかフラグ
+        sidecar.istio.io/proxyCPU: "128m"               # Istio の Envoy（プロキシサーバー）サイドカーの使用 CPU 量
+        sidecar.istio.io/proxyMemory: "128Mi"           # Istio の Envoy（プロキシサーバー）サイドカーの使用 CPU メモリ
+        proxy.istio.io/config: "{'concurrency':'1'}"    # Istio の Envoy（プロキシサーバー）サイドカーの並列スレッド数
+    spec:
+      containers:
+      - name: predict-container-b
+        image: gcr.io/my-project2-303004/predict-image-gke:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+          name: http-server
+        env:
+          - name: GRAB_CUT_ITERS
+            value: "10"
+        command: ["/bin/sh","-c"]
+        args: ["gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"]
+        resources:
+          limits:
+            cpu: 500m
+            memory: "300Mi"

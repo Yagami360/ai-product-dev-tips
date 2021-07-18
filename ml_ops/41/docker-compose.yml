@@ -1,0 +1,42 @@
+version: '2.3'
+
+services:
+  predict-serverA:
+    container_name: predict-containerA
+    image: predict-image
+    build:
+      context: "predict/"
+      dockerfile: Dockerfile_dev
+    volumes:
+      - ${PWD}/predict:/predict
+      - ${PWD}/utils:/utils
+      - ${PWD}/config:/config
+    ports:
+      - "5000:5000"
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+      GRAB_CUT_ITERS: "1"
+    command: bash -c "gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+
+  predict-serverB:
+    container_name: predict-containerB
+    image: predict-image
+    build:
+      context: "predict/"
+      dockerfile: Dockerfile_dev
+    volumes:
+      - ${PWD}/predict:/predict
+      - ${PWD}/utils:/utils
+      - ${PWD}/config:/config
+    ports:
+      - "5001:5001"
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+      GRAB_CUT_ITERS: "10"
+    command: bash -c "gunicorn app:app --bind 0.0.0.0:5001 -w 1 -k uvicorn.workers.UvicornWorker --reload"
