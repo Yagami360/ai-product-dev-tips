@@ -66,7 +66,7 @@ kubectl apply -f k8s/virtual_service.yml
 sleep 60
 
 # 作成した Pod のコンテナログを確認
-kubectl logs `kubectl get pods | grep "predict-pod-a" | awk '{print $1}' | sed -n 1P` proxy-container-a
+kubectl logs `kubectl get pods | grep "predict-pod-a" | awk '{print $1}' | sed -n 1P` predict-container-a
 kubectl logs `kubectl get pods | grep "predict-pod-b" | awk '{print $1}' | sed -n 1P` predict-container-b
 
 # 作成した Pod のコンテナにアクセス

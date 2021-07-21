@@ -8,12 +8,13 @@ spec:
     - predict-server
   http:
     - route:
+        # 推論サーバーA
         - destination:
             host: predict-server
             subset: predict-pod-subset-a      # DestinationRule 定義ファイルの spec.subsets.name タグで定義した値
-          weight: 100
-      # ミラーリングを行うリクエスト先  
-      mirror:
-        host: predict-server
-        subset: predict-pod-subset-b          # DestinationRule 定義ファイルの spec.subsets.name タグで定義した値
-      mirror_percent: 100                     # ミラーリングを行う割合
+          weight: 50                          # 50% をサーバーA からのレスポンスにする
+        # 推論サーバーB
+        - destination:
+            host: predict-server
+            subset: predict-pod-subset-b      # DestinationRule 定義ファイルの spec.subsets.name タグで定義した値
+          weight: 50                          # 50% をサーバーB からのレスポンスにする

@@ -182,7 +182,7 @@
         - [GKE で構成した Web API に vegeta atteck を使用して負荷テストする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/25)
         - GKE で構成した機械学習 API に vegeta atteck を使用して負荷テストする
     - [Istio の VirtualSevice のトラフィックミラーリング機能を使用して Web-API のシャドウA/Bテストを行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/41)
-    - Istio の VirtualSevice のトラフィック分割機能を使用して、Web-API のオンラインA/Bテストを行う
+    - [Istio の VirtualSevice のトラフィック分割機能を使用して、Web-API のオンラインA/Bテストを行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/42)
 
 ## ■ アプリ開発
 
