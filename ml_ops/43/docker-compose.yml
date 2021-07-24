@@ -56,7 +56,7 @@ services:
       LC_ALL: C.UTF-8
       LANG: C.UTF-8
     command: bash -c "redis-server"
-
+      
   batch-server:
     container_name: batch-container
     image: batch-image
@@ -77,7 +77,7 @@ services:
     depends_on:
       - redis-server
       - predict-server-async
-        
+  
   proxy-server:
     container_name: proxy-container
     image: proxy-image
@@ -94,9 +94,9 @@ services:
     tty: true
     depends_on:
       - redis-server
-      - batch-server
       - predict-server-sync
       - predict-server-async
+      - batch-server
     environment:
       TZ: "Asia/Tokyo"
       LC_ALL: C.UTF-8

@@ -69,7 +69,7 @@ async def predict(
     img_none_bg_base64 = conv_pillow_to_base64(img_none_bg_pillow)
 
     # 非同期処理の効果を明確化するためにあえて sleep 処理
-    sleep(10)
+    sleep(1)
 
     # レスポンスデータ設定
     elapsed_time = 1000 * (time.time() - start_time)

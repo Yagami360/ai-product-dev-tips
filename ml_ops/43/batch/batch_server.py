@@ -33,28 +33,13 @@ def polling():
     while True:
         # Redis キューの末端からデータを pop
         job_id = redis_client.rpop('job_id')
-        if job_id is None:
+        if job_id is not None:
+            job_id = job_id.decode()
             print('[{}] time {} | Job {} を pop しました'.format(__name__, f"{datetime.now():%H:%M:%S}", job_id))
             logger.info('[{}] time {} | Job {} を pop しました'.format(__name__, f"{datetime.now():%H:%M:%S}", job_id))
-        else:
-            job_id = job_id.decode()
-            job_status = redis_client.rpop(job_id + "_job_status").decode()
-            print('[{}] time {} | Job {} {} を pop しました'.format(__name__, f"{datetime.now():%H:%M:%S}", job_id, job_status))
-            logger.info('[{}] time {} | Job {} {} を pop しました'.format(__name__, f"{datetime.now():%H:%M:%S}", job_id, job_status))
 
             # job_id に対応した 画像データを取得
             img_base64 = get_image_base64_redis( redis_client=redis_client, key_name=job_id+"_image_in" )
-
-            """
-            # 推論サーバーのヘルスチェック
-            try:
-                health = requests.get( "http://" + PredictServerAsyncConfig.host + ":" + PredictServerAsyncConfig.port + "/health" ).json()
-                print( "health : ", health )
-                logger.info('[{}] time {} | health {}'.format(__name__, f"{datetime.now():%H:%M:%S}", health))
-            except Exception as e:
-                print( "Exception : ", e )
-                logger.info('[{}] time {} | Exception {}'.format(__name__, f"{datetime.now():%H:%M:%S}", e))
-            """
 
             # 推論サーバーにリクエスト処理
             try:
@@ -65,9 +50,7 @@ def polling():
 
                 # Redis の画像データに登録
                 set_image_base64_redis( redis_client=redis_client, key_name=job_id+"_image_out", img_base64=api_responce["img_none_bg_base64"])
-                redis_client.lpush(job_id + "_job_status", "SUCCEED")
             except Exception as e:
-                redis_client.lpush(job_id + "_job_status", "FAILED")
                 print( "Exception : ", e )
                 logger.info('[{}] time {} job_id={} | Exception {}'.format(__name__, f"{datetime.now():%H:%M:%S}", job_id, e))
 

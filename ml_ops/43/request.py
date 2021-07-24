@@ -42,12 +42,6 @@ if __name__ == "__main__":
     print( "health : ", health )
 
     #----------------------------------
-    # metadata 取得
-    #----------------------------------
-    metadata = requests.get( "http://" + args.host + ":" + args.port + "/metadata" ).json()
-    print( "metadata : ", metadata )
-
-    #----------------------------------
     # リクエスト処理
     #----------------------------------
     image_names = sorted( [f for f in os.listdir(args.in_images_dir) if f.endswith(IMG_EXTENSIONS)] )
@@ -79,6 +73,12 @@ if __name__ == "__main__":
         time.sleep(0.01)
 
     #----------------------------------
+    # metadata 取得
+    #----------------------------------
+    metadata = requests.get( "http://" + args.host + ":" + args.port + "/metadata" ).json()
+    print( "metadata : ", metadata )
+
+    #----------------------------------
     # 非同期推論サーバーからのレスポンスデータをポーリング処理
     #----------------------------------
     for n_polling in tqdm(range(args.n_pollings)):
@@ -86,10 +86,10 @@ if __name__ == "__main__":
             break
         for i,job_id in enumerate(job_ids):
             api_responce = requests.get( "http://" + args.host + ":" + args.port + "/get_job/" + job_id ).json()
-            print( "job_id={}, job_status={}, status={}".format(api_responce["job_id"], api_responce["job_status"], api_responce["status"]))
+            print( "job_id={}, status={}".format(api_responce["job_id"], api_responce["status"]))
             if( api_responce["status"] == "ok" ):
                 img_out_pillow = conv_base64_to_pillow(api_responce["img_out_base64"])
-                img_out_pillow.save(os.path.join(args.out_images_dir,api_responce["job_id"]+".png"))
+                img_out_pillow.save(os.path.join(args.out_images_async_dir,api_responce["job_id"]+".png"))
                 job_ids.remove(job_id)
 
         time.sleep(1)

@@ -53,7 +53,6 @@ class SetDataRedisJob(BaseModel):
         try:
             # Redis キューの先頭に job_id を追加
             redis_client.lpush("job_id", self.job_id)
-            redis_client.lpush(self.job_id + "_job_status", "RUNNING")
             print('[{}] time {} | Job {} を登録しました'.format(self.__class__.__name__, f"{datetime.now():%H:%M:%S}", self.job_id))
             logger.info('[{}] time {} | Job {} を登録しました'.format(self.__class__.__name__, f"{datetime.now():%H:%M:%S}", self.job_id))
 
@@ -98,20 +97,16 @@ def health():
 
 @app.get("/metadata")
 def metadata():    
-    return
+    return {
+        "status": "ok",
+        #"jobs" : jobs,
+        "job_id_redis" : redis_client.lrange("job_id",0,-1),
+    }
 
 @app.get("/get_job/{job_id}")
 def get_job(
     job_id: str,  # パスパラメーター
 ):
-    job_status = redis_client.rpop(job_id + "_job_status")
-    redis_client.lpush(job_id + "_job_status", job_status)
-
-    if( job_status == "SUCCEED" ):
-        status = "ok"
-    else:
-        status = "ng"
-
     try:
         img_in_base64 = get_image_base64_redis( redis_client=redis_client, key_name=job_id + "_image_in" )
     except Exception:
@@ -123,9 +118,13 @@ def get_job(
         img_out_base64 = None
         status = "ng"
 
+    if not img_out_base64 is None:
+        status = "ok"
+    else:
+        status = "ng"
+
     return {
         "job_id" : jobs[job_id].job_id,
-        "job_status" : job_status,
         "status": status,
         "img_in_base64" : img_in_base64,
         "img_out_base64" : img_out_base64,

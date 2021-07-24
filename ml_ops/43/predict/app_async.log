@@ -1,5 +1,15 @@
-[app_async] time 14:48:00 | 推論サーバーを起動しました
-2021-07-24 14:48:00 INFO predict START job_id=4e7299
-2021-07-24 14:48:10 INFO predict END job_id=4e7299, elapsed_time [ms]=10457.71241
-2021-07-24 14:48:10 INFO predict START job_id=cb297a
-2021-07-24 14:48:21 INFO predict END job_id=cb297a, elapsed_time [ms]=10419.29674
+[app_async] time 19:41:20 | 推論サーバーを起動しました
+2021-07-24 19:41:26 INFO _health START args=() kwds={}
+2021-07-24 19:41:26 INFO _health END elapsed_time [ms]=1.35422, return {'health': 'ok'}
+2021-07-24 19:41:27 INFO _health START args=() kwds={}
+2021-07-24 19:41:27 INFO _health END elapsed_time [ms]=0.57197, return {'health': 'ok'}
+2021-07-24 19:41:28 INFO predict START job_id=6f1700
+2021-07-24 19:41:30 INFO predict END job_id=6f1700, elapsed_time [ms]=1798.86532
+2021-07-24 19:41:30 INFO predict START job_id=1e02d7
+2021-07-24 19:41:31 INFO predict END job_id=1e02d7, elapsed_time [ms]=1317.65199
+2021-07-24 19:41:31 INFO predict START job_id=4d1049
+2021-07-24 19:41:34 INFO predict END job_id=4d1049, elapsed_time [ms]=2899.84083
+2021-07-24 19:41:34 INFO predict START job_id=f4ea36
+2021-07-24 19:41:35 INFO predict END job_id=f4ea36, elapsed_time [ms]=1445.72067
+2021-07-24 19:41:35 INFO predict START job_id=eaee6d
+2021-07-24 19:41:37 INFO predict END job_id=eaee6d, elapsed_time [ms]=1373.41094
