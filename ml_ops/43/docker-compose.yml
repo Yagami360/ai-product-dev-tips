@@ -1,0 +1,104 @@
+version: '2.3'
+
+services:
+  predict-server-sync:
+    container_name: predict-container-sync
+    image: predict-image
+    build:
+      context: "predict/"
+      dockerfile: Dockerfile_dev
+    volumes:
+      - ${PWD}/predict:/predict
+      - ${PWD}/utils:/utils
+      - ${PWD}/config:/config
+    ports:
+      - "5010:5010"
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+      HOST: "predict-container-sync"
+      PORT: "5010"
+      GRAB_CUT_ITERS: "1"
+    command: bash -c "gunicorn app_sync:app --bind 0.0.0.0:5010 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+
+  predict-server-async:
+    container_name: predict-container-async
+    image: predict-image
+    build:
+      context: "predict/"
+      dockerfile: Dockerfile_dev
+    volumes:
+      - ${PWD}/predict:/predict
+      - ${PWD}/utils:/utils
+      - ${PWD}/config:/config
+    ports:
+      - "5011:5011"
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+      HOST: "predict-container-async"
+      PORT: "5011"
+      GRAB_CUT_ITERS: "10"
+    command: bash -c "gunicorn app_async:app --bind 0.0.0.0:5011 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+
+  redis-server:
+    container_name: redis-container
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    command: bash -c "redis-server"
+
+  batch-server:
+    container_name: batch-container
+    image: batch-image
+    build:
+      context: "batch/"
+      dockerfile: Dockerfile
+    volumes:
+      - ${PWD}/batch:/batch
+      - ${PWD}/redis:/redis
+      - ${PWD}/utils:/utils
+      - ${PWD}/config:/config
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    command: bash -c "python batch_server.py"
+    depends_on:
+      - redis-server
+      - predict-server-async
+        
+  proxy-server:
+    container_name: proxy-container
+    image: proxy-image
+    build:
+      context: "proxy/"
+      dockerfile: Dockerfile_dev
+    volumes:
+      - ${PWD}/proxy:/proxy
+      - ${PWD}/redis:/redis
+      - ${PWD}/utils:/utils
+      - ${PWD}/config:/config
+    ports:
+      - "5000:5000"
+    tty: true
+    depends_on:
+      - redis-server
+      - batch-server
+      - predict-server-sync
+      - predict-server-async
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    command: bash -c "gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"

@@ -1,0 +1,5 @@
+[app_async] time 14:48:00 | 推論サーバーを起動しました
+2021-07-24 14:48:00 INFO predict START job_id=4e7299
+2021-07-24 14:48:10 INFO predict END job_id=4e7299, elapsed_time [ms]=10457.71241
+2021-07-24 14:48:10 INFO predict START job_id=cb297a
+2021-07-24 14:48:21 INFO predict END job_id=cb297a, elapsed_time [ms]=10419.29674
