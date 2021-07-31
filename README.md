@@ -53,7 +53,7 @@
         - [【GKE】Kubernetes (k8s) と GKE [Google Kubernetes Engine] の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/9)
         - [【GKE】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/10)
         - [【GKE】GKE を用いた機械学習モデルの推論 API の構築](https://github.com/Yagami360/graphonomy_api-server_gke)
-        - [[In-progress]【GKE】GKE でのオートスケールの基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/31)
+        - [[In-progress]【GKE】GKE でのオートスケールの基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/31)
         - 【GKE】Workload Identity を用いた GKE クラスタから GCP リソースへのアクセス
         - 【GKE】GKE の外部公開サービスの IP アドレスを固定する
         - 【GKE】Pod 間で通信する
@@ -160,6 +160,7 @@
         - [docker + Redis + Python での Redis の構成](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/23)
         - docker + Flask での Web-API を Redis を利用して非同期実行する
         - [推論結果を Redis にキャッシュし、同じ入力データでの Web-API の推論処理を高速化する（FastAPI + uvicorn + gunicorn + redis + docker + docker-compose での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/39)
+        - [入力データや前処理データを Redis にキャッシュし、同じ入力データでの Web-API の推論処理を高速化する（FastAPI + uvicorn + gunicorn + redis + docker + docker-compose での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/44)
 - 機械学習ワークフロー
     - Kubeflow
         - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/1)
