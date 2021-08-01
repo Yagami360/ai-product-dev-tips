@@ -1,5 +1,9 @@
 # 【Firebase】Firebase Hosting を使用して静的なウェブサイトをデプロイする
-Firebase Hosting を使用することで、Firebase を使用した静的なウェブサイト（HTML）を Hosting にデプロイし、公開することができる。
+Firebase Hosting を使用することで、Firebase を使用した静的なウェブサイト（`index.html` 等 の HTML ファイル）を Hosting にデプロイし、公開することができる。
+
+> Firebase を使用せず、静的なウェブサイト（HTML）`index.html` を公開しようとすると、HTTP サーバーを別途用意しなくてはならずコストや面倒な処理が必要となる。Firebase Hosting を使用することで、別途 HTTP サーバーを別途用意しなくていいので、コストや面倒な処理が不要になるというメリットがある。
+
+> 静的なウェブサイト（`index.html`）をローカルPCから直接開いて使うようなアプリケーションでは、HTTP サーバーは不要なので、この Firebase Hosting を使用するメリットはない
 
 ## 1. Firebase プロジェクトの作成
 1. [Firebase コンソール画面](https://console.firebase.google.com/?hl=ja&pli=1)にアクセス

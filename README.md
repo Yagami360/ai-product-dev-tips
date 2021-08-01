@@ -28,7 +28,7 @@
     - [【シェルスクリプト】ポートフォワーディングを使用した tensorboard 接続](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/21)
     - VPN 接続
 
-## ■ 機械学習基盤（MLOps）
+## ■ 機械学習基盤（MLOps）・バックエンド
 - クラウド環境一般
     - AWS
         - 【AWS】EC インスタンスのディスク容量を後から増設する。
@@ -114,13 +114,6 @@
         - [【GCP】Cloud Run を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/8)
         - 【GCP】Cloud Run で GPU を使用可能にする
         - 【GCP】Cloud Run を用いた機械学習モデルの推論 API の構築
-    - Firebase
-        - [【Firebase】Firebase の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/12)
-        - [【Firebase】Firebase Hosting を使用して静的なウェブサイトをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/14)
-        - [【Firebase】Firebase Cloud Function を使用して動的なウェブアプリをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/15)
-        - 【Firebase】Firebase Cloud Function を JavaScript(`Node.js`) ではなく Google Cloud Function で登録した Python スクリプトで登録する
-        - [【Firebase】Firebase Authentication を使用してウェブアプリに Authentication 機能を導入する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/16)
-        - 【Firebase】Python & Flask で docker コンテナ化した Web-API を Firebase で使用する
 - CI/CD
     - [CI/CD の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/4)
     - GitHub Actions
@@ -186,13 +179,23 @@
     - [Istio の VirtualSevice のトラフィックミラーリング機能を使用して Web-API のシャドウA/Bテストを行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/41)
     - [Istio の VirtualSevice のトラフィック分割機能を使用して、Web-API のオンラインA/Bテストを行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/42)
 
-## ■ アプリ開発
+## ■ アプリ開発・フロントエンド
 
 - iOS アプリ開発
     - iOS アプリ開発の基本事項
     - [【Firebase】iOS アプリ（Xcodeプロジェクト）に Firebase を登録する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ios_app/2)
     - [【Firebase】iOS アプリから Firebase Cloud Functions を利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ios_app/3)
     - 【Firebase】Firebase Authentication を使用して iOS アプリに Authentication 機能を導入する
+    - 【Firebase】Firebase Hosting を使用して GKE 上の WebAPI からの出力を返す GUI 付き iOS アプリを作成する
+
+- サーバレス / FaaS [Function as a Service]
+    - Firebase
+        - [【Firebase】Firebase の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/12)
+        - [【Firebase】Firebase Hosting を使用して静的なウェブサイトをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/14)
+        - [【Firebase】Firebase Cloud Function を使用して動的なウェブアプリをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/15)
+        - 【Firebase】Firebase Cloud Function を JavaScript(`Node.js`) ではなく Google Cloud Function で登録した Python スクリプトで登録する
+        - [【Firebase】Firebase Authentication を使用してウェブアプリに Authentication 機能を導入する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/16)
+        - 【Firebase】Firebase Hosting を使用して GKE 上の WebAPI からの出力を返す GUI 付きウェブアプリを作成する
 
 ## ■ 前処理・後処理（アプリケーション別）
 
