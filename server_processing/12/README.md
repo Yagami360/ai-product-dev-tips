@@ -28,8 +28,9 @@ Firebase を導入することで、主に以下のようなメリットが享�
     - Cloud Firestore<br>
         NoSQL [Not only SQL] と呼ばれる SQL 言語を使わずにデータ操作ができるデータベースで、 最近追加されたデータベース
 
-- Storage<br>
-    Firebase で使うストレージ機能
+- Cloud Storage for Firebase<br>
+    Firebase で使うストレージ機能。
+    Database では SQL などのデータベースを扱うことはできるが、画像ファイルや xml ファイルなどのアプリ上から使用するデータに関しては、こちらの Cloud Storage にパケットとして保存して、アプリ上で使用する形になる
 
 ## ■ 参考サイト
 - https://firebase.google.com/docs/guides?hl=ja

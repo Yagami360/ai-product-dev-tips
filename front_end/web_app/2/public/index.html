@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Cloud Storage の画像を表示</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Firebase -->
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/8.2.6/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/8.2.6/firebase-auth.js"></script>
+    <script defer src="/__/firebase/8.2.6/firebase-storage.js"></script>
+    <!-- 
+      initialize the SDK after all desired features are loaded, set useEmulator to false
+      to avoid connecting the SDK to running emulators.
+    -->
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+      
+  </head>
+  <body>
+    <h1>Cloud Storage の画像を表示</h1>
+    <div class="box_pose">
+      <img src="https://firebasestorage.googleapis.com/v0/b/sample-app-73cab.appspot.com/o/000001_0.jpg?alt=media&token=bd3929a0-49cb-4f06-994d-f5164908618b" id="pose_image_1">
+      <img src="https://firebasestorage.googleapis.com/v0/b/sample-app-73cab.appspot.com/o/000010_0.jpg?alt=media&token=5cc65583-3666-4d76-8cdc-ba50b0cd3bfe" id="pose_image_2">
+      <img src="https://firebasestorage.googleapis.com/v0/b/sample-app-73cab.appspot.com/o/000020_0.jpg?alt=media&token=cdb478e1-ee2e-4243-b674-6c8fbe1565e2" id="pose_image_3">
+      <img src="https://firebasestorage.googleapis.com/v0/b/sample-app-73cab.appspot.com/o/000028_0.jpg?alt=media&token=38d252a6-d309-4894-925f-1272af392629" id="pose_image_4">
+      <img src="https://firebasestorage.googleapis.com/v0/b/sample-app-73cab.appspot.com/o/000038_0.jpg?alt=media&token=3746942a-808e-4049-a48e-f742bbc9ae47" id="pose_image_5">
+    </div>  
+
+    <!-- Firebase -->
+    <p id="load">Firebase SDK Loading&hellip;</p>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const loadEl = document.querySelector('#load');
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        // // The Firebase SDK is initialized and available here!
+        //
+        // firebase.auth().onAuthStateChanged(user => { });
+        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
+        // firebase.firestore().doc('/foo/bar').get().then(() => { });
+        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
+        // firebase.messaging().requestPermission().then(() => { });
+        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+        // firebase.analytics(); // call to activate
+        // firebase.analytics().logEvent('tutorial_completed');
+        // firebase.performance(); // call to activate
+        //
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+
+        try {
+          let app = firebase.app();
+          let features = [
+            'auth', 
+            'database', 
+            'firestore',
+            'functions',
+            'messaging', 
+            'storage', 
+            'analytics', 
+            'remoteConfig',
+            'performance',
+          ].filter(feature => typeof app[feature] === 'function');
+          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+        } catch (e) {
+          console.error(e);
+          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+        }
+      });
+    </script>
+  </body>
+</html>

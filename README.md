@@ -181,10 +181,15 @@
 
 ## ■ アプリ開発・フロントエンド
 
+- Web アプリ開発
+    - HTML
+        - HTML の基礎事項
+    - css
+
 - iOS アプリ開発
     - iOS アプリ開発の基本事項
-    - [【Firebase】iOS アプリ（Xcodeプロジェクト）に Firebase を登録する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ios_app/2)
-    - [【Firebase】iOS アプリから Firebase Cloud Functions を利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ios_app/3)
+    - [【Firebase】iOS アプリ（Xcodeプロジェクト）に Firebase を登録する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/ios_app/2)
+    - [【Firebase】iOS アプリから Firebase Cloud Functions を利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/ios_app/3)
     - 【Firebase】Firebase Authentication を使用して iOS アプリに Authentication 機能を導入する
     - 【Firebase】Firebase Hosting を使用して GKE 上の WebAPI からの出力を返す GUI 付き iOS アプリを作成する
 
@@ -195,8 +200,9 @@
         - [【Firebase】Firebase Cloud Function を使用して動的なウェブアプリをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/15)
         - 【Firebase】Firebase Cloud Function を JavaScript(`Node.js`) ではなく Google Cloud Function で登録した Python スクリプトで登録する
         - [【Firebase】Firebase Authentication を使用してウェブアプリに Authentication 機能を導入する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/16)
+        - [[In-progress]【Firebase】Cloud Storage for Firebase を使用してウェブアプリ上で使用する画像データを表示する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/2)
         - 【Firebase】Firebase Hosting を使用して GKE 上の WebAPI からの出力を返す GUI 付きウェブアプリを作成する
-
+        
 ## ■ 前処理・後処理（アプリケーション別）
 
 - テーブルデータ処理
