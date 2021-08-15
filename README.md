@@ -185,6 +185,8 @@
     - HTML
         - HTML の基礎事項
     - css
+    - JavaScript
+        - JavaScript の基礎事項
 
 - iOS アプリ開発
     - iOS アプリ開発の基本事項

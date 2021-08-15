@@ -1,0 +1,25 @@
+[app] time 10:24:46 | APIサーバーを起動しました
+2021-08-15 10:24:51 INFO _health START args=() kwds={}
+2021-08-15 10:24:51 INFO _health END elapsed_time [ms]=0.92793, return {'health': 'ok'}
+[app] time 10:45:38 | APIサーバーを起動しました
+2021-08-15 10:45:43 INFO _health START args=() kwds={}
+2021-08-15 10:45:43 INFO _health END elapsed_time [ms]=0.81825, return {'health': 'ok'}
+[app] time 10:46:27 | APIサーバーを起動しました
+2021-08-15 10:46:32 INFO _health START args=() kwds={}
+2021-08-15 10:46:32 INFO _health END elapsed_time [ms]=1.06525, return {'health': 'ok'}
+[app] time 10:46:56 | APIサーバーを起動しました
+2021-08-15 10:47:00 INFO _health START args=() kwds={}
+2021-08-15 10:47:00 INFO _health END elapsed_time [ms]=1.11794, return {'health': 'ok'}
+[app] time 10:54:24 | APIサーバーを起動しました
+2021-08-15 10:54:28 INFO _health START args=() kwds={}
+2021-08-15 10:54:28 INFO _health END elapsed_time [ms]=1.04332, return {'health': 'ok'}
+2021-08-15 10:54:29 INFO predict START job_id=475d33
+2021-08-15 10:54:29 INFO predict END job_id=475d33, elapsed_time [ms]=473.00172
+2021-08-15 10:54:29 INFO predict START job_id=c13cc6
+2021-08-15 10:54:29 INFO predict END job_id=c13cc6, elapsed_time [ms]=225.89135
+2021-08-15 10:54:29 INFO predict START job_id=74c0f9
+2021-08-15 10:54:30 INFO predict END job_id=74c0f9, elapsed_time [ms]=923.91253
+2021-08-15 10:54:31 INFO predict START job_id=a234d4
+2021-08-15 10:54:31 INFO predict END job_id=a234d4, elapsed_time [ms]=182.71160
+2021-08-15 10:54:31 INFO predict START job_id=422fee
+2021-08-15 10:54:31 INFO predict END job_id=422fee, elapsed_time [ms]=211.82394
