@@ -7,7 +7,7 @@ PORT=5000
 TIMEOUT_CONNECT=3600
 TIMEOUT_READ=3600
 
-IN_IMAGES_DIR=public/sample_n5      # 入力ディレクトリ
+IN_IMAGES_DIR=sample_n5             # 入力ディレクトリ
 OUT_IMAGES_DIR=out_images           # 出力ディレクトリ
 
 # ヘルスチェック

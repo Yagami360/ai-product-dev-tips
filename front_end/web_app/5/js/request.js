@@ -50,10 +50,10 @@ $(function(){
 });
 
 //============================================
-// 試着画像生成ボタンクリック時に呼び出される関数
+// 出力画像生成ボタンクリック時に呼び出される関数
 //============================================
-function generateTryOnImage() {
-    console.log( "人物パース画像の生成開始" );
+function generateOutputImage() {
+    console.log( "背景除去画像の生成開始" );
 
     // 仮想試着サーバーの URL 取得
     var api_url = document.getElementById("api_url").value;

@@ -3,7 +3,7 @@ set -eu
 HOST=0.0.0.0
 PORT=5000
 
-IN_IMAGES_DIR=public/sample_n5
+IN_IMAGES_DIR=sample_n5
 OUT_IMAGES_DIR=out_images
 rm -rf ${OUT_IMAGES_DIR}
 

@@ -71,6 +71,7 @@ RUN conda install -y -c conda-forge dataclasses && conda clean -ya
 #-----------------------------
 WORKDIR /api
 COPY *.py /api/
+COPY utils/*.py /api/utils/
 
 #-----------------------------
 # ポート開放

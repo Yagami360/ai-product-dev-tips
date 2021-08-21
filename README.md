@@ -187,6 +187,16 @@
     - css
     - JavaScript
         - JavaScript の基礎事項
+    - サーバレス / FaaS [Function as a Service]
+        - Firebase
+            - [【Firebase】Firebase の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/12)
+            - [【Firebase】Firebase Hosting を使用して静的なウェブサイトをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/14)
+            - [【Firebase】Firebase Cloud Function を使用して動的なウェブアプリをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/15)
+            - 【Firebase】Firebase Cloud Function を JavaScript(`Node.js`) ではなく Google Cloud Function で登録した Python スクリプトで登録する
+            - [【Firebase】Firebase Authentication を使用してウェブアプリに Authentication 機能を導入する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/16)
+            - [[In-progress]【Firebase】Cloud Storage for Firebase を使用してウェブアプリ上で使用する画像データを表示する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/2)
+            - [[In-progress]【Firebase】Firebase Hosting を使用して GKE 上の WebAPI からの出力を返す GUI 付きウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/5)
+            - 【Firebase】Firebase Cloud Function を使用して GKE 上の WebAPI からの出力を返す GUI 付きウェブアプリを作成する
 
 - iOS アプリ開発
     - iOS アプリ開発の基本事項
@@ -195,16 +205,8 @@
     - 【Firebase】Firebase Authentication を使用して iOS アプリに Authentication 機能を導入する
     - 【Firebase】Firebase Hosting を使用して GKE 上の WebAPI からの出力を返す GUI 付き iOS アプリを作成する
 
-- サーバレス / FaaS [Function as a Service]
-    - Firebase
-        - [【Firebase】Firebase の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/12)
-        - [【Firebase】Firebase Hosting を使用して静的なウェブサイトをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/14)
-        - [【Firebase】Firebase Cloud Function を使用して動的なウェブアプリをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/15)
-        - 【Firebase】Firebase Cloud Function を JavaScript(`Node.js`) ではなく Google Cloud Function で登録した Python スクリプトで登録する
-        - [【Firebase】Firebase Authentication を使用してウェブアプリに Authentication 機能を導入する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/16)
-        - [[In-progress]【Firebase】Cloud Storage for Firebase を使用してウェブアプリ上で使用する画像データを表示する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/2)
-        - 【Firebase】Firebase Hosting を使用して GKE 上の WebAPI からの出力を返す GUI 付きウェブアプリを作成する
-        
+- アンドロイドアプリ開発
+
 ## ■ 前処理・後処理（アプリケーション別）
 
 - テーブルデータ処理

@@ -68,7 +68,7 @@
             }
         ]
         ```
-        - `tps://xxxx.firebaseapp.com` : Web アプリの公開 URL
+        - `tps://${PROJECT_ID}.firebaseapp.com` : Web アプリの公開 URL
 
     1. CORS 設定ファイル `cors.json` を Web アプリにデプロイする
         ```sh

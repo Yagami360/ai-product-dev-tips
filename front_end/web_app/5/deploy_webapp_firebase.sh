@@ -17,6 +17,10 @@ if [ ! -e "${ROOT_DIR}/public" ] ; then
     firebase init --project ${PROJECT_ID}
 fi
 
+# CORS 設定ファイルを Web アプリにデプロイする
+gsutil cors set cors.json gs://${PROJECT_ID}.appspot.com
+gsutil cors get gs://${PROJECT_ID}.appspot.com 
+
 # Firebase Hosting でウェブサイトをデプロイ
 firebase deploy --project ${PROJECT_ID}
 

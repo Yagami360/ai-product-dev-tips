@@ -14,8 +14,8 @@ CLUSTER_NAME=graph-cut-api-cluster
 MIN_NODES=1
 MAX_NODES=1
 
-#ENABLE_BUILD=0
-ENABLE_BUILD=1
+ENABLE_BUILD=0
+#ENABLE_BUILD=1
 
 # デフォルト値の設定
 gcloud config set project ${PROJECT_ID}
