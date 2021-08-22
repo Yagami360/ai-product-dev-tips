@@ -1,5 +1,8 @@
 # 【Firebase】Cloud Storage for Firebase を使用してウェブアプリ上で使用する画像データを表示する
 
+ここでは、Cloud Storage for Firebase に保管した各種画像データをウェブアプリ上で表示させる方法を記載する。<br>
+尚、Cloud Storage for Firebase を使用せず、ウェブアプリ上で使用する画像データさせたい場合は、FireBase Hosting でデプロイする `public` ディレクトリ以下に画像データを保存し、`index.html` の `<img src="xxx">` タグに、`public` ディレクトリ以下保存した画像データの相対パスを設定すればいい。この際のパスは `./xxx.png` のように `./` 付きのパスで指定する必要がある
+
 ## 方法
 
 1. Firebase プロジェクトを初期化する

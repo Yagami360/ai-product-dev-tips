@@ -82,3 +82,11 @@
 2021-08-21 11:59:37 INFO predict END job_id=d55af6, elapsed_time [ms]=275.88916
 2021-08-21 11:59:37 INFO predict START job_id=05a643
 2021-08-21 11:59:38 INFO predict END job_id=05a643, elapsed_time [ms]=230.78847
+[app] time 13:17:53 | APIサーバーを起動しました
+[app] time 16:59:43 | APIサーバーを起動しました
+[app] time 17:16:40 | APIサーバーを起動しました
+[app] time 22:03:33 | APIサーバーを起動しました
+[app] time 23:02:14 | APIサーバーを起動しました
+[app] time 04:22:03 | APIサーバーを起動しました
+[app] time 08:22:28 | APIサーバーを起動しました
+[app] time 10:24:01 | APIサーバーを起動しました

@@ -62,6 +62,7 @@
         - 【k8s】Istio の基礎事項
         - [【GKE】GKE で構成した Web API に Istio を使用したサーキットブレーカーを導入する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/27)
         - [【GKE】Istio の VirtualSevice を使用してリクエストデータのヘッダーに応じて異なる Web-API で推論する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/40)
+        - 【GKE】GoogleマネージドSSL証明書を用いて、GKE 上の Web-API を https 化する
 - 認証基盤      
     - [【GCP】GCP の認証システム](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/11)
 - Web サーバー / WSGI サーバー
@@ -185,18 +186,16 @@
     - HTML
         - HTML の基礎事項
     - css
-    - JavaScript
+    - JavaScript / TypeScript
         - JavaScript の基礎事項
-    - サーバレス / FaaS [Function as a Service]
-        - Firebase
-            - [【Firebase】Firebase の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/12)
-            - [【Firebase】Firebase Hosting を使用して静的なウェブサイトをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/14)
-            - [【Firebase】Firebase Cloud Function を使用して動的なウェブアプリをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/15)
-            - 【Firebase】Firebase Cloud Function を JavaScript(`Node.js`) ではなく Google Cloud Function で登録した Python スクリプトで登録する
-            - [【Firebase】Firebase Authentication を使用してウェブアプリに Authentication 機能を導入する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/16)
-            - [[In-progress]【Firebase】Cloud Storage for Firebase を使用してウェブアプリ上で使用する画像データを表示する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/2)
-            - [[In-progress]【Firebase】Firebase Hosting を使用して GKE 上の WebAPI からの出力を返す GUI 付きウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/5)
-            - 【Firebase】Firebase Cloud Function を使用して GKE 上の WebAPI からの出力を返す GUI 付きウェブアプリを作成する
+    - React
+    - [【Firebase】Firebase Hosting を使用して静的なウェブサイトをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/14)
+    - [【Firebase】Firebase Cloud Function を使用して動的なウェブアプリをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/15)
+    - [【Firebase】Firebase Authentication を使用してウェブアプリに Authentication 機能を導入する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/16)
+    - [[In-progress]【Firebase】Cloud Storage for Firebase を使用してウェブアプリ上で使用する画像データを表示する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/2)
+    - [[In-progress]【Firebase】Firebase Hosting を使用して GKE 上の https 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/5)
+    - 【Firebase】Firebase Hosting と Firebase Cloud Function を使用して GKE 上の http 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する
+    - 【Firebase】Firebase Cloud Function を使用して GKE 上の WebAPI からの出力を返す GUI 付きウェブアプリを作成する
 
 - iOS アプリ開発
     - iOS アプリ開発の基本事項
@@ -206,6 +205,12 @@
     - 【Firebase】Firebase Hosting を使用して GKE 上の WebAPI からの出力を返す GUI 付き iOS アプリを作成する
 
 - アンドロイドアプリ開発
+
+- サーバレス / FaaS [Function as a Service]
+    - Firebase
+        - [【Firebase】Firebase の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/12)
+        - 【Firebase】Firebase Cloud Function を JavaScript(`Node.js`) ではなく Google Cloud Function で登録した Python スクリプトで登録する
+        - https 通信での Web サイトからリバースプロキシとしての Firebase Cloud Function 経由で http 通信での Web-API を呼び出す
 
 ## ■ 前処理・後処理（アプリケーション別）
 
