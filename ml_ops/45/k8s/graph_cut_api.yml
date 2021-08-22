@@ -1,0 +1,89 @@
+# Pod
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graph-cut-api-pod
+  labels:
+    app: graph-cut-api-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: graph-cut-api-pod
+  template:
+     metadata:
+       labels:
+         app: graph-cut-api-pod
+     spec:
+       containers:
+       - name: graph-cut-api-container
+         image: gcr.io/my-project2-303004/graph-cut-api-image-gke:latest
+         ports:
+         - containerPort: 5000
+           name: http-server
+         env:
+           - name: HOST
+             value: "0.0.0.0"
+           - name: PORT
+             value: "5000"
+         command: ["/bin/sh","-c"]
+         args: ["gunicorn app:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:5000 --workers 4 --threads 1 --backlog 256 --reload"]
+         resources:
+           requests:
+             cpu: 1
+             memory: "10Gi"
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: graph-cut-api-server
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 5000
+      targetPort: 5000
+      protocol: TCP
+  selector:
+    app: graph-cut-api-pod
+---
+# 水平オートスケール
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: graph-cut-api-auto-scale
+  namespace: default
+spec:
+  scaleTargetRef:     # autoscale 対象となる `scaled resource object` を指定
+    apiVersion: apps/v1
+    kind: Deployment
+    name: graph-cut-api-pod
+  minReplicas: 1       # 最小 Pod 数
+  maxReplicas: 1       # 最大 Pod 数
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 10
+---
+# ManagedCertificate
+apiVersion: networking.gke.io/v1beta2
+kind: ManagedCertificate
+metadata:
+  name: graph-cut-api-cert  # ManagedCertificateリソース名を指定
+spec:
+  domains:
+    - graph-cut-api.ga      # 取得したドメイン名を指定
+---
+# Ingress
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: graph-cut-api-ingress   # Ingress名を指定
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: graph-cut-api-ip       # 用意した静的IPの名前を指定(IPアドレス自体では無い)
+    networking.gke.io/managed-certificates: graph-cut-api-cert          # ManagedCertificate で指定した ManagedCertificateリソース名 を指定
+spec:
+  backend:
+    serviceName: graph-cut-api-server   # Serviceリソースで指定したリソース名を指定
+    servicePort: 5000                   # Serviceリソースの portで指定したポート(targetPortでは無い)
