@@ -75,6 +75,22 @@
                 servicePort: 5000                   # Serviceリソースの portで指定したポート(targetPortでは無い)
         ```
     1. Service リソースを作成する
+        ```yaml
+        # Service
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: graph-cut-api-server
+        spec:
+          type: LoadBalancer
+          loadBalancerIP: 34.149.113.28   # IP アドレス固定
+        ports:
+          - port: 5000
+            targetPort: 5000
+            protocol: TCP
+        selector:
+          app: graph-cut-api-pod
+        ```
 
         > 作成した固定 IP に対応した Service になるようにする
 
@@ -83,17 +99,19 @@
     $ sh deploy_api_gke.sh
     ```
 
-<!--
 1. Google マネージド SSL 証明書を有効化する<br>
     Google マネージド SSL 証明書を有効化（`ACTIVE`）するには、Google マネージド SSL 証明書をロードバランサ、特にロードバランサのターゲットプロキシに関連付ける必要がある。<br>
     既に GKE クラスタを作成している場合は、[Cloud Load Balancing のコンソール画面](https://console.cloud.google.com/net-services/loadbalancing/loadBalancers/list?project=my-project2-303004&hl=ja) に、GKE クラスタ構築時のロードバランサーが作成されているので、このロードバランサーに作成したGoogle マネージド SSL 証明書を関連付け、Google マネージド SSL 証明書を有効化する。
 
     1. GUI で行う場合
+        - 「編集」ボタンをクリックします。
+        - 「フロントエンドの構成」ボタンをクリックし、「プロトコル: HTTPS、IP:xxx、ポート:xxx」をクリックします。
+        - 「その他の証明書」をクリックし、プルダウンリストから作成した Google マネージド証明書を選択します。
+        - 「更新」 をクリックします。
 
     1. CLI で行う場合
         ```sh
         ```
--->
 
 1. GKE 上の https 化した Web-API にリクエスト処理する
     ```sh

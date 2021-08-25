@@ -22,6 +22,7 @@ if __name__ == "__main__":
     parser.add_argument('--port', type=str, default="5000", help="API サーバーのポート番号")
     parser.add_argument('--in_images_dir', type=str, default="in_images", help="入力画像のディレクトリ")
     parser.add_argument('--out_images_dir', type=str, default="out_images", help="出力ディレクトリ")
+    parser.add_argument('--use_https', action='store_true', help="https通信")
     parser.add_argument('--debug', action='store_true', help="デバッグモード有効化")
     args = parser.parse_args()
     if( args.debug ):
@@ -44,7 +45,10 @@ if __name__ == "__main__":
         api_msg = {'image': img_base64}
         #api_msg = json.dumps(api_msg)  # Fast API では、json.dump() で dict 型データを JSON 形式に変換する必要はない
         try:
-            api_responce = requests.post( "http://" + args.host + ":" + args.port + "/predict", json=api_msg )
+            if(args.use_https):
+                api_responce = requests.post( "https://" + args.host + ":" + args.port + "/predict", json=api_msg )
+            else:
+                api_responce = requests.post( "http://" + args.host + ":" + args.port + "/predict", json=api_msg )
             api_responce = api_responce.json()
         except Exception as e:
             print( "Exception : ", e )

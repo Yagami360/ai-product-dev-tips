@@ -26,16 +26,22 @@ gcloud config set compute/zone ${REGION}
 gcloud config list
 
 # 固定 IP アドレス（グローバル）を取得する
-gcloud compute addresses create ${IP_ADDRESS_NAME} --global
-gcloud compute addresses describe ${IP_ADDRESS_NAME} --global
+if [ ! "$(gcloud compute addresses list | grep "${IP_ADDRESS_NAME}")" ] ; then
+    gcloud compute addresses create ${IP_ADDRESS_NAME} --global
+    gcloud compute addresses describe ${IP_ADDRESS_NAME} --global
+fi
 
 # SSL 証明書を作成および変更できるための IAM 権限を設定する
 
 # Google マネージド SSL 証明書の作成
+if [ "$(gcloud compute ssl-certificates list | grep "${CERTIFICATE_NAME}")" ] ; then
+    gcloud compute ssl-certificates delete ${CERTIFICATE_NAME}
+fi
+
 gcloud compute ssl-certificates create ${CERTIFICATE_NAME} \
     --description="graph-cut-api用SSL証明書" \
     --domains=${DOMAINS} \
-    --global    
+    --global
 
 # docker image を GCP の Container Registry にアップロード
 if [ ! ${ENABLE_BUILD} = 0 ] ; then
@@ -62,6 +68,19 @@ gcloud container clusters get-credentials ${CLUSTER_NAME} --region ${ZONE} --pro
 kubectl apply -f k8s/graph_cut_api.yml
 
 # Google マネージド SSL 証明書を有効化する
+TARGET_PROXY_NAME=`gcloud compute target-https-proxies list | grep ${CERTIFICATE_NAME} | awk -F" " '{print $1}'`
+
+gcloud compute target-https-proxies update ${TARGET_PROXY_NAME} \
+    --ssl-certificates ${CERTIFICATE_NAME} \
+    --global-ssl-certificates \
+    --global
+    
+#gcloud compute target-ssl-proxies update ${TARGET_PROXY_NAME} \
+#    --ssl-certificates ${CERTIFICATE_NAME}
+
+gcloud compute target-https-proxies describe ${TARGET_PROXY_NAME} \
+    --global \
+    --format="get(sslCertificates)"
 
 # 正常起動待ち
 sleep 360
