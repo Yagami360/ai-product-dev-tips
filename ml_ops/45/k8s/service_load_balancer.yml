@@ -1,0 +1,14 @@
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: graph-cut-api-server
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 34.149.113.28   # IP アドレス固定
+  ports:
+    - port: 5000
+      targetPort: 5000
+      protocol: TCP
+  selector:
+    app: graph-cut-api-pod

@@ -1,0 +1,18 @@
+# 水平オートスケール
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: graph-cut-api-auto-scale
+  namespace: default
+spec:
+  scaleTargetRef:     # autoscale 対象となる `scaled resource object` を指定
+    apiVersion: apps/v1
+    kind: Deployment
+    name: graph-cut-api-pod
+  minReplicas: 1       # 最小 Pod 数
+  maxReplicas: 1       # 最大 Pod 数
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 10

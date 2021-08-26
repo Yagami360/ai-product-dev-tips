@@ -1,0 +1,9 @@
+# ManagedCertificate (カスタムリソース定義) / Google マネージド証明書のマニフェスト
+apiVersion: networking.gke.io/v1beta2
+kind: ManagedCertificate
+metadata:
+  name: graph-cut-api-cert  # ManagedCertificateリソース名を指定
+spec:
+  domains:
+    - graph-cut-api.ga      # 取得したドメイン名を指定
+    

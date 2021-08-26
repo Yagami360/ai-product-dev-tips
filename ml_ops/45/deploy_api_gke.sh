@@ -65,7 +65,13 @@ gcloud container clusters create ${CLUSTER_NAME} \
 gcloud container clusters get-credentials ${CLUSTER_NAME} --region ${ZONE} --project ${PROJECT_ID}
 
 # k8s リソース（Pod, Service, HorizontalPodAutoscaler, configmap 等）の作成
-kubectl apply -f k8s/graph_cut_api.yml
+kubectl apply -f k8s/deployment.yml
+kubectl apply -f k8s/service_load_balancer.yml
+kubectl apply -f k8s/autoscale.yml
+
+kubectl apply -f k8s/cert.yml
+kubectl apply -f k8s/ingress.yml
+kubectl apply -f k8s/service_node_port.yml
 
 # Google マネージド SSL 証明書を有効化する
 TARGET_PROXY_NAME=`gcloud compute target-https-proxies list | grep ${CERTIFICATE_NAME} | awk -F" " '{print $1}'`
@@ -81,6 +87,9 @@ gcloud compute target-https-proxies update ${TARGET_PROXY_NAME} \
 gcloud compute target-https-proxies describe ${TARGET_PROXY_NAME} \
     --global \
     --format="get(sslCertificates)"
+
+# k8s リソース（Pod, Service, HorizontalPodAutoscaler, configmap 等）の作成
+#kubectl apply -f k8s/service.yml
 
 # 正常起動待ち
 sleep 360
