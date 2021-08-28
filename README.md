@@ -91,6 +91,7 @@
         - [FastAPI + uvicorn + gunicorn での構成（本番環境想定時）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/32)
         - [FastAPI + uvicorn + gunicorn + docker を用いた Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/33)
         - [FastAPI での GET / POST 処理（FastAPI + uvicorn + gunicorn + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/34)
+        - [FastAPI を使用した Web-API にファイルをアップロードする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/46)
         - [FastAPI での非同期処理（FastAPI + uvicorn + gunicorn + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/35)
         - [FastAPI を使用した非同期処理での Web-API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/36)
         - FastAPI を使用した非同期処理での機械学習モデル推論 API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成）
@@ -255,6 +256,9 @@
         - [DensePose と人物パースモデルを用いて、人物画像における手領域の画像を取得する](https://github.com/Yagami360/hand-image-extractor-api)
     - dlib による顔の landmark 検出
         - [【Python】dlib で顔の landmark 検出を検出し、画像上に表示する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/image_processing/15)
+
+- 動画処理
+    - xxx
 
 - WEB スクレイピング
     - [【Python】WEB 上の画像データを収集する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/web_scraping/1)

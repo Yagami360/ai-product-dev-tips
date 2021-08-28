@@ -1,0 +1,21 @@
+version: '2.3'
+
+services:
+  fast-api-server:
+    container_name: fast-api-container
+    image: fast-api-image
+    build:
+      context: "api/"
+      dockerfile: Dockerfile
+    volumes:
+      - ${PWD}/api:/api
+    ports:
+      - "5000:5000"
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+      HOST: "0.0.0.0"
+      PORT: "5000"
+    command: bash -c "gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"

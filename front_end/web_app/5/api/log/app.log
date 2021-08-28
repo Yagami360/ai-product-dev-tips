@@ -93,3 +93,6 @@
 [app] time 11:57:53 | APIサーバーを起動しました
 [app] time 13:14:03 | APIサーバーを起動しました
 [app] time 15:26:30 | APIサーバーを起動しました
+[app] time 22:49:46 | APIサーバーを起動しました
+2021-08-27 22:49:50 INFO _health START args=() kwds={}
+2021-08-27 22:49:50 INFO _health END elapsed_time [ms]=1.03283, return {'health': 'ok'}
