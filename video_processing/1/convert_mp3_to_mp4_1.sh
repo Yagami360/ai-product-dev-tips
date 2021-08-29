@@ -34,9 +34,11 @@ fi
 
 # ffmpeg コマンドを用いて mp3 ファイルと画像ファイルから mp4 ファイルを作成する
 ffmpeg \
-    -loop 1 \
-    -framerate 1 \
-    -i ${IN_IMAGE_FILE} -i ${IN_AUDIO_FILE} \
-    -map 0:v -map 1:a -r ${FPS} -vf "scale='iw-mod(iw,2)':'ih-mod(ih,2)',format=yuv420p" \
-    -movflags +faststart -shortest -fflags +shortest -max_interleave_delta 100M \
-    ${OUT_VIDEO_FILE}
+	-i ${IN_IMAGE_FILE} -i ${IN_AUDIO_FILE} \
+	-map 0:v -map 1:a \
+	-loop 1 \
+	-framerate 1 -r ${FPS} \
+	-vf "scale='iw-mod(iw,2)':'ih-mod(ih,2)',format=yuv420p" \
+	-movflags +faststart -shortest -fflags +shortest -max_interleave_delta 100M \
+	${OUT_VIDEO_FILE}
+	

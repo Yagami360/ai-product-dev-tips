@@ -258,15 +258,17 @@
         - [【Python】dlib で顔の landmark 検出を検出し、画像上に表示する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/image_processing/15)
 
 - 動画処理
-    - xxx
+    - ffmpeg を使用して mp4ファイルを wav ファイルに変換する
+    - ffmpeg を使用して動画ファイル（mp4）をクロップする
+    - [【Python】ffmpeg を使用して画像ファイルと音声ファイル（mp3）から動画ファイル（mp4）を作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/video_processing/1)
+
+- 音声処理
 
 - WEB スクレイピング
     - [【Python】WEB 上の画像データを収集する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/web_scraping/1)
     - 【Python】Selenium を用いてログインが必要な Web ページにログインし、スクレイピングを行う
 
 - 自然言語処理
-
-- 音声処理
 
 - 高速化処理
     - [【Python】for ループ内の処理を複数 CPU の並列処理で高速化する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/acceleration_processing/2)
