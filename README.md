@@ -92,6 +92,7 @@
         - [FastAPI + uvicorn + gunicorn + docker を用いた Web-API の構築](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/33)
         - [FastAPI での GET / POST 処理（FastAPI + uvicorn + gunicorn + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/34)
         - [FastAPI を使用した Web-API にファイルをアップロードする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/46)
+        - [FastAPI を使用した Web-API に複数ファイルを同時にアップロードする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/47)
         - [FastAPI での非同期処理（FastAPI + uvicorn + gunicorn + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/35)
         - [FastAPI を使用した非同期処理での Web-API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/36)
         - FastAPI を使用した非同期処理での機械学習モデル推論 API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成）
@@ -258,11 +259,11 @@
         - [【Python】dlib で顔の landmark 検出を検出し、画像上に表示する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/image_processing/15)
 
 - 動画処理
-    - ffmpeg を使用して mp4ファイルを wav ファイルに変換する
     - ffmpeg を使用して動画ファイル（mp4）をクロップする
     - [【Python】ffmpeg を使用して画像ファイルと音声ファイル（mp3）から動画ファイル（mp4）を作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/video_processing/1)
 
 - 音声処理
+    - 音声ファイルの無音部分を取り除く
 
 - WEB スクレイピング
     - [【Python】WEB 上の画像データを収集する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/web_scraping/1)

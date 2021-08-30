@@ -66,5 +66,6 @@ python の `subprocess.call(...)` を使用して、ffmpeg コマンドを直接
 
 
 ## ■ 参考サイト
+- https://qiita.com/economist/items/bb325e8d23e0b3521c65
 - https://stackoverflow.com/questions/64375367/python-convert-mp3-to-mp4-with-static-image
 - https://qiita.com/studio_haneya/items/a2a6664c155cfa90ddcf

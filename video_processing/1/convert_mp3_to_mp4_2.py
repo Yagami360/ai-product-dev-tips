@@ -20,30 +20,31 @@ if __name__ == "__main__":
     #--------------------
     # 変換処理
     #--------------------
-    command = [
-        'ffmpeg',
-        '-i', '{}'.format(args.in_image_file),
-        '-i', '{}'.format(args.in_audio_file),
-        '-map', '0:v',
-        '-map', '1:a',
+    #ffmpeg -y -loop 1 -i ${IN_IMAGE_FILE} -i ${IN_AUDIO_FILE} -vcodec libx264 -acodec aac -ab 160k -ac 2 -ar 48000 -pix_fmt yuv420p -shortest ${OUT_VIDEO_FILE}
+    """
+    subprocess.call([
+        'ffmpeg', '-y',
+        '-i', args.in_image_file,
+        '-i', args.in_audio_file,
+        '-map', '0:v', '-map', '1:a',
         '-loop', '1',
-        '-framerate', '1',
-        '-r', '{}'.format(args.fps),
+        '-framerate', '1', '-r', str(args.fps),
         '-vf', "scale='iw-mod(iw,2)':'ih-mod(ih,2)',format={}".format(args.format),
-    ]
-
-    subprocess.call(command, shell=True)
+        '-movflags', '+faststart', '-shortest', '-fflags', '+shortest', '-max_interleave_delta', '100M',
+        args.out_video_file,
+    ])
     """
-    vf = "scale='iw-mod(iw,2)':'ih-mod(ih,2)',format={}".format(args.format)
-    subprocess.call(
-        'ffmpeg -y \
-            -i {} -i {} \
-            -map 0:v -map 1:a \
-            -loop 1 \
-            -framerate 1 -r {} \
-            -vf {} \
-            -movflags +faststart -shortest -fflags +shortest -max_interleave_delta 100M \
-            {}'.format(args.in_image_file, args.in_audio_file, args.fps, vf, args.out_video_file),
-        shell=True
-    )
-    """
+    subprocess.call([
+        'ffmpeg', '-y',
+        '-loop', '1',
+        '-i', args.in_image_file,
+        '-i', args.in_audio_file,
+        '-vcodec', 'libx264',                       # 動画コーデック
+        '-acodec', 'aac',                           # 音声コーデック
+        '-ab', '160k',                              # 音声ビットレート
+        '-ac', '2',                                 # 音声チャンネル数
+        '-ar', '48000',                             # 音声サンプリングレート
+        '-pix_fmt', args.format,                    # 
+        '-shortest',                                # 入力の短い方(音声)に動画時間を合わす
+        args.out_video_file,
+    ])

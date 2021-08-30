@@ -24,15 +24,21 @@ else
 fi
 
 # ffmpeg をインストール
-if [ ${OS} = "Mac" ] ; then
-	#git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core fetch --unshallow
-	#brew style --fix
-    brew install ffmpeg
-elif [ ${OS} = "Linux" ] ; then
-    sudo apt install ffmpeg
+ffmpeg -version &> /dev/null
+if [ $? -ne 0 ] ; then
+	if [ ${OS} = "Mac" ] ; then
+		#git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core fetch --unshallow
+		#brew style --fix
+		brew install ffmpeg
+	elif [ ${OS} = "Linux" ] ; then
+		sudo apt install ffmpeg
+	fi
 fi
 
 # ffmpeg コマンドを用いて mp3 ファイルと画像ファイルから mp4 ファイルを作成する
+ffmpeg -y -loop 1 -i ${IN_IMAGE_FILE} -i ${IN_AUDIO_FILE} -vcodec libx264 -acodec aac -ab 160k -ac 2 -ar 48000 -pix_fmt yuv420p -shortest ${OUT_VIDEO_FILE}
+
+<<COMMENTOUT
 ffmpeg \
 	-i ${IN_IMAGE_FILE} -i ${IN_AUDIO_FILE} \
 	-map 0:v -map 1:a \
@@ -41,4 +47,4 @@ ffmpeg \
 	-vf "scale='iw-mod(iw,2)':'ih-mod(ih,2)',format=yuv420p" \
 	-movflags +faststart -shortest -fflags +shortest -max_interleave_delta 100M \
 	${OUT_VIDEO_FILE}
-	
+COMMENTOUT
