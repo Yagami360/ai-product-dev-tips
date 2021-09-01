@@ -263,7 +263,7 @@
     - [【Python】ffmpeg を使用して画像ファイルと音声ファイル（mp3）から動画ファイル（mp4）を作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/video_processing/1)
 
 - 音声処理
-    - 音声ファイルの無音部分を取り除く
+    - [pydub と ffmpeg を用いて音声ファイルの無音部分をクレンジングする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/audio_processing/1)
 
 - WEB スクレイピング
     - [【Python】WEB 上の画像データを収集する。](https://github.com/Yagami360/MachineLearning_Tips/tree/master/web_scraping/1)
