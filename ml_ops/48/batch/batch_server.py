@@ -7,51 +7,50 @@ import asyncio
 import requests
 
 import sys
+sys.path.append(os.path.join(os.getcwd(), '../redis'))
+from redis_client import redis_client
+
 sys.path.append(os.path.join(os.getcwd(), '../config'))
 from config import BatchServerConfig
 from config import PredictServerConfig
-
-sys.path.append(os.path.join(os.getcwd(), '../redis'))
-from redis_client import redis_client
-from redis_utils import set_image_pillow_redis, set_image_base64_redis, get_image_pillow_redis, get_image_base64_redis
-
-sys.path.append(os.path.join(os.getcwd(), '../utils'))
-from utils import conv_base64_to_pillow, conv_pillow_to_base64
+from config import ProxyServerConfig
 
 # logger
-if( os.path.exists(__name__ + '.log') ):
-    os.remove(__name__ + '.log')
+if not os.path.isdir("log"):
+    os.mkdir("log")
+"""
+if( os.path.exists(os.path.join("log", 'app.log')) ):
+    os.remove(os.path.join("log", 'app.log'))
+"""
 logger = logging.getLogger(__name__)
 logger.setLevel(10)
-logger_fh = logging.FileHandler( __name__ + '.log')
+logger_fh = logging.FileHandler(os.path.join("log", 'app.log'))
 logger.addHandler(logger_fh)
+logger.info("{} {} start batch server".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO"))
 
 def polling():
     """
-    Redis のキューを定期的にポーリングして、API サーバーにリクエスト処理を送信する
+    ローカルディスク上のキャッシュデータを定期的にポーリングして、API サーバーにリクエスト処理を送信する
     """
     while True:
         # Redis キューの末端からデータを pop
         job_id = redis_client.rpop('job_id')
-        print('[{}] time {} | Job {} を pop しました'.format(__name__, f"{datetime.now():%H:%M:%S}", job_id))
-        logger.info('[{}] time {} | Job {} を pop しました'.format(__name__, f"{datetime.now():%H:%M:%S}", job_id))
-
         if job_id is not None:
             job_id = job_id.decode()
             
-            # job_id に対応した 画像データを取得
-            img_base64 = get_image_base64_redis( redis_client=redis_client, key_name=job_id+"_image_in" )
+            # job_id に対応したファイルパスを取得
+            in_file_path = redis_client.get(job_id + "_in_file_path")
+            logger.info('[{}] time {} | job_id={}, in_file_path="{}" を pop しました'.format(__name__, f"{datetime.now():%H:%M:%S}", job_id, in_file_path))
 
             # 推論サーバーのヘルスチェック
             try:
                 health = requests.get( "http://" + PredictServerConfig.host + ":" + PredictServerConfig.port + "/health" ).json()
-                print( "health : ", health )
                 logger.info('[{}] time {} | health {}'.format(__name__, f"{datetime.now():%H:%M:%S}", health))
             except Exception as e:
-                print( "Exception : ", e )
                 logger.info('[{}] time {} | Exception {}'.format(__name__, f"{datetime.now():%H:%M:%S}", e))
 
             # 推論サーバーにリクエスト処理
+            """
             try:
                 api_msg = {'image': img_base64}
                 api_responce = requests.post( "http://" + PredictServerConfig.host + ":" + PredictServerConfig.port + "/predict", json=api_msg )
@@ -60,9 +59,11 @@ def polling():
             except Exception as e:
                 print( "Exception : ", e )
                 logger.info('[{}] time {} | Exception {}'.format(__name__, f"{datetime.now():%H:%M:%S}", e))
+            """
 
-            # Redis の画像データに登録
-            set_image_base64_redis( redis_client=redis_client, key_name=job_id+"_image_out", img_base64=api_responce["img_none_bg_base64"])
+            # 出力動画データのファイルパスを保管
+            out_file_path = os.path.join(ProxyServerConfig.cache_dir, job_id, "output.mp4" )
+            redis_client.lpush("job_id" + "_out_file_path", out_file_path)
 
         # ポーリング間隔
         sleep(BatchServerConfig.polling_time)

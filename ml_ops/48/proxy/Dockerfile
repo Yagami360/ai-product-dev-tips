@@ -42,6 +42,7 @@ RUN pip3 install Gunicorn
 RUN pip3 install requests
 RUN pip3 install httpx
 RUN pip3 install python-multipart
+RUN pip3 install redis
 
 #-----------------------------
 # ソースコードの書き込み

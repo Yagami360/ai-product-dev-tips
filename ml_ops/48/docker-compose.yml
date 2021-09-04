@@ -20,6 +20,18 @@ services:
       LANG: C.UTF-8
     command: bash -c "gunicorn app:app --bind 0.0.0.0:5001 -w 1 -k uvicorn.workers.UvicornWorker --reload"
 
+  redis-server:
+    container_name: redis-container
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    command: bash -c "redis-server"
+
   batch-video-server:
     container_name: batch-video-container
     image: batch-video-image
@@ -28,6 +40,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ${PWD}/batch:/batch
+      - ${PWD}/redis:/redis
       - ${PWD}/utils:/utils
       - ${PWD}/config:/config
     tty: true
@@ -38,6 +51,7 @@ services:
     command: bash -c "python batch_server.py"
     depends_on:
       - predict-video-server
+      - redis-server
 
   proxy-video-server:
     container_name: proxy-video-container
@@ -47,6 +61,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ${PWD}/proxy:/proxy
+      - ${PWD}/redis:/redis
       - ${PWD}/utils:/utils
       - ${PWD}/config:/config
     ports:
@@ -60,3 +75,4 @@ services:
     depends_on:
       - batch-video-server
       - predict-video-server
+      - redis-server

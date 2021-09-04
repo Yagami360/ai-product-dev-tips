@@ -1,9 +1,19 @@
 # FastAPI を使用した非同期処理での Web-API の構築（FastAPI + uvicorn + gunicorn + バッチサーバー + docker での構成で動画データを扱うケース）
 
-「[FastAPI を使用した非同期処理での Web-API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成で画像データを扱うケース）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/36)」記載の方法では、Redis のキューデータに画像データを保存し、非同期 API を実現していたが、Redis のキューデータ上に大容量の動画データを保存するとメモリを多量に消費してしまい OutOfMemory エラーが発生する懸念があるので、ここでは、ローカルディスクに job_id のフォルダを作成し、そのディレクトリをキューデータとして使用し、非同期 API を実現する
+「[FastAPI を使用した非同期処理での Web-API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成で画像データを扱うケース）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/36)」記載の方法では、Redis のキューデータに画像データを保存し、非同期 API を実現していたが、Redis のキューデータ上に大容量の動画データを保存するとメモリを多量に消費してしまい OutOfMemory エラーが発生する懸念がある。
+
+この問題を回避するために、ここでは、以下のような処理を行うことで、動画データに対しての非同期 API を実現する
+
+1. ローカルディスクに job_id のフォルダを作成し、そのディレクトリ以下に動画データを保存する（＝キャッシュデータを保存するディレクトリを使用する）
+1. Redis のキューデータには、job_id とファイルパスのキーデータを保存する。
+
+
+各コンポーネントの構成は以下のようになる
 
 - プロキシサーバー（uvicorn + gunicorn + FastAPI）
     - 非同期処理を行うジョブを定義
+- redis サーバー
+    redis をジョブキューとして使用。
 - バッチサーバー（＝ジョブの投入から終了までを管理するサーバー）
     - redis のジョブキューを定期的にポーリングして、キューにデータが存在すれば推論サーバーにリクエストする。推論サーバーからのレスポンスデータを redis にレスポンスデータを保存する
 - 推論サーバー
@@ -11,6 +21,8 @@
     ここでは、簡単のため推論サーバーとして ffppeg を使用した動画の無音化を行う処理にしているが、機械学習 API の場合は、この推論サーバーの部分が動画の機械学習モデルの推論処理になる
 
 ## ■ API 構成図
+
+
 
 ## ■ 使用法
 

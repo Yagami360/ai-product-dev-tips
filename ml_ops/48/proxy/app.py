@@ -13,19 +13,28 @@ from pydantic import BaseModel
 from typing import Any, Dict
 
 import sys
+sys.path.append(os.path.join(os.getcwd(), '../redis'))
+from redis_client import redis_client
+
+import sys
 sys.path.append(os.path.join(os.getcwd(), '../config'))
 from config import ProxyServerConfig
 
-if not os.path.isdir(ProxyServerConfig.tmp_dir):
-    os.mkdir(ProxyServerConfig.tmp_dir)
+if not os.path.isdir(ProxyServerConfig.cache_dir):
+    os.mkdir(ProxyServerConfig.cache_dir)
 
 # logger
-if( os.path.exists(__name__ + '.log') ):
-    os.remove(__name__ + '.log')
+if not os.path.isdir("log"):
+    os.mkdir("log")
+"""
+if( os.path.exists(os.path.join("log", 'app.log')) ):
+    os.remove(os.path.join("log", 'app.log'))
+"""
 logger = logging.getLogger(__name__)
 logger.setLevel(10)
-logger_fh = logging.FileHandler(__name__ + '.log')
+logger_fh = logging.FileHandler(os.path.join("log", 'app.log'))
 logger.addHandler(logger_fh)
+logger.info("{} {} start proxy-api server".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO"))
 
 # FastAPI
 app = FastAPI()
@@ -45,16 +54,20 @@ class SetDataRedisJob(BaseModel):
         self.job_status = "RUNNING"
         try:
             # ディスク上に job_id に対応したディレクトリを作成
-            if not os.path.isdir( os.path.join(ProxyServerConfig.tmp_dir,self.job_id) ):
-                os.mkdir( os.path.join(ProxyServerConfig.tmp_dir,self.job_id) )
+            if not os.path.isdir( os.path.join(ProxyServerConfig.cache_dir,self.job_id) ):
+                os.mkdir( os.path.join(ProxyServerConfig.cache_dir,self.job_id) )
 
             # job_id に対応したディレクトリ以下に動画データを保存
-            with open(os.path.join(ProxyServerConfig.tmp_dir,self.job_id,self.file.filename),'wb+') as buffer:
+            with open(os.path.join(ProxyServerConfig.cache_dir,self.job_id,self.file.filename),'wb+') as buffer:
                 shutil.copyfileobj(self.file.file, buffer)
-
             self.file_name = self.file.filename
-            self.file_path = os.path.join(ProxyServerConfig.tmp_dir,self.job_id,self.file.filename)
-            logger.info('[{}] time {} | job_id={} の動画データを保存しました'.format(self.__class__.__name__, f"{datetime.now():%H:%M:%S}", self.job_id))
+            self.file_path = os.path.join(ProxyServerConfig.cache_dir,self.job_id,self.file.filename)
+
+            # Redis キューの先頭に job_id を追加
+            redis_client.lpush("job_id", self.job_id)
+            redis_client.lpush(self.job_id + "_in_file_path", self.file_path)
+
+            logger.info('[{}] time {} | job_id={}, file_path="{}" の動画データを保存しました'.format(self.__class__.__name__, f"{datetime.now():%H:%M:%S}", self.job_id, self.file_path))
 
             self.job_status = "SUCCEED"
         except Exception:
@@ -73,12 +86,19 @@ async def root():
 async def health():
     return {"status": "ok"}
 
-"""
+@app.post("/clear")
+async def clear_cache():
+    shutil.rmtree(ProxyServerConfig.cache_dir)
+    if not os.path.isdir(ProxyServerConfig.cache_dir):
+        os.mkdir(ProxyServerConfig.cache_dir)
+    return
+
 @app.get("/get/{job_id}")
 async def get_job(
     job_id: str,  # パスパラメーター
 ):
     status = "ok"
+    """
     try:
         img_in_base64 = get_image_base64_redis( redis_client=redis_client, key_name=job_id+"_image_in" )
     except Exception:
@@ -89,48 +109,20 @@ async def get_job(
     except Exception:
         img_out_base64 = None
         status = "ng"
+    """
 
     return {
         "status": status,
         "job_id" : jobs[job_id].job_id,
         "job_status" : jobs[job_id].job_status,
-        "img_in_base64" : img_in_base64,
-        "img_out_base64" : img_out_base64,
+#        "img_in_base64" : img_in_base64,
+#        "img_out_base64" : img_out_base64,
     }
-"""
-
-"""
-#@app.post("/upload_file")
-async def upload_file(file: UploadFile = File(...)):
-    start_time = time.time()
-    logger.info("{} {} {} {} file_name={}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", sys._getframe().f_code.co_name, "START", file.filename))
-    try:
-        with open(os.path.join(ProxyServerConfig.tmp_dir, file.filename),'wb+') as buffer:
-            shutil.copyfileobj(file.file, buffer)
-        responce = {
-            "status": "ok",
-            "file_name": file.filename,
-            "file_path": os.path.join(ProxyServerConfig.tmp_dir,file.filename),
-        }
-    except Exception as e:
-        responce = {
-            "status": "ng",
-            "file_name": None,
-            "file_path": None,
-        }
-    finally:
-        file.file.close()
-
-    elapsed_time = 1000 * (time.time() - start_time)
-    logger.info("{} {} {} {} elapsed_time [ms]={:.5f} file_name={}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", sys._getframe().f_code.co_name, "END", elapsed_time, file.filename))
-    return responce
-
-"""
 
 @app.post("/predict")
 async def predict(
     file: UploadFile = File(...),
-    background_tasks: BackgroundTasks,  # BackgroundTasks
+    background_tasks: BackgroundTasks = None,  # BackgroundTasks
 ):
     # job_id を自動生成
     job_id = str(uuid.uuid4())[:6]

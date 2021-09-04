@@ -29,24 +29,12 @@ if __name__ == "__main__":
         os.mkdir(args.out_video_dir)
 
     #----------------------------------
-    # ヘルスチェック
-    #----------------------------------
-    health = requests.get( "http://" + args.host + ":" + args.port + "/health" ).json()
-    print( "health : ", health )
-
-    #----------------------------------
-    # metadata 取得
-    #----------------------------------
-    #metadata = requests.get( "http://" + args.host + ":" + args.port + "/metadata" ).json()
-    #print( "metadata : ", metadata )
-
-    #----------------------------------
     # ジョブ開始
     #----------------------------------
     video_names = sorted( [f for f in os.listdir(args.in_video_dir) if f.endswith(VIDEO_EXTENSIONS)] )
     job_ids = []
     for video_name in tqdm(video_names):
-        files = {'video_file': (video_name, open(os.path.join(args.in_video_dir, video_name), "rb"), 'video/mp4')}
+        files = {'file': (video_name, open(os.path.join(args.in_video_dir, video_name), "rb"), 'video/mp4')}
         try:
             api_responce = requests.post( "http://" + args.host + ":" + args.port + "/predict", files=files )
             api_responce = api_responce.json()
@@ -57,7 +45,7 @@ if __name__ == "__main__":
 
         job_id = api_responce["job_id"]
         job_status = api_responce["job_status"]
-        print( "img_name={}, job_id={}, job_status={}".format(video_name, job_id, job_status) )
+        print( "video_name={}, job_id={}, job_status={}".format(video_name, job_id, job_status) )
         job_ids.append(job_id)
 
         time.sleep(0.1)

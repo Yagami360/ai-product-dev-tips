@@ -39,6 +39,7 @@ ENV PYTHONIOENCODING utf-8
 RUN pip3 install asyncio
 RUN pip3 install requests
 RUN pip3 install python-multipart
+RUN pip3 install redis
 
 #-----------------------------
 # ソースコードの書き込み
