@@ -1,4 +1,4 @@
-# FastAPI を使用した非同期処理での Web-API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成）
+# FastAPI を使用した非同期処理での Web-API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成で画像データを扱うケース）
 
 「[FastAPI での非同期処理（FastAPI + uvicorn + gunicorn + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/35)」記載の方法をベースに、更に以下のコンポーネントや機能を追加することで、非同期処理での WebAPI を構成する
 

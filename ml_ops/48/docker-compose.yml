@@ -1,0 +1,62 @@
+version: '2.3'
+
+services:
+  predict-video-server:
+    container_name: predict-video-container
+    image: predict-video-image
+    build:
+      context: "predict/"
+      dockerfile: Dockerfile
+    volumes:
+      - ${PWD}/predict:/predict
+      - ${PWD}/utils:/utils
+      - ${PWD}/config:/config
+    ports:
+      - "5001:5001"
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    command: bash -c "gunicorn app:app --bind 0.0.0.0:5001 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+
+  batch-video-server:
+    container_name: batch-video-container
+    image: batch-video-image
+    build:
+      context: "batch/"
+      dockerfile: Dockerfile
+    volumes:
+      - ${PWD}/batch:/batch
+      - ${PWD}/utils:/utils
+      - ${PWD}/config:/config
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    command: bash -c "python batch_server.py"
+    depends_on:
+      - predict-video-server
+
+  proxy-video-server:
+    container_name: proxy-video-container
+    image: proxy-video-image
+    build:
+      context: "proxy/"
+      dockerfile: Dockerfile
+    volumes:
+      - ${PWD}/proxy:/proxy
+      - ${PWD}/utils:/utils
+      - ${PWD}/config:/config
+    ports:
+      - "5000:5000"
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    command: bash -c "gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+    depends_on:
+      - batch-video-server
+      - predict-video-server
