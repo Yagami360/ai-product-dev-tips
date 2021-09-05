@@ -22,3 +22,4 @@ python request.py --host ${HOST} --port ${PORT} --in_video_dir ${IN_VIDEO_DIR} -
 #docker-compose logs --tail 50
 #docker logs proxy-video-container
 #docker logs batch-video-container
+#docker logs predict-video-container

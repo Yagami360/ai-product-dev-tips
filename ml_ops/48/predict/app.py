@@ -1,36 +1,40 @@
 import os
 import asyncio
 from datetime import datetime
-from time import sleep
+import time
 import logging
+import subprocess
+import shutil
 
 from fastapi import FastAPI
+from fastapi import UploadFile, File
 from pydantic import BaseModel
 from typing import Any, Dict
 
-from api_utils import graph_cut
-
 import sys
-sys.path.append(os.path.join(os.getcwd(), '../utils'))
-from utils import conv_base64_to_pillow, conv_pillow_to_base64
+sys.path.append(os.path.join(os.getcwd(), '../config'))
+from config import PredictServerConfig
+
+if not os.path.isdir(PredictServerConfig.cache_dir):
+    os.mkdir(PredictServerConfig.cache_dir)
 
 # logger
-if( os.path.exists(__name__ + '.log') ):
-    os.remove(__name__ + '.log')
+if not os.path.isdir("log"):
+    os.mkdir("log")
+"""
+if( os.path.exists(os.path.join("log", 'app.log')) ):
+    os.remove(os.path.join("log", 'app.log'))
+"""
 logger = logging.getLogger(__name__)
 logger.setLevel(10)
-logger_fh = logging.FileHandler( __name__ + '.log')
+logger_fh = logging.FileHandler(os.path.join("log", 'app.log'))
 logger.addHandler(logger_fh)
+logger.info("{} {} start predict-api server".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO"))
 
+# FastAPI
 app = FastAPI()
 print('[{}] time {} | 推論サーバーを起動しました'.format(__name__, f"{datetime.now():%H:%M:%S}"))
 logger.info('[{}] time {} | 推論サーバーを起動しました'.format(__name__, f"{datetime.now():%H:%M:%S}"))
-
-class ImageData(BaseModel):
-    """
-    画像データのリクエストボディ
-    """
-    image: Any
 
 @app.get("/")
 async def root():
@@ -44,30 +48,57 @@ async def health():
 async def metadata():
     return
 
+@app.post("/clear_log")
+async def clear_log():
+    if( os.path.exists(os.path.join("log", 'app.log')) ):
+        os.remove(os.path.join("log", 'app.log'))
+    return
+
+#@app.post("/upload_file")
+#async def upload_file(file: UploadFile = File(...)):
+def upload_file(file: UploadFile = File(...)):
+    start_time = time.time()
+    logger.info("{} {} {} {} file_name={}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", sys._getframe().f_code.co_name, "START", file.filename))
+    try:
+        with open(os.path.join(PredictServerConfig.cache_dir, file.filename),'wb+') as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        responce = {
+            "status": "ok",
+            "file_name": file.filename,
+            "file_path": os.path.join(PredictServerConfig.cache_dir,file.filename),
+        }
+    except Exception as e:
+        responce = {
+            "status": "ng",
+            "file_name": None,
+            "file_path": None,
+        }
+    finally:
+        file.file.close()
+
+    elapsed_time = 1000 * (time.time() - start_time)
+    logger.info("{} {} {} {} elapsed_time [ms]={:.5f} file_name={}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", sys._getframe().f_code.co_name, "END", elapsed_time, file.filename))
+    return responce
+
 @app.post("/predict")
 async def predict(
-    img_data: ImageData,        # リクエストボディ    
+    file: UploadFile = File(...),
 ):
-    print('[{}] time {} | リクエスト受付しました'.format(__name__, f"{datetime.now():%H:%M:%S}"))
-    logger.info('[{}] time {} | リクエスト受付しました'.format(__name__, f"{datetime.now():%H:%M:%S}"))
+    logger.info('[{}] time {} | file_name={} のリクエスト受付しました'.format(__name__, f"{datetime.now():%H:%M:%S}",file.filename))
 
-    # base64 -> Pillow への変換
-    img_data.image = conv_base64_to_pillow(img_data.image)
+    #
+    uploaded_file = upload_file(file)
 
-    # OpenCV を用いて背景除去
-    _, img_none_bg_pillow = graph_cut(img_data.image)
-
-    # Pillow -> base64 への変換
-    img_none_bg_base64 = conv_pillow_to_base64(img_none_bg_pillow)
+    # ffmpeg を用いた動画の無音化処理 / ffmpeg -i input.mp4 -an output.mp4
+    subprocess.call("ffmpeg -i {} -an {}".format(uploaded_file["file_path"], uploaded_file["file_path"].split(".mp4")[0] + "_out.mp4"))
 
     # 非同期処理の効果を明確化するためにあえて sleep 処理
-    sleep(1)
+    time.sleep(10)
 
     # レスポンスデータ設定
     print('[{}] time {} | リクエスト処理完了しました'.format(__name__, f"{datetime.now():%H:%M:%S}"))
-    logger.info('[{}] time {} | リクエスト処理完了しました'.format(__name__, f"{datetime.now():%H:%M:%S}"))
+    logger.info('[{}] time {} | filename={} リクエスト処理完了しました'.format(__name__, f"{datetime.now():%H:%M:%S}",file.filename))
 
     return {
         "status": "ok",
-        "img_none_bg_base64" : img_none_bg_base64,
     }

@@ -39,7 +39,7 @@ def polling():
             job_id = job_id.decode()
             
             # job_id に対応したファイルパスを取得
-            in_file_path = redis_client.get(job_id + "_in_file_path")
+            in_file_path = redis_client.get(job_id + "_in_file_path").decode()
             logger.info('[{}] time {} | job_id={}, in_file_path="{}" を pop しました'.format(__name__, f"{datetime.now():%H:%M:%S}", job_id, in_file_path))
 
             # 推論サーバーのヘルスチェック
@@ -50,20 +50,18 @@ def polling():
                 logger.info('[{}] time {} | Exception {}'.format(__name__, f"{datetime.now():%H:%M:%S}", e))
 
             # 推論サーバーにリクエスト処理
-            """
             try:
-                api_msg = {'image': img_base64}
-                api_responce = requests.post( "http://" + PredictServerConfig.host + ":" + PredictServerConfig.port + "/predict", json=api_msg )
+                files = { 'file': (in_file_path.split("/")[-1], open(in_file_path,"rb"), 'video/mp4') }
+                api_responce = requests.post( "http://" + PredictServerConfig.host + ":" + PredictServerConfig.port + "/predict", files=files )
                 api_responce = api_responce.json()
                 logger.info('[{}] time {} | api_responce["status"] {}'.format(__name__, f"{datetime.now():%H:%M:%S}", api_responce["status"]))
             except Exception as e:
                 print( "Exception : ", e )
                 logger.info('[{}] time {} | Exception {}'.format(__name__, f"{datetime.now():%H:%M:%S}", e))
-            """
 
             # 出力動画データのファイルパスを保管
             out_file_path = os.path.join(ProxyServerConfig.cache_dir, job_id, "output.mp4" )
-            redis_client.lpush("job_id" + "_out_file_path", out_file_path)
+            redis_client.set("job_id" + "_out_file_path", out_file_path)
 
         # ポーリング間隔
         sleep(BatchServerConfig.polling_time)

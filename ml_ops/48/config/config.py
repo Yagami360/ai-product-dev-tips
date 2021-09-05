@@ -9,7 +9,7 @@ class ResidConfig:
 
 class ProxyServerConfig:
     # クラス変数
-    cache_dir = os.getenv("CACHE_DIR", "tmp")
+    cache_dir = os.getenv("CACHE_DIR", "/redis/tmp")
     debug = bool(os.getenv("DEBUG", "False"))
 
 class BatchServerConfig:
@@ -19,6 +19,6 @@ class BatchServerConfig:
  
 class PredictServerConfig:
     # クラス変数
-    host="predict-container"
+    host="predict-video-container"
     port="5001"
-    
+    cache_dir = os.getenv("CACHE_DIR", "tmp")

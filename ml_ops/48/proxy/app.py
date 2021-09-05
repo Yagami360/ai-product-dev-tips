@@ -65,7 +65,7 @@ class SetDataRedisJob(BaseModel):
 
             # Redis キューの先頭に job_id を追加
             redis_client.lpush("job_id", self.job_id)
-            redis_client.lpush(self.job_id + "_in_file_path", self.file_path)
+            redis_client.set(self.job_id + "_in_file_path", self.file_path)
 
             logger.info('[{}] time {} | job_id={}, file_path="{}" の動画データを保存しました'.format(self.__class__.__name__, f"{datetime.now():%H:%M:%S}", self.job_id, self.file_path))
 
@@ -86,7 +86,13 @@ async def root():
 async def health():
     return {"status": "ok"}
 
-@app.post("/clear")
+@app.post("/clear_log")
+async def clear_log():
+    if( os.path.exists(os.path.join("log", 'app.log')) ):
+        os.remove(os.path.join("log", 'app.log'))
+    return
+
+@app.post("/clear_cache")
 async def clear_cache():
     shutil.rmtree(ProxyServerConfig.cache_dir)
     if not os.path.isdir(ProxyServerConfig.cache_dir):

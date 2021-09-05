@@ -50,14 +50,6 @@ ENV CONDA_PREFIX=/miniconda/envs/${CONDA_DEFAULT_ENV}
 ENV PATH=${CONDA_PREFIX}/bin:${PATH}
 RUN conda install conda-build=3.18.9=py36_3 && conda clean -ya
 
-# OpenCV3 のインストール
-RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
-    libgtk2.0-0 \
-    libcanberra-gtk-module \
-    && sudo rm -rf /var/lib/apt/lists/*
-
-RUN conda install -y -c menpo opencv3=3.1.0 && conda clean -ya
-
 # Others
 RUN conda install -y tqdm && conda clean -ya
 RUN conda install -y -c anaconda pillow==6.2.1 && conda clean -ya
@@ -66,6 +58,7 @@ RUN conda install -y -c conda-forge fastapi && conda clean -ya
 RUN conda install -y -c conda-forge uvicorn && conda clean -ya
 RUN conda install -y -c conda-forge Gunicorn && conda clean -ya
 RUN conda install -y -c conda-forge dataclasses && conda clean -ya
+RUN conda install -y -c conda-forge python-multipart && conda clean -ya
 
 #-----------------------------
 # ソースコードの書き込み
