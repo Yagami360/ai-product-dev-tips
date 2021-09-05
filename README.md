@@ -93,6 +93,7 @@
         - [FastAPI での GET / POST 処理（FastAPI + uvicorn + gunicorn + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/34)
         - [FastAPI を使用した Web-API にファイルをアップロードする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/46)
         - [FastAPI を使用した Web-API に複数ファイルを同時にアップロードする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/47)
+        - FastAPI を使用した Web-API からファイルをダウンロードする
         - [FastAPI での非同期処理（FastAPI + uvicorn + gunicorn + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/35)
         - [FastAPI を使用した非同期処理での Web-API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成で画像データを扱うケース）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/36)
         - [[In-progress] FastAPI を使用した非同期処理での Web-API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成で動画データを扱うケース）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/48)

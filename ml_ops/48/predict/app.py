@@ -8,6 +8,7 @@ import shutil
 
 from fastapi import FastAPI
 from fastapi import UploadFile, File
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import Any, Dict
 
@@ -33,9 +34,7 @@ logger.info("{} {} start predict-api server".format(datetime.now().strftime("%Y-
 
 # FastAPI
 app = FastAPI()
-print('[{}] time {} | 推論サーバーを起動しました'.format(__name__, f"{datetime.now():%H:%M:%S}"))
-logger.info('[{}] time {} | 推論サーバーを起動しました'.format(__name__, f"{datetime.now():%H:%M:%S}"))
-
+ 
 @app.get("/")
 async def root():
     return 'Hello API Server!\n'
@@ -48,6 +47,16 @@ async def health():
 async def metadata():
     return
 
+"""
+@app.get("/get/{job_id}")
+async def get_job(
+    job_id: str,  # パスパラメーター
+):
+    return FileResponse(
+        os.path.join(PredictServerConfig.cache_dir, job_id, "" )
+    )
+"""
+
 @app.post("/clear_log")
 async def clear_log():
     if( os.path.exists(os.path.join("log", 'app.log')) ):
@@ -56,16 +65,19 @@ async def clear_log():
 
 #@app.post("/upload_file")
 #async def upload_file(file: UploadFile = File(...)):
-def upload_file(file: UploadFile = File(...)):
+def upload_file(job_id: str, file: UploadFile = File(...)):
     start_time = time.time()
     logger.info("{} {} {} {} file_name={}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", sys._getframe().f_code.co_name, "START", file.filename))
+    if not os.path.isdir( os.path.join(PredictServerConfig.cache_dir,job_id) ):
+        os.mkdir( os.path.join(PredictServerConfig.cache_dir,job_id) )
+
     try:
-        with open(os.path.join(PredictServerConfig.cache_dir, file.filename),'wb+') as buffer:
+        with open(os.path.join(PredictServerConfig.cache_dir, job_id, file.filename),'wb+') as buffer:
             shutil.copyfileobj(file.file, buffer)
         responce = {
             "status": "ok",
             "file_name": file.filename,
-            "file_path": os.path.join(PredictServerConfig.cache_dir,file.filename),
+            "file_path": os.path.join(PredictServerConfig.cache_dir, job_id, file.filename),
         }
     except Exception as e:
         responce = {
@@ -82,23 +94,26 @@ def upload_file(file: UploadFile = File(...)):
 
 @app.post("/predict")
 async def predict(
+    job_id: str,
     file: UploadFile = File(...),
 ):
-    logger.info('[{}] time {} | file_name={} のリクエスト受付しました'.format(__name__, f"{datetime.now():%H:%M:%S}",file.filename))
-
     #
-    uploaded_file = upload_file(file)
+    logger.info('[{}] time {} | job_id={}, file_name={} のリクエスト受付しました'.format(__name__, f"{datetime.now():%H:%M:%S}", job_id, file.filename))
+    uploaded_file = upload_file(job_id=job_id, file=file)
 
     # ffmpeg を用いた動画の無音化処理 / ffmpeg -i input.mp4 -an output.mp4
-    subprocess.call("ffmpeg -i {} -an {}".format(uploaded_file["file_path"], uploaded_file["file_path"].split(".mp4")[0] + "_out.mp4"))
+    subprocess.call([
+        'ffmpeg', '-y',
+        '-i', uploaded_file["file_path"],
+        '-an', uploaded_file["file_path"].split(".mp4")[0] + "_out.mp4",
+    ])
 
     # 非同期処理の効果を明確化するためにあえて sleep 処理
-    time.sleep(10)
+    time.sleep(1)
 
     # レスポンスデータ設定
     print('[{}] time {} | リクエスト処理完了しました'.format(__name__, f"{datetime.now():%H:%M:%S}"))
-    logger.info('[{}] time {} | filename={} リクエスト処理完了しました'.format(__name__, f"{datetime.now():%H:%M:%S}",file.filename))
-
-    return {
-        "status": "ok",
-    }
+    logger.info('[{}] time {} | job_id={}, file_name={} リクエスト処理完了しました'.format(__name__, f"{datetime.now():%H:%M:%S}", job_id, file.filename))
+    #return {"status": "ok",}
+    return FileResponse(uploaded_file["file_path"].split(".mp4")[0] + "_out.mp4")
+    
