@@ -59,6 +59,6 @@ if __name__ == "__main__":
         for i,job_id in enumerate(job_ids):
             job_data = requests.get( "http://" + args.host + ":" + args.port + "/get/" + job_id ).json()
             if( job_data["status"] == "ok" ):
-                pass
+                print( "job_data : ", job_data )
 
         time.sleep(1)

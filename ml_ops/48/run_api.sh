@@ -18,7 +18,6 @@ curl http://${HOST}:${PORT}/health
 
 # キャッシュクリア
 curl -X POST http://${HOST}:${PORT}/clear_cache
-#curl -X POST http://0.0.0.0:5001/clear_cache
 
 # リクエスト処理
 python request.py --host ${HOST} --port ${PORT} --in_video_dir ${IN_VIDEO_DIR} --out_video_dir ${OUT_VIDEO_DIR} --n_pollings ${N_POLLINGS}

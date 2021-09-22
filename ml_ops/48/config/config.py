@@ -2,8 +2,7 @@ import os
 
 class ResidConfig:
     # クラス変数
-    #host="0.0.0.0"
-    host="redis-container"
+    host="redis-server"
     port="6379"
     database_id=0
 
@@ -19,6 +18,7 @@ class BatchServerConfig:
  
 class PredictServerConfig:
     # クラス変数
-    host="predict-video-container"
+    host="predict-video-server"
     port="5001"
     cache_dir = os.getenv("CACHE_DIR", "tmp")
+    video_height = int(os.getenv("VIDEO_HEIGHT", "300"))

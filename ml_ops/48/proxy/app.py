@@ -5,9 +5,11 @@ import time
 import asyncio
 import uuid
 import shutil
+import requests
 
 from fastapi import FastAPI
 from fastapi import UploadFile, File, HTTPException
+from fastapi.responses import FileResponse
 from fastapi import BackgroundTasks
 from pydantic import BaseModel
 from typing import Any, Dict
@@ -18,7 +20,7 @@ from redis_client import redis_client
 
 import sys
 sys.path.append(os.path.join(os.getcwd(), '../config'))
-from config import ProxyServerConfig
+from config import ProxyServerConfig, PredictServerConfig
 
 if not os.path.isdir(ProxyServerConfig.cache_dir):
     os.mkdir(ProxyServerConfig.cache_dir)
@@ -97,6 +99,8 @@ async def clear_cache():
     shutil.rmtree(ProxyServerConfig.cache_dir)
     if not os.path.isdir(ProxyServerConfig.cache_dir):
         os.mkdir(ProxyServerConfig.cache_dir)
+
+    requests.post( "http://" + PredictServerConfig.host + ":" + PredictServerConfig.port + "/clear_cache" )
     return
 
 @app.get("/get/{job_id}")
@@ -104,26 +108,27 @@ async def get_job(
     job_id: str,  # パスパラメーター
 ):
     status = "ok"
-    """
     try:
-        img_in_base64 = get_image_base64_redis( redis_client=redis_client, key_name=job_id+"_image_in" )
+        out_file_path = redis_client.get(job_id + "_out_file_path").decode()
+        logger.info('[{}] time {} | job_id={}, out_file_path="{}" を get しました'.format(__name__, f"{datetime.now():%H:%M:%S}", job_id, out_file_path))
     except Exception:
-        img_in_base64 = None
-        status = "ng"
-    try:
-        img_out_base64 = get_image_base64_redis( redis_client=redis_client, key_name=job_id+"_image_out" )
-    except Exception:
-        img_out_base64 = None
-        status = "ng"
-    """
+        status = "ng"    
+        return {
+            "status": status,
+            "job_id" : jobs[job_id].job_id,
+            "job_status" : jobs[job_id].job_status,
+            "out_file_path" : None,
+            #"out_file": None,
+        }
 
     return {
         "status": status,
         "job_id" : jobs[job_id].job_id,
         "job_status" : jobs[job_id].job_status,
-#        "img_in_base64" : img_in_base64,
-#        "img_out_base64" : img_out_base64,
+        "out_file_path" : out_file_path,
+        #"out_file": FileResponse(out_file_path),
     }
+    #return FileResponse(out_file_path)
 
 @app.post("/predict")
 async def predict(
