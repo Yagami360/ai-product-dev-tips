@@ -22,3 +22,4 @@ class PredictServerConfig:
     port="5001"
     cache_dir = os.getenv("CACHE_DIR", "tmp")
     video_height = int(os.getenv("VIDEO_HEIGHT", "300"))
+    video_width = int(os.getenv("VIDEO_WIDTH", "168"))

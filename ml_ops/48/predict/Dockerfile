@@ -59,6 +59,7 @@ RUN conda install -y -c conda-forge uvicorn && conda clean -ya
 RUN conda install -y -c conda-forge Gunicorn && conda clean -ya
 RUN conda install -y -c conda-forge dataclasses && conda clean -ya
 RUN conda install -y -c conda-forge python-multipart && conda clean -ya
+RUN conda install -c anaconda aiofiles && conda clean -ya
 
 #-----------------------------
 # ソースコードの書き込み

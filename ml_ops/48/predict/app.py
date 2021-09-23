@@ -47,15 +47,21 @@ def health():
 def metadata():
     return
 
-"""
-@app.get("/get/{job_id}")
+@app.get("/get_job/{job_id}")
 def get_job(
     job_id: str,  # パスパラメーター
 ):
+    start_time = time.time()
+    logger.info("{} {} {} {} job_id={}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", sys._getframe().f_code.co_name, "START", job_id))
+    file_names = sorted( [f for f in os.listdir(os.path.join(PredictServerConfig.cache_dir, job_id, "out")) if f.endswith(".mp4")] )
+    logger.info("file_names : {}".format(file_names) )
+
+    elapsed_time = 1000 * (time.time() - start_time)
+    logger.info("{} {} {} {} elapsed_time [ms]={:.5f} job_id={}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", sys._getframe().f_code.co_name, "END", elapsed_time, job_id))
+
     return FileResponse(
-        os.path.join(PredictServerConfig.cache_dir, job_id, "" )
+        os.path.join(PredictServerConfig.cache_dir, job_id, "out", file_names[-1])
     )
-"""
 
 @app.post("/clear_cache")
 def clear_cache():
@@ -74,12 +80,12 @@ def upload_file(job_id: str, file: UploadFile = File(...)):
     start_time = time.time()
     logger.info("{} {} {} {} file_name={}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", sys._getframe().f_code.co_name, "START", file.filename))
     try:
-        with open(os.path.join(PredictServerConfig.cache_dir, job_id, file.filename),'wb+') as buffer:
+        with open(os.path.join(PredictServerConfig.cache_dir, job_id, "in", file.filename),'wb+') as buffer:
             shutil.copyfileobj(file.file, buffer)
         responce = {
             "status": "ok",
             "file_name": file.filename,
-            "file_path": os.path.join(PredictServerConfig.cache_dir, job_id, file.filename),
+            "file_path": os.path.join(PredictServerConfig.cache_dir, job_id, "in", file.filename),
         }
     except Exception as e:
         responce = {
@@ -96,12 +102,16 @@ def upload_file(job_id: str, file: UploadFile = File(...)):
 
 @app.post("/predict")
 def predict(
-    job_id: str,
+    job_id: str = "00000",
     file: UploadFile = File(...),
 ):
     logger.info('[{}] time {} | job_id={}, file_name={} のリクエスト受付しました'.format(__name__, f"{datetime.now():%H:%M:%S}", job_id, file.filename))
     if not os.path.isdir( os.path.join(PredictServerConfig.cache_dir,job_id) ):
         os.mkdir( os.path.join(PredictServerConfig.cache_dir,job_id) )
+    if not os.path.isdir( os.path.join(PredictServerConfig.cache_dir, job_id, "in") ):
+        os.mkdir( os.path.join(PredictServerConfig.cache_dir, job_id, "in") )
+    if not os.path.isdir( os.path.join(PredictServerConfig.cache_dir, job_id, "out") ):
+        os.mkdir( os.path.join(PredictServerConfig.cache_dir, job_id, "out") )
 
     uploaded_file = upload_file(job_id=job_id, file=file)
 
@@ -109,8 +119,8 @@ def predict(
     subprocess.call([
         'ffmpeg', '-y',
         '-i', uploaded_file["file_path"],
-        '-vf', 'scale={}:-1'.format(PredictServerConfig.video_height),
-        uploaded_file["file_path"].split(".mp4")[0] + "_out.mp4",
+        '-vf', 'scale={}:{}'.format(PredictServerConfig.video_height, PredictServerConfig.video_width),
+        os.path.join(PredictServerConfig.cache_dir, job_id, "out", uploaded_file["file_path"].split("/")[-1])
     ])
 
     # 非同期処理の効果を明確化するためにあえて sleep 処理
@@ -119,5 +129,7 @@ def predict(
     # レスポンスデータ設定
     print('[{}] time {} | リクエスト処理完了しました'.format(__name__, f"{datetime.now():%H:%M:%S}"))
     logger.info('[{}] time {} | job_id={}, file_name={} リクエスト処理完了しました'.format(__name__, f"{datetime.now():%H:%M:%S}", job_id, file.filename))
-    #return {"status": "ok",}
-    return FileResponse(uploaded_file["file_path"].split(".mp4")[0] + "_out.mp4")
+    return {
+        "status": "ok",
+        "job_id": job_id,
+    }

@@ -52,6 +52,12 @@ def polling():
 
             # 推論サーバーにリクエスト処理
             try:
+                api_responce = requests.post(
+                    "http://" + PredictServerConfig.host + ":" + PredictServerConfig.port + "/predict",
+                    files={'file': (in_file_path.split("/")[-1], open(in_file_path, "rb"), 'video/mp4')},
+                    params={"job_id": job_id},
+                ).json()
+                """
                 subprocess.call(
                     "curl --location -m {} --request POST {} --form file=@{} --output {}".format(
                         100000,
@@ -61,11 +67,25 @@ def polling():
                     ),
                     shell=True,
                 )
-                #files = {'file': (in_file_path.split("/")[-1], open(in_file_path, "rb"), 'video/mp4')}
-                #requests.post( "http://" + PredictServerConfig.host + ":" + PredictServerConfig.port + "/predict", files=files )
+                """
             except Exception as e:
                 print( "Exception : ", e )
                 logger.info('[{}] time {} | Exception {}'.format(__name__, f"{datetime.now():%H:%M:%S}", e))
+
+            # 推論サーバーの処理結果取得
+            if( api_responce["status"] == "ok" ):
+                """
+                predict_data = requests.get( "http://" + PredictServerConfig.host + ":" + PredictServerConfig.port + "/get_job/" + job_id )
+                logger.info("predict_data : {}".format(predict_data))
+                """
+                subprocess.call(
+                    "curl --location -m {} --request POST {} --output {}".format(
+                        100000,
+                        "http://" + PredictServerConfig.host + ":" + PredictServerConfig.port + "/get_job/" + job_id,
+                        os.path.join(ProxyServerConfig.cache_dir, job_id, in_file_path.split(".mp4")[0] + "_out.mp4")
+                    ),
+                    shell=True,
+                )
 
             # 出力動画データのファイルパスを保管
             out_file_path = os.path.join(ProxyServerConfig.cache_dir, job_id, in_file_path.split(".mp4")[0] + "_out.mp4" )
