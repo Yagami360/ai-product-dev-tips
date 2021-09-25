@@ -147,7 +147,7 @@
         requests.post( "http://" + PredictServerConfig.host + ":" + PredictServerConfig.port + "/clear_cache" )
         return
 
-    @app.get("/get/{job_id}")
+    @app.get("/get_job/{job_id}")
     async def get_job(
         job_id: str,  # パスパラメーター
     ):

@@ -109,7 +109,7 @@ async def clear_cache():
     requests.post( "http://" + PredictServerConfig.host + ":" + PredictServerConfig.port + "/clear_cache" )
     return
 
-@app.get("/get/{job_id}")
+@app.get("/get_job/{job_id}")
 async def get_job(
     job_id: str,  # パスパラメーター
 ):
@@ -125,7 +125,7 @@ async def get_job(
             "job_id" : jobs[job_id].job_id,
             "job_status" : jobs[job_id].job_status,
             "out_file_path" : "",
-            "out_file":"",
+            "out_file": "",
         }
 
     return {
