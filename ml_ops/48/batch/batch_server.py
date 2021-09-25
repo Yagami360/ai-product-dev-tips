@@ -79,8 +79,7 @@ def polling():
                 logger.info("predict_data : {}".format(predict_data))
                 """
                 subprocess.call(
-                    "curl --location -m {} --request POST {} --output {}".format(
-                        100000,
+                    "curl {} --output {}".format(
                         "http://" + PredictServerConfig.host + ":" + PredictServerConfig.port + "/get_job/" + job_id,
                         os.path.join(ProxyServerConfig.cache_dir, job_id, in_file_path.split(".mp4")[0] + "_out.mp4")
                     ),

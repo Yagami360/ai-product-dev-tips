@@ -96,7 +96,7 @@
         - FastAPI を使用した Web-API からファイルをダウンロードする
         - [FastAPI での非同期処理（FastAPI + uvicorn + gunicorn + docker での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/35)
         - [FastAPI を使用した非同期処理での Web-API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成で画像データを扱うケース）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/36)
-        - [[In-progress] FastAPI を使用した非同期処理での Web-API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成で動画データを扱うケース）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/48)
+        - [FastAPI を使用した非同期処理での Web-API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成で動画データを扱うケース）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/48)
         - FastAPI を使用した非同期処理での機械学習モデル推論 API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成）
         - [FastAPI を使用した複数の同期処理での Web-API を並列処理する（FastAPI + uvicorn + gunicorn + docker + docker-compose での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/38)
         - [推論時間が異なる複数の API から構成される Web-API において、推論結果を複数段階に分けてレスポンスする（FastAPI + uvicorn + gunicorn + docker + docker-compose での構成）（FastAPI + uvicorn + gunicorn + docker + docker-compose での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/43)

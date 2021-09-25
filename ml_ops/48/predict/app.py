@@ -52,15 +52,13 @@ def get_job(
     job_id: str,  # パスパラメーター
 ):
     start_time = time.time()
-    logger.info("{} {} {} {} job_id={}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", sys._getframe().f_code.co_name, "START", job_id))
     file_names = sorted( [f for f in os.listdir(os.path.join(PredictServerConfig.cache_dir, job_id, "out")) if f.endswith(".mp4")] )
-    logger.info("file_names : {}".format(file_names) )
+    logger.info("{} {} {} {} job_id={} file_name={}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", sys._getframe().f_code.co_name, "START", job_id, file_names[0]))
 
     elapsed_time = 1000 * (time.time() - start_time)
-    logger.info("{} {} {} {} elapsed_time [ms]={:.5f} job_id={}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", sys._getframe().f_code.co_name, "END", elapsed_time, job_id))
-
+    logger.info("{} {} {} {} elapsed_time [ms]={:.5f} job_id={} file_name={}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", sys._getframe().f_code.co_name, "END", elapsed_time, job_id, file_names[0]))
     return FileResponse(
-        os.path.join(PredictServerConfig.cache_dir, job_id, "out", file_names[-1])
+        os.path.join(PredictServerConfig.cache_dir, job_id, "out", file_names[0])
     )
 
 @app.post("/clear_cache")
@@ -74,6 +72,9 @@ def clear_cache():
 def clear_log():
     if( os.path.exists(os.path.join("log", 'app.log')) ):
         os.remove(os.path.join("log", 'app.log'))
+    logger_fh = logging.FileHandler(os.path.join("log", 'app.log'))
+    logger.addHandler(logger_fh)
+    logger.info("{} {} start predict-api server".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO"))
     return
 
 def upload_file(job_id: str, file: UploadFile = File(...)):
@@ -102,7 +103,7 @@ def upload_file(job_id: str, file: UploadFile = File(...)):
 
 @app.post("/predict")
 def predict(
-    job_id: str = "00000",
+    job_id: str,
     file: UploadFile = File(...),
 ):
     logger.info('[{}] time {} | job_id={}, file_name={} のリクエスト受付しました'.format(__name__, f"{datetime.now():%H:%M:%S}", job_id, file.filename))

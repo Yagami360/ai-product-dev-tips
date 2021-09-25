@@ -6,10 +6,11 @@ from PIL import Image
 from tqdm import tqdm 
 import requests
 import time
+import subprocess
 
 # グローバル変数
 VIDEO_EXTENSIONS = (
-    '.mp4',
+    '.mp4', '.MP4',
 )
 
 if __name__ == "__main__":
@@ -57,8 +58,17 @@ if __name__ == "__main__":
         if(len(job_ids)==0):
             break
         for i,job_id in enumerate(job_ids):
+            """
             job_data = requests.get( "http://" + args.host + ":" + args.port + "/get/" + job_id ).json()
             if( job_data["status"] == "ok" ):
                 print( "job_data : ", job_data )
+            """
+            subprocess.call(
+                "curl {} --output {}".format(
+                    "http://" + args.host + ":" + args.port + "/get_job/" + job_id,
+                    os.path.join(args.out_video_dir, video_names[i].split(".mp4")[0] + "_out.mp4")
+                ),
+                shell=True,
+            )
 
         time.sleep(1)

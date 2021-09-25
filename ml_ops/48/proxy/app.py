@@ -92,6 +92,12 @@ async def health():
 async def clear_log():
     if( os.path.exists(os.path.join("log", 'app.log')) ):
         os.remove(os.path.join("log", 'app.log'))
+
+    logger_fh = logging.FileHandler(os.path.join("log", 'app.log'))
+    logger.addHandler(logger_fh)
+    logger.info("{} {} start proxy-api server".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO"))
+
+    requests.post( "http://" + PredictServerConfig.host + ":" + PredictServerConfig.port + "/clear_log" )
     return
 
 @app.post("/clear_cache")
@@ -107,6 +113,7 @@ async def clear_cache():
 async def get_job(
     job_id: str,  # パスパラメーター
 ):
+    """
     status = "ok"
     try:
         out_file_path = redis_client.get(job_id + "_out_file_path").decode()
@@ -117,8 +124,8 @@ async def get_job(
             "status": status,
             "job_id" : jobs[job_id].job_id,
             "job_status" : jobs[job_id].job_status,
-            "out_file_path" : None,
-            #"out_file": None,
+            "out_file_path" : "",
+            "out_file":"",
         }
 
     return {
@@ -126,9 +133,17 @@ async def get_job(
         "job_id" : jobs[job_id].job_id,
         "job_status" : jobs[job_id].job_status,
         "out_file_path" : out_file_path,
-        #"out_file": FileResponse(out_file_path),
+        "out_file": FileResponse(out_file_path),
     }
-    #return FileResponse(out_file_path)
+    """
+    try:
+        out_file_path = redis_client.get(job_id + "_out_file_path").decode()
+        logger.info('[{}] time {} | job_id={}, out_file_path="{}" を get しました'.format(__name__, f"{datetime.now():%H:%M:%S}", job_id, out_file_path))
+    except Exception:
+        out_file_path = None
+        logger.info('[{}] time {} | job_id={}, out_file_path="{}" を get できません'.format(__name__, f"{datetime.now():%H:%M:%S}", job_id, out_file_path))
+
+    return FileResponse(out_file_path)
 
 @app.post("/predict")
 async def predict(
