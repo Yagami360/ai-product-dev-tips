@@ -11,6 +11,9 @@
 
     > 尚、リバースプロキシとしての Firebase Cloud Function 経由で http 通信での Web-API を呼び出す方法を用いれば、Web-API を https 化しなくとも、https 通信の Web サイトから、http 通信での Web-API を呼び出すことは可能になる。
 
+    GKE 上の Web-API を https 化する方法の詳細は、「[【GKE】GoogleマネージドSSL証明書を用いて、GKE 上の Web-API を https 化する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/45)」を参照
+
+
 1. GKE 上に https 化した WebAPI をデプロイする
     ```sh
     $ deploy_api_gke.sh

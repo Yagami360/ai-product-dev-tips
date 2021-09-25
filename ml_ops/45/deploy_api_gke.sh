@@ -11,7 +11,7 @@ GPU_TYPE=nvidia-tesla-t4
 
 IP_ADDRESS_NAME=graph-cut-api-ip
 CERTIFICATE_NAME=graph-cut-api-ssl
-DOMAINS="graph-cut-api.ga"
+DOMAINS="yagami360.com"
 CLUSTER_NAME=graph-cut-api-cluster
 
 MIN_NODES=1
@@ -71,7 +71,7 @@ kubectl apply -f k8s/autoscale.yml
 
 kubectl apply -f k8s/cert.yml
 kubectl apply -f k8s/ingress.yml
-kubectl apply -f k8s/service_node_port.yml
+#kubectl apply -f k8s/service_node_port.yml
 
 # Google マネージド SSL 証明書を有効化する
 TARGET_PROXY_NAME=`gcloud compute target-https-proxies list | grep ${CERTIFICATE_NAME} | awk -F" " '{print $1}'`
@@ -87,9 +87,6 @@ gcloud compute target-https-proxies update ${TARGET_PROXY_NAME} \
 gcloud compute target-https-proxies describe ${TARGET_PROXY_NAME} \
     --global \
     --format="get(sslCertificates)"
-
-# k8s リソース（Pod, Service, HorizontalPodAutoscaler, configmap 等）の作成
-#kubectl apply -f k8s/service.yml
 
 # 正常起動待ち
 sleep 360

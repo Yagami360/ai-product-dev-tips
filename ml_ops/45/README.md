@@ -1,6 +1,6 @@
 # 【GKE】GoogleマネージドSSL証明書を用いて、GKE 上の Web-API を https 化する
 
-ここでは、GKE 上の Web-API を https 化するための方法として、k8s の Ingress を使用して Google マネージド SSL 証明書を構成し、外部ロードバランサーを作成することで実現する方法を記載する
+ここでは、GKE 上の Web-API を https 化するための方法として、Google マネージド SSL 証明書と k8s の Ingress を使用して http リクエストを https へリダイレクトすることで、https 通信を実現する方法を記載する
 
 > - Ingree（上り）<br>
 >   k8s における Ingree とは、クラスター内の Service に対して外部からのアクセス(主にHTTP)を管理するAPIオブジェクト。<br>
@@ -17,8 +17,12 @@
     ```
 
 1. Web-API のドメインを取得する<br>
-    ここでは、[Freenom](https://www.freenom.com/ja/index.html) から無料のドメイン `graph-cut-api.ga` を取得する<br>
+    [Freenom](https://www.freenom.com/ja/index.html) や [Google Dmains](https://domains.google.com/) などから
+    ここでは、[Google Dmains](https://domains.google.com/) から無料のドメイン `yagami360.com` を取得する<br>
+
+    <!--
     <img src="https://user-images.githubusercontent.com/25688193/130347142-5d6c4542-45cf-433d-a2cd-7f016db9d3c3.png" width="500"><br>
+    -->
 
 1. SSL 証明書を作成および変更できるための IAM 権限を設定する
     ```sh
@@ -45,6 +49,15 @@
         - `${CERTIFICATE_NAME}` : グローバル SSL 証明書の名前
         - `${DESCRIPTION}` : グローバル SSL 証明書の説明
         - `${DOMAINS}` : この証明書に使用する単一のドメイン名またはドメイン名のカンマ区切りリスト
+
+1. SSL 証明書と鍵のセットを k8s に登録する<br>
+    ```sh
+    $ kubectl create secret tls <シークレット名> \
+        --key <鍵ファイル> \
+        --cert <証明書ファイル>
+    ```
+
+    > この処理は必要か？
 
 1. 各種 k8s リソースファイルを作成する
     1. Deployment リソースを作成する
@@ -74,7 +87,10 @@
                 serviceName: graph-cut-api-server   # Serviceリソースで指定したリソース名を指定
                 servicePort: 5000                   # Serviceリソースの portで指定したポート(targetPortでは無い)
         ```
-    1. Service リソースを作成する
+
+    1. Service リソースを作成する<br>
+        LoadBalancer または NodePort で Service を作成する
+
         ```yaml
         # Service
         apiVersion: v1
@@ -93,6 +109,10 @@
         ```
 
         > 作成した固定 IP に対応した Service になるようにする
+
+        > NodePort : Service　のタイプの１つで、k8s の Node のランダムなポートを使用して外部のサーバーからの疎通性を取るタイプの Service
+
+        > LoadBalancer : Service　のタイプの１つで、NodePort の Service を作成した上で、更に外部の LoadBalanerを作成し、LoadBalancerのUpstreamとしてNodePortで疎通性を取るタイプの Service
 
 1. GKE 上に Web-API をデプロイする
     ```sh
@@ -120,6 +140,7 @@
 
 ## ■ 参考サイト
 - https://qiita.com/tontoko/items/33faead6bb14370ecb17
+- https://qiita.com/kwbt/items/914b3ffab1e9b4e3c1a4
 - https://qiita.com/teekay/items/135dc67e39f24997019e
 - https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs?hl=ja
 - https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs?hl=ja
