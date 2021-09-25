@@ -2,8 +2,8 @@
 set -eu
 ROOT_DIR=${PWD}
 SERVICE_NAME=graph-cut-api-server
-HOST=`kubectl describe service ${SERVICE_NAME} | grep "LoadBalancer Ingress" | awk '{print $3}'`
-#HOST=10.3.248.56
+#HOST=`kubectl describe service ${SERVICE_NAME} | grep "LoadBalancer Ingress" | awk '{print $3}'`
+HOST=34.149.113.28
 PORT=5000
 TIMEOUT_CONNECT=3600
 TIMEOUT_READ=3600

@@ -8,14 +8,6 @@
 
 ## ■ 方法
 
-1. 固定 IP アドレス（グローバル）を取得する<br>
-    ```sh
-    $ gcloud compute addresses create ${IP_ADDRESS_NAME} --global
-    ```
-    ```sh
-    $ gcloud compute addresses describe ${IP_ADDRESS_NAME} --global
-    ```
-
 1. Web-API のドメインを取得する<br>
     [Freenom](https://www.freenom.com/ja/index.html) や [Google Dmains](https://domains.google.com/) などから
     ここでは、[Google Dmains](https://domains.google.com/) から無料のドメイン `yagami360.com` を取得する<br>
@@ -24,11 +16,43 @@
     <img src="https://user-images.githubusercontent.com/25688193/130347142-5d6c4542-45cf-433d-a2cd-7f016db9d3c3.png" width="500"><br>
     -->
 
+1. 固定 IP アドレス（グローバル）を取得する<br>
+    ```sh
+    $ gcloud compute addresses create ${IP_ADDRESS_NAME} --global
+    ```
+    ```sh
+    $ gcloud compute addresses describe ${IP_ADDRESS_NAME} --global
+    ```
+
+1. GKE クラスタを作成する
+    ```sh
+    # docker image を GCP の Container Registry にアップロード
+    if [ ! ${ENABLE_BUILD} = 0 ] ; then
+        cd ${ROOT_DIR}/api
+        gcloud builds submit --config cloudbuild.yml --timeout 3600
+        cd ${ROOT_DIR}
+    fi
+
+    # クラスタを作成
+    if [ "$(gcloud container clusters list | grep "${CLUSTER_NAME}")" ] ; then
+        gcloud container clusters delete ${CLUSTER_NAME} --region ${ZONE}
+    fi
+
+    gcloud container clusters create ${CLUSTER_NAME} \
+        --num-nodes 1 \
+        --machine-type ${CPU_TYPE} \
+        --region ${ZONE} \
+        --scopes=gke-default,logging-write
+
+    # 作成したクラスタに切り替える
+    gcloud container clusters get-credentials ${CLUSTER_NAME} --region ${ZONE} --project ${PROJECT_ID}
+    ```
+
 1. SSL 証明書を作成および変更できるための IAM 権限を設定する
     ```sh
     ```
 
-1. Google マネージド SSL 証明書の作成<br>
+1. Google マネージド SSL 証明書を作成する<br>
     1. GUI で行う場合<br>
         1. [Cloud Load Balancing のコンソール画面](https://console.cloud.google.com/net-services/loadbalancing/advanced/sslCertificates/list?hl=ja&_ga=2.120728651.238332542.1629617512-1000767715.1629617512&project=my-project2-303004&folder&organizationId&sslCertificateTablesize=50)に移動する<br>
         1. 「SSL 証明書を作成」ボタンをクリックする<br>
@@ -50,6 +74,7 @@
         - `${DESCRIPTION}` : グローバル SSL 証明書の説明
         - `${DOMAINS}` : この証明書に使用する単一のドメイン名またはドメイン名のカンマ区切りリスト
 
+<!--
 1. SSL 証明書と鍵のセットを k8s に登録する<br>
     ```sh
     $ kubectl create secret tls <シークレット名> \
@@ -58,6 +83,49 @@
     ```
 
     > この処理は必要か？
+
+-->
+
+1. Google マネージド SSL 証明書を GKE のロードバランサのターゲットプロキシに関連付ける<br>
+    Google マネージド SSL 証明書を有効化（`ACTIVE`）するには、まず、Google マネージド SSL 証明書をロードバランサ、特にロードバランサのターゲットプロキシに関連付ける必要がある。<br>
+    既に GKE クラスタを作成している場合は、[Cloud Load Balancing のコンソール画面](https://console.cloud.google.com/net-services/loadbalancing/loadBalancers/list?project=my-project2-303004&hl=ja) に、GKE クラスタ構築時のロードバランサーが作成されているので、このロードバランサーに作成したGoogle マネージド SSL 証明書を関連付け、Google マネージド SSL 証明書を有効化する。
+
+    1. GUI で行う場合
+        - 「編集」ボタンをクリックします。
+        - 「フロントエンドの構成」ボタンをクリックし、「プロトコル: HTTPS、IP:xxx、ポート:xxx」をクリックします。
+        - 「その他の証明書」をクリックし、プルダウンリストから作成した Google マネージド証明書を選択します。
+        - 「更新」 をクリックします。
+
+    1. CLI で行う場合
+        ```sh
+        ```
+
+1. Cloud DNS で IP アドレスとドメインを関連付ける<br>
+    Google マネージド SSL 証明書を有効化（`ACTIVE`）するには、更に、DNS サーバーで作成したドメイン（）と作成した固定 IP アドレスを関連付ける必要がある
+
+    > DNS サーバー（ネームサーバー） : ドメイン名（xxx.com など）とIPアドレスを変換する仕組みを提供するサーバー
+
+    > A レコード : ドメイン名とIPアドレスの関連づけを定義したもの。
+
+    1. GUI で行う場合<br>
+        1. DNS ゾーンを作成する<br>
+            - 「DNS 名」には作成したドメイン名（今の場合は yagami360.com）を入力する<br>
+
+        1. 作成した DNS ゾーンに A レコードを追加する<br>
+            - 「IPv4 アドレス」に作成した固定 IP アドレスを設定する
+
+        1. ドメインの DNS サーバー（ネームサーバー）を更新する<br>
+            Google Domains でドメインを作成した場合は、「[Google Domains コンソール画面](https://domains.google.com/)」の「DNS」->「カスタムネームサーバー」画面から、作成したドメインの DNS サーバー（ネームサーバー）を上記 Cloud DNS で設定した DNS サーバーに更新する
+
+
+    1. CLI で行う場合
+        ```sh
+        ```
+
+    IP アドレスとドメインを関連付けに成功したかは、ドメインにブラウザアクセスすることで確認できる    
+    ```sh
+    open http://yagami360.com/
+    ```
 
 1. 各種 k8s リソースファイルを作成する
     1. Deployment リソースを作成する
@@ -114,24 +182,14 @@
 
         > LoadBalancer : Service　のタイプの１つで、NodePort の Service を作成した上で、更に外部の LoadBalanerを作成し、LoadBalancerのUpstreamとしてNodePortで疎通性を取るタイプの Service
 
-1. GKE 上に Web-API をデプロイする
     ```sh
-    $ sh deploy_api_gke.sh
+    $ kubectl apply -f k8s/deployment.yml
+    $ kubectl apply -f k8s/service_load_balancer.yml
+    $ kubectl apply -f k8s/autoscale.yml
+
+    $ kubectl apply -f k8s/cert.yml
+    $ kubectl apply -f k8s/ingress.yml
     ```
-
-1. Google マネージド SSL 証明書を有効化する<br>
-    Google マネージド SSL 証明書を有効化（`ACTIVE`）するには、Google マネージド SSL 証明書をロードバランサ、特にロードバランサのターゲットプロキシに関連付ける必要がある。<br>
-    既に GKE クラスタを作成している場合は、[Cloud Load Balancing のコンソール画面](https://console.cloud.google.com/net-services/loadbalancing/loadBalancers/list?project=my-project2-303004&hl=ja) に、GKE クラスタ構築時のロードバランサーが作成されているので、このロードバランサーに作成したGoogle マネージド SSL 証明書を関連付け、Google マネージド SSL 証明書を有効化する。
-
-    1. GUI で行う場合
-        - 「編集」ボタンをクリックします。
-        - 「フロントエンドの構成」ボタンをクリックし、「プロトコル: HTTPS、IP:xxx、ポート:xxx」をクリックします。
-        - 「その他の証明書」をクリックし、プルダウンリストから作成した Google マネージド証明書を選択します。
-        - 「更新」 をクリックします。
-
-    1. CLI で行う場合
-        ```sh
-        ```
 
 1. GKE 上の https 化した Web-API にリクエスト処理する
     ```sh

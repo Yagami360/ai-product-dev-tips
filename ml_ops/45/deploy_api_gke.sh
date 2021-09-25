@@ -31,18 +31,6 @@ if [ ! "$(gcloud compute addresses list | grep "${IP_ADDRESS_NAME}")" ] ; then
     gcloud compute addresses describe ${IP_ADDRESS_NAME} --global
 fi
 
-# SSL 証明書を作成および変更できるための IAM 権限を設定する
-
-# Google マネージド SSL 証明書の作成
-if [ "$(gcloud compute ssl-certificates list | grep "${CERTIFICATE_NAME}")" ] ; then
-    gcloud compute ssl-certificates delete ${CERTIFICATE_NAME}
-fi
-
-gcloud compute ssl-certificates create ${CERTIFICATE_NAME} \
-    --description="graph-cut-api用SSL証明書" \
-    --domains=${DOMAINS} \
-    --global
-
 # docker image を GCP の Container Registry にアップロード
 if [ ! ${ENABLE_BUILD} = 0 ] ; then
     cd ${ROOT_DIR}/api
@@ -64,16 +52,19 @@ gcloud container clusters create ${CLUSTER_NAME} \
 # 作成したクラスタに切り替える
 gcloud container clusters get-credentials ${CLUSTER_NAME} --region ${ZONE} --project ${PROJECT_ID}
 
-# k8s リソース（Pod, Service, HorizontalPodAutoscaler, configmap 等）の作成
-kubectl apply -f k8s/deployment.yml
-kubectl apply -f k8s/service_load_balancer.yml
-kubectl apply -f k8s/autoscale.yml
+# SSL 証明書を作成および変更できるための IAM 権限を設定する
 
-kubectl apply -f k8s/cert.yml
-kubectl apply -f k8s/ingress.yml
-#kubectl apply -f k8s/service_node_port.yml
+# Google マネージド SSL 証明書の作成
+if [ "$(gcloud compute ssl-certificates list | grep "${CERTIFICATE_NAME}")" ] ; then
+    gcloud compute ssl-certificates delete ${CERTIFICATE_NAME}
+fi
 
-# Google マネージド SSL 証明書を有効化する
+gcloud compute ssl-certificates create ${CERTIFICATE_NAME} \
+    --description="graph-cut-api用SSL証明書" \
+    --domains=${DOMAINS} \
+    --global
+
+# Google マネージド SSL 証明書を GKE のロードバランサのターゲットプロキシに関連付ける
 TARGET_PROXY_NAME=`gcloud compute target-https-proxies list | grep ${CERTIFICATE_NAME} | awk -F" " '{print $1}'`
 
 gcloud compute target-https-proxies update ${TARGET_PROXY_NAME} \
@@ -87,6 +78,15 @@ gcloud compute target-https-proxies update ${TARGET_PROXY_NAME} \
 gcloud compute target-https-proxies describe ${TARGET_PROXY_NAME} \
     --global \
     --format="get(sslCertificates)"
+
+# k8s リソース（Pod, Service, HorizontalPodAutoscaler, configmap 等）の作成
+kubectl apply -f k8s/deployment.yml
+kubectl apply -f k8s/service_load_balancer.yml
+kubectl apply -f k8s/autoscale.yml
+
+kubectl apply -f k8s/cert.yml
+kubectl apply -f k8s/ingress.yml
+#kubectl apply -f k8s/service_node_port.yml
 
 # 正常起動待ち
 sleep 360
