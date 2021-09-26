@@ -6,14 +6,8 @@ metadata:
 spec:
   type: NodePort
   ports:
-  - name: http
-    port: 5000
-    protocol: TCP
-    targetPort: 5000
-  - name: https
-    protocol: TCP
-    port: 5000
-    targetPort: 5000
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
   selector:
     app: graph-cut-api-pod
-    

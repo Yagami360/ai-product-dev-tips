@@ -5,7 +5,7 @@ metadata:
   name: graph-cut-api-server
 spec:
   type: LoadBalancer
-  loadBalancerIP: 34.149.113.28   # IP アドレス固定
+  #loadBalancerIP: 34.149.113.28   # IP アドレス固定
   ports:
     - port: 5000
       targetPort: 5000

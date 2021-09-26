@@ -6,7 +6,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.global-static-ip-name: graph-cut-api-ip       # 用意した静的IPの名前を指定(IPアドレス自体では無い)
     networking.gke.io/managed-certificates: graph-cut-api-cert          # ManagedCertificate で指定した ManagedCertificateリソース名 を指定
-#    kubernetes.io/ingress.allow-http: "false"                           # httpsのみ許可
+    #kubernetes.io/ingress.allow-http: "false"                           # httpsのみ許可
 spec:
   backend:
     serviceName: graph-cut-api-server   # Serviceリソースで指定したリソース名を指定

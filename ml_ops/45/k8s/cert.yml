@@ -5,5 +5,5 @@ metadata:
   name: graph-cut-api-cert  # ManagedCertificateリソース名を指定
 spec:
   domains:
-    - yagami360.com      # 取得したドメイン名を指定
+    - yagami360.com         # 取得したドメイン名を指定
     
