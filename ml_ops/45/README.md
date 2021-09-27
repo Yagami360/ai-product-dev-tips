@@ -37,7 +37,7 @@
             - 「DNS 名」には作成したドメイン名（今の場合は `yagami360.com`）を入力する<br>
 
         1. 作成した DNS ゾーンに A レコードを追加する<br>
-            - 「DNS 名に」に `www`（`www.yagami360.com.`）を入力する
+            - 「DNS 名に」には何も入力しない（`.yagami360.com.`）
             - 「IPv4 アドレス」に作成した固定 IP アドレスを設定する
 
         1. ドメインの DNS サーバー（ネームサーバー）を更新する<br>
@@ -238,7 +238,6 @@
     ```sh
     open http://yagami360.com/
     open https://yagami360.com/
-    open https://www.yagami360.com/
     ```
 
 1. GKE 上の https 化した Web-API にリクエスト処理する
