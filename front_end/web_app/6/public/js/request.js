@@ -55,8 +55,9 @@ $(function(){
 function generateOutputImage() {
     console.log( "背景除去画像の生成開始" );
 
-    // 仮想試着サーバーの URL 取得
+    // API の URL 取得
     var api_url = document.getElementById("api_url").value;
+    var cloud_function_url = document.getElementById("cloud_function_url").value;
 
     //---------------------------------------
     // 選択されている人物画像を取得
@@ -107,8 +108,45 @@ function generateOutputImage() {
     }
 
     //--------------------------------------------------------
-    // データを仮想試着サーバーに送信（jQuery での Ajax通信を開始）
+    // GKE 上の WebAPI に https 送信（リバースプロキシとしての firebase cloud function 経由で API を呼び出す）
     //--------------------------------------------------------
+    try {
+        $.ajax({
+            url: cloud_function_url,            
+            type: 'POST',
+            dataType: "json",
+            data: JSON.stringify({ "pose_img_base64": pose_img_base64}),
+            contentType: 'application/json',
+            crossDomain: true,  // API サーバーとリクエスト処理を異なるアプリケーションでデバッグするために必要
+            timeout: 60000,
+        })
+        .done(function(data, textStatus, jqXHR) {
+            // 通信成功時の処理を記述
+            console.log( "Cloud Function との通信成功" );
+            //console.log( data.pose_parse_img_RGB_base64 );
+            console.log( textStatus );
+            console.log( jqXHR );
+
+            dataURL = `data:image/png;base64,${data.pose_parse_img_RGB_base64}`
+            drawToCanvas( dataURL, "output_image_canvas" )
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+            // 通信失敗時の処理を記述
+            console.log( "Cloud Function との通信失敗" );
+            //console.log( textStatus );
+            console.log( jqXHR );
+            //console.log( errorThrown );
+            alert("Cloud Function との通信に失敗しました\n" + cloud_function_url )
+        });
+    } catch (e) {
+        console.error(e)
+        alert(e);
+    }
+
+    //--------------------------------------------------------
+    // GKE 上の WebAPI に http 送信（jQuery での Ajax通信を開始）
+    //--------------------------------------------------------
+    /*
     try {
         $.ajax({
             url: api_url,            
@@ -141,4 +179,5 @@ function generateOutputImage() {
         console.error(e)
         alert(e);
     }
+    */
 }
