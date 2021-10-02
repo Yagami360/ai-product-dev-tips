@@ -1,0 +1,61 @@
+/* ラジオボタンを見えないようにする */
+/*
+input[type=radio] {
+    display: none;
+}
+*/
+.box_server_url {
+    margin: 0 auto;
+    border: solid 2px #ADD8E6;
+    box-sizing: border-box;
+    clear: both;
+}
+
+.box_pose {
+    margin: 0 auto;
+    border: solid 2px #ADD8E6;
+    box-sizing: border-box;
+    clear: both;
+}
+
+.box_pose_select {
+    /*float: left;*/
+    /*display: inline-block;*/
+}
+
+.box_cloth {
+    border: solid 2px #ADD8E6;
+    box-sizing: border-box;
+    clear: both;
+}
+
+.box_tryon {
+    border: solid 2px r#ADD8E6;
+    box-sizing: border-box;
+    clear: both;
+}
+
+#selected_file_pose_image_canvas {
+    display: table-column;
+    position: static;
+    bottom: 0;
+    right: 0;
+    background-color:  #ccc;    /* 背景色指定 */
+}
+
+#selected_file_cloth_image_canvas {
+    display: table-column;
+    position: static;
+    bottom: 0;
+    right: 0;
+    background-color:  #ccc;    /* 背景色指定 */
+}
+
+#tryon_image_canvas {
+    display: table-column;
+    position: static;
+    bottom: 0;
+    right: 0;
+    background-color:  #ccc;    /* 背景色指定 */
+}
+

@@ -115,7 +115,10 @@ function generateOutputImage() {
             url: cloud_function_url,            
             type: 'POST',
             dataType: "json",
-            data: JSON.stringify({ "pose_img_base64": pose_img_base64}),
+            data: JSON.stringify({
+                "api_url" : api_url,
+                "pose_img_base64": pose_img_base64,
+            }),
             contentType: 'application/json',
             crossDomain: true,  // API サーバーとリクエスト処理を異なるアプリケーションでデバッグするために必要
             timeout: 60000,
@@ -123,12 +126,19 @@ function generateOutputImage() {
         .done(function(data, textStatus, jqXHR) {
             // 通信成功時の処理を記述
             console.log( "Cloud Function との通信成功" );
-            //console.log( data.pose_parse_img_RGB_base64 );
+            console.log( data );
+            //console.log( data.img_none_bg_base64 );
             console.log( textStatus );
             console.log( jqXHR );
-
-            dataURL = `data:image/png;base64,${data.pose_parse_img_RGB_base64}`
-            drawToCanvas( dataURL, "output_image_canvas" )
+            
+            if (data.status == "ok" ) {
+                dataURL = `data:image/png;base64,${data.img_none_bg_base64}`
+                drawToCanvas( dataURL, "output_image_canvas" )
+            }
+            else{
+                console.log( "Web-API の推論処理失敗" );                
+                alert("Web-API の推論処理に失敗しました")
+            }
         })
         .fail(function(jqXHR, textStatus, errorThrown) {
             // 通信失敗時の処理を記述
@@ -160,11 +170,11 @@ function generateOutputImage() {
         .done(function(data, textStatus, jqXHR) {
             // 通信成功時の処理を記述
             console.log( "APIサーバーとの通信成功" );
-            //console.log( data.pose_parse_img_RGB_base64 );
+            //console.log( data.img_none_bg_base64 );
             console.log( textStatus );
             console.log( jqXHR );
 
-            dataURL = `data:image/png;base64,${data.pose_parse_img_RGB_base64}`
+            dataURL = `data:image/png;base64,${data.img_none_bg_base64}`
             drawToCanvas( dataURL, "output_image_canvas" )
         })
         .fail(function(jqXHR, textStatus, errorThrown) {

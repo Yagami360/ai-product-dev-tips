@@ -201,7 +201,7 @@
     - [【Firebase】Firebase Authentication を使用してウェブアプリに Authentication 機能を導入する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/16)
     - [[In-progress]【Firebase】Cloud Storage for Firebase を使用してウェブアプリ上で使用する画像データを表示する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/2)
     - [[In-progress]【Firebase】Firebase Hosting を使用して GKE 上の https 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/5)
-    - 【Firebase】Firebase Hosting と Firebase Cloud Function を使用して GKE 上の http 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する（リバースプロキシとしての firebase cloud function 経由で API を呼び出す）
+    - [[In-progress]【Firebase】Firebase Hosting と Firebase Cloud Function を使用して GKE 上の http 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する（リバースプロキシとしての firebase cloud function 経由で API を呼び出す）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/6)
     - 【Firebase】Firebase Cloud Function を使用して GKE 上の WebAPI からの出力を返す GUI 付きウェブアプリを作成する
 
 - iOS アプリ開発

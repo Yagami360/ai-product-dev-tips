@@ -31,7 +31,7 @@ GKE 上の Web-API を https 化することでもこの問題は解決できる
     $ sudo npm install -g firebase-tools
     ```
 
-1. FireBase を初期化し、動的な Web サイト `index.js` のテンプレートを作成する
+1. FireBase を初期化し、静的な Web サイト `index.html` と Cloud Function `index.js` のテンプレートを作成する
     ```sh
     # Firebase へのログイン
     $ firebase login --project ${PROJECT_ID}
@@ -42,19 +42,12 @@ GKE 上の Web-API を https 化することでもこの問題は解決できる
 
     > `Firebase Hosting` と `Cloud Functions for Firebase` の機能を有効にして初期化する
 
-1. `functions` ディレクトリ以下に、firebase cloud functionhttps 通信 -> http 通信へのリバースプロキシとして役割を行う `index.js` を作成する。<br>
-    `functions` ディレクトリ以下に、https 通信 -> http 通信へのリバースプロキシとして役割を行う firebase cloud function `index.js` を作成する。
-    ```javascript
+1. `public` ディレクトリ以下に、静的なウェブサイト `index.html` を作成する
+    ```html
     ```
 
-    > Node.js において、定義した関数を外部から使用可能にするためには、`exports.${関数名} = functions` の形式で定義する必要がある。
-
-1. `public` ディレクトリ以下に、静的なウェブサイト `index.html` で利用する各種リソースのファイルを保管する<br>
-    `public` ディレクトリ以下 に `index.html` で利用する各種リソースのファイル（javascript, css, 画像データ等）を保管する
-
-
-1. API にリクエスト処理を行う javascript を作成する<br>
-    `index.js` で定義した firebase cloud function を利用して、API にリクエスト処理を行う javascript を作成する
+1. Cloud Function `index.js` にリクエスト処理を行う javascript を作成する<br>
+    `index.js` で定義した firebase cloud function を利用して、API にリクエスト処理を行う javascript `js/request.js` を作成する。このスクリプトは、静的なウェブサイト `index.html` から呼び出される
     - `js/request.js`
         ```python
         ```
@@ -62,6 +55,18 @@ GKE 上の Web-API を https 化することでもこの問題は解決できる
     - `js/utils.js`
         ```python
         ```
+
+1. `public` ディレクトリ以下に、静的なウェブサイト `index.html` で利用する各種リソースのファイルを保管する<br>
+    `public` ディレクトリ以下 に `index.html` で利用する各種リソースのファイル（javascript, css, 画像データ等）を保管する
+
+1. `functions` ディレクトリ以下に、firebase cloud functionhttps 通信 -> http 通信へのリバースプロキシとして役割を行う `index.js` を作成する。<br>
+    `functions` ディレクトリ以下に、https 通信 -> http 通信へのリバースプロキシとして役割を行う firebase cloud function `index.js` を作成する。
+    ```javascript
+    ```
+
+    > Node.js において、定義した関数を外部から使用可能にするためには、`exports.${関数名} = functions` の形式で定義する必要がある。
+
+    > この cloud function へのリクエスト処理は、`js/request.js` 内にて、cloud function の URL `https://${ZONE}-${PROJECT_ID}.cloudfunctions.net/${FUNCTION_NAME}` から行う
 
 <!--
 1. CORS [Cross-Origin Resource Sharing] の設定を行う。<br>
@@ -112,14 +117,31 @@ GKE 上の Web-API を https 化することでもこの問題は解決できる
     $ open https://${PROJECT_ID}.web.app
     ```
 
-    <!--
-    ```sh
-    $ open https://${ZONE}-${PROJECT_ID}.cloudfunctions.net/${FUNCTION_NAME}
-    ```
-    -->
-
 1. Web サイトの GUI を利用して出力画像を生成する
-    1. GraphCut API サーバーの URL に GKE 上の Web-API の URL を設定する
+    1. 「GraphCut API サーバーの URL を指定」に、GKE 上の Web-API の URL `http://${HOST}:5000` を設定する
+    1. 「Firebase Cloud Function の URL を指定」に、Cloud Function の URL `https://${ZONE}-${PROJECT_ID}.cloudfunctions.net/${FUNCTION_NAME}` を設定する
     1. 人物画像を指定する
     1. 「背景除去画像を生成」ボタンをクリックし、出力画像を生成する
 
+1. 【オプション】Cloud Function のログデータを確認する
+    - CLI を使用する場合
+        ```sh
+        $ firebase functions:log --only ${FUNCTION_NAME}
+        ```
+
+    - GUI を使用する場合
+        ```sh
+        $ open https://console.firebase.google.com/project/${PROJECT_ID}/functions/logs?hl=ja&functionFilter=${FUNCTION_NAME}(${ZONE})&search=&severity=DEBUG
+        ```
+
+1. 【オプション】WebAPI のログデータを確認する
+    - コンテナログの確認
+        ```sh
+        $ kubectl logs `kubectl get pods | grep "graph-cut-api-pod" | awk '{print $1}'` graph-cut-api-container
+        ```
+
+    - API ログファイルの確認
+        ```sh
+        $ kubectl exec -it `kubectl get pods | grep "graph-cut-api-pod" | awk '{print $1}'` /bin/bash
+        $ cat log/app.log
+        ```
