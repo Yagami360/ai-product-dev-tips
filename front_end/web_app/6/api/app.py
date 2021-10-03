@@ -7,6 +7,7 @@ import uuid
 #import ssl
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Any, Dict
 
@@ -18,7 +19,9 @@ from config import PredictServerConfig
 from utils.utils import conv_base64_to_pillow, conv_pillow_to_base64
 from utils.logger import log_base_decorator, log_decorator
 
+#------------------------------
 # logger
+#------------------------------
 if not os.path.isdir("log"):
     os.mkdir("log")
 """
@@ -30,9 +33,27 @@ logger.setLevel(10)
 logger_fh = logging.FileHandler(  os.path.join("log", __name__+'.log') )
 logger.addHandler(logger_fh)
 
+#------------------------------
+# FastAPI
+#------------------------------
 app = FastAPI()
 print('[{}] time {} | APIサーバーを起動しました'.format(__name__, f"{datetime.now():%H:%M:%S}"))
 logger.info('[{}] time {} | APIサーバーを起動しました'.format(__name__, f"{datetime.now():%H:%M:%S}"))
+
+# CORS 対策
+"""
+origins = [
+    "http://localhost",
+    "http://localhost:5000",
+]
+"""
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=['Content-Type,Authorization'],
+    allow_headers=['GET,PUT,POST,DELETE,OPTIONS'],
+)
 
 class ImageData(BaseModel):
     """

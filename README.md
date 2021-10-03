@@ -201,15 +201,14 @@
     - [【Firebase】Firebase Authentication を使用してウェブアプリに Authentication 機能を導入する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/16)
     - [[In-progress]【Firebase】Cloud Storage for Firebase を使用してウェブアプリ上で使用する画像データを表示する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/2)
     - [[In-progress]【Firebase】Firebase Hosting を使用して GKE 上の https 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/5)
-    - [[In-progress]【Firebase】Firebase Hosting と Firebase Cloud Function を使用して GKE 上の http 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する（リバースプロキシとしての firebase cloud function 経由で API を呼び出す）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/6)
-    - 【Firebase】Firebase Cloud Function を使用して GKE 上の WebAPI からの出力を返す GUI 付きウェブアプリを作成する
+    - [【Firebase】Firebase Hosting と Firebase Cloud Function を使用して GKE 上の http 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する（リバースプロキシとしての firebase cloud function 経由で API を呼び出す）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/6)
 
 - iOS アプリ開発
     - iOS アプリ開発の基本事項
     - [【Firebase】iOS アプリ（Xcodeプロジェクト）に Firebase を登録する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/ios_app/2)
     - [【Firebase】iOS アプリから Firebase Cloud Functions を利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/ios_app/3)
     - 【Firebase】Firebase Authentication を使用して iOS アプリに Authentication 機能を導入する
-    - 【Firebase】Firebase Hosting を使用して GKE 上の WebAPI からの出力を返す GUI 付き iOS アプリを作成する
+    - 【Firebase】Firebase Hosting と Firebase Cloud Function を使用して GKE 上の http 通信での WebAPI からの出力を返す iOS アプリを作成する（リバースプロキシとしての firebase cloud function 経由で API を呼び出す）
 
 - アンドロイドアプリ開発
 

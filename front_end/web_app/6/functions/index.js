@@ -25,7 +25,7 @@ exports.call_api = functions.https.onRequest((req, res) => {
     request.get({
         uri: req.body["api_url"] + "/health",
         headers: { "Content-type": "application/json" },
-    }, (error_api, res_api, body_api) => {
+    }, function(error_api, res_api, body_api) {
         if ( !error_api && res_api.statusCode == 200 ) {
             functions.logger.info("[health check] API との通信に成功しました");
             functions.logger.info("[health check] error_api : ", error_api);
@@ -45,7 +45,7 @@ exports.call_api = functions.https.onRequest((req, res) => {
         uri: req.body["api_url"] + "/predict",
         headers: { "Content-type": "application/json" },
         json: {"image": req.body["pose_img_base64"]},       // JSON.stringify({"image": req.body["pose_img_base64"]}),
-    }, (error_api, res_api, body_api) => {
+    }, function(error_api, res_api, body_api) {
         if ( !error_api && res_api.statusCode == 200 ) {
             functions.logger.info("[predict] API との通信に成功しました");
             functions.logger.info("[predict] error_api : ", error_api);

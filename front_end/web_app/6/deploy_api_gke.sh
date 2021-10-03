@@ -6,8 +6,9 @@ REGION=us-central1
 ZONE=us-central1-b
 #ZONE=us-central1-c
 
-CPU_TYPE=n1-standard-4
+CPU_TYPE=n1-standard-1
 GPU_TYPE=nvidia-tesla-t4
+DISK_SIZE=64
 
 CLUSTER_NAME=graph-cut-api-cluster
 
@@ -35,9 +36,10 @@ if [ "$(gcloud container clusters list | grep "${CLUSTER_NAME}")" ] ; then
 fi
 
 gcloud container clusters create ${CLUSTER_NAME} \
+    --region ${ZONE} \
     --num-nodes 1 \
     --machine-type ${CPU_TYPE} \
-    --region ${ZONE} \
+    --disk-size ${DISK_SIZE} \
     --scopes=gke-default,logging-write
 
 # 作成したクラスタに切り替える
