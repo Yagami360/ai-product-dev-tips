@@ -189,13 +189,20 @@
 
 ## ■ アプリ開発・フロントエンド
 
-- Web アプリ開発
-    - HTML
-        - HTML の基礎事項
-    - css
-    - JavaScript / TypeScript
-        - JavaScript の基礎事項
+- HTML
+    - HTML の基礎事項
+- css
+- JavaScript / TypeScript
+    - JavaScript の基礎事項
+    - Node.js
+    - jQuery
+    - Vue.js
+        - 【Vue.js】Vue.js の基礎事項
+        - 【Vue.js】CDN 版（スタンドアロン版）の Vue.js を使用する
+        - 【Vue.js】vue-cli を用いて Vue.js アプリをデプロイする
     - React
+
+- Web アプリ開発
     - [【Firebase】Firebase Hosting を使用して静的なウェブサイトをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/14)
     - [【Firebase】Firebase Cloud Function を使用して動的なウェブアプリをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/15)
     - [【Firebase】Firebase Authentication を使用してウェブアプリに Authentication 機能を導入する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/16)
