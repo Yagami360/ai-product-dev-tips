@@ -3,7 +3,8 @@
 Vue.js の使用方法には、以下の２種類が存在する
 
 1. CDN 版（スタンドアロン版）の Vue.js を用いた方法<br>
-    HTMLファイルに scriptタグ `<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>` を埋め込むだけで使えるようになる Vue.js
+    
+    HTMLファイルに scriptタグ `<script src="https://unpkg.com/vue@next"></script>` を埋め込むだけで使えるようになる Vue.js
 
 2. CDN 版（スタンドアロン版）の Vue.js　を用いず、`vue-cli` コマンドでデプロイする方法<br>
 
