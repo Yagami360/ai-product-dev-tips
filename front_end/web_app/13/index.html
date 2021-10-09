@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My first Vue app</title>
+  <script src="https://unpkg.com/vue@next"></script>
+</head>
+
+<body>
+	<h1>Vue3</h1>
+	<div id="app">
+		<!-- v-html 属性のタグ `<div v-html="変数名"></div>` を使用することで HTML 側はタグを認識-->
+	  <div v-html="message"></div>
+	</div>
+	
+	<script>
+	const list = ['One', 'Two', 'Three']
+	const appdata = {
+	  data() {
+			return {
+				// `xxx` : テンプレートリテラル。テキストを改行して記述できる（※javascriptの構文）。このケースでは <li></li> と <li></li> の間に <br> を挟まなくとも、各リストが改行されて表示される
+				// <ul> タグ : unordered list（順序がないリスト）
+				// <li> タグ : list の各項目
+				// ${変数名} : プレースホルダー。テンプレートリテラルの中 `xxx` で定義でき、定義済みの変数の値を埋め込んむことができる（※javascriptの構文）
+				message: `<ul>
+				<li>${list[0]}</li>
+				<li>${list[1]}</li>
+				<li>${list[2]}</li>
+				</ul>`
+			}
+	  }
+	}
+  
+	let app = Vue.createApp(appdata)
+	app.mount('#app')
+	</script>
+</body>
+
+</html>

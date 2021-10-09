@@ -110,18 +110,3 @@
 	$ open index2.html
 	```
 
-## ■ v-html 属性を使用して `{{xxx}}` を HTML の要素として認識させる
-
-1. Vue.js を用いた静的な Web ファイル `index3.html` を作成する
-	```html
-	```
-
-	ポイントは、以下の通り
-
-	- xxx
-
-1. 作成した静的な Web ファイルをブラウザで開く
-	```sh
-	$ open index3.html
-	```
-	
