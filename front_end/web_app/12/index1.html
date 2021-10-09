@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My first Vue app</title>
+  <script src="https://unpkg.com/vue@next"></script>
+</head>
+
+<body>
+	<h1 class="bg-secondary text-white display-4 px-3">Vue3</h1>
+	<div id="app" class="container">
+	  <p>{{ message }}</p>
+		<!--<コンポーネント名/> でコンポーネントを使用-->
+	  <hello/>
+	</div>
+	
+	<script>
+	const appdata = {
+	  data() {
+			return {
+				message : 'コンポーネントを表示する'
+			}
+	  }
+	}
+  
+	// アプリケーションオブジェクトの変数定義
+	let app = Vue.createApp(appdata)
+  
+	// コンポーネントの作成 : app.component(コンポーネント名、{設定情報})
+	// {設定情報} の `template:` 項目に設定した内容がコンポーネントとして表示される
+	app.component('hello', {
+	  template: '<p class="alert alert-primary">Hello!</p>'		// HTML の <p></p> タグで文字列 "Hello!" を表示
+	})
+	app.mount('#app')
+	</script>
+</body>
+
+</html>

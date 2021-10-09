@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>GraphCut Web API</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="https://firebasestorage.googleapis.com/v0/b/graph-cut-web-app.appspot.com/o/main.css?alt=media&token=68752862-aac7-4ac0-a839-1dbf4ea1a87e" />
+    <script src="https://firebasestorage.googleapis.com/v0/b/graph-cut-web-app.appspot.com/o/jquery-3.4.1.js?alt=media&token=0008401c-7199-4e53-b3d0-b26b0c70c587"></script>
+    <script src="https://firebasestorage.googleapis.com/v0/b/graph-cut-web-app.appspot.com/o/request.js?alt=media&token=b94a29da-9772-48d0-bd68-6276127804dc"></script>
+    <script src="https://firebasestorage.googleapis.com/v0/b/graph-cut-web-app.appspot.com/o/utils.js?alt=media&token=0facb22f-af69-4e19-95cf-52f37b7e17ae"></script>
+
+    <!-- Firebase -->
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/8.2.6/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/8.2.6/firebase-auth.js"></script>
+    <script defer src="/__/firebase/8.2.6/firebase-database.js"></script>
+    <script defer src="/__/firebase/8.2.6/firebase-firestore.js"></script>
+    <script defer src="/__/firebase/8.2.6/firebase-functions.js"></script>
+    <script defer src="/__/firebase/8.2.6/firebase-messaging.js"></script>
+    <script defer src="/__/firebase/8.2.6/firebase-storage.js"></script>
+    <script defer src="/__/firebase/8.2.6/firebase-analytics.js"></script>
+    <script defer src="/__/firebase/8.2.6/firebase-remote-config.js"></script>
+    <script defer src="/__/firebase/8.2.6/firebase-performance.js"></script>
+    <!-- 
+      initialize the SDK after all desired features are loaded, set useEmulator to false
+      to avoid connecting the SDK to running emulators.
+    -->
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+
+    <style media="screen">
+      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
+      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
+      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
+      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
+      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
+      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+      @media (max-width: 600px) {
+        body, #message { margin-top: 0; background: white; box-shadow: none; }
+        body { border-top: 16px solid #ffa100; }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>GraphCut Web API</h1>
+    <div class="box_server_url">
+        <p>GraphCut API サーバーの URL を指定</p>
+        <input type="text" class="form-parts" name="api_url" id="api_url" size="40" maxlength="100" value="http://localhost:5000/predict">
+    </div>
+    <div class="box_pose">
+      <p>人物画像を指定</p>
+      <div class="box_pose_select">
+          <!-- for属性の値とinputタグのid属性の値を同じにすることで、ブラウザでラベルをクリックした際に、inputタグをクリックしたのと同じ動作が可能になる -->
+          <!-- labelタグにはjsで使うクラス「js-panel-select」を用意しておく-->
+          <label for="pose_select_1" class="pose_panel_select">
+              <!-- ラジオボタンを用意する-->
+              <input type="radio" value="1" id="pose_select_1">
+              <img src="https://firebasestorage.googleapis.com/v0/b/graph-cut-web-app.appspot.com/o/000001_0.jpg?alt=media&token=f9b7960e-c5bf-47b2-9d29-275a505a23ca" id="pose_image_1">
+          </label>
+          <label for="pose_select_2" class="pose_panel_select">
+              <input type="radio" value="2" id="pose_select_2">
+              <img src="https://firebasestorage.googleapis.com/v0/b/graph-cut-web-app.appspot.com/o/000010_0.jpg?alt=media&token=fe822a41-86da-4cfe-8b86-a97668f07749" id="pose_image_2">
+          </label>
+          <label for="pose_select_3" class="pose_panel_select">
+              <input type="radio" value="3" id="pose_select_3">
+              <img src="https://firebasestorage.googleapis.com/v0/b/graph-cut-web-app.appspot.com/o/000020_0.jpg?alt=media&token=615ff335-6977-409d-8eec-a3d53d22d5e3" id="pose_image_3">
+          </label>
+          <label for="pose_select_4" class="pose_panel_select">
+              <input type="radio" value="4" id="pose_select_4">
+              <img src="https://firebasestorage.googleapis.com/v0/b/graph-cut-web-app.appspot.com/o/000028_0.jpg?alt=media&token=86a2f086-7ff4-4f46-95ea-19e9d511aae0" id="pose_image_4">
+          </label>
+          <label for="pose_select_5" class="pose_panel_select">
+              <input type="radio" value="5" id="pose_select_5">
+              <img src="https://firebasestorage.googleapis.com/v0/b/graph-cut-web-app.appspot.com/o/000038_0.jpg?alt=media&token=5dff7066-0c63-4868-9df1-af4881a3a3d7" id="pose_image_5">
+          </label>
+      </div>
+      <label for="pose_select_0" class="pose_panel_select">
+          <input type="radio" value="0" id="pose_select_0"></input>
+          <input id="selected_file_pose_image" type="file" accept="image/*"></input>
+          <canvas id="selected_file_pose_image_canvas" width="192" height="256"></canvas>
+      </label>
+    </div>  
+    <div class="box_output">
+        <p>背景除去画像を表示</p>
+        <button type="button" onclick="generateOutputImage()">背景除去画像を生成</button>
+        <canvas id="output_image_canvas" width="192" height="256"></canvas>
+    </div>
+
+    <!-- Firebase -->
+    <p id="load">Firebase SDK Loading&hellip;</p>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const loadEl = document.querySelector('#load');
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        // // The Firebase SDK is initialized and available here!
+        //
+        // firebase.auth().onAuthStateChanged(user => { });
+        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
+        // firebase.firestore().doc('/foo/bar').get().then(() => { });
+        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
+        // firebase.messaging().requestPermission().then(() => { });
+        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+        // firebase.analytics(); // call to activate
+        // firebase.analytics().logEvent('tutorial_completed');
+        // firebase.performance(); // call to activate
+        //
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+
+        try {
+          let app = firebase.app();
+          let features = [
+            'auth', 
+            'database', 
+            'firestore',
+            'functions',
+            'messaging', 
+            'storage', 
+            'analytics', 
+            'remoteConfig',
+            'performance',
+          ].filter(feature => typeof app[feature] === 'function');
+          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+        } catch (e) {
+          console.error(e);
+          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+        }
+      });
+    </script>
+  </body>
+</html>

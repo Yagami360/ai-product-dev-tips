@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My first Vue app</title>
+  <script src="https://unpkg.com/vue@next"></script>
+</head>
+
+<body>
+	<h1>Vue3</h1>
+	<div id="app">
+	{{ message }}
+	</div>
+	
+	<script>
+	const appdata = {
+		// data() には、Web ページで表示するためのデータのみ定義する（ここでの例では `timer_count` は対象外）
+		data() {
+			return {
+				message: 'init\n',
+			}
+		},
+
+		// Vue.createApp() で、アプリケーションオブジェクトが作成された時点で呼び出されるコールバック関数
+		// Web ページで表示するためのデータ以外（内部的な変数）はここで定義するのが一般的（ここでの例では `timer_count`）
+		created() {
+			this.timer_count = 0
+			this.message += "call created()" + " timer_count : " + this.timer_count + "\n"
+		},
+
+		// Vue.createApp(appdata).mount('#app') で、Vue3 オブジェクトが Web ページに組み込まれたときに呼び出されるコールバック関数
+		mounted() {
+			this.timer_count += 1
+			this.message += "call mounted()" + " timer_count : " + this.timer_count + "\n"
+		},
+	}
+	
+	Vue.createApp(appdata).mount('#app')
+	</script>
+</body>
+
+</html>

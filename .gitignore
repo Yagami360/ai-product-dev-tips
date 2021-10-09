@@ -6,7 +6,6 @@
 *.ini
 *.png
 *.code-workspace
-*.html
 *.pt
 *.json
 *.local

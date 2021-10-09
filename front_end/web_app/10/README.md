@@ -27,9 +27,10 @@
     > 
 
     ```sh
-    + ${PROJECT_NAME} + /public     # HTML や CSS などの公開ファイル
-    |                 + /src        # .vue などの Vue3 が作成した各種ファイル
-
+    + ${PROJECT_NAME} + /public         # HTML や CSS などの公開ファイル
+    |                 + /src            # .vue などの Vue3 が作成した各種ファイル
+    |                 +-- main.js       # プロジェクトを Web アプリケーションとして実行した場合に、最初に実行されるスクリプト
+    ```
 
 1. 作成した Vue.js のプロジェクトのサーバーを起動する
     ```sh
