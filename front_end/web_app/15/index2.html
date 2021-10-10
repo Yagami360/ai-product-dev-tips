@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>My first Vue app</title>
+	<script src="https://unpkg.com/vue@next"></script>
+</head>
+
+<body>
+	<h1 class="bg-secondary text-white display-4 px-3">Vue3</h1>
+	<div id="app" class="container">
+		<div class="form-group">
+			<!-- <input type="text" class="form-control"> でブラウザ画面に入力フィールドを表示 -->
+			<!-- v-model 属性は HTML の `<input>` タグ内で `<input v-model="変数名"></input>` の形式で使用され、<input> タグでの入力値を data プロパティに割り当てる（バインド）ことができる。 -->
+			<input type="text" v-model="name" class="form-control">
+    </div>
+		<!-- <コンポーネント名 /> でコンポーネントを使用 -->
+		<!-- v-bind 属性でコンポーネントの属性 name_in_component に appdata で定義した name の値を設定する。-->
+		<!-- この name は v-model 属性 により <input> タグでの入力値が割り当てられているので、入力フィールドの値がコンポーネントの属性 name_in_component に反映される -->
+		<div><hello_component v-bind:name_in_component="name" /></div>		
+	</div>
+	
+	<script>
+	const appdata = {
+		data() {
+			return {
+				name: "Yagami",		// v-model 属性は appdata の name に割り当てられる
+			}
+		}
+	}
+	
+	// アプリケーションオブジェクトの変数定義
+	let app = Vue.createApp(appdata)
+	
+	// コンポーネントの作成 : app.component(コンポーネント名、{設定情報})
+	app.component('hello_component', {
+		// props: ["属性名１"，"属性名２", ...] でコンポーネントで使用する HTML 属性を定義できる
+		props: ["name_in_component"],
+		// data() メソッドでコンポーネント内で使用する変数を定義できる
+		data() {
+			return {
+				message : "Hello",
+			}
+		},
+		// {設定情報} の `template:` 項目に設定した内容がコンポーネントとして表示される
+		// HTML の <p></p> タグで コンポーネントの data() メソッドで return した変数文字列 "Hello" と props で定義した name_in_component 属性の値を出力する
+		template: '<p>{{message}}, {{name_in_component}}!</p>'
+	})
+	app.mount('#app')
+	</script>
+</body>
+
+</html>

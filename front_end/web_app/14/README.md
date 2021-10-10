@@ -59,7 +59,6 @@ HTML 要素を Vue.js スクリプト側から利用するには、`{{}}` を用
 
 ### ◎ v-bind 属性を使用して HTML の class 属性の値を設定する
 
-
 1. Vue.js を用いた静的な Web ファイル `index2.html` を作成する
 	```html
 	<!DOCTYPE html>
@@ -95,14 +94,6 @@ HTML 要素を Vue.js スクリプト側から利用するには、`{{}}` を用
 		</div>
 		
 		<script>
-		// class 属性のの変数定義（※オブジェクト指向における class のオブジェクトではない）
-		/*
-		var class_var = {
-				red: true,    // <style> タグ内の .red に対応
-				blue: false   // <style> タグ内の .blue に対応
-		}
-		*/
-
 		const appdata = {
 			data() {
 				return {
@@ -138,33 +129,3 @@ HTML 要素を Vue.js スクリプト側から利用するには、`{{}}` を用
 	$ open index2.html
 	```
 
-### ◎ v-if 属性を使用して条件付きでレンダリングする
-
-1. Vue.js を用いた静的な Web ファイル `index3.html` を作成する
-	```html
-	```
-
-	ポイントは、以下の通り
-
-	- xxx
-
-1. 作成した静的な Web ファイルをブラウザで開く
-	```sh
-	$ open index3.html
-	```
-
-### ◎ v-for 属性を使用してオブジェクトのプロパティを順にレンダリングする
-
-1. Vue.js を用いた静的な Web ファイル `index4.html` を作成する
-	```html
-	```
-
-	ポイントは、以下の通り
-
-	- xxx
-
-1. 作成した静的な Web ファイルをブラウザで開く
-	```sh
-	$ open index4.html
-	```
-	

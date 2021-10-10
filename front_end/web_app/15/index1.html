@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>My first Vue app</title>
+	<script src="https://unpkg.com/vue@next"></script>
+</head>
+
+<body>
+	<h1 class="bg-secondary text-white display-4 px-3">Vue3</h1>
+	<div id="app" class="container">
+		<p>{{ message }}</p>
+		<!-- <コンポーネント名 属性名 /> でコンポーネントとHTML属性を使用 -->
+		<!-- v-for 属性で for item in items: の for ループ処理を行う -->
+		<!-- v-bind 属性で コンポーネント内で定義した属性 name に対して、上記 for ループでの item の値を設定する -->
+		<div><hello_component v-for="item in items" v-bind:name="item" /></div>		
+	</div>
+	
+	<script>
+	const appdata = {
+		data() {
+			return {
+				message : 'コンポーネントを表示する',
+				items: ["Yagami", "Yagoo", "Ken"],
+			}
+		}
+	}
+	
+	// アプリケーションオブジェクトの変数定義
+	let app = Vue.createApp(appdata)
+	
+	// コンポーネントの作成 : app.component(コンポーネント名、{設定情報})
+	app.component('hello_component', {
+		// props: ["属性名１"，"属性名２", ...] でコンポーネントで使用する HTML 属性を定義できる
+		props: ["name"],
+		// data() メソッドでコンポーネント内で使用する変数を定義できる
+		data() {
+			return {
+				message : "Hello",
+			}
+		},
+		// {設定情報} の `template:` 項目に設定した内容がコンポーネントとして表示される
+		template: '<p>{{message}}, {{name}}!</p>'		// HTML の <p></p> タグで data() で return した変数文字列 "Hello!" を表示
+	})
+	app.mount('#app')
+	</script>
+</body>
+
+</html>

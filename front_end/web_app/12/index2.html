@@ -26,10 +26,15 @@
 	let app = Vue.createApp(appdata)
   
 	// コンポーネントの作成 : app.component(コンポーネント名、{設定情報})
-	
 	app.component('hello_component', {
+		// data() メソッドでコンポーネント内で使用する変数を定義できる
+		data() {
+			return {
+				message_in_component : "コンポーネント内部で定義した変数を表示",
+			}
+		},
 		// {設定情報} の `template:` 項目に設定した内容がコンポーネントとして表示される
-	  template: '<p>Hello Vue.js Component!</p>'		// HTML の <p></p> タグで文字列 "Hello!" を表示
+	  template: '<p>{{message_in_component}}</p>'		// HTML の <p></p> タグで data() で return した変数文字列 "Hello!" を表示
 	})
 	app.mount('#app')
 	</script>
