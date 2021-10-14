@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>My first Vue app</title>
+	<script src="https://unpkg.com/vue@next"></script>
+</head>
+
+<body>
+	<h1 class="bg-secondary text-white display-4 px-3">Vue3</h1>
+	<div id="app" class="container">
+		<p>{{ message }}</p>
+		<!-- <コンポーネント名 /> でコンポーネントを使用 -->
+		<div><counter_component /></div>		
+	</div>
+	
+	<script>
+	const appdata = {
+		data() {
+			return {
+				message : 'コンポーネントを表示する',
+			}
+		}
+	}
+	
+	// アプリケーションオブジェクトの変数定義
+	let app = Vue.createApp(appdata)
+	
+	// コンポーネントの作成 : app.component(コンポーネント名、{設定情報})
+	app.component('counter_component', {
+		// data() メソッドでコンポーネント内で使用する変数を定義できる
+		data() {
+			return {
+				counter: 0,
+			}
+		},
+		// methods プロパティでイベント処理を実装
+    methods:{
+      increment_counter() {
+        this.counter++
+			},
+		},
+		// {設定情報} の `template:` 項目に設定した内容がコンポーネントとして表示される
+		//template: '<input type="button" value="button" onclick="counter++"></input><p>clicked: {{counter}}.</p>'						// onclick 属性をそのまま使用すると、コンポーネント内の変数 counter に {{counter}} でアクセスできなくなる
+		template: '<input type="button" value="button" v-on:click="increment_counter"></input><p>clicked: {{counter}}.</p>'		// v-on 属性で onclick イベントを割り当てることで、コンポーネント内の変数 counter に {{counter}} でアクセスできる
+	})
+	app.mount('#app')
+	</script>
+</body>
+
+</html>

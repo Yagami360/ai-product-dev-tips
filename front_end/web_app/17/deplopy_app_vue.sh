@@ -1,11 +1,11 @@
 #!/bin/sh
 set -eu
 ROOT_DIR=${PWD}
-PROJECT_NAME="vue-sample-project"
+PROJECT_NAME="calc-app-vue-project"
 HOST="localhost"
 PORT=8080
-#BUILD=0
-BUILD=1
+BUILD=0
+#BUILD=1
 
 #-----------------------------
 # OS判定

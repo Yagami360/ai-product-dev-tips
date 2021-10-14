@@ -207,9 +207,11 @@
             - 【Vue.js】v-for 属性を使用してオブジェクトのプロパティを順にレンダリングする
             - [【Vue.js】コンポーネントの基本的な書き方](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/12)
             - [[In-progress]【Vue.js】コンポーネントで v 属性を利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/15)
+            - [【Vue.js】コンポーネントでイベント処理する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/16)
             - Bootstrap（CSSのフレームワーク）を Vue.js アプリケーション内で使用する
         - 非 CDN 版の Vue.js
             - [[In-progress]【Vue.js】vue-cli を用いて Vue.js アプリをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/10)
+            - 【Vue.js】Vue.js を使用して簡単なウェブアプリ（計算機アプリ）を作成する
             - 【Vue.js】Vue.js を使用して http 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する
     - React
 
