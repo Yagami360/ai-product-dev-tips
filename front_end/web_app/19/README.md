@@ -23,12 +23,12 @@ CDN 版（スタンドアロン版）の React を使用したい場合は、HTM
     <div id="root">wait...</div>
     <!-- React のスクリプト -->
     <script>
-      // DOM の HTML 要素の取得
+      // DOM におけるタグのエレメント取得
       let dom = document.querySelector('#root');
-      // React.createElement(HTMLタグ名, 属性, タグの中身) : 仮想DOMのエレメント
+      // React.createElement(HTMLタグ名, 属性, タグの中身) : 仮想DOMのエレメントを生成
       let element = React.createElement(
         'p',            // <p> タグ
-        {},             // 
+        {},             // 特に必要ない場合は、{} を指定する
         'Hello React!'  // <p> タグの中身
       );    
       // ReactDOM.render(エレメント, DOM) : 仮想DOMにレンダリング
@@ -42,12 +42,17 @@ CDN 版（スタンドアロン版）の React を使用したい場合は、HTM
 
   - `<script src="https://unpkg.com/react@16/umd/react.development.js"></script>` で、CDN という Web サイトから React ライブラリを読み込んでいる。同じく `<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>` で、CDN という Web サイトから React-DOM ライブラリを読み込んでいる
 
-  - `document.querySelector()` で HTML 要素 `<div id="root">wait...</div>` を取得している（※ このメソッドは、React のメソッドではなく JavaScript のメソッド）
+  - `document.querySelector()` で、DOM におけるタグ `<div id="root">wait...</div>` のエレメントを取得している（※ このメソッドは、React のメソッドではなく JavaScript のメソッド）。
 
-  - `React.createElement(HTMLタグ名, 属性, タグの中身)` で、仮想DOMのエレメント `<p>'Hello React!'</p>` を生成している（※ DOMのエレメントではなく仮想DOMのエレメントになっている）
+  - `React.createElement(HTMLタグ名, 属性, タグの中身)` で、仮想DOMにおけるエレメント（＝タグのオブジェクト）`<p>'Hello React!'</p>` を生成している（※ DOMのエレメントではなく仮想DOMのエレメントになっている）
 
   - `ReactDOM.render(エレメント, DOM)` で、React-DOM ライブラリの `ReactDOM` オブジェクトを用いて、仮想DOMにレンダリングしている。これにより、`document.querySelector()`　で取得した HTML 要素 `<div id="root">wait...</div>` の部分が `<div id="root"><p>'Hello React!'</p></div>` に置き換わる。<br>
   その後、仮想DOMのレンダリングがDOMのレンダリングに反映され、HTML 上の表示に反映される
+
+
+  > エレメント : HTML タグを操作するためのオブジェクト（JavaScript における用語）
+
+  > ノード : 各 HTML 要素のオブジェクト。エレメントのノードの１つになる
 
 1. 静的な Web ファイル `index.html` をブラウザで開き動作確認する
 	```sh
@@ -60,4 +65,3 @@ CDN 版（スタンドアロン版）の React を使用したい場合は、HTM
 
 1. 【オプション】React Developer Tools をインストール<br>
   [React Developer Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi/related?hl=ja)
-  

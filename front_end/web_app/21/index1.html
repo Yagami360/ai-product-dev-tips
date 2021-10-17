@@ -8,18 +8,32 @@
   <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
 </head>
 <body>
-  <h1>React</h1>
   <div id="root">wait...</div>
   <!-- React のスクリプト -->
   <script>
-    // DOM におけるタグのエレメント取得
+    // DOM
     let dom = document.querySelector('#root');
     // React.createElement(HTMLタグ名, 属性, タグの中身) : 仮想DOMのエレメント
     let element = React.createElement(
-      'p',            // <p> タグ
-      {},             // 
-      'Hello React!'  // <p> タグの中身
-    );    
+        'div', {}, [
+            React.createElement(
+                'h1', {}, "Hello React!"
+            ),
+            React.createElement(
+                'h2', {}, "react sample app"
+            ),
+            React.createElement(
+                'ul', {}, [
+                    React.createElement(
+                        'li', {}, "list1"
+                    ),
+                    React.createElement(
+                        'li', {}, "lsit2"
+                    ),
+                ]
+            ),
+        ]
+    );
     // ReactDOM.render(エレメント, DOM) : 仮想DOMにレンダリング
     ReactDOM.render(element, dom);
   </script>

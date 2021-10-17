@@ -224,6 +224,12 @@
         - [[In-progress]【React】React の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/18)
         - CDN 版（スタンドアロン版）の React
             - [【React】CDN 版（スタンドアロン版）の React を使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/19)
+            - [【React】JSX を用いて階層構造のタグを表示する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/21)
+            - [【React】JSX に変数値を埋め込む](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/22)
+            - [【React】JSX で HTML 属性に変数値を設定する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/23)
+            - 【React】JSX で 関数を使用する
+            - [【React】関数コンポーネントを使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/24)
+            - 【React】クラスコンポーネントを使用する
         - 非 CDN 版の React
             - [【React】Creat React App を用いて React アプリをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/20)
 
