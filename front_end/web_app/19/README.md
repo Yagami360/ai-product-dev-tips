@@ -7,60 +7,61 @@ CDN 版（スタンドアロン版）の React を使用したい場合は、HTM
 
 ## ■ 方法
 
-1. HTML ファイルを作成する
-  ```html
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>React</title>
-    <!-- CDN 版（スタンドアロン版）の React を使用 -->
-    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-  </head>
-  <body>
-    <h1>React</h1>
-    <div id="root">wait...</div>
-    <!-- React のスクリプト -->
-    <script>
-      // DOM におけるタグのエレメント取得
-      let dom = document.querySelector('#root');
-      // React.createElement(HTMLタグ名, 属性, タグの中身) : 仮想DOMのエレメントを生成
-      let element = React.createElement(
-        'p',            // <p> タグ
-        {},             // 特に必要ない場合は、{} を指定する
-        'Hello React!'  // <p> タグの中身
-      );    
-      // ReactDOM.render(エレメント, DOM) : 仮想DOMにレンダリング
-      ReactDOM.render(element, dom);
-    </script>
-  </body>
-  </html>
-  ```
+1. HTML ファイルを作成する<br>
 
-  ポイントは、以下の通り。React では元々の HTML タグの値を置き換えることで、表示を行っている点がポイント
+	```html
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>React</title>
+		<!-- CDN 版（スタンドアロン版）の React を使用 -->
+		<script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+		<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+	</head>
+	<body>
+		<h1>React</h1>
+		<div id="root">wait...</div>
+		<!-- React のスクリプト -->
+		<script>
+			// DOM におけるタグのエレメント取得
+			let dom = document.querySelector('#root');
+			// React.createElement(HTMLタグ名, 属性, タグの中身) : 仮想DOMのエレメントを生成
+			let element = React.createElement(
+				'p',            // <p> タグ
+				{},             // 特に必要ない場合は、{} を指定する
+				'Hello React!'  // <p> タグの中身
+			);    
+			// ReactDOM.render(エレメント, DOM) : 仮想DOMにレンダリング
+			ReactDOM.render(element, dom);
+		</script>
+	</body>
+	</html>
+	```
 
-  - `<script src="https://unpkg.com/react@16/umd/react.development.js"></script>` で、CDN という Web サイトから React ライブラリを読み込んでいる。同じく `<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>` で、CDN という Web サイトから React-DOM ライブラリを読み込んでいる
+	ポイントは、以下の通り。React では元々の HTML タグの値を置き換えることで、表示を行っている点がポイント
+		
+	- `<script src="https://unpkg.com/react@16/umd/react.development.js"></script>` で、CDN という Web サイトから React ライブラリを読み込んでいる。同じく `<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>` で、CDN という Web サイトから React-DOM ライブラリを読み込んでいる
 
-  - `document.querySelector()` で、DOM におけるタグ `<div id="root">wait...</div>` のエレメントを取得している（※ このメソッドは、React のメソッドではなく JavaScript のメソッド）。
+	- `document.querySelector()` で、DOM におけるタグ `<div id="root">wait...</div>` のエレメントを取得している（※ このメソッドは、React のメソッドではなく JavaScript のメソッド）。
 
-  - `React.createElement(HTMLタグ名, 属性, タグの中身)` で、仮想DOMにおけるエレメント（＝タグのオブジェクト）`<p>'Hello React!'</p>` を生成している（※ DOMのエレメントではなく仮想DOMのエレメントになっている）
+	- `React.createElement(HTMLタグ名, 属性, タグの中身)` で、仮想DOMにおけるエレメント（＝タグのオブジェクト）`<p>'Hello React!'</p>` を生成している（※ DOMのエレメントではなく仮想DOMのエレメントになっている）
 
-  - `ReactDOM.render(エレメント, DOM)` で、React-DOM ライブラリの `ReactDOM` オブジェクトを用いて、仮想DOMにレンダリングしている。これにより、`document.querySelector()`　で取得した HTML 要素 `<div id="root">wait...</div>` の部分が `<div id="root"><p>'Hello React!'</p></div>` に置き換わる。<br>
-  その後、仮想DOMのレンダリングがDOMのレンダリングに反映され、HTML 上の表示に反映される
+	- `ReactDOM.render(エレメント, DOM)` で、React-DOM ライブラリの `ReactDOM` オブジェクトを用いて、仮想DOMにレンダリングしている。これにより、`document.querySelector()`　で取得した HTML 要素 `<div id="root">wait...</div>` の部分が `<div id="root"><p>'Hello React!'</p></div>` に置き換わる。<br>
+	
+	その後、仮想DOMのレンダリングがDOMのレンダリングに反映され、HTML 上の表示に反映される
 
+	> エレメント : HTML タグを操作するためのオブジェクト（JavaScript における用語）
 
-  > エレメント : HTML タグを操作するためのオブジェクト（JavaScript における用語）
-
-  > ノード : 各 HTML 要素のオブジェクト。エレメントのノードの１つになる
+	> ノード : 各 HTML 要素のオブジェクト。エレメントのノードの１つになる
 
 1. 静的な Web ファイル `index.html` をブラウザで開き動作確認する
 	```sh
 	$ open index.html
 	```
 
-    ブラウザ上に以下のような表示が行われる<br>
-    <img src="https://user-images.githubusercontent.com/25688193/137611994-6c3a823c-3572-47e1-a69e-1037f0d8f008.png" width="500"><br>
+	ブラウザ上に以下のような表示が行われる<br>
+	<img src="https://user-images.githubusercontent.com/25688193/137611994-6c3a823c-3572-47e1-a69e-1037f0d8f008.png" width="500"><br>
 
 
 1. 【オプション】React Developer Tools をインストール<br>

@@ -44,51 +44,52 @@ JSX を用いれば、このような階層構造を持つタグも HTML ライ�
 ## ■ 方法
 
 1. HTML ファイル `index2.html` を作成する
-  ```html
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>React</title>
-    <!-- CDN 版（スタンドアロン版）の React を使用 -->
-    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-    <!-- JSX の機能を利用するための Babel ライブラリを読み込む  -->
-    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
-  </head>
-  <body>
-    <div id="root">wait...</div>
-    <!-- React のスクリプト -->
-    <script type="text/babel">
-      // DOM におけるタグのエレメント取得
-      let dom = document.querySelector('#root');
-      // JSX を用いた 仮想 DOM のエレメント定義
-      let element = (
-        <div>
-          <h1>Hello React!</h1>
-          <h2>react sample app</h2>
-          <ul>
-            <li>list1</li>
-            <li>list2</li>
-          </ul>
-        </div>
-      );
-      // ReactDOM.render(エレメント, DOM) : 仮想DOMにレンダリング
-      ReactDOM.render(element, dom);
-    </script>
-  </body>
-  </html>
-  ```
 
-  ポイントは、以下の通り。React では元々の HTML タグの値を置き換えることで、表示を行っている点がポイント
+    ```html
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8" />
+      <title>React</title>
+      <!-- CDN 版（スタンドアロン版）の React を使用 -->
+      <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+      <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+      <!-- JSX の機能を利用するための Babel ライブラリを読み込む  -->
+      <script src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
+    </head>
+    <body>
+      <div id="root">wait...</div>
+      <!-- React のスクリプト -->
+      <script type="text/babel">
+        // DOM におけるタグのエレメント取得
+        let dom = document.querySelector('#root');
+        // JSX を用いた 仮想 DOM のエレメント定義
+        let element = (
+          <div>
+            <h1>Hello React!</h1>
+            <h2>react sample app</h2>
+            <ul>
+              <li>list1</li>
+              <li>list2</li>
+            </ul>
+          </div>
+        );
+        // ReactDOM.render(エレメント, DOM) : 仮想DOMにレンダリング
+        ReactDOM.render(element, dom);
+      </script>
+    </body>
+    </html>
+    ```
 
-  - `<script src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>` で JSX の機能を利用するための Babel ライブラリを読み込んでいる
+    ポイントは、以下の通り。React では元々の HTML タグの値を置き換えることで、表示を行っている点がポイント
 
-  - `<script></script>` タグではなく、`<script type="text/babel"></script>` タグで React スクリプトを定義している。これにより、タグ内に定義した React スクリプトが、Bable のコンパイラによってコンパイルされ、JSX で記述されたスクリプトが動作するようになる。（このタグで定義しないと文法エラーがでる）
+    - `<script src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>` で JSX の機能を利用するための Babel ライブラリを読み込んでいる
 
-  - `element` 変数に HTML におけるタグ定義と同じ形式で階層構造のタグを定義し、それを `React.createElement()` のときと同じように、`ReactDOM.render()` に渡すことで階層構造のタグをレンダリングできる
+    - `<script></script>` タグではなく、`<script type="text/babel"></script>` タグで React スクリプトを定義している。これにより、タグ内に定義した React スクリプトが、Bable のコンパイラによってコンパイルされ、JSX で記述されたスクリプトが動作するようになる。（このタグで定義しないと文法エラーがでる）
 
-1. 静的な Web ファイル `index2.html` をブラウザで開き動作確認する
+    - `element` 変数に HTML におけるタグ定義と同じ形式で階層構造のタグを定義し、それを `React.createElement()` のときと同じように、`ReactDOM.render()` に渡すことで階層構造のタグをレンダリングできる
+
+2. 静的な Web ファイル `index2.html` をブラウザで開き動作確認する
 	```sh
 	$ open index2.html
 	```
