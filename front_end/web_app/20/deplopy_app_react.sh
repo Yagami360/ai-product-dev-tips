@@ -1,9 +1,9 @@
 #!/bin/sh
 set -eu
 ROOT_DIR=${PWD}
-PROJECT_NAME="vue-sample-project"
+PROJECT_NAME="react-sample-project"
 HOST="localhost"
-PORT=8080
+PORT=3000
 #BUILD=0
 BUILD=1
 
@@ -36,29 +36,24 @@ fi
 npm -v
 
 #-----------------------------
-# Vue.js の CLI をインストール
+# React のプロジェクトを作成し、起動する
 #-----------------------------
-npm install -g @vue/cli
-
-#-----------------------------
-# Vue.js のプロジェクトを作成し、起動する
-#-----------------------------
-# Vue.js のプロジェクトを作成
+# React のプロジェクトを作成
 if [ ! -e ${ROOT_DIR}/${PROJECT_NAME} ] ; then
-  vue create ${PROJECT_NAME}
+  npx -y create-react-app ${PROJECT_NAME}
 fi
 
-# Vue.js アプリをデプロイする
+# プロジェクトをビルドする
 if [ ${BUILD} != 0 ] ; then
   cd ${ROOT_DIR}/${PROJECT_NAME}
   npm run build
 fi
 
-# Vue.js アプリのサーバーを起動する
+# 作成した React のプロジェクトのサーバーを起動する
 cd ${ROOT_DIR}/${PROJECT_NAME}
-npm run serve
+npm start
 
 #-----------------------------
 # デプロイしたアプリの Web サイトにアクセスする
 #-----------------------------
-open http://${HOST}:${PORT}
+#open http://${HOST}:${PORT}

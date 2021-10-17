@@ -44,19 +44,19 @@ npm install -g @vue/cli
 # Vue.js のプロジェクトを作成し、起動する
 #-----------------------------
 # Vue.js のプロジェクトを作成
-if [ ! -e ${PWD}/${PROJECT_NAME} ] ; then
+if [ ! -e ${ROOT_DIR}/${PROJECT_NAME} ] ; then
   vue create ${PROJECT_NAME}
 fi
 
-# 依存関係をインストールして、起動
-cd ${PWD}/${PROJECT_NAME}
-npm run serve
-
-# 依存関係をインストールして、起動
+# Vue.js アプリをデプロイする
 if [ ${BUILD} != 0 ] ; then
-  cd ${PWD}/${PROJECT_NAME}
+  cd ${ROOT_DIR}/${PROJECT_NAME}
   npm run build
 fi
+
+# Vue.js アプリのサーバーを起動する
+cd ${ROOT_DIR}/${PROJECT_NAME}
+npm run serve
 
 #-----------------------------
 # デプロイしたアプリの Web サイトにアクセスする

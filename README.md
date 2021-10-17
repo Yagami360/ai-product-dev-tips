@@ -49,6 +49,7 @@
         - 【Docker】dockerfile でユーザー追加後に git clone する際の、permission denied エラー対策
         - [【Docker】dockerfile の WORKDIR 変更前のデフォルトパス](https://github.com/Yagami360/MachineLearning_Tips/tree/master/docker_processing/9)
         - [【Docker】requests モジュールを用いてコンテナ間通信するときの、IP アドレス指定方式（コンテナ名で指定）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/docker_processing/8)
+        - 【Docker】Docker コンテナ内から別の Docker コンテナを認識する
     - Kubernetes (k8s)
         - [【GKE】Kubernetes (k8s) と GKE [Google Kubernetes Engine] の基本事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/9)
         - [【GKE】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/10)
@@ -191,12 +192,18 @@
 
 - HTML
     - HTML の基礎事項
+
 - css
+
 - JavaScript / TypeScript
     - JavaScript の基礎事項
+
+- サーバサイド
     - Node.js
+
+- UI ライブラリ/ UI フレームワーク
     - jQuery
-    - Vue.js
+    - Vue.js / Nuxt.js
         - [[In-progress]【Vue.js】Vue.js の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/7)
         - CDN 版（スタンドアロン版）の Vue.js
             - [【Vue.js】CDN 版（スタンドアロン版）の Vue.js を使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/9)
@@ -211,9 +218,14 @@
             - Bootstrap（CSSのフレームワーク）を Vue.js アプリケーション内で使用する
         - 非 CDN 版の Vue.js
             - [[In-progress]【Vue.js】vue-cli を用いて Vue.js アプリをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/10)
-            - 【Vue.js】Vue.js を使用して簡単なウェブアプリ（計算機アプリ）を作成する
+            - [[In-progress]【Vue.js】Vue.js を使用して簡単なウェブアプリ（計算機アプリ）を作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/17)
             - 【Vue.js】Vue.js を使用して http 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する
-    - React
+    - React / Next.js
+        - [[In-progress]【React】React の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/18)
+        - CDN 版（スタンドアロン版）の React
+            - [【React】CDN 版（スタンドアロン版）の React を使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/19)
+        - 非 CDN 版の React
+            - [【React】Creat React App を用いて React アプリをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/20)
 
 - Web アプリ開発
     - [【Firebase】Firebase Hosting を使用して静的なウェブサイトをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/14)
