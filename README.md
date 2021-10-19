@@ -229,9 +229,13 @@
             - [【React】JSX で HTML 属性に変数値を設定する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/23)
             - 【React】JSX で 関数を使用する
             - [【React】関数コンポーネントを使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/24)
-            - 【React】クラスコンポーネントを使用する
+            - [【React】クラスコンポーネントを使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/25)
+            - [【React】クラスコンポーネントでステートを使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/26)
+            - [【React】クラスコンポーネントでイベントを割り当てる](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/27)
+            - [【React】クラスコンポーネントでコンテキストを使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/28)
         - 非 CDN 版の React
             - [【React】Creat React App を用いて React アプリをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/20)
+            - 【React】Redux を使用して値の状態管理を行う
 
 - Web アプリ開発
     - [【Firebase】Firebase Hosting を使用して静的なウェブサイトをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/14)
