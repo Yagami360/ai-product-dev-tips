@@ -1,5 +1,4 @@
-import React from 'react';
-import { createStore, combineReducers } from 'redux';   // ストア機能を import
+import { createStore } from 'redux';   // ストア機能を import
 
 // ステートの初期値
 let init_state = {
