@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './App.css';
 import Memo from './Memo';
+import AddMemoForm from './AddMemoForm';
 
-// App コンポーネント
+// アプリ全部のコンポーネント
 class App extends Component {
   constructor(props){
     super(props);
@@ -12,7 +13,8 @@ class App extends Component {
   render() {
     return (
       <div>
-        <p>Hello React Component!</p>
+        <h1>React Memo App</h1>
+        <AddMemoForm />
         <Memo />
       </div>
     );

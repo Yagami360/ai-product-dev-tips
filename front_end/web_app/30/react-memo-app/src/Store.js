@@ -4,8 +4,8 @@ import { createStore } from 'redux';   // ストア機能を import
 let init_state = {
   // 各メモをリストで管理
   data_list: [{
-    memo_text: "",                // メモのテキスト内容
-    created_time: new Date(),     // メモの作成時刻
+    memo_text: "xxx",                // メモのテキスト内容
+    created_time: new Date(),       // メモの作成時刻
   }]
 }
 
@@ -13,6 +13,8 @@ let init_state = {
 // レデューサー
 //-----------------------------------------
 function reducer(state = init_state, action) {
+  console.log("[reducer] state", state)
+  console.log("[reducer] action", action)
   // action : レデューサーを呼び出す際の情報をまとめたオブジェクト
   // action.type : action オブジェクトに必ず用意されているプロパティで、レデューサーを呼び出す際の呼び出しの種類を表している。これらの値は、App.js 内の `this.props.dispath({type:"xxx"})` で定義している
   switch (action.type) {
@@ -43,7 +45,7 @@ function addMemo(state, action){
 
   // unshift() でリストの先頭に値を追加
   new_data_list.unshift(new_data)
-
+  console.log("[reducer:addMemo] new_data_list", new_data_list)
   // 新たな state を return
   return {
     data_list: new_data_list,
