@@ -230,7 +230,7 @@
         - [【React】クラスコンポーネントでイベントを割り当てる（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/27)
         - [【React】クラスコンポーネントでコンテキストを使用する（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/28)
         - [【React】Redux を使用して値の状態管理を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/29)
-        - [[In-progress]【React】React を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/30)
+        - [【React】React を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/30)
         - 【React】React を使用して http 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する
 - Web アプリ開発
     - [【Firebase】Firebase Hosting を使用して静的なウェブサイトをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/14)
