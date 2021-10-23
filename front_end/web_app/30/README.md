@@ -26,11 +26,12 @@
 	$ npx -y create-react-app ${PROJECT_NAME}
 	```
 
-1. Redux, React Redux, React DevTools をインストールする<br>
+1. Redux, React Redux, Redux Persist, React DevTools をインストールする<br>
 	```sh
 	$ cd ${PROJECT_NAME}
 	$ npm install --save redux
 	$ npm install --save react-redux
+  $ npm install --save redux-persist
 	$ npm install --save-dev redux-devtools
 	```
 

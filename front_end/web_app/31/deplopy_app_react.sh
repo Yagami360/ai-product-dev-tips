@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 ROOT_DIR=${PWD}
-PROJECT_NAME="react-memo-app"
+PROJECT_NAME="react-redux-app"
 BUILD=0
 #BUILD=1
 

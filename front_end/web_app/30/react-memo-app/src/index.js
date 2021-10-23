@@ -1,6 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import storage from 'redux-persist/lib/storage';
 import { Provider } from 'react-redux';                 // プロバイダー機能を import
+import { persistStore, persistReducer } from 'redux-persist';   // redux-persist のパーシストレデューサーとパーシスター
+import { PersistGate } from 'redux-persist/integration/react';  // redux-persist のパーシストゲート
 import './index.css';
 import App from './App';
 import Store from './Store'

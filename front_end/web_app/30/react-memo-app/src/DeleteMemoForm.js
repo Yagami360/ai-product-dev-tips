@@ -57,14 +57,15 @@ class DeleteMemoForm extends Component {
     this.setState({memo_text: ''});
   }
 
-  // <form> タグがひとつのフォームとなり、フォームの中に <input> タグ、<select> タグ、<textarea> タグなどのフォーム部品を配置してフォームを作る
-  // <select> タグ : 選択ボックス
-  // <input> タグの onChange 属性 : フォームのコントロール部品（input要素, select要素, textarea要素）の属性値が変更されたときのイベント
-  // <form> タグの onSubmit 属性 : <form> タグ内部の <input type="submit"> で定義したボタンクリック時のイベント
   render() {
     let n = 0;
+    // <option> タグ : <select>タグ内で使用し、メニューの選択肢を作成する要素
     let memo_texts = this.props.data_list.map((data)=>(<option key={n} value={n++}>{data.memo_text.substring(0,10)}</option>));
 
+    // <form> タグがひとつのフォームとなり、フォームの中に <input> タグ、<select> タグ、<textarea> タグなどのフォーム部品を配置してフォームを作る
+    // <select> タグ : 選択ボックス
+    // <input> タグの onChange 属性 : フォームのコントロール部品（input要素, select要素, textarea要素）の属性値が変更されたときのイベント
+    // <form> タグの onSubmit 属性 : <form> タグ内部の <input type="submit"> で定義したボタンクリック時のイベント
     return (
       <div>
         <form onSubmit={this.deleteMemo}>
