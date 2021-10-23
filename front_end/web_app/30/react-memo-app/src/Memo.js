@@ -13,12 +13,9 @@ class Memo extends Component {
     //console.log("this.props.data_list[0]", this.props.data_list[0])
     //console.log("this.props.data_list[0].memo_text", this.props.data_list[0].memo_text)
     //console.log("this.props.data_list[0].created_time", this.props.data_list[0].created_time)
-    /*
-    return (
-      <p>テキスト : {this.props.data_list[0].memo_text}, 保存時間 : {this.props.data_list[0].created_time.getHours() + ':' + this.props.data_list[0].created_time.getMinutes() + ':' + this.props.data_list[0].created_time.getSeconds()}</p>
-    );
-    */
+
     // <table> タグ : 表
+    // 配列.map((value)=>(配列の各要素 value に対しての処理)) : map で配列の各要素 value を取り出し、value を引数に、配列の各要素 value に対しての処理を行う
     return (
       // 保存済みメモ一覧
       <table><tbody>

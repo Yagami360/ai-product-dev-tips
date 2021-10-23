@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import './App.css';
 import Memo from './Memo';
 import AddMemoForm from './AddMemoForm';
+import DeleteMemoForm from './DeleteMemoForm';
 
 // アプリ全部のコンポーネント
 class App extends Component {
@@ -11,10 +12,13 @@ class App extends Component {
   }
 
   render() {
+    // <hr /> タグ : 区切り線
     return (
       <div>
         <h1>React Memo App</h1>
         <AddMemoForm />
+        <hr />
+        <DeleteMemoForm />
         <Memo />
       </div>
     );

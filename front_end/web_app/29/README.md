@@ -125,7 +125,8 @@ Redux には、主に以下のような要素で構成される。
 
 	- プロバイダーは、`<Provider store={ストアの変数名}>xxx</Provider>` タグとその store 属性で定義し、このタグ内の xxx の箇所で定義されているコンポーネントにストアの内容が渡される。この例では、`App.js` で定義されている `AppComponent` コンポーネントにストアの内容が渡される。但し、ストアの state をコンポーネントで利用可能にするためには、`connect(stateを設定する関数)(コンポーネント)` でストアの state を接続する処理も必要なことに注意。この処理は、後述の `App.js` で行っている
 
-1. `src/App.js` を修正する
+1. `src/App.js` を修正する<br>
+
 	```js
 	import React, { Component } from 'react';
 	import { connect } from 'react-redux';
@@ -208,7 +209,6 @@ Redux には、主に以下のような要素で構成される。
 
 	// AppComponent を外部ファイルから利用できるようにする
 	export default AppComponent;
-
 	```
 
 	ポイントは、以下の通り
@@ -233,7 +233,7 @@ Redux には、主に以下のような要素で構成される。
 	$ npm start
 	```
 
-  コマンド実行後、作成した React アプリの Web サイト（デフォルトでは http://localhost:3000）が自動的に開く
+	コマンド実行後、作成した React アプリの Web サイト（デフォルトでは http://localhost:3000）が自動的に開く
 
 <!--
 1. デプロイしたアプリの Web サイトにアクセスする

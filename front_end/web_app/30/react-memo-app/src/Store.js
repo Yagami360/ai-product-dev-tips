@@ -39,13 +39,14 @@ function addMemo(state, action){
     created_time: new Date(),
   }
 
-  // リスト.slice() で リストのコピーを作成
-  // Redux では state の値を直接変えて setState() しても state の更新なしと判断してしまうため、state オブジェクトのコピーを作成して、そのオブジェクトを更新するようにする
+  // リスト.slice() で state 内の変数のリストのコピーインスタンスを作成
+  // Redux では state の値を直接変えて setState() で state の更新を行っても、state の更新なしと判断してしまうため、state オブジェクトのコピーを作成して、そのオブジェクトを更新するようにする
   let new_data_list = state.data_list.slice();
 
   // unshift() でリストの先頭に値を追加
   new_data_list.unshift(new_data)
   console.log("[reducer:addMemo] new_data_list", new_data_list)
+
   // 新たな state を return
   return {
     data_list: new_data_list,
@@ -54,8 +55,17 @@ function addMemo(state, action){
 
 // メモを削除するメソッド
 function deleteMemo(state, action){
+  // リスト.slice() で state 内の変数のリストのコピーインスタンスを作成
+  // Redux では state の値を直接変えて setState() で state の更新を行っても、state の更新なしと判断してしまうため、state オブジェクトのコピーを作成して、そのオブジェクトを更新するようにする
+  let new_data_list = state.data_list.slice();
+
+  // splice() でリストの要素を削除
+  // action.select_index : メモの番号
+  new_data_list.splice(action.select_index, 1);
+
+  // 新たな state を return  
   return {
-    data_list: state.data_list.slice(),
+    data_list: new_data_list,
   }
 }
 
@@ -70,10 +80,10 @@ export function addMemoAction(memo_text){
   }
 }
 
-export function deleteMemoAction(memo_text){
+export function deleteMemoAction(select_index){
   return {
     type: 'DELETE_MEMO',
-    memo_text:memo_text
+    select_index:select_index
   }
 }
 
@@ -81,4 +91,5 @@ export function deleteMemoAction(memo_text){
 // `ストア変数名 = createStore(レデューサー関数名)` の形式でストアを作成
 // export default で外部ファイルに公開
 //-----------------------------------------
-export default createStore(reducer);
+let store = createStore(reducer);
+export default store;
