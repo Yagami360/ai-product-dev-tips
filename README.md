@@ -229,11 +229,15 @@
         - [【React】クラスコンポーネントでステートを使用する（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/26)
         - [【React】クラスコンポーネントでイベントを割り当てる（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/27)
         - [【React】クラスコンポーネントでコンテキストを使用する（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/28)
+        - 【React】クラスコンポーネントでレイアウトを行う
         - [【React】Redux を使用して値の状態管理を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/29)
-        - [【React】Redux Persist で React アプリのデータを永続化する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/29)
-        - 【React】Next.js を使用する
-        - 【React】React アプリに Firebase を組み込む
-        - [【React】React を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/30)
+        - [【React】Redux Persist で React アプリのデータを永続化する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/31)
+        - 【React】Redux Persist で React アプリのデータの永続化を停止・再開する
+        - [[In-progress]【React】Next.js を使用してサーバーサイドレンダリング（SSR）する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/32)
+        - 【React】React アプリで Firebase の Realtime Database を利用する
+        - [【React】React と Redux を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/30)
+        - 【React】Next.js を使用して簡単なウェブアプリを作成する
+        - 【React】React と Firebase を使用して簡単なウェブアプリを作成する
         - 【React】React を使用して http 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する
 
 - Web アプリ開発

@@ -1,5 +1,5 @@
 
-# 【React】React を使用して簡単なウェブアプリを作成する
+# 【React】React と Redux を使用して簡単なウェブアプリを作成する
 
 ここでは、React を使用した簡単なウェブアプリの構成例として、以下のようなメモ帳アプリを作成する
 
@@ -39,25 +39,54 @@
     ```js
     import React from 'react';
     import ReactDOM from 'react-dom';
+    import { createStore } from 'redux';   // ストア機能を import
     import { Provider } from 'react-redux';                 // プロバイダー機能を import
+    import storage from 'redux-persist/lib/storage';
+    import { persistStore, persistReducer } from 'redux-persist';   // redux-persist のパーシストレデューサーとパーシスター
+    import { PersistGate } from 'redux-persist/integration/react';  // redux-persist のパーシストゲート
     import './index.css';
     import App from './App';
-    import Store from './Store'
+    import { reducer } from './Store'
+
+    // Redux Persist の設定情報の作成
+    const persist_config = {
+      key: "react-memo-app",
+      storage,
+    };
+
+    // パーシストレデューサーの作成
+    const persist_reducer = persistReducer(persist_config, reducer);
+
+    // `ストア変数名 = createStore(レデューサー関数名)` の形式でストアを作成
+    let store = createStore(persist_reducer);
+
+    // パーシスターの作成
+    let persist_store = persistStore(store);
 
     // 表示をレンダリング
     ReactDOM.render(
       // プロバイダーは、`<Provider store={ストアの変数名}>xxx</Provider>` タグとその store 属性で定義し、このタグ内の xxx の箇所で定義されているコンポーネントにストアの内容が渡される。
       // この例では、App.js で定義されている App コンポーネントにストアの内容が渡される
-      <Provider store={Store}>
-        <App />
+      // プロバイダーのタグ `<Provider>` 内に、パーシストゲートのタグ `<PersistGate>` を追加することで、パーシストゲートをコンポーネントに適用する
+      <Provider store={store}>
+        <PersistGate loading={<p>loading...</p>} persistor={persist_store}>
+          <App />
+        </PersistGate>
       </Provider>,
       document.getElementById('root')
     );
     ```
 
-	ポイントは、以下の通り
+    ポイントは、以下の通り
 
-	- `<Provider store={ストアの変数名}>` タグでプロバイダーとその store 属性で定義し、アプリ全部のコンポーネント `<App />`にストアの内容が渡している。
+    - アプリのウェブページをリロードしても、アプリのデータが消失しないようにするために、Redux Persist を用いてデータの永続化を行っている。具体的には、以下の処理を行っている
+      - `const persist_config = {key: "root", storage,};` の部分で、redux-persist の設定情報を定義している。`key` には `"react-memo-app"` を指定している。この key はブラウザのローカルストレージの key の値である（ブラウザのローカルストレージは key:value 形式でデータを保管している）。ブラウザのローカルストレージの key は、ディベロッパーツールから確認できる。
+      - `const persist_reducer = persistReducer(persist_config, reducer);` の部分で、`Store.js` から impoert した通常のレデューサーからパーシストレデューサーを作成している。
+      - `let store = createStore(persist_reducer);` の部分で、パーシストレデューサーから通常のストアを作成している。
+      - `let persist_store = persistStore(store);` の部分で、通常のストアからパーシスターを作成している。
+      - `ReactDOM.render()` の JSX 定義にて、プロバイダーのタグ `<Provider>` 内に、パーシストゲートのタグ `<PersistGate>` を追加することで、パーシストゲートを `App` コンポーネントに適用している
+
+    - `<Provider store={ストアの変数名}>` タグでプロバイダーとその store 属性で定義し、アプリ全部のコンポーネント `<App />`にストアの内容が渡している。
 
 1. `src/App.js` を修正する<br>
   `App.js` の `App` コンポーネントは、アプリ全部画面のコンポーネントであり、アプリ全部表示を行う。
@@ -108,24 +137,23 @@
     - `export default` で `App` コンポーネントを外部公開している
 
 1. `src/Store.js` を修正する<br>
-  `Store.js` では、レデューサーの定義、レデューサーの action を定義するアクションクリエイター、及び、ストアの作成を行う。
+  `Store.js` では、レデューサーの定義、レデューサーの action を定義するアクションクリエイターの作成を行う。
 
     ```js
-    import { createStore } from 'redux';   // ストア機能を import
-
     // ステートの初期値
     let init_state = {
-      // 各メモをリストで管理
-      data_list: [{
-        memo_text: "xxx",                // メモのテキスト内容
-        created_time: new Date(),       // メモの作成時刻
-      }]
+      // data_list には、各メモの memo_text と created_time を要素とする可変長の配列が入る
+      //data_list: [{
+      //  memo_text: "xxx",                // メモのテキスト内容
+      //  created_time: "00:00:00",        // メモの作成時刻
+      //}]
+      data_list: []
     }
 
     //-----------------------------------------
     // レデューサー
     //-----------------------------------------
-    function reducer(state = init_state, action) {
+    export function reducer(state = init_state, action) {
       // action : レデューサーを呼び出す際の情報をまとめたオブジェクト
       // action.type : action オブジェクトに必ず用意されているプロパティで、レデューサーを呼び出す際の呼び出しの種類を表している。これらの値は、App.js 内の `this.props.dispath({type:"xxx"})` で定義している
       switch (action.type) {
@@ -145,9 +173,10 @@
     //-----------------------------------------
     // メモを追加するメソッド
     function addMemo(state, action){
+      let date = new Date()
       let new_data = {
         memo_text: action.memo_text,
-        created_time: new Date(),
+        created_time: date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds(),  // created_time に new Date() で生成したオブジェクトの値を直接入力すると、Redux Persist でデータを保存できなくなるので、テキスト情報に変換しておく
       }
 
       // リスト.slice() で state 内の変数のリストのコピーインスタンスを作成
@@ -196,22 +225,16 @@
         select_index:select_index
       }
     }
-
-    //-----------------------------------------
-    // `ストア変数名 = createStore(レデューサー関数名)` の形式でストアを作成
-    // export default で外部ファイルに公開
-    //-----------------------------------------
-    let store = createStore(reducer);
-    export default store;
     ```
 
     - `function レデューサーの関数名 (state=stateの初期値, action){...}` の形式でレデューサーを定義している。 ここで、`action` 引数には、レデューサーを呼び出す際の情報をまとめたオブジェクトが設定される。この内、`action.type` は action オブジェクトに必ず用意されているプロパティで、レデューサーを呼び出す際の呼び出しの種類を表している。 そして、レデューサーは、後述の `AddMemoForm.js` や `DeleteMemoForm.js` のコンポーネント内にて、`this.props.dispatch({action})` を呼び出したときに呼び出される。
 
-    - レデューサー内（レデューサーから呼び出されるメソッド内）では、`リスト.slice()` の形式で state 内の変数のリスト `state.data_list` のコピーを作成し、そのコピーインスタンスの値を新たな state として設定している。これは Redux では state の値を直接変えて `setState()` で state の更新を行っても、state の更新なしと判断してしまうためである。そのため state オブジェクトのコピーを作成して、そのオブジェクトを更新するようにしている。
+    - レデューサーから呼び出されるメソッド内 `addMemo()` で、state の `created_time`（メモの作成時刻）に値を代入する際には、`new Date()` で作成したオブジェクトを直接代入するのではなくて、`"xx:xx:xx"` のテキスト形式に変換したデータを入力している。`new Date()` で作成したオブジェクトを `console.log()` で出力した場合も、"Tue Apr 01 2014 12:34:56 GMT+0900" のようなテキスト情報が print されるのだが、React Persist を使用する場合は、オブジェクトの値を保存することはできないため、オブジェクトをテキスト情報に変換している。
+
+    - レデューサー内（レデューサーから呼び出されるメソッド内 `addMemo()`, `deleteMemo()` ）では、`リスト.slice()` の形式で state 内の変数のリスト `state.data_list` のコピーを作成し、そのコピーインスタンスの値を新たな state として設定している。これは Redux では state の値を直接変えて `setState()` で state の更新を行っても、state の更新なしと判断してしまうためである。そのため state オブジェクトのコピーを作成して、そのオブジェクトを更新するようにしている。
 
     - `addMemoAction()` メソッドや `deleteMemoAction` メソッドは、アクションクリエイターで、レデューサーの引数に渡される `action` を返す外部公開されたメソッドになっている。このメソッドを用意して外部公開しておくことで、`this.props.dispatch({action})` の呼び出さし元（今の場合 `AddMemoForm.js` や `DeleteMemoForm.js`）が、レデューサーにどのような action を定義すればよいのか知らなくて良くなるので便利
 
-    - レデューサー定義後、`ストア変数名 = createStore(レデューサー関数名)` の形式でストアを作成し、`export default ストア名` で外部ファイルに公開している。
 
 1. `src/Memo.js` を作成する<br>
   `Memo.js` では、保存済みのメモ画面の表示を行う `Memo` コンポーネントを定義する
@@ -262,10 +285,17 @@
     - `Memo = connect(mappingState)(Memo);` とすることで、`this.props.state内の変数名` で `Store.js` 内のレデューサー `reducer` で定義したストアの state にアクセス出来るようにしている。
       ```js
       // `Store.js` 内のレデューサー `reducer` で定義したストアの state
-      data_list: [{
-        memo_text: "xxx",                // メモのテキスト内容
-        created_time: new Date(),       // メモの作成時刻
-      }]
+      data_list: [
+        {
+          memo_text: "xxx",                 // メモのテキスト内容
+          created_time: "00:00:00",         // メモの作成時刻
+        },
+        {
+          memo_text: "yyy",                 // メモのテキスト内容
+          created_time: "00:00:01",         // メモの作成時刻
+        },
+        ...        
+      ]
       ```
 
     - `配列.map((value)=>(配列の各要素 value に対しての処理))` の形式で、Store の state で定義した配列 `this.props.data_list` の各要素に対して、メモの各項目のコンポーネント `<Item />` を繰り返し呼び出すことで、メモ画面全部を表示するようにしている。
@@ -349,7 +379,7 @@
           <tr>
             <th style={this.index_style}>{this.props.index}</th>
             <td style={this.memo_text_style}>{this.props.memo_text}</td>
-            <td style={this.data_style}>{this.props.created_time.getHours() + ':' + this.props.created_time.getMinutes() + ':' + this.props.created_time.getSeconds()}</td>
+            <td style={this.data_style}>{this.props.created_time}</td>
           </tr>
         );
       }

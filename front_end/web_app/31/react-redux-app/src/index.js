@@ -12,6 +12,8 @@ import App from './App';
 const persist_config = {
   key: "root",
   storage,
+  blacklist: ["name"],
+  whitelist: ["id"],
 };
 
 // function レデューサーの関数名 (state=stateの初期値, action){} の形式でレデューサーを定義

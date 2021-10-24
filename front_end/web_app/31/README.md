@@ -15,10 +15,16 @@ Redux Persist を使用していない Redux を利用した React アプリか�
         const 設定情報の定数名 = {
             key: "keyの指定",
             storage,
+            blacklist: ["永続化を行わないストアのstateの変数名"],
+            whitelist: ["永続化を行うストアのstateの変数名"],
         };
         ```
         - `key` : ブラウザのローカルストレージは、key:value 形式で値を保存しているが、その key を指定する。
         - `storage` : Redux Persist が用意しているストレージを指定する（`redux-persist/lib/storage` で定義されている `storage`）
+        - `blacklist` : 永続化を行わないストアのstateの変数名をリスト形式で指定
+        - `whitelist` : 永続化を行うストアのstateの変数名をリスト形式で指定
+
+        > `blacklist`, `whitelist` の定義を行わない場合は、ストアの全ての state が永続化される動作になる。
 
     1. （通常の）レデューサーの作成<br>
         ```js
@@ -119,6 +125,8 @@ Redux Persist を使用していない Redux を利用した React アプリか�
     const persist_config = {
       key: "root",
       storage,
+      blacklist: ["name"],
+      whitelist: ["id"],
     };
 
     // function レデューサーの関数名 (state=stateの初期値, action){} の形式でレデューサーを定義
@@ -166,7 +174,8 @@ Redux Persist を使用していない Redux を利用した React アプリか�
 
     ポイントは、以下の通り。
 
-    - `const persist_config = {key: "root", storage,};` の部分で、redux-persist の設定情報を定義している。`key` には `"root"` を指定している。この値は `index.html` の `root` に対応していたものではなく、ブラウザのローカルストレージの key の値であることに注意（ブラウザのローカルストレージは key:value 形式でデータを保管している）。ブラウザのローカルストレージの key は、ディベロッパーツールから確認できる。
+    - `const persist_config = {key: "root", storage,};` の部分で、redux-persist の設定情報を定義している。`key` には `"root"` を指定している。この値は `index.html` の `root` に対応していたものではなく、ブラウザのローカルストレージの key の値であることに注意（ブラウザのローカルストレージは key:value 形式でデータを保管している）。ブラウザのローカルストレージの key は、ディベロッパーツールから確認できる。<br>
+      また　`blacklist` に `"name"`, `whitelist` に `"id"` を指定することで、ストアの state のうち `id` の値のみデータの永続化を行うようにしている。
 
     - `const persist_reducer = persistReducer(persist_config, reducer);` の部分で、通常のレデューサーからパーシストレデューサーを作成している。
 
@@ -287,7 +296,10 @@ Redux Persist を使用していない Redux を利用した React アプリか�
   > ブラウザをリロードしても id の値が変わらなくなっている点に注目
 
 1. 【オプション】ブラウザのディベロッパーツールでブラウザのローカルディスクに保存されているデータを確認する<br>
-    <img src="https://user-images.githubusercontent.com/25688193/138548553-69b1a1e5-c353-49a8-816d-119f26876fdf.png" width="500"><br>
+    「アプリケーション」→「ストレージ」→「ローカルストレージ」→「http://localhost:${PORT}」→「persist:root」から確認できる。
 
+    <img src="https://user-images.githubusercontent.com/25688193/138579809-b3eb3a13-ae29-4608-827f-cffd4b93bf2c.png" width="500"><br>
 
-    「アプリケーション」→「ストレージ」→「ローカルストレージ」→「http://localhost:3000」→「persist:root」から確認できる。この `persist:root` が、
+    > この `persist:root` が、ブラウザのローカルストレージに格納されている key の値になる
+
+    > key の value において、ストアの state のうち、`whitelist` に追加した `"id"` のみが保存されて、`blacklist` に追加した `"name"` の値は保存されていない点に注目

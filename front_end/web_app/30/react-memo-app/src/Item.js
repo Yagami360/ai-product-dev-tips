@@ -48,7 +48,7 @@ class Item extends Component {
       <tr>
         <th style={this.index_style}>{this.props.index}</th>
         <td style={this.memo_text_style}>{this.props.memo_text}</td>
-        <td style={this.data_style}>{this.props.created_time.getHours() + ':' + this.props.created_time.getMinutes() + ':' + this.props.created_time.getSeconds()}</td>
+        <td style={this.data_style}>{this.props.created_time}</td>
       </tr>
     );
   }

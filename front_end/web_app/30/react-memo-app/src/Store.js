@@ -1,18 +1,17 @@
-import { createStore } from 'redux';   // ストア機能を import
-
 // ステートの初期値
 let init_state = {
-  // 各メモをリストで管理
-  data_list: [{
-    memo_text: "xxx",                // メモのテキスト内容
-    created_time: new Date(),       // メモの作成時刻
-  }]
+  // data_list には、各メモの memo_text と created_time を要素とする可変長の配列が入る
+  //data_list: [{
+  //  memo_text: "xxx",                // メモのテキスト内容
+  //  created_time: "00:00:00",        // メモの作成時刻
+  //}]
+  data_list: []
 }
 
 //-----------------------------------------
 // レデューサー
 //-----------------------------------------
-function reducer(state = init_state, action) {
+export function reducer(state = init_state, action) {
   console.log("[reducer] state", state)
   console.log("[reducer] action", action)
   // action : レデューサーを呼び出す際の情報をまとめたオブジェクト
@@ -34,9 +33,10 @@ function reducer(state = init_state, action) {
 //-----------------------------------------
 // メモを追加するメソッド
 function addMemo(state, action){
+  let date = new Date()
   let new_data = {
     memo_text: action.memo_text,
-    created_time: new Date(),
+    created_time: date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds(),  // created_time に new Date() で生成したオブジェクトの値を直接入力すると、Redux Persist でデータを保存できなくなるので、テキスト情報に変換しておく
   }
 
   // リスト.slice() で state 内の変数のリストのコピーインスタンスを作成
@@ -86,10 +86,3 @@ export function deleteMemoAction(select_index){
     select_index:select_index
   }
 }
-
-//-----------------------------------------
-// `ストア変数名 = createStore(レデューサー関数名)` の形式でストアを作成
-// export default で外部ファイルに公開
-//-----------------------------------------
-let store = createStore(reducer);
-export default store;
