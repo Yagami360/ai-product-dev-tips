@@ -1,0 +1,49 @@
+[debug] [2021-10-24T09:41:23.891Z] ----------------------------------------------------------------------
+[debug] [2021-10-24T09:41:23.892Z] Command:       /usr/local/bin/node /usr/local/bin/firebase init --project react-firebase-app
+[debug] [2021-10-24T09:41:23.893Z] CLI Version:   9.21.0
+[debug] [2021-10-24T09:41:23.893Z] Platform:      darwin
+[debug] [2021-10-24T09:41:23.893Z] Node Version:  v12.16.1
+[debug] [2021-10-24T09:41:23.894Z] Time:          Sun Oct 24 2021 18:41:23 GMT+0900 (GMT+09:00)
+[debug] [2021-10-24T09:41:23.894Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2021-10-24T09:41:23.895Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2021-10-24T09:41:23.919Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2021-10-24T09:41:23.919Z] > authorizing via signed-in user (y034112@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /Users/sakai/GitHub/MachineLearning_Tips/front_end/web_app/33
+
+[debug] [2021-10-24T09:41:24.493Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2021-10-24T09:41:24.494Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2021-10-24T09:41:49.816Z] > refreshing access token with scopes: []
+[debug] [2021-10-24T09:41:49.817Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2021-10-24T09:41:50.127Z] <<< HTTP RESPONSE 200 {"expires":"Mon, 01 Jan 1990 00:00:00 GMT","cache-control":"no-cache, no-store, max-age=0, must-revalidate","pragma":"no-cache","date":"Sun, 24 Oct 2021 09:41:50 GMT","content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2021-10-24T09:41:50.188Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/react-firebase-app [none]
+[debug] [2021-10-24T09:41:50.940Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/react-firebase-app 403
+[debug] [2021-10-24T09:41:50.940Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/react-firebase-app {"error":{"code":403,"message":"The caller does not have permission","status":"PERMISSION_DENIED"}}
+[debug] [2021-10-24T09:41:50.940Z] HTTP Error: 403, The caller does not have permission
+[debug] [2021-10-24T09:41:51.144Z] FirebaseError: HTTP Error: 403, The caller does not have permission
+    at module.exports (/usr/local/lib/node_modules/firebase-tools/lib/responseToError.js:38:12)
+    at Client.doRequest (/usr/local/lib/node_modules/firebase-tools/lib/apiv2.js:240:23)
+    at processTicksAndRejections (internal/process/task_queues.js:97:5)
+    at async Client.request (/usr/local/lib/node_modules/firebase-tools/lib/apiv2.js:96:20)
+    at async Object.getFirebaseProject (/usr/local/lib/node_modules/firebase-tools/lib/management/projects.js:290:21)
+    at async Object.doSetup [as project] (/usr/local/lib/node_modules/firebase-tools/lib/init/features/project.js:84:27)
+    at async init (/usr/local/lib/node_modules/firebase-tools/lib/init/index.js:19:9)
+[error] 
+[error] Error: Failed to get Firebase project react-firebase-app. Please make sure the project exists and your account has permission to access it.
