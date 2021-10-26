@@ -55,15 +55,20 @@
         - [【GKE】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/10)
         - [【GKE】GKE を用いた機械学習モデルの推論 API の構築](https://github.com/Yagami360/graphonomy_api-server_gke)
         - [[In-progress]【GKE】GKE でのオートスケールの基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/31)
+        - 【GKE】k8s の外部メトリックと Cloud Monitoring を使用し独自のメトリックでオートスケールする
         - 【GKE】Workload Identity を用いた GKE クラスタから GCP リソースへのアクセス
         - 【GKE】GKE の外部公開サービスの IP アドレスを固定する
         - 【GKE】Pod 間で通信する
         - 【GKE】Pod 内のコンテナ間で通信する
         - 【GKE】Pod でのコンテナの起動順を設定する
+        - 【Docker】Pod 内のコンテナ内から別の Pod を認識する
         - 【k8s】Istio の基礎事項
         - [【GKE】GKE で構成した Web API に Istio を使用したサーキットブレーカーを導入する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/27)
         - [【GKE】Istio の VirtualSevice を使用してリクエストデータのヘッダーに応じて異なる Web-API で推論する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/40)
         - [[In-progress]【GKE】GoogleマネージドSSL証明書を用いて、GKE 上の Web-API を https 化する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/45)
+        - 【GKE】k8s のジョブを使用する
+        - 【GKE】サイドカーで異なるコンテナ間のボリュームを共有する
+        - 【GKE】k8s の PersistentVolume と hostpath を使用してコンテナ間のボリュームを永続的に共有する
 - 認証基盤      
     - [【GCP】GCP の認証システム](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/11)
 - Web サーバー / WSGI サーバー
@@ -173,6 +178,7 @@
     - サーバーのロギング / モニタリング
         - Datadog
         - 【GCP】Cloud logging（旧 Stackdriver）
+        - [[In-progress]【GCP】Cloud Monitoring（旧 Stackdriver Monitoring）に独自のメトリックを書き込む](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/49)
     - ログフォワーダ
         - [Fluentd (td-​agent) を使用してログデータを転送する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/29)
         - [Fluentd を使用して Web-API からのログデータを転送する（FastAPI + uvicorn + gunicorn + Fluentd + docker + docker-compose での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/30)
@@ -234,7 +240,7 @@
         - [【React】Redux Persist で React アプリのデータを永続化する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/31)
         - 【React】Redux Persist で React アプリのデータの永続化を停止・再開する
         - [[In-progress]【React】Next.js を使用してサーバーサイドレンダリング（SSR）する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/32)
-        - 【React】React アプリで Firebase の Realtime Database を利用する
+        - [[In-progress]【React】React アプリで Firebase の Realtime Database を利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/33)
         - [【React】React と Redux を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/30)
         - 【React】Next.js を使用して簡単なウェブアプリを作成する
         - 【React】React と Firebase を使用して簡単なウェブアプリを作成する

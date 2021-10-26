@@ -1,0 +1,101 @@
+version: '2.3'
+
+services:
+  predict-server:
+    container_name: predict-container
+    image: predict-server-image
+    build:
+      context: "api/predict-server/"
+      dockerfile: Dockerfile_dev
+    volumes:
+      - ${PWD}/api/predict-server:/api/predict-server
+      - ${PWD}/api/utils:/api/utils
+      - ${PWD}/api/config:/api/config
+    ports:
+      - "5001:5001"
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    command: bash -c "gunicorn app:app --bind 0.0.0.0:5001 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+
+  redis-server:
+    container_name: redis-container
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    command: bash -c "redis-server"
+
+  batch-server:
+    container_name: batch-container
+    image: batch-server-image
+    build:
+      context: "api/batch-server/"
+      dockerfile: Dockerfile_dev
+    volumes:
+      - ${PWD}/api/batch-server:/api/batch-server
+      - ${PWD}/api/redis:/api/redis
+      - ${PWD}/api/utils:/api/utils
+      - ${PWD}/api/config:/api/config
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    command: bash -c "python batch_server.py"
+    depends_on:
+      - redis-server
+      - predict-server
+
+  proxy-server:
+    container_name: proxy-container
+    image: proxy-server-image
+    build:
+      context: "api/proxy-server/"
+      dockerfile: Dockerfile_dev
+    volumes:
+      - ${PWD}/api/proxy-server:/api/proxy-server
+      - ${PWD}/api/redis:/api/redis
+      - ${PWD}/api/utils:/api/utils
+      - ${PWD}/api/config:/api/config
+    ports:
+      - "5000:5000"
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    command: bash -c "gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+    depends_on:
+      - redis-server
+      - batch-server
+      - predict-server
+
+  monitoring-server:
+    container_name: monitoring-container
+    image: monitoring-server-image
+    build:
+      context: "api/monitoring-server/"
+      dockerfile: Dockerfile_dev
+    volumes:
+      - ${PWD}/api/monitoring-server:/api/monitoring-server
+      - ${PWD}/api/redis:/api/redis
+      - ${PWD}/api/config:/api/config
+      - ${PWD}/api/key:/api/key
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+      GOOGLE_APPLICATION_CREDENTIALS: "/api/key/cloud-monitoring.json"
+    command: bash -c "python monitoring_server.py"
+    depends_on:
+      - redis-server
+      - batch-server
+      - predict-server

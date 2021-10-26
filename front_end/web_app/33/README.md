@@ -1,5 +1,7 @@
 # 【React】React アプリで Firebase の Realtime Database を利用する
 
+> Redux ではなく、Firebase の Realtime Database を利用する意義を追記
+
 ## ■ 方法
 
 1. npm をインストール
