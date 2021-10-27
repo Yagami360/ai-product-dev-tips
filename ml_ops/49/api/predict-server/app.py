@@ -15,13 +15,16 @@ sys.path.append(os.path.join(os.getcwd(), '../utils'))
 from utils import conv_base64_to_pillow, conv_pillow_to_base64
 
 # logger
-if( os.path.exists(__name__ + '.log') ):
-    os.remove(__name__ + '.log')
-logger = logging.getLogger(__name__)
+if not os.path.isdir("log"):
+    os.mkdir("log")
+if( os.path.exists(os.path.join("log",os.path.basename(__file__).split(".")[0] + '.log')) ):
+    os.remove(os.path.join("log",os.path.basename(__file__).split(".")[0] + '.log'))
+logger = logging.getLogger(os.path.join("log",os.path.basename(__file__).split(".")[0] + '.log'))
 logger.setLevel(10)
-logger_fh = logging.FileHandler( __name__ + '.log')
+logger_fh = logging.FileHandler(os.path.join("log",os.path.basename(__file__).split(".")[0] + '.log'))
 logger.addHandler(logger_fh)
 
+# FastAPI
 app = FastAPI()
 print('[{}] time {} | 推論サーバーを起動しました'.format(__name__, f"{datetime.now():%H:%M:%S}"))
 logger.info('[{}] time {} | 推論サーバーを起動しました'.format(__name__, f"{datetime.now():%H:%M:%S}"))

@@ -20,11 +20,13 @@ sys.path.append(os.path.join(os.getcwd(), '../redis'))
 from redis_client import redis_client
 
 # logger
-if( os.path.exists(__name__ + '.log') ):
-    os.remove(__name__ + '.log')
-logger = logging.getLogger(__name__)
+if not os.path.isdir("log"):
+    os.mkdir("log")
+if( os.path.exists(os.path.join("log",os.path.basename(__file__).split(".")[0] + '.log')) ):
+    os.remove(os.path.join("log",os.path.basename(__file__).split(".")[0] + '.log'))
+logger = logging.getLogger(os.path.join("log",os.path.basename(__file__).split(".")[0] + '.log'))
 logger.setLevel(10)
-logger_fh = logging.FileHandler( __name__ + '.log')
+logger_fh = logging.FileHandler(os.path.join("log",os.path.basename(__file__).split(".")[0] + '.log'))
 logger.addHandler(logger_fh)
 
 def polling():
@@ -36,51 +38,64 @@ def polling():
     #--------------------
     metrics_client = monitoring_v3.MetricServiceClient()
 
-    #for descriptor in metrics_client.list_metric_descriptors(name="projects/" + MonitoringServerConfig.project_id):
-    #metrics_client.delete_metric_descriptor(name=descriptor_name)
+    # カスタム指標が既に存在する場合は削除（上書き不可のため）
+    for descriptor in metrics_client.list_metric_descriptors(name="projects/" + MonitoringServerConfig.project_id):
+        if(descriptor.name == "projects/" + MonitoringServerConfig.project_id + "/metricDescriptors/" + "custom.googleapis.com/" + MonitoringServerConfig.metric_name ):
+            metrics_client.delete_metric_descriptor(name=descriptor.name)
+            logger.info("{} {} {} Deleted metrics={}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", sys._getframe().f_code.co_name, descriptor.name))
 
     # 指標記述子
     descriptor = ga_metric.MetricDescriptor()
     descriptor.type = "custom.googleapis.com/" + MonitoringServerConfig.metric_name         # 使用できるプレフィックスは custom.googleapis.com/ と external.googleapis.com/prometheus 
     descriptor.metric_kind = ga_metric.MetricDescriptor.MetricKind.GAUGE                    #
-    descriptor.value_type = ga_metric.MetricDescriptor.ValueType.DOUBLE                      #
+    descriptor.value_type = ga_metric.MetricDescriptor.ValueType.INT64                      #
     descriptor.description = "joj_ids in redis queue."
 
     # descriptor.labels に設定するラベル
     labels = ga_label.LabelDescriptor()
-    #labels.key = MonitoringServerConfig.metric_name                     # monitoring_v3.Point() で指定する {"interval": interval, "value": {key:value} }
-    labels.key = "TestLabel"
+    labels.key = MonitoringServerConfig.metric_name + "_label"
     labels.value_type = ga_label.LabelDescriptor.ValueType.STRING
-    labels.description = "This is a test label"
+    labels.description = "label for " + MonitoringServerConfig.metric_name
     descriptor.labels.append(labels)
 
     # 
-    descriptor = metrics_client.create_metric_descriptor(
-        name= "projects/" + MonitoringServerConfig.project_id,
-        metric_descriptor=descriptor
-    )
+    descriptor = metrics_client.create_metric_descriptor(name= "projects/" + MonitoringServerConfig.project_id, metric_descriptor=descriptor)
     logger.info("{} {} {} Created metrics={}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", sys._getframe().f_code.co_name, descriptor.name))
 
     # モニタリング指標に書き込むための TimeSeries オブジェクトの作成
     series = monitoring_v3.TimeSeries()
     series.metric.type = "custom.googleapis.com/" + MonitoringServerConfig.metric_name
     series.resource.type = MonitoringServerConfig.metric_resource_type
-    series.resource.labels["project_id"] = MonitoringServerConfig.project_id
+    if(MonitoringServerConfig.metric_resource_type == "global"):       # https://cloud.google.com/monitoring/api/resources?hl=ja#tag_global
+        series.resource.labels["project_id"] = MonitoringServerConfig.project_id
+    elif(MonitoringServerConfig.metric_resource_type == "k8s_pod"):    # https://cloud.google.com/monitoring/api/resources?hl=ja#tag_k8s_pod
+        series.resource.labels["project_id"] = MonitoringServerConfig.project_id
+        series.resource.labels["location"] = "us-central1-f"
+        series.resource.labels["cluster_name"] = "monitering-cluster"       
+        series.resource.labels["namespace_name"] = "default"
+        series.resource.labels["pod_name"] = "monitering-server-pod"
+    else:
+        series.resource.labels["project_id"] = MonitoringServerConfig.project_id
 
     while True:
         # Redis キューの数を取得
         n_queues_in_redis = redis_client.llen('job_id')
         logger.info("{} {} {} n_queues_in_redis={}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", sys._getframe().f_code.co_name, n_queues_in_redis))
 
-        # モニタリング指標に書き込み
+        # 横軸の interval 設定
         now = time.time()
         seconds = int(now)
         nanos = int((now - seconds) * 10 ** 9)
-        interval = monitoring_v3.TimeInterval(
-            {"end_time": {"seconds": seconds, "nanos": nanos}}
-        )
-        point = monitoring_v3.Point({"interval": interval, "value": {"double_value": n_queues_in_redis}})
-        series.points = [point]        
+        interval = monitoring_v3.TimeInterval({"end_time": {"seconds": seconds, "nanos": nanos}})
+
+        # Cloud Monitoring へ書き込み
+        point = monitoring_v3.Point({
+            "interval": interval, 
+            "value": {
+                "int64_value": n_queues_in_redis     # descriptor.value_type = ga_metric.MetricDescriptor.ValueType.INT64 の場合は、"int64_value" である必要がある。（https://cloud.google.com/monitoring/api/ref_v3/rpc/google.monitoring.v3#google.monitoring.v3.TypedValue）
+            }
+        })
+        series.points = [point]
         metrics_client.create_time_series(name="projects/" + MonitoringServerConfig.project_id, time_series=[series])
 
         # ポーリング間隔

@@ -68,8 +68,7 @@ if __name__ == "__main__":
             continue
 
         job_id = api_responce["job_id"]
-        job_status = api_responce["job_status"]
-        print( "img_name={}, job_id={}, job_status={}".format(img_name, job_id, job_status) )
+        print( "img_name={}, job_id={}".format(img_name, job_id) )
         job_ids.append(job_id)
 
         # 

@@ -30,4 +30,4 @@ python3 request.py --host ${HOST} --port ${PORT} --in_images_dir ${IN_IMAGES_DIR
 
 #docker-compose logs --tail 50
 #docker logs proxy-container
-docker logs monitoring-container
+#docker logs monitoring-container

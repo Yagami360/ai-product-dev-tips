@@ -20,16 +20,18 @@ from redis_utils import set_image_pillow_redis, set_image_base64_redis, get_imag
 sys.path.append(os.path.join(os.getcwd(), '../utils'))
 from utils import conv_base64_to_pillow, conv_pillow_to_base64
 
-app = FastAPI()
-
 # logger
-if( os.path.exists(__name__ + '.log') ):
-    os.remove(__name__ + '.log')
-logger = logging.getLogger(__name__)
+if not os.path.isdir("log"):
+    os.mkdir("log")
+if( os.path.exists(os.path.join("log",os.path.basename(__file__).split(".")[0] + '.log')) ):
+    os.remove(os.path.join("log",os.path.basename(__file__).split(".")[0] + '.log'))
+logger = logging.getLogger(os.path.join("log",os.path.basename(__file__).split(".")[0] + '.log'))
 logger.setLevel(10)
-logger_fh = logging.FileHandler(__name__ + '.log')
+logger_fh = logging.FileHandler(os.path.join("log",os.path.basename(__file__).split(".")[0] + '.log'))
 logger.addHandler(logger_fh)
 
+# FastAPI
+app = FastAPI()
 
 class ImageData(BaseModel):
     """
@@ -43,14 +45,13 @@ class SetDataRedisJob(BaseModel):
     """
     job_id: str
     img_base64: Any
-    job_status: str = "RUNNING"
 
     def __call__(self):
         jobs[self.job_id] = self
-        self.job_status = "RUNNING"
         try:
             # Redis キューの先頭に job_id を追加
             redis_client.lpush("job_id", self.job_id)
+            redis_client.set(self.job_id + "_job_status", "PENDING")
             print('[{}] time {} | Job {} を登録しました'.format(self.__class__.__name__, f"{datetime.now():%H:%M:%S}", self.job_id))
             logger.info('[{}] time {} | Job {} を登録しました'.format(self.__class__.__name__, f"{datetime.now():%H:%M:%S}", self.job_id))
 
@@ -61,7 +62,7 @@ class SetDataRedisJob(BaseModel):
         except Exception:
             print('[{}] time {} | Job {} の登録に失敗しました'.format(self.__class__.__name__, f"{datetime.now():%H:%M:%S}", self.job_id))
             logger.info('[{}] time {} | Job {} の登録に失敗しました'.format(self.__class__.__name__, f"{datetime.now():%H:%M:%S}", self.job_id))
-            self.job_status = "FAILED"
+            redis_client.set(self.job_id + "_job_status", "FAILED")
 
         return
 
@@ -89,6 +90,11 @@ async def get_job(
 ):
     status = "ok"
     try:
+        job_status = redis_client.get(job_id + "_job_status").decode()
+    except Exception:
+        job_status = "FAILED"
+        status = "ng"
+    try:
         img_in_base64 = get_image_base64_redis( redis_client=redis_client, key_name=job_id+"_image_in" )
     except Exception:
         img_in_base64 = None
@@ -102,7 +108,7 @@ async def get_job(
     return {
         "status": status,
         "job_id" : jobs[job_id].job_id,
-        "job_status" : jobs[job_id].job_status,
+        "job_status" : job_status,
         "img_in_base64" : img_in_base64,
         "img_out_base64" : img_out_base64,
     }
@@ -124,5 +130,4 @@ async def start_job(
     return {
         "status": "ok",
         "job_id" : task.job_id,
-        "job_status" : task.job_status,
     }
