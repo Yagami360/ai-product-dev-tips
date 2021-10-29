@@ -1,0 +1,46 @@
+# redis-server
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-pod
+  labels:
+    app: redis-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-pod
+  template:
+    metadata:
+      labels:
+        app: redis-pod
+    spec:
+      containers:
+      - name: redis-container
+        image: redis:latest
+        ports:
+        - containerPort: 6379
+          name: http-server
+        env:
+          - name: DEBUG
+            value: "True"
+        command: ["/bin/sh","-c"]
+        args: ["redis-server"]
+#        resources:
+#          requests:
+#            cpu: 1
+#            memory: "0.1Gi"
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-server
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 6379
+      targetPort: 6379
+      protocol: TCP
+  selector:
+    app: redis-pod

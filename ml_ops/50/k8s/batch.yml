@@ -1,0 +1,47 @@
+---
+# Pod
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: batch-pod
+  labels:
+    app: batch-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: batch-pod
+  template:
+    metadata:
+      labels:
+        app: batch-pod
+    spec:
+      containers:
+      - name: batch-container
+        image: gcr.io/my-project2-303004/batch-image-gke:latest
+        env:
+          - name: N_WORKERS
+            value: "1"
+          - name: DEBUG
+            value: "True"
+        command: ["/bin/sh","-c"]
+        args: ["bash setup_gke.sh ; python batch_server.py"]
+---
+# HorizontalPodAutoscaler
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: batch-auto-scale
+  namespace: default
+spec:
+  scaleTargetRef:     # autoscale 対象となる `scaled resource object` を指定
+    apiVersion: apps/v1
+    kind: Deployment
+    name: batch-pod
+  minReplicas: 1      # 最小 Pod 数
+  maxReplicas: 4      # 最大 Pod 数
+  metrics:
+  - type: External  # 外部メトリクス（kubernetesクラスタ内のリソースとは関係しないメトリクス）
+    external:
+      metricName: custom.googleapis.com|n_queues_in_redis   # Kubernetes API では指標名にスラッシュを使用できないため、パイプ記号（|）で置き換える必要がある
+      targetValue: 0.5                                      # 1つのPodが処理すべき値を決め打ちで指定する。

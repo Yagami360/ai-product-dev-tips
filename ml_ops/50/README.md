@@ -1,14 +1,4 @@
-# 【GCP】Cloud Monitoring（旧 Stackdriver Monitoring）にカスタム指標を書き込む（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + モニタリングサーバー + docker での構成）
-
-Cloud Monitoring（旧 Stackdriver Monitoring）は、各種インフラリソースやアプリケーションのパフォーマンスを監視する GCP サービスであるが、アプリケーション固有のカスタム指標のモニタリングも行うことができる。
-
-<img src="https://user-images.githubusercontent.com/25688193/139069365-bdc1754d-e0fe-413b-a566-a0a830bb1165.png" width="800"><br>
-
-ここでは、「プロキシサーバ・バッチサーバ・モニタリングサーバー・Redis サーバー・推論サーバー」から構成される上記のような非同期 API において、カスタム指標として、Redis に保存されている job_id のキュー数を採用し、Cloud Monitoring への書き込む処理を行う。
-
-尚、今回の構成例では、Redis に保存されている job_id のキュー数を無限ループでポーリングするモニタリングサーバーなるものを新規に追加し、モニタリングサーバー内で Python の Cloud Monitoring API を用いて、Cloud Monitoring への書き込む処理を行っているが、必ずしもモニタリングサーバーなるものを新規に追加する必要はないことに注意
-
-> この Cloud Monitoring へのカスタム指標を書き込み処理の応用例としては、k8s の外部メトリックでのオートスケール機能と併用して、GKE で構成した非同期 API において、Redis のキュー数に応じてオートスケールするようなシステムが考えられる。詳細は「[【GKE】k8s の外部メトリックと Cloud Monitoring を使用しカスタム指標でオートスケールする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/50)」を確認のこと
+# 【GKE】k8s の外部メトリックと Cloud Monitoring を使用しカスタム指標でオートスケールする
 
 ## ■ 使用法
 
@@ -65,24 +55,24 @@ Cloud Monitoring（旧 Stackdriver Monitoring）は、各種インフラリソ�
                 - predict-server
         ```
 
-1. redis サーバーのコード [api/redis/redis_client.py](https://github.com/Yagami360/MachineLearning_Tips/blob/master/ml_ops/49/api/redis/redis_client.py) を作成する<br>
+1. redis サーバーのコード [api/redis/redis_client.py](https://github.com/Yagami360/MachineLearning_Tips/blob/master/ml_ops/50/api/redis/redis_client.py) を作成する<br>
     Redis の Python API を用いて Redis サーバーに接続するためのコードを作成する。<br>
     本項目のコア部分ではないので、詳細は割愛する。
 
-1. プロキシサーバーのコード [api/proxy-server/app.py](https://github.com/Yagami360/MachineLearning_Tips/blob/master/ml_ops/49/api/proxy-server/app.py)  を作成する<br>
+1. プロキシサーバーのコード [api/proxy-server/app.py](https://github.com/Yagami360/MachineLearning_Tips/blob/master/ml_ops/50/api/proxy-server/app.py)  を作成する<br>
     プロキシサーバでは、FastAPI を用いて、推論リクエストをジョブIDとして定義し、Redis のキューにジョブIDを push している。<br>
     本項目のコア部分ではないので、詳細は割愛する。
 
-1. バッチサーバーのコード [api/batch-server/batch_server.py](https://github.com/Yagami360/MachineLearning_Tips/blob/master/ml_ops/49/api/batch-server/batch_server.py)  を作成する<br>
+1. バッチサーバーのコード [api/batch-server/batch_server.py](https://github.com/Yagami360/MachineLearning_Tips/blob/master/ml_ops/50/api/batch-server/batch_server.py)  を作成する<br>
     バッチサーバーでは、Redis のデータを定期的にポーリングし、データがあれば推論サーバーにリクエスト処理する。その後、推論サーバーからのレスポンスデータを Redis に保存する。<br>
     バッチサーバーでのポーリング処理は、`asyncio` と `concurrent.futures.ProcessPoolExecutor` を使用した並列処理で行っている<br>
     本項目のコア部分ではないので、詳細は割愛する。
 
-1. 推論サーバーのコード [api/predict-server/app.py](https://github.com/Yagami360/MachineLearning_Tips/blob/master/ml_ops/49/api/predict-server/app.py) を作成する<br>
+1. 推論サーバーのコード [api/predict-server/app.py](https://github.com/Yagami360/MachineLearning_Tips/blob/master/ml_ops/50/api/predict-server/app.py) を作成する<br>
     ここでは例えば、OpenCV の `cv2.grabCut()` を用いた推論サーバーを構築する。機械学習 API の場合は、この推論サーバーの部分が機械学習モデルを使用した推論処理になる。<br>
     本項目のコア部分ではないので、詳細は割愛する。
 
-1. モニタリングサーバーのコード [api/monitoring-server/monitoring_server.py](https://github.com/Yagami360/MachineLearning_Tips/blob/master/ml_ops/49/api/monitoring-server/monitoring_server.py) を作成する<br>
+1. モニタリングサーバーのコード [api/monitoring-server/monitoring_server.py](https://github.com/Yagami360/MachineLearning_Tips/blob/master/ml_ops/50/api/monitoring-server/monitoring_server.py) を作成する<br>
     本項目のコア部分。Python の Cloud Monitoring API を用いて、モニタリング指標を書き込む
 
     ```python
@@ -244,110 +234,9 @@ Cloud Monitoring（旧 Stackdriver Monitoring）は、各種インフラリソ�
         > 他にも色々あるが、詳細は、https://cloud.google.com/monitoring/custom-metrics/creating-metrics?hl=ja#global-v-generic を確認のこと
 
 
-1. docker-compose で API を構成する<br>
-    プロキシサーバー・Redis サーバー・バッチサーバー・推論サーバー・モニタリングサーバーを docker-compose で構築する。
+1. k8s のマニフェストファイルを作成する<br>
+    プロキシサーバー・Redis サーバー・バッチサーバー・推論サーバー・モニタリングサーバーのマニフェストファイルを作成する。
     ```yml
-    version: '2.3'
-
-    services:
-    predict-server:
-        container_name: predict-container
-        image: predict-server-image
-        build:
-        context: "api/predict-server/"
-        dockerfile: Dockerfile_dev
-        volumes:
-            - ${PWD}/api/predict-server:/api/predict-server
-            - ${PWD}/api/utils:/api/utils
-            - ${PWD}/api/config:/api/config
-        ports:
-            - "5001:5001"
-        tty: true
-        environment:
-            TZ: "Asia/Tokyo"
-            LC_ALL: C.UTF-8
-            LANG: C.UTF-8
-        command: bash -c "gunicorn app:app --bind 0.0.0.0:5001 -w 1 -k uvicorn.workers.UvicornWorker --reload"
-
-    redis-server:
-        container_name: redis-container
-        image: redis:latest
-        ports:
-            - "6379:6379"
-        tty: true
-        environment:
-            TZ: "Asia/Tokyo"
-            LC_ALL: C.UTF-8
-            LANG: C.UTF-8
-        command: bash -c "redis-server"
-
-    batch-server:
-        container_name: batch-container
-        image: batch-server-image
-        build:
-            context: "api/batch-server/"
-            dockerfile: Dockerfile_dev
-        volumes:
-            - ${PWD}/api/batch-server:/api/batch-server
-            - ${PWD}/api/redis:/api/redis
-            - ${PWD}/api/utils:/api/utils
-            - ${PWD}/api/config:/api/config
-        tty: true
-        environment:
-            TZ: "Asia/Tokyo"
-            LC_ALL: C.UTF-8
-            LANG: C.UTF-8
-        command: bash -c "python batch_server.py"
-        depends_on:
-            - redis-server
-            - predict-server
-
-    proxy-server:
-        container_name: proxy-container
-        image: proxy-server-image
-        build:
-            context: "api/proxy-server/"
-            dockerfile: Dockerfile_dev
-        volumes:
-            - ${PWD}/api/proxy-server:/api/proxy-server
-            - ${PWD}/api/redis:/api/redis
-            - ${PWD}/api/utils:/api/utils
-            - ${PWD}/api/config:/api/config
-        ports:
-            - "5000:5000"
-        tty: true
-        environment:
-            TZ: "Asia/Tokyo"
-            LC_ALL: C.UTF-8
-            LANG: C.UTF-8
-        command: bash -c "gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"
-        depends_on:
-            - redis-server
-            - batch-server
-            - predict-server
-
-    monitoring-server:
-        container_name: monitoring-container
-        image: monitoring-server-image
-        build:
-            context: "api/monitoring-server/"
-            dockerfile: Dockerfile_dev
-        volumes:
-            - ${PWD}/api/monitoring-server:/api/monitoring-server
-            - ${PWD}/api/redis:/api/redis
-            - ${PWD}/api/config:/api/config
-            - ${PWD}/api/key:/api/key
-        tty: true
-        environment:
-            TZ: "Asia/Tokyo"
-            LC_ALL: C.UTF-8
-            LANG: C.UTF-8
-            GOOGLE_APPLICATION_CREDENTIALS: "/api/key/cloud-monitoring.json"
-        command: bash -c "python monitoring_server.py"
-        depends_on:
-            - redis-server
-            - batch-server
-            - predict-server
     ```
 
     > 作成したサービスアカウントの秘密鍵 (json) は、Cloud Monitoring API を用いて Cloud Monitoring にアクセスするモジュール（今の場合は Monitoring サーバー）に認証させる必要があるが、この処理は、`docker-compose.yml` 内の `environment` タグに `GOOGLE_APPLICATION_CREDENTIALS: "/api/key/cloud-monitoring.json"` を設定して行うようにしている。
@@ -392,5 +281,4 @@ Cloud Monitoring（旧 Stackdriver Monitoring）は、各種インフラリソ�
     <img src="https://user-images.githubusercontent.com/25688193/139066998-01043494-d42f-42cf-9efc-c323498355d4.png" width="1000" /><br>
 
 ## ■ 参考サイト
-- https://cloud.google.com/monitoring/custom-metrics/creating-metrics?hl=ja
-- https://ymotongpoo.hatenablog.com/entry/2019/03/18/085924
+- https://cloud.google.com/kubernetes-engine/docs/tutorials/external-metrics-autoscaling

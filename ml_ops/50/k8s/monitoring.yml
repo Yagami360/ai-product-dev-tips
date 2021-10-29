@@ -1,0 +1,33 @@
+# Pod
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monitoring-pod
+  labels:
+    app: monitoring-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monitoring-pod
+  template:
+    metadata:
+      labels:
+        app: monitoring-pod
+    spec:
+      containers:
+      - name: monitoring-container
+        image: gcr.io/my-project2-303004/monitoring-image-gke:latest
+        env:
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /api/key/cloud-monitoring.json
+          - name: POLLING_TIME
+            value: "1"
+          - name: DEBUG
+            value: "True"
+        command: ["/bin/sh","-c"]
+        args: ["python monitoring_server.py"]
+#        resources:
+#          requests:
+#            cpu: 1
+#            memory: "0.1Gi"

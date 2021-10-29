@@ -1,0 +1,114 @@
+# 変数値の置換
+substitutions:
+  _PROXY_IMAGE_NAME: proxy-image-gke
+  _BATCH_IMAGE_NAME: batch-image-gke
+  _MONITORING_IMAGE_NAME: monitoring-image-gke
+  _PREDICT_IMAGE_NAME: predict-image-gke
+
+steps:
+  #-----------------------------------
+  #  プロキシサーバー
+  #-----------------------------------
+  # キャッシュされたイメージを Container Registry から pull
+  # 初めてイメージをビルドする際は docker pull で pull できる既存のイメージがないため、entrypoint を bash に設定し、コマンドの実行で返されるエラーを無視できるようにしている
+  - name: 'gcr.io/cloud-builders/docker'
+    id: docker pull proxy
+    entrypoint: 'bash'
+    args: ['-c', 'docker pull gcr.io/${PROJECT_ID}/${_PROXY_IMAGE_NAME}:latest || exit 0']
+
+  # Container Registry 上で docker image 作成 
+  - name: 'gcr.io/cloud-builders/docker'
+    id: docker build proxy
+    args: [
+      'build', 
+      '-t', 'gcr.io/${PROJECT_ID}/${_PROXY_IMAGE_NAME}:latest', 
+      '--cache-from', 'gcr.io/${PROJECT_ID}/${_PROXY_IMAGE_NAME}:latest',
+      '-f', 'api/proxy-server/Dockerfile',
+      '.'
+    ]
+
+  # Container Registry 上に docker image を登録
+  - name: 'gcr.io/cloud-builders/docker'
+    id: docker push proxy
+    args: ['push', 'gcr.io/${PROJECT_ID}/${_PROXY_IMAGE_NAME}:latest']
+
+  #-----------------------------------
+  # バッチサーバー
+  #-----------------------------------
+  # キャッシュされたイメージを Container Registry から pull
+  # 初めてイメージをビルドする際は docker pull で pull できる既存のイメージがないため、entrypoint を bash に設定し、コマンドの実行で返されるエラーを無視できるようにしている
+  - name: 'gcr.io/cloud-builders/docker'
+    id: docker pull batch
+    entrypoint: 'bash'
+    args: ['-c', 'docker pull gcr.io/${PROJECT_ID}/${_BATCH_IMAGE_NAME}:latest || exit 0']
+
+  # Container Registry 上で docker image 作成 
+  - name: 'gcr.io/cloud-builders/docker'
+    id: docker build batch
+    args: [
+      'build', 
+      '-t', 'gcr.io/${PROJECT_ID}/${_BATCH_IMAGE_NAME}:latest', 
+      '--cache-from', 'gcr.io/${PROJECT_ID}/${_BATCH_IMAGE_NAME}:latest',
+      '-f', 'api/batch-server/Dockerfile',
+      '.'
+    ]
+
+  # Container Registry 上に docker image を登録
+  - name: 'gcr.io/cloud-builders/docker'
+    id: docker push batch
+    args: ['push', 'gcr.io/${PROJECT_ID}/${_BATCH_IMAGE_NAME}:latest']
+
+  #-----------------------------------
+  # モニタリングサーバー
+  #-----------------------------------
+  # キャッシュされたイメージを Container Registry から pull
+  # 初めてイメージをビルドする際は docker pull で pull できる既存のイメージがないため、entrypoint を bash に設定し、コマンドの実行で返されるエラーを無視できるようにしている
+  - name: 'gcr.io/cloud-builders/docker'
+    id: docker pull monitoring
+    entrypoint: 'bash'
+    args: ['-c', 'docker pull gcr.io/${PROJECT_ID}/${_MONITORING_IMAGE_NAME}:latest || exit 0']
+
+  # Container Registry 上で docker image 作成 
+  - name: 'gcr.io/cloud-builders/docker'
+    id: docker build monitoring
+    args: [
+      'build', 
+      '-t', 'gcr.io/${PROJECT_ID}/${_MONITORING_IMAGE_NAME}:latest', 
+      '--cache-from', 'gcr.io/${PROJECT_ID}/${_MONITORING_IMAGE_NAME}:latest',
+      '-f', 'api/monitoring-server/Dockerfile',
+      '.'
+    ]
+
+  # Container Registry 上に docker image を登録
+  - name: 'gcr.io/cloud-builders/docker'
+    id: docker push monitoring
+    args: ['push', 'gcr.io/${PROJECT_ID}/${_MONITORING_IMAGE_NAME}:latest']
+
+  #-----------------------------------
+  # 推論サーバー
+  #-----------------------------------
+  # キャッシュされたイメージを Container Registry から pull
+  # 初めてイメージをビルドする際は docker pull で pull できる既存のイメージがないため、entrypoint を bash に設定し、コマンドの実行で返されるエラーを無視できるようにしている
+  - name: 'gcr.io/cloud-builders/docker'
+    id: docker pull predict
+    entrypoint: 'bash'
+    args: ['-c', 'docker pull gcr.io/${PROJECT_ID}/${_PREDICT_IMAGE_NAME}:latest || exit 0']
+
+  # Container Registry 上で docker image 作成 
+  - name: 'gcr.io/cloud-builders/docker'
+    id: docker build predict
+    args: [
+      'build', 
+      '-t', 'gcr.io/${PROJECT_ID}/${_PREDICT_IMAGE_NAME}:latest', 
+      '--cache-from', 'gcr.io/${PROJECT_ID}/${_PREDICT_IMAGE_NAME}:latest',
+      '-f', 'api/predict-server/Dockerfile',
+      '.'
+    ]
+
+  # Container Registry 上に docker image を登録
+  - name: 'gcr.io/cloud-builders/docker'
+    id: docker push predict
+    args: ['push', 'gcr.io/${PROJECT_ID}/${_PREDICT_IMAGE_NAME}:latest']
+
+images: ['gcr.io/${PROJECT_ID}/${_PROXY_IMAGE_NAME}:latest', 'gcr.io/${PROJECT_ID}/${_BATCH_IMAGE_NAME}:latest', 'gcr.io/${PROJECT_ID}/${_MONITORING_IMAGE_NAME}:latest', 'gcr.io/${PROJECT_ID}/${_PREDICT_IMAGE_NAME}:latest']
+timeout: 3600s
