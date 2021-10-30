@@ -45,22 +45,22 @@ def polling():
             metrics_client.delete_metric_descriptor(name=descriptor.name)
             logger.info("{} {} {} Deleted metrics={}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", sys._getframe().f_code.co_name, descriptor.name))
 
-    # 指標記述子
-    descriptor = ga_metric.MetricDescriptor()
-    descriptor.type = "custom.googleapis.com/" + MonitoringServerConfig.metric_name         # 使用できるプレフィックスは custom.googleapis.com/ と external.googleapis.com/prometheus 
-    descriptor.metric_kind = ga_metric.MetricDescriptor.MetricKind.GAUGE                    #
-    descriptor.value_type = ga_metric.MetricDescriptor.ValueType.INT64                      #
-    descriptor.description = "joj_ids in redis queue."
+    # create_metric_descriptor() メソッドの metric_descriptor 引数
+    metric_descriptor = ga_metric.MetricDescriptor()
+    metric_descriptor.type = "custom.googleapis.com/" + MonitoringServerConfig.metric_name         # 使用できるプレフィックスは custom.googleapis.com/ と external.googleapis.com/prometheus 
+    metric_descriptor.metric_kind = ga_metric.MetricDescriptor.MetricKind.GAUGE                    #
+    metric_descriptor.value_type = ga_metric.MetricDescriptor.ValueType.INT64                      #
+    metric_descriptor.description = "joj_ids in redis queue."
 
-    # descriptor.labels に設定するラベル
+    # metric_descriptor.labels に設定するラベル
     labels = ga_label.LabelDescriptor()
     labels.key = MonitoringServerConfig.metric_name + "_label"
     labels.value_type = ga_label.LabelDescriptor.ValueType.STRING
     labels.description = "label for " + MonitoringServerConfig.metric_name
-    descriptor.labels.append(labels)
+    metric_descriptor.labels.append(labels)
 
-    # 
-    descriptor = metrics_client.create_metric_descriptor(name= "projects/" + MonitoringServerConfig.project_id, metric_descriptor=descriptor)
+    # metrics_client.create_metric_descriptor() で、カスタム指標の記述子（descriptor）を作成
+    descriptor = metrics_client.create_metric_descriptor(name= "projects/" + MonitoringServerConfig.project_id, metric_descriptor=metric_descriptor)
     logger.info("{} {} {} Created metrics={}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "INFO", sys._getframe().f_code.co_name, descriptor.name))
 
     # モニタリング指標に書き込むための TimeSeries オブジェクトの作成

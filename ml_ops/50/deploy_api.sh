@@ -64,7 +64,7 @@ kubectl apply -f k8s/batch.yml
 kubectl apply -f k8s/monitoring.yml
 
 # 正常起動待ち
-sleep 300
+sleep 180
 kubectl get pods
 kubectl get service
 kubectl get HorizontalPodAutoscaler
@@ -74,13 +74,16 @@ kubectl scale deploy proxy-pod --replicas=1
 kubectl scale deploy batch-pod --replicas=1
 kubectl scale deploy monitoring-pod --replicas=1
 kubectl scale deploy predict-pod --replicas=1
+kubectl scale deploy redis-pod --replicas=1
 
 # 作成した Pod のコンテナログを確認
 kubectl logs `kubectl get pods | grep "proxy-pod" | awk '{print $1}'` proxy-container
 kubectl logs `kubectl get pods | grep "batch-pod" | awk '{print $1}'` batch-container
 kubectl logs `kubectl get pods | grep "monitoring-pod" | awk '{print $1}'` monitoring-container
 kubectl logs `kubectl get pods | grep "predict-pod" | awk '{print $1}'` predict-container
+kubectl logs `kubectl get pods | grep "redis-pod" | awk '{print $1}'` redis-container
 
 # 作成した Pod のコンテナにアクセス
 #kubectl exec -it `kubectl get pods | grep "proxy-pod" | awk '{print $1}'` /bin/bash
+#kubectl exec -it `kubectl get pods | grep "batch-pod" | awk '{print $1}'` /bin/bash
 #kubectl exec -it `kubectl get pods | grep "monitoring-pod" | awk '{print $1}'` /bin/bash

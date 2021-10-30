@@ -25,7 +25,7 @@ spec:
           - name: DEBUG
             value: "True"
         command: ["/bin/sh","-c"]
-        args: ["bash setup_gke.sh ; python batch_server.py"]
+        args: ["python batch_server.py"]
 ---
 # HorizontalPodAutoscaler
 apiVersion: autoscaling/v2beta1

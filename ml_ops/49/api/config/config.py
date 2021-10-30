@@ -2,7 +2,7 @@ import os
 
 class ResidConfig:
     # クラス変数
-    host=os.getenv("HOST", "redis-container")
+    host=os.getenv("HOST", "redis-server")
     port=int(os.getenv("PORT", "6379"))
     database_id=int(os.getenv("DATABASE_ID", "0"))
 
@@ -13,7 +13,7 @@ class BatchServerConfig:
 
 class PredictServerConfig:
     # クラス変数
-    host="predict-container"
+    host="predict-server"
     port="5001"
 
 class MonitoringServerConfig:
