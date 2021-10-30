@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 ROOT_DIR=${PWD}
-SERVICE_NAME=graph-cut-api-server
+SERVICE_NAME=proxy-server
 HOST=`kubectl describe service ${SERVICE_NAME} | grep "LoadBalancer Ingress" | awk '{print $3}'`
 PORT=5000
 N_POLLINGS=100

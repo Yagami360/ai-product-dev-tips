@@ -1,4 +1,20 @@
-# 【GKE】k8s の外部メトリックと Cloud Monitoring を使用しカスタム指標でオートスケールする
+# 【GKE】Cloud Monitoring でのカスタム指標を k8s の外部メトリックとしてオートスケールする
+
+k8s では、以下の２種類の独自のメトリックに基づくオートスケール機能が提供されている。<br>
+
+- カスタムメトリクス（＝カスタム指標）でのオートスケール機能<br>
+    Pod やその他 k8s リソースに紐づくリソースでのオートスケール機能
+
+- 外部メトリクス（＝外部指標）でのオートスケール機能<br>
+    k8s リソースに紐づかないリソースでのオートスケール機能
+
+ここでは、Cloud Monitoring でのカスタム指標を外部メトリクス（＝外部指標）として採用し、k8s の外部指標でのオートスケール機能を使用したオートスケール方法について記載する
+
+> ここでいう「k8s のカスタム指標」と「Cloud Monitoring のカスタム指標」は同じではなく、「k8s の外部指標」と「loud Monitoring のカスタム指標」が一致することに注意
+
+<img src="https://user-images.githubusercontent.com/25688193/139519339-ddfa99fd-f18b-4851-81bc-fa36009db76f.png" width="1000"><br>
+
+より詳細には、上図のように、「プロキシサーバ・バッチサーバ・モニタリングサーバー・外部メトリクスサーバー・Redis サーバー・推論サーバー」から構成される GKE 上の非同期 API において、Redis に保存されている job_id のキュー数を Cloud Monitoring への書き込み、この Cloud Monitoring に書き込まれたカスタム指標（＝Redisのキュー数）に基づき、k8s の外部指標でのオートスケール機能を利用してオートスケールを行う
 
 ## ■ 使用法
 
@@ -25,34 +41,41 @@
 
     > docker コンテナ内ではなく、ホスト PC 内で Cloud Monitoring API を用いて Cloud Monitoring にアクセスする場合は、個人アカウントに Cloud Monitoring への IAM 権限を追加するだけでよい
 
-    ここで、作成したサービスアカウントの秘密鍵 (json) は、Cloud Monitoring API を用いて Cloud Monitoring にアクセスするモジュール（今の場合は Monitoring サーバー）に認証させる必要があるが、この処理は、`docker-compose.yml` 内の `environment` タグに `GOOGLE_APPLICATION_CREDENTIALS: "/api/key/cloud-monitoring.json"` を設定して行うようにしている。
+    ここで、作成したサービスアカウントの秘密鍵 (json) は、Cloud Monitoring API を用いて Cloud Monitoring にアクセスするモジュール（今の場合は Monitoring サーバー）に認証させる必要があるが、この処理は、k8s マニフェストファイル `k8s/monitoring.ym` 内の `env` タグに `GOOGLE_APPLICATION_CREDENTIALS: "/api/key/cloud-monitoring.json"` を設定して行うようにしている。
 
-    > `export GOOGLE_APPLICATION_CREDENTIALS = "json鍵へのパス"` の形式でもよい
+    > モニタリングサーバーの起動スクリプトや初期化スクリプトで、`export GOOGLE_APPLICATION_CREDENTIALS = "json鍵へのパス"` を追加する形式でもよい
 
-    - `docker-compose.yml` のコード抜粋
+    - `k8s/monitoring.yml`
         ```yaml
-        monitoring-server:
-            container_name: monitoring-container
-            image: monitoring-server-image
-            build:
-            context: "api/monitoring-server/"
-            dockerfile: Dockerfile_dev
-            volumes:
-                - ${PWD}/api/monitoring-server:/api/monitoring-server
-                - ${PWD}/api/redis:/api/redis
-                - ${PWD}/api/config:/api/config
-                - ${PWD}/api/key:/api/key
-            tty: true
-            environment:
-                TZ: "Asia/Tokyo"
-                LC_ALL: C.UTF-8
-                LANG: C.UTF-8
-                GOOGLE_APPLICATION_CREDENTIALS: "/api/key/cloud-monitoring.json"
-            command: bash -c "python monitoring_server.py"
-            depends_on:
-                - redis-server
-                - batch-server
-                - predict-server
+        # Pod
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+        name: monitoring-pod
+        labels:
+            app: monitoring-pod
+        spec:
+        replicas: 1
+        selector:
+            matchLabels:
+            app: monitoring-pod
+        template:
+            metadata:
+            labels:
+                app: monitoring-pod
+            spec:
+            containers:
+            - name: monitoring-container
+                image: gcr.io/my-project2-303004/monitoring-image-gke:latest
+                env:
+                - name: GOOGLE_APPLICATION_CREDENTIALS          # 作成したサービスアカウントの秘密鍵 (json) を環境変数 GOOGLE_APPLICATION_CREDENTIALS に適用
+                    value: /api/key/cloud-monitoring.json       # 
+                - name: POLLING_TIME
+                    value: "1"
+                - name: DEBUG
+                    value: "True"
+                command: ["/bin/sh","-c"]
+                args: ["python monitoring_server.py"]
         ```
 
 1. redis サーバーのコード [api/redis/redis_client.py](https://github.com/Yagami360/MachineLearning_Tips/blob/master/ml_ops/50/api/redis/redis_client.py) を作成する<br>
@@ -236,10 +259,169 @@
 
 1. k8s のマニフェストファイルを作成する<br>
     プロキシサーバー・Redis サーバー・バッチサーバー・推論サーバー・モニタリングサーバーのマニフェストファイルを作成する。
-    ```yml
+
+    - プロキシサーバーのマニフェストファイル<br>
+        本項目のコア部分ではないので、詳細は割愛する。
+
+    - バッチサーバーのマニフェストファイル<br>
+        本項目のコア部分ではないので、詳細は割愛する。
+
+    - Redis サーバーのマニフェストファイル<br>
+        本項目のコア部分ではないので、詳細は割愛する。
+
+    - モニタリングサーバーのマニフェストファイル<br>
+        ```yml
+        # Pod
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+        name: monitoring-pod
+        labels:
+            app: monitoring-pod
+        spec:
+        replicas: 1
+        selector:
+            matchLabels:
+            app: monitoring-pod
+        template:
+            metadata:
+            labels:
+                app: monitoring-pod
+            spec:
+            containers:
+            - name: monitoring-container
+                image: gcr.io/my-project2-303004/monitoring-image-gke:latest
+                env:
+                - name: GOOGLE_APPLICATION_CREDENTIALS
+                    value: /api/key/cloud-monitoring.json
+                - name: POLLING_TIME
+                    value: "1"
+                - name: DEBUG
+                    value: "True"
+                command: ["/bin/sh","-c"]
+                args: ["python monitoring_server.py"]
+        ```
+
+        ポイントは、以下の通り
+
+        - 作成したサービスアカウントの秘密鍵 (json) は、Cloud Monitoring API を用いて Cloud Monitoring にアクセスするモジュール（今の場合は Monitoring サーバー）に認証させる必要があるが、この処理は、各種 k8s マニフェストファイル内の `env` タグに `GOOGLE_APPLICATION_CREDENTIALS: "/api/key/cloud-monitoring.json"` を設定して行うようにしている。
+
+        - モニタリングサーバーはオートスケールを行う必要はないので、`HorizontalPodAutoscaler` リソースを定義していない
+
+    - 推論サーバーのマニフェストファイル<br>
+        ```yml
+        ---
+        # Pod
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+        name: predict-pod
+        labels:
+            app: predict-pod
+        spec:
+        replicas: 1
+        selector:
+            matchLabels:
+            app: predict-pod
+        template:
+            metadata:
+            labels:
+                app: predict-pod
+            spec:
+            containers:
+            - name: predict-container
+                image: gcr.io/my-project2-303004/predict-image-gke:latest
+                command: ["/bin/sh","-c"]
+                args: ["gunicorn app:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:5001 --workers 1 --threads 1 --backlog 256 --reload"]
+        ---
+        # Service
+        apiVersion: v1
+        kind: Service
+        metadata:
+        name: predict-server
+        spec:
+        type: LoadBalancer
+        ports:
+            - port: 5001
+            targetPort: 5001
+            protocol: TCP
+        selector:
+            app: predict-pod
+        ---
+        # HorizontalPodAutoscaler
+        apiVersion: autoscaling/v2beta1
+        kind: HorizontalPodAutoscaler
+        metadata:
+        name: predict-auto-scale
+        namespace: default
+        spec:
+        scaleTargetRef:     # autoscale 対象となる `scaled resource object` を指定
+            apiVersion: apps/v1
+            kind: Deployment
+            name: predict-pod
+        minReplicas: 1      # 最小 Pod 数
+        maxReplicas: 4      # 最大 Pod 数
+        metrics:
+        - type: External  # 外部メトリクス（kubernetesクラスタ内のリソースとは関係しないメトリクス）
+            external:
+            metricName: custom.googleapis.com|n_queues_in_redis   # Kubernetes API では指標名にスラッシュを使用できないため、パイプ記号（|）で置き換える必要がある
+            targetValue: 0.5                                      # 1つのPodが処理すべき値を決め打ちで指定する。
+        ```
+
+        ポイントは、以下の通り
+
+        - 推論サーバーはオートスケール対象なのでので、水平 Pod オートスケールを行うための `HorizontalPodAutoscaler` リソースを定義している。
+
+        - この `HorizontalPodAutoscaler` リソースに対して、`metrics.type: External` で外部メトリック（＝外部指標）をオートスケール指標とするように定義している。そして、具体的な外部指標名 `metrics.metricName` には、Cloud Monitoring に書き込んでいるカスタム指標（＝Redisの joib_id のキュー数） `custom.googleapis.com|n_queues_in_redis` を設定している
+
+            > k8s には外部指標でのオートスケール機能とカスタム指標でのオートスケール機能があるが、ここでいう「k8s のカスタム指標」と「Cloud Monitoring のカスタム指標」は同じではなく、「k8s の外部指標」と「loud Monitoring のカスタム指標」が一致することに注意
+
+        - このとき、Kubernetes API では指標名にスラッシュ(`/`)を使用できないため、パイプ記号（`|`）で置き換える必要があることに注意。また、ここで設定する外部指標名（＝Cloud Monitoring でのカスタム指標名）としては、`n_queues_in_redis` 単体や `projects|my-project2-303004|metricDescriptors|custom.googleapis.com|n_queues_in_redis` ではなく、`custom.googleapis.com|n_queues_in_redis` となることに注意
+
+        - オートスケールのしきい値は、`targetAverageValue` ではなく `targetValue` で定義している。
+            - `targetValue` : 1つのPodに対してのしきい値
+            - `targetAverageValue` : 外部指標全体の数値をPod数で割ったときのしきい値。例えば Pod 数（５）・外部指標値（100）・targetAverageValue=10の場合は、 外部指標値/Pod 数=20 になって、targetAverageValue=10 を超えているので水平オートスケールが行われる
+
+        - この `metrics.type: External` を定義しただけでは、例え、Cloud Monitoring に対応するカスタム指標を書き込んでいたとしても、実際にオートスケールは行われないことに注意。この外部指標でオートスケール出来るようにするためには、後述の Stackdriver Adapter を GKE クラスタにデプロイして、`custom-metrics-stackdriver-adapter` という名前の外部メトリックサーバーの Pod を起動させておく必要がある
+
+1. docker image を Container Registry にアップロードするための `cloudbuild.yml` を作成する<br>
+    本項目のコア部分ではないので、詳細は割愛する。
+
+1. docker image を Container Registry にアップロードする<br>
+    ```sh
+    $ gcloud builds submit --config cloudbuild.yml --timeout 3600
     ```
 
-    > 作成したサービスアカウントの秘密鍵 (json) は、Cloud Monitoring API を用いて Cloud Monitoring にアクセスするモジュール（今の場合は Monitoring サーバー）に認証させる必要があるが、この処理は、`docker-compose.yml` 内の `environment` タグに `GOOGLE_APPLICATION_CREDENTIALS: "/api/key/cloud-monitoring.json"` を設定して行うようにしている。
+1. GKE クラスタを作成する<br>
+    ```sh
+    # GKE クラスタを作成する
+    $ gcloud container clusters create ${CLUSTER_NAME} \
+        --region ${ZONE} \
+        --num-nodes 1 \
+        --machine-type ${CPU_TYPE} \
+        --disk-size ${DISK_SIZE} \
+        --scopes=gke-default,logging-write
+
+    # 作成したクラスタに切り替える
+    gcloud container clusters get-credentials ${CLUSTER_NAME} --region ${ZONE} --project ${PROJECT_ID}
+    ```
+
+1. GKE クラスタに Stackdriver Adapter をデプロイする<br>
+    GKE クラスタにカスタム指標のためのアダプタである Stackdriver Adapter をデプロイする。この際の Stackdriver Adapter の k8s マニフェストファイルは、GCP側で予め用意されているマニフェストファイルを使用する。<br>
+    このデプロイ処理を行うことで、`custom-metrics-stackdriver-adapter` という名前の外部メトリックサーバーの Pod が起動し、k8s マニフェスファイルトの `HorizontalPodAutoscaler` リソース内で `spec.metrics.type: External` で定義した Cloud Monitoring からのカスタム指標 `spec.metrics.external.metricName: custom.googleapis.com|${カスタム指標名}` で水平 Pod オートスケールが行えるようになる。
+    ```sh
+    $ kubectl create clusterrolebinding cluster-admin-binding --clusterrole cluster-admin --user "$(gcloud config get-value account)"
+    $ kubectl create -f https://raw.githubusercontent.com/GoogleCloudPlatform/k8s-stackdriver/master/custom-metrics-stackdriver-adapter/deploy/production/adapter.yaml
+    ```
+
+1. GKE クラスタに各種 k8s リソースをデプロイする<br>
+    ```sh
+    $ kubectl apply -f k8s/redis.yml
+    $ kubectl apply -f k8s/predict.yml
+    $ kubectl apply -f k8s/proxy.yml
+    $ kubectl apply -f k8s/batch.yml
+    $ kubectl apply -f k8s/monitoring.yml
+    ```
 
 1. リクエスト処理のコードを作成する<br>
     `requests` モジュールを用いて、例えば以下のようなリクエスト処理のコードを作成する。<br>
@@ -247,15 +429,11 @@
 
     > リクエスト処理を `curl` コマンドで直接行う場合は、リクエスト処理のコードは不要
 
-1. API を起動する<br>
-    ```sh
-    $ docker-compose -f docker-compose.yml stop
-    $ docker-compose -f docker-compose.yml up -d
-    ```
-
 1. リクエスト処理する<br>
     上記作成したリクエスト処理のコードを用いてリクエスト処理する場合は、以下のコマンドを実行する
     ```sh
+    $ SERVICE_NAME=proxy-server
+    $ HOST=`kubectl describe service ${SERVICE_NAME} | grep "LoadBalancer Ingress" | awk '{print $3}'`
     $ python request.py --host ${HOST} --port ${PORT} --in_images_dir ${IN_IMAGES_DIR} --out_images_dir ${OUT_IMAGES_DIR}
     ```
 
@@ -280,5 +458,13 @@
     [Cloud Monitoring コンソール画面の「Metrics Explorer」の項目](https://console.cloud.google.com/monitoring/metrics-explorer?hl=ja&project=my-project2-303004) から、メトリックが書き込まれているか確認する<br>
     <img src="https://user-images.githubusercontent.com/25688193/139066998-01043494-d42f-42cf-9efc-c323498355d4.png" width="1000" /><br>
 
+
+1. 推論サーバーがオートスケールされていることを確認する<br>
+    ```sh
+    $ watch kubectl get HorizontalPodAutoscaler
+    ```
+
 ## ■ 参考サイト
+- https://cloud.google.com/monitoring/custom-metrics/creating-metrics?hl=ja
 - https://cloud.google.com/kubernetes-engine/docs/tutorials/external-metrics-autoscaling
+- https://open-groove.net/aws-eks/k8s-hpa-targetvalue/

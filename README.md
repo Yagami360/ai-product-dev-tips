@@ -55,13 +55,15 @@
         - [【GKE】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/10)
         - [【GKE】GKE を用いた機械学習モデルの推論 API の構築](https://github.com/Yagami360/graphonomy_api-server_gke)
         - [[In-progress]【GKE】GKE でのオートスケールの基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/31)
-        - [[In-progress]【GKE】k8s の外部メトリックと Cloud Monitoring を使用しカスタム指標でオートスケールする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/50)
+        - [[In-progress]【GKE】Cloud Monitoring でのカスタム指標を k8s の外部メトリックとしてオートスケールする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/50)
         - 【GKE】Workload Identity を用いた GKE クラスタから GCP リソースへのアクセス
         - 【GKE】GKE の外部公開サービスの IP アドレスを固定する
         - 【GKE】Pod 間で通信する
         - 【GKE】Pod 内のコンテナ間で通信する
         - 【GKE】Pod でのコンテナの起動順を設定する
-        - 【Docker】Pod 内のコンテナ内から別の Pod を認識する
+        - 【GKE】Pod 内のコンテナ内から別の Pod を認識する
+        - 【GKE】GKE クラスタをマルチゾーンクラスタにして安定性を向上させる
+        - 【GKE】GKE クラスタをマルチリージョン＆マルチゾーンクラスタにして安定性を向上させる
         - 【k8s】Istio の基礎事項
         - [【GKE】GKE で構成した Web API に Istio を使用したサーキットブレーカーを導入する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/27)
         - [【GKE】Istio の VirtualSevice を使用してリクエストデータのヘッダーに応じて異なる Web-API で推論する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/40)
@@ -193,6 +195,8 @@
         - GKE で構成した機械学習 API に vegeta atteck を使用して負荷テストする
     - [Istio の VirtualSevice のトラフィックミラーリング機能を使用して Web-API のシャドウA/Bテストを行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/41)
     - [Istio の VirtualSevice のトラフィック分割機能を使用して、Web-API のオンラインA/Bテストを行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/42)
+- ジョブ管理
+    - Slurm
 
 ## ■ アプリ開発・フロントエンド
 

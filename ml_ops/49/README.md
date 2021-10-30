@@ -4,11 +4,11 @@ Cloud Monitoring（旧 Stackdriver Monitoring）は、各種インフラリソ�
 
 <img src="https://user-images.githubusercontent.com/25688193/139069365-bdc1754d-e0fe-413b-a566-a0a830bb1165.png" width="800"><br>
 
-ここでは、「プロキシサーバ・バッチサーバ・モニタリングサーバー・Redis サーバー・推論サーバー」から構成される上記のような非同期 API において、カスタム指標として、Redis に保存されている job_id のキュー数を採用し、Cloud Monitoring への書き込む処理を行う。
+ここでは上図のように、「プロキシサーバ・バッチサーバ・モニタリングサーバー・Redis サーバー・推論サーバー」から構成される非同期 API において、カスタム指標として、Redis に保存されている job_id のキュー数を採用し、Cloud Monitoring への書き込む処理を行う。
 
 尚、今回の構成例では、Redis に保存されている job_id のキュー数を無限ループでポーリングするモニタリングサーバーなるものを新規に追加し、モニタリングサーバー内で Python の Cloud Monitoring API を用いて、Cloud Monitoring への書き込む処理を行っているが、必ずしもモニタリングサーバーなるものを新規に追加する必要はないことに注意
 
-> この Cloud Monitoring へのカスタム指標を書き込み処理の応用例としては、k8s の外部メトリックでのオートスケール機能と併用して、GKE で構成した非同期 API において、Redis のキュー数に応じてオートスケールするようなシステムが考えられる。詳細は「[【GKE】k8s の外部メトリックと Cloud Monitoring を使用しカスタム指標でオートスケールする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/50)」を確認のこと
+> この Cloud Monitoring へのカスタム指標を書き込み処理の応用例としては、k8s の外部メトリックでのオートスケール機能と併用して、GKE で構成した非同期 API において、Redis のキュー数に応じてオートスケールするようなシステムが考えられる。詳細は「[【GKE】Cloud Monitoring でのカスタム指標を k8s の外部メトリックとしてオートスケールする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/50)」を確認のこと
 
 ## ■ 使用法
 

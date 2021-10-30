@@ -41,8 +41,8 @@ if __name__ == "__main__":
     #----------------------------------
     # metadata 取得
     #----------------------------------
-    metadata = requests.get( "http://" + args.host + ":" + args.port + "/metadata" ).json()
-    print( "metadata : ", metadata )
+    #metadata = requests.get( "http://" + args.host + ":" + args.port + "/metadata" ).json()
+    #print( "metadata : ", metadata )
 
     #----------------------------------
     # ジョブ開始
