@@ -22,7 +22,7 @@ spec:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /api/key/cloud-monitoring.json
           - name: POLLING_TIME
-            value: "1"
+            value: "5"
           - name: DEBUG
             value: "True"
         command: ["/bin/sh","-c"]

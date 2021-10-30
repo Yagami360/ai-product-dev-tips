@@ -55,7 +55,7 @@
         - [【GKE】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/server_processing/10)
         - [【GKE】GKE を用いた機械学習モデルの推論 API の構築](https://github.com/Yagami360/graphonomy_api-server_gke)
         - [[In-progress]【GKE】GKE でのオートスケールの基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/31)
-        - [[In-progress]【GKE】Cloud Monitoring でのカスタム指標を k8s の外部メトリックとしてオートスケールする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/50)
+        - [【GKE】Cloud Monitoring でのカスタム指標を k8s の外部メトリックとしてオートスケールする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/50)
         - 【GKE】Workload Identity を用いた GKE クラスタから GCP リソースへのアクセス
         - 【GKE】GKE の外部公開サービスの IP アドレスを固定する
         - 【GKE】Pod 間で通信する

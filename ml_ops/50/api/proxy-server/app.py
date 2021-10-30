@@ -81,6 +81,7 @@ async def metadata():
     return {
         "status": "ok",
         "jobs" : jobs,
+        "n_queues_in_redis" : redis_client.lrange("job_id",0,-1),
     }
 
 @app.get("/get_job/{job_id}")

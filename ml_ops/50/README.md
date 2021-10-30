@@ -232,7 +232,11 @@ k8s では、以下の２種類の独自のメトリックに基づくオート�
 
     ポイントは、以下の通り。
 
-    - Redis のキューに保管されている joib_id のリストを定期的に確認するために、`asyncio `と `concurrent.futures.ProcessPoolExecutor` を使用した並列処理で、無限ループでのポーリング処理を行っている。
+    - Redis のキューに保管されている job_id のリストを定期的に確認するために、`asyncio `と `concurrent.futures.ProcessPoolExecutor` を使用した並列処理で、無限ループでのポーリング処理を行っている。<br>
+        このとき、コンフィグ値で設定可能にしているポーリング間隔 `MonitoringServerConfig.polling_time` を小さな値（1secなど）にしすぎると、カスタム指標の最大サンプリング時間より頻繁に書き込処理が行われるために、以下のエラーが発生することに注意。1sec 間隔だとこのエラーが発生したので、`MonitoringServerConfig.polling_time` のデフォルト値を 5sec にしている
+        ```sh
+        google.api_core.exceptions.InvalidArgument: 400 One or more TimeSeries could not be written: One or more points were written more frequently than the maximum sampling period configured for the metric.: timeSeries[0] [type_url: "type.googleapis.com/google.monitoring.v3.CreateTimeSeriesSummary"
+        ```
 
     - Python の Cloud Monitoring API を用いた Cloud Monitoring への一連の書き込み処理は、[公式マニュアル](https://cloud.google.com/monitoring/custom-metrics/creating-metrics?hl=ja) にあるコードを参考にしている。大まかな処理の流れは以下の通り<br>
         1. `monitoring_v3.MetricServiceClient()` で、Cloud Monitoring にアクセスするためのクライアントを作成する
@@ -417,11 +421,14 @@ k8s では、以下の２種類の独自のメトリックに基づくオート�
 1. GKE クラスタに各種 k8s リソースをデプロイする<br>
     ```sh
     $ kubectl apply -f k8s/redis.yml
+    $ sleep 10
     $ kubectl apply -f k8s/predict.yml
     $ kubectl apply -f k8s/proxy.yml
     $ kubectl apply -f k8s/batch.yml
     $ kubectl apply -f k8s/monitoring.yml
     ```
+
+    > redis の pod が正常に動作した後に、batch-server と monitoring-server を起動しないと、batch-server と monitoring-server 内ででエラーが出て停止するので、sleep コマンドで間隔を開けている
 
 1. リクエスト処理のコードを作成する<br>
     `requests` モジュールを用いて、例えば以下のようなリクエスト処理のコードを作成する。<br>

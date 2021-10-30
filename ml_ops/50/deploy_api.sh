@@ -58,13 +58,15 @@ set -e
 
 # k8s リソース（Pod, Service, HorizontalPodAutoscaler, configmap 等）の作成
 kubectl apply -f k8s/redis.yml
+sleep 10    # redis の pod が正常に動作した後でないと、batch-server と monitoring-server でエラーが出て停止するので、間隔を開ける
+
 kubectl apply -f k8s/predict.yml
 kubectl apply -f k8s/proxy.yml
 kubectl apply -f k8s/batch.yml
 kubectl apply -f k8s/monitoring.yml
 
 # 正常起動待ち
-sleep 180
+sleep 120
 kubectl get pods
 kubectl get service
 kubectl get HorizontalPodAutoscaler

@@ -35,7 +35,7 @@
   1. 「設定」ボタン→「全般」タブから、GCP リソースのリージョンを指定する<br>
       <img src="https://user-images.githubusercontent.com/25688193/107106996-d4759180-6871-11eb-909c-14915bde83c6.png" width="500"><br>
 
-1. ウェブアプリを Fisebase に登録する<br>
+1. <a id="ウェブアプリをFirebaseに登録する"></a>ウェブアプリを Firebase に登録する<br>
   1. Firebase コンソールの「プロジェクトの概要」ページの中央にあるウェブアイコン `</>` をクリックし、設定ワークフローを起動する。<br>
       <img src="https://user-images.githubusercontent.com/25688193/107107327-bd37a380-6873-11eb-972d-4957992a748c.png" width="300"><br>
   1. 設定ワークフロー画面でアプリ名を入力後、「アプリを登録」ボタンをクリックする。このとき、以下の画面のコードをコピーしておく。<br>
@@ -110,8 +110,22 @@
     ```js
     import React from 'react';
     import ReactDOM from 'react-dom';
+    import firebase from "firebase";
     import './index.css';
     import App from './App';
+
+    // Firebaseの初期化
+    var firebaseConfig = {
+        apiKey: "AIzaSyBSKhjSkI0pERNnYhcrl3Uldl47ZyGvNqE",
+        authDomain: "react-firebase-app-2cc53.firebaseapp.com",
+        databaseURL: "https://react-firebase-app-2cc53-default-rtdb.firebaseio.com",
+        projectId: "react-firebase-app-2cc53",
+        storageBucket: "react-firebase-app-2cc53.appspot.com",
+        messagingSenderId: "686383733508",
+        appId: "1:686383733508:web:a1d5c2ec271201d87b4e51",
+        measurementId: "G-MCWN891SRK"   
+    };
+    firebase.initializeApp(firebaseConfig);
 
     // 表示をレンダリング
     ReactDOM.render(
@@ -120,9 +134,26 @@
     );
     ```
 
-    Redux のストア・レデューサー・プロバイダーなどを使わないシンプルな構成になっている
+    ポイントは、以下の通り
+
+    - `firebase.initializeApp()` で firebase の初期化を行っている。このときの config 引数には、先の「[ウェブアプリをFirebaseに登録する](#ウェブアプリをFirebaseに登録する)」の処理時にコピーしていた値を設定すればよい。そして 一旦 firebase の初期化処理を行えば、どのコンポーネントからも firebase を利用することが出来るようになる。
+
+        > このコンフィ値には、API キーの情報が含まれており、GitHub に公開することでセキュリティ上のリスクがあるように思えるが、公開前提の値であり隠すようなものではないらしい。<br>
+        > 詳細は、https://qiita.com/hoshymo/items/e9c14ed157200b36eaa5 などを参照のこと
+
+    - その他の部分は、Redux のストア・レデューサー・プロバイダーなどを使わないシンプルな構成になっている
 
 1. `src/App.js` を修正する<br>
+    ```js
+    ```
+
+    ポイントは、以下の通り
+
+    - xxx
+
+1. `src/FirebaseDatabase.js` を作成する<br>
+    Firebase の Realtime Database からデータを取り出し、それらを表示する `FirebaseDatabase` コンポーネントを作成する
+
     ```js
     ```
 

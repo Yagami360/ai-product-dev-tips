@@ -50,7 +50,7 @@ def polling():
     metric_descriptor.type = "custom.googleapis.com/" + MonitoringServerConfig.metric_name         # 使用できるプレフィックスは custom.googleapis.com/ と external.googleapis.com/prometheus 
     metric_descriptor.metric_kind = ga_metric.MetricDescriptor.MetricKind.GAUGE                    #
     metric_descriptor.value_type = ga_metric.MetricDescriptor.ValueType.INT64                      #
-    metric_descriptor.description = "joj_ids in redis queue."
+    metric_descriptor.description = "job_ids in redis queue."
 
     # metric_descriptor.labels に設定するラベル
     labels = ga_label.LabelDescriptor()
@@ -88,7 +88,7 @@ def polling():
         seconds = int(now)
         nanos = int((now - seconds) * 10 ** 9)
         interval = monitoring_v3.TimeInterval({"end_time": {"seconds": seconds, "nanos": nanos}})
-
+        
         # Cloud Monitoring へ書き込み
         point = monitoring_v3.Point({
             "interval": interval, 
