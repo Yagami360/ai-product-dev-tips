@@ -1,8 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import firebase from "firebase";
+import firebase from "firebase";                    // for version 8.x
+//import { initializeApp } from 'firebase/app';     // for version 9.x
 import './index.css';
 import App from './App';
+
+console.log("firebase version", firebase.SDK_VERSION )
 
 // Firebaseの初期化
 var firebaseConfig = {
@@ -16,8 +19,10 @@ var firebaseConfig = {
     measurementId: "G-MCWN891SRK"   
 };
 
-firebase.initializeApp(firebaseConfig);
-  
+
+firebase.initializeApp(firebaseConfig);           // for version 8.x
+//initializeApp(firebaseConfig);                  // for version 9.x
+
 // 表示をレンダリング
 ReactDOM.render(
     <App />,

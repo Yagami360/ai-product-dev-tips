@@ -1,8 +1,8 @@
 #!/bin/sh
 set -eu
 ROOT_DIR=${PWD}
-PROJECT_NAME="react-firebase-app"
 PROJECT_ID="react-firebase-app-2cc53"
+PROJECT_NAME="nextjs-firebase-app"
 #BUILD=0
 BUILD=1
 
@@ -35,17 +35,41 @@ fi
 npm -v
 
 #-----------------------------
-# React のプロジェクトを作成する
+# React のプロジェクトを作成し、起動する
 #-----------------------------
 # React のプロジェクトを作成
-if [ ! -e ${ROOT_DIR}/${PROJECT_NAME} ] ; then
-  npx -y create-react-app ${PROJECT_NAME}
-fi
+mkdir -p ${PROJECT_NAME}
 
+# `package.json` を作成する
+cd ${ROOT_DIR}/${PROJECT_NAME}
+touch "package.json"
+echo '{
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start",
+    "export": "next export"
+  }
+}' > "package.json"
+
+# next.js, react, react-dom をインストールする
+cd ${ROOT_DIR}/${PROJECT_NAME}
+npm install --save next
+npm install --save react
+npm install --save react-dom
+ 
 #  fisebase API をインストールする
 cd ${ROOT_DIR}/${PROJECT_NAME}
 npm install --save firebase@8.10.0
 npm ls --depth=0
+
+touch ".gitignore"
+echo 'node_modules' > "package.json"
+echo '.next' > "package.json"
+
+# テンプレートファイルを作成する
+mkdir -p ${ROOT_DIR}/${PROJECT_NAME}/pages
+touch ${ROOT_DIR}/${PROJECT_NAME}/pages/"index.js"
 
 #----------------------------- 
 # Firebase のプロジェクトを作成する
@@ -67,14 +91,28 @@ if [ ! -e ${ROOT_DIR}/${PROJECT_NAME}/"database.rules.json" ] ; then
 fi
 
 #-----------------------------
-# React アプリを起動する
+# Next.js アプリを起動する
 #-----------------------------
 # プロジェクトをビルドする
 if [ ${BUILD} != 0 ] ; then
+  # Next.js の設定ファイル `next.config.js` を作成する
   cd ${ROOT_DIR}/${PROJECT_NAME}
+  touch "next.config.js"
+  echo 'module.exports = {
+    exportPathMap: function () {
+      return {
+        "/": { page: "/" }
+      }
+    }
+  }' > "next.config.js"
+
+  # プロジェクトをビルドする
   npm run build
+
+  # プロジェクトをエクスポートする
+  npm run export
 fi
 
-# 作成した React のプロジェクトのサーバーを起動する
+# 作成した Next.js のプロジェクトのサーバーを起動する
 cd ${ROOT_DIR}/${PROJECT_NAME}
-npm start
+npm run dev
