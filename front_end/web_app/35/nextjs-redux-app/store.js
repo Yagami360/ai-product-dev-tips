@@ -3,15 +3,14 @@ import thunkMiddleware from 'redux-thunk';
 
 // ステート初期値
 const init_state = {
-  key:'value',
+  id:0,
+  name: "none"
 }
 
 // レデューサー
 function reducer(state = init_state, action) {
   switch (action.type) {
-    case 'TYPE1':
-      return state;
-    case 'TYPE2':
+    case 'ADD_USER':
       return state;
     default:
       return state;

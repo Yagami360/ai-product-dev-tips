@@ -62,7 +62,7 @@ ReactDOM.render(
 
 
 1. Next.js で Redux を利用するためのスクリプトを作成する<br>
-    1. `lib/redux-store.js` に `AppWithRedux` コンポーネントを作成する<br>
+  	1. `lib/redux-store.js` に `AppWithRedux` コンポーネントを作成する<br>
 			`lib/redux-store.js` に `AppWithRedux` コンポーネントを作成する。このコンポーネントでは、Redux の store を初期化し、それに属性を指定して、App コンポーネントを生成する・
 			```js
 			import { Component } from 'react';
@@ -112,73 +112,76 @@ ReactDOM.render(
 			}
 			```
 
- 		1. `pages/_app.js` に `_App` コンポーネントを作成する<br>
-			`pages/_app.js` に `_App` コンポーネントを作成する。このコンポーネントは、Next.js の App コンポーネントを継承し、Next.js でも React のときと同じようにして Redux を使用出来るようにたコンポーネントになっている。
-			```js
-			import App, {Container} from 'next/app';
-			import React from 'react';
-			import withReduxStore from '../lib/redux-store';
-			import { Provider } from 'react-redux';
-
-			// Next.js の App コンポーネントを形式したコンポーネント
-			class _App extends App {
-				render () {
-					const {Component, pageProps, reduxStore} = this.props
-					return (
-						<Container>
-							<Provider store={reduxStore}>
-								<Component {...pageProps} />
-							</Provider>
-						</Container>
-					)
-				}
-			}
-
-			export default withReduxStore(_App)
-			```
-
-	  > この２つのコンポーネントの中身のコードを詳細に把握する必要はない。Next.js で React の時と同じようにして Redux を利用するためのスクリプトであって、Next.js で Redux を使用する場合は、毎回同じコードを作成するようにすればよい
-
-1. `store.js` を作成する<br>
-		Redux における ストアやレデューサーの作成を行う `store.js` を作成する
-
+	1. `pages/_app.js` に `_App` コンポーネントを作成する<br>
+		`pages/_app.js` に `_App` コンポーネントを作成する。このコンポーネントは、Next.js の App コンポーネントを継承し、Next.js でも React のときと同じようにして Redux を使用出来るようにたコンポーネントになっている。
 		```js
-		import { createStore, applyMiddleware } from 'redux';
-		import thunkMiddleware from 'redux-thunk';
+		import App, {Container} from 'next/app';
+		import React from 'react';
+		import withReduxStore from '../lib/redux-store';
+		import { Provider } from 'react-redux';
 
-		// ステート初期値
-		const init_state = {
-			key:'value',
-		}
-
-		// レデューサー
-		function reducer(state = init_state, action) {
-			switch (action.type) {
-				case 'TYPE1':
-					return state;
-				case 'TYPE2':
-					return state;
-				default:
-					return state;
+		// Next.js の App コンポーネントを形式したコンポーネント
+		class _App extends App {
+			render () {
+				const {Component, pageProps, reduxStore} = this.props
+				return (
+					<Container>
+						<Provider store={reduxStore}>
+							<Component {...pageProps} />
+						</Provider>
+					</Container>
+				)
 			}
 		}
 
-		// createStore() で作成した store を返すメソッド。lib/redux-store.js の AppWithRedux コンポーネントで利用しているので外部公開する
-		export function initStore(state = init_state) {
-			// applyMiddleware() でミドルウェアを追加する。ここでいうミドルウェアとは、React の処理に途中に入り込んで、実行する処理の内容をカスタマイズするものである。
-			// redux-thunk の thunkMiddleware ミドルウェアを追加することで、Next.js で Redux がうまく動作するようになる
-			return createStore(reducer, state, applyMiddleware(thunkMiddleware))
-		}
+		export default withReduxStore(_App)
 		```
 
-		ポイントは、以下の通り
+		> `render()` メソッド内で `<Provider>` タグで store を設定している。
 
-		- `initStore()` は、単に `createStore()` で作成した store を返すメソッドであるが、このメソッドを `lib/redux-store.js` の `AppWithRedux` コンポーネントで利用するので、外部公開している。
+	> この２つのコンポーネントの中身のコードを詳細に把握する必要はない。Next.js で React の時と同じようにして Redux を利用するためのスクリプトであって、Next.js で Redux を使用する場合は、毎回同じコードを作成するようにすればよい
 
-		- `createStore()` の引数に、`applyMiddleware()` でミドルウェアを追加している。ここでいうミドルウェアとは、React の処理に途中に入り込んで、実行する処理の内容をカスタマイズするものであるが、redux-thunk の `thunkMiddleware` ミドルウェアを追加することで、Next.js で Redux がうまく動作するようになる
+1. `store.js` を作成する<br>
+	Redux における ストアやレデューサーの作成を行う `store.js` を作成する
+
+	```js
+	import { createStore, applyMiddleware } from 'redux';
+	import thunkMiddleware from 'redux-thunk';
+
+	// ステート初期値
+	const init_state = {
+		key:'value',
+	}
+
+	// レデューサー
+	function reducer(state = init_state, action) {
+		switch (action.type) {
+			case 'TYPE1':
+				return state;
+			case 'TYPE2':
+				return state;
+			default:
+				return state;
+		}
+	}
+
+	// createStore() で作成した store を返すメソッド。lib/redux-store.js の AppWithRedux コンポーネントで利用しているので外部公開する
+	export function initStore(state = init_state) {
+		// applyMiddleware() でミドルウェアを追加する。ここでいうミドルウェアとは、React の処理に途中に入り込んで、実行する処理の内容をカスタマイズするものである。
+		// redux-thunk の thunkMiddleware ミドルウェアを追加することで、Next.js で Redux がうまく動作するようになる
+		return createStore(reducer, state, applyMiddleware(thunkMiddleware))
+	}
+	```
+
+	ポイントは、以下の通り
+
+	- `initStore()` は、単に `createStore()` で作成した store を返すメソッドであるが、このメソッドを `lib/redux-store.js` の `AppWithRedux` コンポーネントで利用するので、外部公開している。
+
+	- `createStore()` の引数に、`applyMiddleware()` でミドルウェアを追加している。ここでいうミドルウェアとは、React の処理に途中に入り込んで、実行する処理の内容をカスタマイズするものであるが、redux-thunk の `thunkMiddleware` ミドルウェアを追加することで、Next.js で Redux がうまく動作するようになる
 
 
 1. 各種コンポーネントを作成する<br>
+	xxx
 
 1. `pages/index.js` を作成する
     ```sh
@@ -208,37 +211,36 @@ ReactDOM.render(
 
     - Next.js では css ファイルは使えない。JSX 内でスタイル定義したい場合は、ビルドイン css でスタイルを定義するのが一般的である。ビルドイン css は、JSX 記述の内で、`<style jsx>` タグで定義できる。
 
-1. 【オプション】プロジェクトをビルドする
-  1. Next.js の設定ファイル `next.config.js` を作成する<br>
-      アプリの公開時に、外部公開される静的な HTML ファイルを生成するために、 Next.js の設定ファイル `next.config.js` を作成する
-      ```js
-      module.exports = {
-        exportPathMap: function () {
-          return {
-            '/': { page: '/' }
-          }
-        }
-      }
-      ```
-    1. プロジェクトをビルドする
-        ```sh
-        $ npm run build
-        ```
+1. 【オプション】プロジェクトをビルドする<br>
+	1. Next.js の設定ファイル `next.config.js` を作成する<br>
+			アプリの公開時に、外部公開される静的な HTML ファイルを生成するために、 Next.js の設定ファイル `next.config.js` を作成する
+			```js
+			module.exports = {
+				exportPathMap: function () {
+					return {
+						'/': { page: '/' }
+					}
+				}
+			}
+			```
 
-    1. プロジェクトをエクスポートする
-        ```sh
-        $ npm run export
-        ```
+	1. プロジェクトをビルドする
+		```sh
+		$ npm run build
+		```
 
-        > ビルドしてエクスポートされたプロジェクトは `${PROJECT_NAME}/out` ディレクトリに作成される。この out ディレクトリのファイルを全部アップロードすることで、アプリケーションを公開できる。
+	1. プロジェクトをエクスポートする
+			```sh
+			$ npm run export
+			```
 
-    1. 【オプション】出力された静的な Web ファイル　`out/index.html` を確認する
-        ```html
-        ```
+			> ビルドしてエクスポートされたプロジェクトは `${PROJECT_NAME}/out` ディレクトリに作成される。この out ディレクトリのファイルを全部アップロードすることで、アプリケーションを公開できる。
 
-        > 出力された静的な Web ファイル　`index.html` では、`index.js` の JSX の内容で書き換わっていることに注目。
-        
-        > サーバーから送られる静的な Web ファイル　`index.html` に表示内容が生成されてウェブブラウザに送られた後に、ウェブブラウザで表示内容をレンダリングする形式になっているので、サーバーサイドレンダリングできるようになっている
+	1. 【オプション】出力された静的な Web ファイル　`out/index.html` を確認する
+
+		> 出力された静的な Web ファイル　`index.html` では、`index.js` の JSX の内容で書き換わっていることに注目。
+		
+		> サーバーから送られる静的な Web ファイル　`index.html` に表示内容が生成されてウェブブラウザに送られた後に、ウェブブラウザで表示内容をレンダリングする形式になっているので、サーバーサイドレンダリングできるようになっている
 
 1. 作成した React のプロジェクトのサーバーを起動する
     ```sh

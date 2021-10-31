@@ -70,13 +70,13 @@ echo '.next' >> ".gitignore"
 # テンプレートファイルを作成する
 mkdir -p ${ROOT_DIR}/${PROJECT_NAME}/pages
 touch ${ROOT_DIR}/${PROJECT_NAME}/pages/"index.js"
-cp ${ROOT_DIR}/src/index.js ${ROOT_DIR}/${PROJECT_NAME}/pages/
+#cp ${ROOT_DIR}/src/index.js ${ROOT_DIR}/${PROJECT_NAME}/pages/
 
 # Next.js で Redux を利用するためのスクリプトを作成する（ここでは、予め作成しておいたコードを Next.js プロジェクトにコピーしている）
 mkdir -p ${ROOT_DIR}/${PROJECT_NAME}/lib
 cp ${ROOT_DIR}/src/redux-store.js ${ROOT_DIR}/${PROJECT_NAME}/lib/
-cp ${ROOT_DIR}/src/_app.js ${ROOT_DIR}/${PROJECT_NAME}/pages/
-cp ${ROOT_DIR}/src/store.js ${ROOT_DIR}/${PROJECT_NAME}/
+cp ${ROOT_DIR}/src/_app.js ${ROOT_DIR}/${PROJECT_NAME}/lib/
+#cp ${ROOT_DIR}/src/store.js ${ROOT_DIR}/${PROJECT_NAME}/
 
 # プロジェクトをビルドする
 if [ ${BUILD} != 0 ] ; then
