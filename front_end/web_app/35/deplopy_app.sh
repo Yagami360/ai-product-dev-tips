@@ -2,8 +2,8 @@
 set -eu
 ROOT_DIR=${PWD}
 PROJECT_NAME="nextjs-redux-app"
-#BUILD=0
-BUILD=1
+BUILD=0
+#BUILD=1
 
 #-----------------------------
 # OS判定
@@ -41,6 +41,7 @@ mkdir -p ${PROJECT_NAME}
 
 # `package.json` を作成する
 cd ${ROOT_DIR}/${PROJECT_NAME}
+rm -rf "package.json"
 touch "package.json"
 echo '{
   "scripts": {
@@ -51,20 +52,31 @@ echo '{
   }
 }' > "package.json"
 
-# next.js, react, react-dom をインストールする
+# next.js, react, react-dom, redux をインストールする
 cd ${ROOT_DIR}/${PROJECT_NAME}
 npm install --save next
 npm install --save react
 npm install --save react-dom
+npm install --save redux
+npm install --save react-redux
+npm install --save redux-thunk
 npm ls --depth=0
 
+rm -rf ".gitignore"
 touch ".gitignore"
-echo 'node_modules' > "package.json"
-echo '.next' > "package.json"
+echo 'node_modules' >> ".gitignore"
+echo '.next' >> ".gitignore"
 
 # テンプレートファイルを作成する
 mkdir -p ${ROOT_DIR}/${PROJECT_NAME}/pages
 touch ${ROOT_DIR}/${PROJECT_NAME}/pages/"index.js"
+cp ${ROOT_DIR}/src/index.js ${ROOT_DIR}/${PROJECT_NAME}/pages/
+
+# Next.js で Redux を利用するためのスクリプトを作成する（ここでは、予め作成しておいたコードを Next.js プロジェクトにコピーしている）
+mkdir -p ${ROOT_DIR}/${PROJECT_NAME}/lib
+cp ${ROOT_DIR}/src/redux-store.js ${ROOT_DIR}/${PROJECT_NAME}/lib/
+cp ${ROOT_DIR}/src/_app.js ${ROOT_DIR}/${PROJECT_NAME}/pages/
+cp ${ROOT_DIR}/src/store.js ${ROOT_DIR}/${PROJECT_NAME}/
 
 # プロジェクトをビルドする
 if [ ${BUILD} != 0 ] ; then

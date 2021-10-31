@@ -59,8 +59,8 @@ npm install --save react-dom
 npm ls --depth=0
 
 touch ".gitignore"
-echo 'node_modules' > "package.json"
-echo '.next' > "package.json"
+echo 'node_modules' > ".gitignore"
+echo '.next' > ".gitignore"
 
 # テンプレートファイルを作成する
 mkdir -p ${ROOT_DIR}/${PROJECT_NAME}/pages
