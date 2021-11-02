@@ -74,8 +74,8 @@ touch ${ROOT_DIR}/${PROJECT_NAME}/pages/"index.js"
 
 # Next.js で Redux を利用するためのスクリプトを作成する（ここでは、予め作成しておいたコードを Next.js プロジェクトにコピーしている）
 mkdir -p ${ROOT_DIR}/${PROJECT_NAME}/lib
-cp ${ROOT_DIR}/src/redux-store.js ${ROOT_DIR}/${PROJECT_NAME}/lib/
-cp ${ROOT_DIR}/src/_app.js ${ROOT_DIR}/${PROJECT_NAME}/lib/
+cp ${ROOT_DIR}/src/with-redux-store.js ${ROOT_DIR}/${PROJECT_NAME}/lib/
+cp ${ROOT_DIR}/src/_app.js ${ROOT_DIR}/${PROJECT_NAME}/pages/
 #cp ${ROOT_DIR}/src/store.js ${ROOT_DIR}/${PROJECT_NAME}/
 
 # プロジェクトをビルドする
