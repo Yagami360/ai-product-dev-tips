@@ -243,14 +243,17 @@
         - [【React】Redux を使用して値の状態管理を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/29)
         - [【React】Redux Persist で React アプリのデータを永続化する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/31)
         - 【React】Redux Persist で React アプリのデータの永続化を停止・再開する
-        - [[In-progress]【React】React Hooks を使用して値の状態管理を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/36)
+        - [【React】React Hooks のステートフックを使用して値の状態管理を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/36)
+        - 【React】React Hooks でステートフックを永続化する
+        - [[In-progress]【React】React Hooks で副作用フックを使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/37)
+        - 【React】React Hooks で独自フックを使用する
         - [[In-progress]【React】Next.js を使用してサーバーサイドレンダリング（SSR）する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/32)
         - [[In-progress]【React】Next.js で Redux を使用して値の状態管理を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/35)
         - [【React】React アプリで Firebase の Realtime Database を利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/33)
         - [[In-progress]【React】Next.js で Firebase の Realtime Database を利用し、基本的なデータベース操作を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/33)
         - [【React】React と Redux を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/30)
-        - 【React】Next.js と Redux を使用して簡単なウェブアプリを作成する
-        - 【React】Next.js と Redux と Firebase を使用して簡単なウェブアプリを作成する
+        - 【React】React と React Hooks を使用して簡単なウェブアプリを作成する
+        - 【React】Next.js と React Hooks と Firebase を使用して簡単なウェブアプリを作成する
         - 【React】React を使用して http 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する
 
 - Web アプリ開発
