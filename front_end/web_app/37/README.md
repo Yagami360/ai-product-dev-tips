@@ -124,8 +124,19 @@ useEffect(関数名)
 
 ## ■ 副作用フックをスキップする（＝自身の副作用フック再呼び出しによる無限ループを回避する）
 
-> 概要設定追加
+副作用フック内で、state の値を更新するために `useState()` の第２戻り値（＝state を更新する関数）を呼び出すと、（state の値が更新するために）再度同じ副作用フックが呼び出され、無限ループになってしまうケースがある。
 
+このような場合は、副作用フックが呼び出されるステートを限定することで回避できる。
+
+副作用フックが呼び出されるステートを限定する場合は、以下の形式で副作用フック定義する。
+この時、`[副作用フックが呼び出されるステート１, 副作用フックが呼び出されるステート２, ...]` に指定しなかったステートは、ステートの値が更新されても副作用フックの処理が行われなくなる。
+
+```js
+import { useEffect } from 'react'
+
+// 関数名 : コンポーネント更新時に実行される関数を指定
+useEffect((event)=>{...}, [副作用フックが呼び出されるステート１, 副作用フックが呼び出されるステート２, ...]) 
+```
 
 ### ◎ 方法
 
@@ -152,15 +163,110 @@ useEffect(関数名)
 
 	- OK 例
 		```js
+		import React, { useState, useEffect } from 'react'
+		import './App.css';
+
+		// 関数コンポーネントにおいても、コンポーネントの呼び出し側で <コンポーネント名 args1="" args2="" ... /> で指定されたタグ属性の値は、props 引数で取得出来る
+		function Counter(props) {
+			return (
+				<div>
+					<p>total counter : {props.counter}</p>
+				</div>
+			)
+		}
+
+		function App() {
+			// ステートフックの宣言
+			// 第１戻り値には、state の値が入る。
+			// 第２戻り値には、state の値を変更する関数が入る。
+			// 引数には、state の初期値を設定
+			const [counter, setCounter] = useState(0)
+			const [total_counter, setTotalCounter] = useState(0)
+
+			// 入力ボタンクリック時のイベントハンドラ
+			// 関数コンポーネント内なので、const 関数名 = () => {} の形式でイベントハンドラを定義する
+			const onClickCounter = ()=>{
+				setCounter(counter+1)
+			}
+
+			// 副作用フックで実際の更新処理を定義。この副作用フックは、state 更新時に自動的に呼び出される
+			// useEffect((event)=>{...}, [副作用フックが呼び出されるステート１, 副作用フックが呼び出されるステート２, ...]) の形式で定義することで、副作用フックが呼び出されるステートを限定出来る
+			useEffect(() => {
+				setTotalCounter(total_counter+1)
+			}, [counter])
+
+			// 関数コンポーネントでも（クラスコンポーネントのときと同じように）<コンポーネント名 args1="" args2="" ... /> の形式ででタグ属性を指定出来る
+			// useState() メソッドで取得した第１戻り値（＝state の値）を、別の関数コンポーネントのタグ属性に指定にて渡す
+			return (
+				<div className="App">
+					<header className="App-header">
+						<h1>React Hook Sample App</h1>
+						<Counter counter={total_counter} />
+						<button onClick={onClickCounter} className="btn btn-primary">add counter</button>
+					</header>
+				</div>
+			);
+		}
+
+		export default App;
 		```
 
 	- NG 例
 		```js
+		import React, { useState, useEffect } from 'react'
+		import './App.css';
+
+		// 関数コンポーネントにおいても、コンポーネントの呼び出し側で <コンポーネント名 args1="" args2="" ... /> で指定されたタグ属性の値は、props 引数で取得出来る
+		function Counter(props) {
+			return (
+				<div>
+					<p>total counter : {props.counter}</p>
+				</div>
+			)
+		}
+
+		function AppNG() {
+			// ステートフックの宣言
+			// 第１戻り値には、state の値が入る。
+			// 第２戻り値には、state の値を変更する関数が入る。
+			// 引数には、state の初期値を設定
+			const [counter, setCounter] = useState(0)
+			const [total_counter, setTotalCounter] = useState(0)
+
+			// 入力ボタンクリック時のイベントハンドラ
+			// 関数コンポーネント内なので、const 関数名 = () => {} の形式でイベントハンドラを定義する
+			const onClickCounter = ()=>{
+				setCounter(counter+1)
+			}
+
+			// 副作用フックで実際の更新処理を定義
+			// この副作用フックは、state 更新時に自動的に呼び出される
+			useEffect(() => {
+				// NG 箇所 : ステート total_counter の値が更新されるので、再度同じ副作用フックが呼び出され、無限に値が加算され続ける
+				setTotalCounter(total_counter+1)
+			})
+
+			// 関数コンポーネントでも（クラスコンポーネントのときと同じように）<コンポーネント名 args1="" args2="" ... /> の形式ででタグ属性を指定出来る
+			// useState() メソッドで取得した第１戻り値（＝state の値）を、別の関数コンポーネントのタグ属性に指定にて渡す
+			return (
+				<div className="App">
+					<header className="App-header">
+						<h1>React Hook Sample App</h1>
+						<Counter counter={total_counter} />
+						<button onClick={onClickCounter} className="btn btn-primary">add counter</button>
+					</header>
+				</div>
+			);
+		}
+
+		export default AppNG;
 		```
 
   ポイントは、以下の通り
 
-  - xxx
+  - NG 例のコードでは、まずボタンクリック時のイベントハンドラ `onClickCounter()` 内にて、`setCounter()` で state `counter` の値を更新されることにより、副作用フック `useEffect(() => {...})` が呼び出される。次に、副作用フック内の処理にて、`setTotalCounter()` で state `total_counter` の値を更新しているが、この state の値が更新されると、再度同じ副作用フックが呼び出されるために、副作用フックが無限に呼び出され、`total_counter` が無限に増加している挙動になってしまっている。
+
+	- 一方で、OK 例のコードでは、`useEffect((event)=>{...}, [副作用フックが呼び出されるステート１, 副作用フックが呼び出されるステート２, ...])` の形式で、副作用フックが呼び出されるステートを限定している。そのため、まずボタンクリック時のイベントハンドラ `onClickCounter()` 内にて、`setCounter()` で state `counter` の値を更新されることにより、副作用フック `useEffect(() => {...})` が呼び出される動作は同じであるが、次に副作用フック内の処理にて、`setTotalCounter()` で state `total_counter` の値を更新しても、副作用フックが呼び出される state を `counter` に限定しているために、この state `total_counter` の値が更新されても、再度同じ副作用フックが呼び出されことなく、ボタンクリック時に値が加算するだけの正常な挙動になる。
 
 1. 【オプション】プロジェクトをビルドする
 	React を用いたアプリケーションを公開したい場合は、以下のコマンドでプロジェクトをビルドして公開する
