@@ -1,12 +1,8 @@
-# 【React】React Hooks でステートフックを永続化する
+# 【React】React と React Hooks を使用して簡単なウェブアプリを作成する
 
-データの永続化を行っていないアプリでは、ブラウザでアプリのページをリロードすると、入力したデータなどがすべて消えてしまう。
+ここでは、React と React Hooks を使用した簡単なウェブアプリの構成例として、以下のようなメモ帳アプリを作成する
 
-React Hooks を利用した React アプリにおいては、ローカルストレージにアプリのデータを保存する方法が、最も手軽に永続化を行うことが出来る。
-
-この際に、ローカルストレージにデータを保存する独自フックを作成しておけば、汎用性に使えて便利である
-
-> Redux における Redux Persist のようなデータ永続化機能は、React Hooks にはないことに注意
+<img src="https://user-images.githubusercontent.com/25688193/138546011-aff3aeb7-0ed8-4d40-9c56-6cfc074a7321.png" width="500"/>
 
 ## ■ 方法
 
@@ -90,79 +86,11 @@ React Hooks を利用した React アプリにおいては、ローカルスト�
 
 1. `src/App.js` を修正する<br>
   ```js
-  import React, { useState } from 'react'
-  import './App.css';
-  import useLocalPersist from './LocalPersist';
-
-  // カウンター値をインクリメントする独自フック
-  function useAddCounter(init_counter) {
-    // const ステート名
-    const [counter, setCounter] = useState(init_counter)
-
-    // const ステートを更新する関数名
-    const addCounter = () => {
-      setCounter(counter+1)
-    }
-
-    // return [ステート名, ステートを更新する関数名]
-    return [counter, addCounter]
-  }
-
-  function Counter(props) {
-    return (
-      <div>
-        <p>total counter : {props.counter}</p>
-      </div>
-    )
-  }
-
-  function App() {
-    // 独自フックの使用
-    // 第１戻り値には、state の値が入る。
-    // 第２戻り値には、state の値を変更する関数が入る。
-    // 引数には、state の初期値を設定
-    const [savedData, setSavedData] = useLocalPersist("counter", 0)
-    const [counter, addCounter] = useAddCounter(savedData["counter"])   // ローカルストレージに保存されたデータ savedData["counter"] で初期化
-    //console.log("savedData : ", savedData)
-
-    // 入力ボタンクリック時のイベントハンドラ
-    // 関数コンポーネント内なので、const 関数名 = () => {} の形式でイベントハンドラを定義する
-    const onClickAddCounter = ()=>{
-      addCounter()
-    }
-
-    const onClickSaveCounter = ()=>{
-      // counter 値をローカルストレージに書き込む
-      const data = {
-        counter: counter,
-      }
-      setSavedData(data)    
-    }
-
-    // 関数コンポーネントでも（クラスコンポーネントのときと同じように）<コンポーネント名 args1="" args2="" ... /> の形式ででタグ属性を指定出来る
-    // useState() メソッドで取得した第１戻り値（＝state の値）を、別の関数コンポーネントのタグ属性に指定にて渡す
-    return (
-      <div className="App">
-        <header className="App-header">
-          <h1>React Hook Sample App</h1>
-          <Counter counter={counter} />
-          <button onClick={onClickAddCounter} className="btn btn-primary">add counter</button>
-          <button onClick={onClickSaveCounter} className="btn btn-primary">save counter</button>
-        </header>
-      </div>
-    );
-  }
-
-  export default App;
   ```
 
   ポイントは、以下の通り
 
-  - `const [savedData, setSavedData] = useLocalPersist("counter", 0)` の形式でローカルストレージにデータを保存する独自フックを宣言している。第１戻り値 `savedData` には、ストレージから読み込んだ値が入るので、これを counter 値をインクリメントする独自フック `useAddCounter` の引数に設定し、カウンター値を初期化している。
-    この時、初回の動作としては `useLocalPersist("counter", 0)` の第２引数の値 `initValue=0` が `savedData["counter"]` に入るので、counter 値は 0 で初期化される。
-    その後、一度でも save counter ボタンクリックされれば、後述のイベントハンドラ `onClickSaveCounter` 内にて、ローカルストレージへの counter 値の書き込み処理が行われるので、以降はローカルストレージに保存された counter 値で独自フック `useAddCounter` が初期化されるようになる
-  
-  - save counter ボタンクリック時のイベントハンドラ `onClickSaveCounter` 内にて、`setSavedData` を呼び出さし、counter 値の保存処理を行っている
+  - xxx
 
 1. 【オプション】プロジェクトをビルドする
 	React を用いたアプリケーションを公開したい場合は、以下のコマンドでプロジェクトをビルドして公開する

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import './App.css';
+import useLocalPersist from './LocalPersist';
 
 // カウンター値をインクリメントする独自フック
 function useAddCounter(init_counter) {
@@ -28,12 +29,21 @@ function App() {
   // 第１戻り値には、state の値が入る。
   // 第２戻り値には、state の値を変更する関数が入る。
   // 引数には、state の初期値を設定
-  const [counter, addCounter] = useAddCounter(0)
+  const [savedData, setSavedData] = useLocalPersist("counter", 0)
+  const [counter, addCounter] = useAddCounter(savedData["counter"])   // ローカルストレージに保存されたデータ savedData["counter"] で初期化
+  //console.log("savedData : ", savedData)
 
   // 入力ボタンクリック時のイベントハンドラ
   // 関数コンポーネント内なので、const 関数名 = () => {} の形式でイベントハンドラを定義する
-  const onClickCounter = ()=>{
+  const onClickAddCounter = ()=>{
     addCounter()
+  }
+
+  const onClickSaveCounter = ()=>{
+    const data = {
+      counter: counter,
+    }
+    setSavedData(data)    
   }
 
   // 関数コンポーネントでも（クラスコンポーネントのときと同じように）<コンポーネント名 args1="" args2="" ... /> の形式ででタグ属性を指定出来る
@@ -43,7 +53,8 @@ function App() {
       <header className="App-header">
         <h1>React Hook Sample App</h1>
         <Counter counter={counter} />
-        <button onClick={onClickCounter} className="btn btn-primary">add counter</button>
+        <button onClick={onClickAddCounter} className="btn btn-primary">add counter</button>
+        <button onClick={onClickSaveCounter} className="btn btn-primary">save counter</button>
       </header>
     </div>
   );

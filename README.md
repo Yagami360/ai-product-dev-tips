@@ -246,7 +246,7 @@
         - [【React】React Hooks のステートフックを使用して値の状態管理を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/36)
         - [【React】React Hooks で副作用フックを使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/37)
         - [【React】React Hooks で独自フックを使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/38)
-        - 【React】React Hooks でステートフックを永続化する
+        - [【React】React Hooks でステートフックを永続化する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/39)
         - [[In-progress]【React】Next.js を使用してサーバーサイドレンダリング（SSR）する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/32)
         - [[In-progress]【React】Next.js で Redux を使用して値の状態管理を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/35)
         - [【React】React アプリで Firebase の Realtime Database を利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/33)
