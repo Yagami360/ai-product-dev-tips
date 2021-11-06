@@ -249,11 +249,11 @@
         - [【React】React Hooks でステートフックを永続化する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/39)
         - [[In-progress]【React】Next.js を使用してサーバーサイドレンダリング（SSR）する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/32)
         - [[In-progress]【React】Next.js で Redux を使用して値の状態管理を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/35)
-        - [【React】React アプリで Firebase の Realtime Database を利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/33)
-        - [[In-progress]【React】Next.js で Firebase の Realtime Database を利用し、基本的なデータベース操作を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/33)
+        - [【React】React + Redux アプリで Firebase の Realtime Database を利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/33)
+        - 【React】Node.js + React Hooks アプリで Firebase の Realtime Database を利用する
         - [【React】React と Redux を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/30)
-        - 【React】React と React Hooks を使用して簡単なウェブアプリを作成する
-        - 【React】Next.js と React Hooks と Firebase を使用して簡単なウェブアプリを作成する
+        - [【React】React と React Hooks を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/40)
+        - [[In-progress]【React】Next.js と React Hooks と Firebase を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/41)
         - 【React】React を使用して http 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する
 
 - Web アプリ開発

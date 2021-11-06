@@ -1,4 +1,4 @@
-# 【React】Next.js + Redux アプリで Firebase の Realtime Database を利用し、基本的なデータベース操作を行う
+# 【React】Node.js + React Hooks アプリで Firebase の Realtime Database を利用する
 
 ## ■ 方法
 
@@ -30,18 +30,18 @@
     ```
 
 1. next.js, react, react-dom をインストールする
-  ```sh
-  $ cd ${PROJECT_NAME}
-  $ npm install --save next
-  $ npm install --save react
-  $ npm install --save react-dom
-  ```
+    ```sh
+    $ cd ${PROJECT_NAME}
+    $ npm install --save next
+    $ npm install --save react
+    $ npm install --save react-dom
+    ```
 
 1. firebase API をインストールする<br>
-  ```sh
-  $ cd ${PROJECT_NAME}
-  $ npm install --save firebase@8.10.0
-  ```
+		```sh
+		$ cd ${PROJECT_NAME}
+		$ npm install --save firebase@8.10.0
+		```
 
 	> バージョン指定なしの `npm install --save firebase` でインストールすると、現時点（21/10/31）では version 9.x の Firebase がインストールされるが、version8 -> version9 へ変更した場合は、firebase の import 方法が、`import firebase from 'firebase/app';` -> `import { initializeApp } from 'firebase/app';` に変更されたりしており、version8 の Firebase コードが動かなくなることに注意
 
@@ -112,57 +112,41 @@
 
       > "Realtime Database: Configure a security rules file for Realtime Database and (optionally) provision default instance" を選択しスペースキーを押して、Realtime Database の機能を有効化する。
 
-1. `pages/index.js` を作成する
-    ```sh
-    $ mkdir -p ${PROJECT_NAME}/pages
-    $ touch ${PROJECT_NAME}/pages/"index.js"
-    ```
 
+1. `pages/index.js` を作成する
     ```js
     ```
 
-    ポイントは、以下の通り
+1. 【オプション】プロジェクトをビルドする<br>
+	1. Next.js の設定ファイル `next.config.js` を作成する<br>
+			アプリの公開時に、外部公開される静的な HTML ファイルを生成するために、 Next.js の設定ファイル `next.config.js` を作成する
+			```js
+			module.exports = {
+				exportPathMap: function () {
+					return {
+						'/': { page: '/' }
+					}
+				}
+			}
+			```
 
-    - Next.js でのサーバーサイドレンダリングでアプリ開発をする場合は、全て Jacascript ファイルで開発を行い HTML ファイルは使わない（※Javascript ファイル内部で JSX 形式で HTML タグの出力は行う）。そのため、プログラムの起点となる `index.html` も存在しない。プログラムの起点は、この `index.js` になる。
+	1. プロジェクトをビルドする
+		```sh
+		$ npm run build
+		```
 
-    - 各種ソースファイルは、`pages` ディレクトリ以下に保存するようにする。
+	1. プロジェクトをエクスポートする
+			```sh
+			$ npm run export
+			```
 
-    - アロー関数（無名関数） `()=>{...}` の return に JSX 形式で表示させる内容を記述し、export default で外部公開している
+			> ビルドしてエクスポートされたプロジェクトは `${PROJECT_NAME}/out` ディレクトリに作成される。この out ディレクトリのファイルを全部アップロードすることで、アプリケーションを公開できる。
 
-1. xxx
+	1. 【オプション】出力された静的な Web ファイル　`out/index.html` を確認する
 
-
-1. 【オプション】プロジェクトをビルドする
-  1. Next.js の設定ファイル `next.config.js` を作成する<br>
-      アプリの公開時に、外部公開される静的な HTML ファイルを生成するために、 Next.js の設定ファイル `next.config.js` を作成する
-      ```js
-      module.exports = {
-        exportPathMap: function () {
-          return {
-            '/': { page: '/' }
-          }
-        }
-      }
-      ```
-    1. プロジェクトをビルドする
-        ```sh
-        $ npm run build
-        ```
-
-    1. プロジェクトをエクスポートする
-        ```sh
-        $ npm run export
-        ```
-
-        > ビルドしてエクスポートされたプロジェクトは `${PROJECT_NAME}/out` ディレクトリに作成される。この out ディレクトリのファイルを全部アップロードすることで、アプリケーションを公開できる。
-
-    1. 【オプション】出力された静的な Web ファイル　`out/index.html` を確認する
-        ```html
-        ```
-
-        > 出力された静的な Web ファイル　`index.html` では、`index.js` の JSX の内容で書き換わっていることに注目。
-        
-        > サーバーから送られる静的な Web ファイル　`index.html` に表示内容が生成されてウェブブラウザに送られた後に、ウェブブラウザで表示内容をレンダリングする形式になっているので、サーバーサイドレンダリングできるようになっている
+		> 出力された静的な Web ファイル　`index.html` では、`index.js` の JSX の内容で書き換わっていることに注目。
+		
+		> サーバーから送られる静的な Web ファイル　`index.html` に表示内容が生成されてウェブブラウザに送られた後に、ウェブブラウザで表示内容をレンダリングする形式になっているので、サーバーサイドレンダリングできるようになっている
 
 1. 作成した React のプロジェクトのサーバーを起動する
     ```sh

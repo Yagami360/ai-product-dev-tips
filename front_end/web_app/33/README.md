@@ -1,6 +1,4 @@
-# 【React】React アプリで Firebase の Realtime Database を利用する
-
-> Redux ではなく、Firebase の Realtime Database を利用する意義を追記
+# 【React】React + Redux アプリで Firebase の Realtime Database を利用する
 
 ## ■ 方法
 
@@ -23,6 +21,7 @@
 		# 強制 yes にする場合
 		$ npx -y create-react-app ${PROJECT_NAME}
 		```
+
 1. firebase API をインストールする<br>
 		```sh
 		$ cd ${PROJECT_NAME}

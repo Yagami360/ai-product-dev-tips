@@ -18,7 +18,6 @@ function DeleteMemoForm(props) {
   // ステートフック・独自フック
   const [selectIndex, setSelectIndex] = useState(0)
   const [savedMemo, setSavedMemo] = useLocalPersist("memo", [])
-  const [mode, setMode] = useLocalPersist('mode', 'default')
 
   // 選択ボックス更新時のイベントハンドラ
   // 関数コンポーネント内なので、const 関数名 = () => {} の形式でイベントハンドラを定義する
@@ -30,7 +29,7 @@ function DeleteMemoForm(props) {
   // Delete ボタンクリック時のイベントハンドラ
   const deleteMemo = (e)=>{
     // submit イベント e の発生元であるフォームが持つデフォルトのイベント処理をキャンセル
-    e.preventDefault();    
+    //e.preventDefault();    // その処理を入れると、Delete ボタンクリック直後に（画面をリロードするまでは）メモの削除が行われなくなるので削除
 
      // splice() でリストの要素を削除
      // 削除番号には、選択ボックス更新時のイベントハンドラで設定したステート selectIndex の値を使用
@@ -42,9 +41,6 @@ function DeleteMemoForm(props) {
     // 選択ボックスの選択インデックスをクリア
     setSelectIndex(0)
     console.log("[DeleteMemoForm] [deleteMemo] savedMemo", savedMemo)
-
-    //
-    setMode('default')
   }
   
   // <form> タグがひとつのフォームとなり、フォームの中に <input> タグ、<select> タグ、<textarea> タグなどのフォーム部品を配置してフォームを作る

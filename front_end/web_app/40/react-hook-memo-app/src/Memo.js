@@ -18,27 +18,14 @@ function Memo(props) {
   //   ...        
   // ]
   const [savedMemo, setSavedMemo] = useLocalPersist("memo", [])
-  const [mode, setMode] = useLocalPersist('mode', 'default')
   console.log("[Memo] savedMemo :", savedMemo)
 
-  // mode によって表示を変える
-  let items = []
-  switch (mode){
-    case 'default':
-      items = savedMemo.map((data,index)=>(
-        <Item index={index+1} memoText={data.memoText} createdTime={data.createdTime} />
-      ))
-      break
-    case 'find':
-      break
-    default:
-      items = savedMemo.map((data,index)=>(
-        <Item index={index+1} memoText={data.memoText} createdTime={data.createdTime} />
-      ))
-  }
+  // 配列.map((value,index)=>(配列番号 index の各要素 data に対しての処理)) : map で配列の各要素 data を取り出し、data を引数に、配列の各要素 data に対しての処理を行う
+  let items = savedMemo.map((data,index)=>(
+    <Item index={index+1} memoText={data.memoText} createdTime={data.createdTime} />
+  ))
   console.log("[Memo] items :", items)
 
-  // // 配列.map((value,index)=>(配列番号 index の各要素 data に対しての処理)) : map で配列の各要素 data を取り出し、data を引数に、配列の各要素 data に対しての処理を行う
   return (
     // 保存済みメモ一覧
     <table><tbody>

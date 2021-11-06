@@ -5,7 +5,6 @@ function AddMemoForm(props) {
   // ステートフック・独自フック
   const [memoText, setMemoText] = useState('')
   const [savedMemo, setSavedMemo] = useLocalPersist("memo", [])
-  const [mode, setMode] = useLocalPersist('mode', 'default')
 
   // テキスト入力フォーム更新時のイベントハンドラ。このイベント処理を定義しないと、テキスト入力フォームにキーボードで入力したテキストが入らない
   // 関数コンポーネント内なので、const 関数名 = () => {} の形式でイベントハンドラを定義する
@@ -17,7 +16,7 @@ function AddMemoForm(props) {
   // Add ボタンクリック時のイベントハンドラ
   const addMemo = (e)=>{
     // submit イベント e の発生元であるフォームが持つデフォルトのイベント処理をキャンセル
-    e.preventDefault();    
+    //e.preventDefault();    // その処理を入れると、Add ボタンクリック直後に（画面をリロードするまでは）メモの追加が行われなくなるので削除
 
     // 追加データ
     const date = new Date()
@@ -35,9 +34,6 @@ function AddMemoForm(props) {
     // 入力フォームのテキストをクリア
     setMemoText("")
     console.log("[AddMemoForm] [addMemo] savedMemo", savedMemo)
-
-    //
-    setMode('default')
   }
   
   // ステートフック useState() で定義したステート memoText を {memoText} で表示させることで値の変更が即座に画面上に反映されるようにする
