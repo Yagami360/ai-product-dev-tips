@@ -1,22 +1,22 @@
-import logo from './logo.svg';
 import './App.css';
+import React, { useState } from 'react'
+import useLocalPersist from './LocalPersist';
+import Memo from './Memo'
+import AddMemoForm from './AddMemoForm'
+import DeleteMemoForm from './DeleteMemoForm'
 
 function App() {
+  const [mode, setMode] = useLocalPersist('mode', 'default')
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <h1>React Hook Memo App</h1>
+        <h5>mode: {mode}</h5>
+        <AddMemoForm />
+        <p></p>
+        <DeleteMemoForm />
+        <Memo />
       </header>
     </div>
   );

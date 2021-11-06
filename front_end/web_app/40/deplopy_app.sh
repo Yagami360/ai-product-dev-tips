@@ -2,6 +2,7 @@
 set -eu
 ROOT_DIR=${PWD}
 PROJECT_NAME="react-hook-memo-app"
+#PROJECT_NAME="react-hook-memo-app-tmp"
 BUILD=0
 #BUILD=1
 
