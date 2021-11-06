@@ -1,5 +1,6 @@
 import React from 'react';
 import firebase from "firebase";
+import Firestore from '../components/Firestore';
 
 // Firebaseの初期化
 const firebaseConfig = {
@@ -12,13 +13,17 @@ const firebaseConfig = {
   appId: "1:686383733508:web:a1d5c2ec271201d87b4e51",
   measurementId: "G-MCWN891SRK"   
 };
-firebase.initializeApp(firebaseConfig);
 
-// 
+if (firebase.apps.length == 0) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+// ルートページ
 export default function Home() {
   return (
     <div className="App">
-      <h1>React Hook Sample App</h1>
+      <h1>Next.js & Firebase Sample App</h1>
+      <Firestore collectionName="sample-database" />
     </div>
   );
 }
