@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState } from 'react'
 import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 import firebase from "firebase";
 import '../firebase/initFirebase'
 
@@ -34,26 +35,24 @@ export default function ShowFirestore() {
   // コレクション名入力フォームのステートフック
   const [collectionName, setCollectionName] = useState('sample-database')
 
-  // body に対してのステートフック
-  const body = []                                 // データセットの JSX でのテーブルボディ
-  const [bodyData, setBodyData] = useState(body)
+  // ドキュメント表示用のステートフック
+  const [documentsJsx, setDocumentsJsx] = useState([])
 
   // 読み込み待ち表示のステートフック
   const [message, setMessage] = useState('wait...')
 
-  //------------------------
-  // イベントハンドラ
-  //------------------------
-  // テキスト入力フォーム更新時のイベントハンドラ。このイベント処理を定義しないと、テキスト入力フォームにキーボードで入力したテキストが入らない
-  // 関数コンポーネント内なので、const 関数名 = () => {} の形式でイベントハンドラを定義する
-  const updateInputText = (e)=>{
-    // e.target.value に入力テキストが入る
-    setCollectionName(e.target.value)
-  }
+  /*
+  // リダイレクトのための独自フック。遷移元ページからクエリパラメータを取得するために使用
+  const router = useRouter()
 
-  // useEffect(関数名) で副作用フック（＝関数コンポーネント内のステートの値が更新されたときに実行される関数のフック）を定義
-  // 副作用フックで定義することで、特定のステート更新時のみ副作用フック内の処理を行うようにすることが出来るので、データベースにアクセスされすぎるのを防止することが出来る（※Firestoreには契約内容によってアクセス可能数決まっている）
-  // 今の場合、useEffect(関数名, [ステート１，ステート２]) の第２引数の部分を空のリスト [collectionName] で定義しているので、この副作用フックは 初回アクセス時と collectionName ステートが更新されたときのみ呼び出されるようになる
+  // Add ページからリダイレクト時は、クエリパラメータに設定されたコレクション名で初期化
+  // 但し、ページ遷移直後は router.query.collectionName = undefined になることに注意
+  if( router.query.collectionName != undefined ){
+    setCollectionName(router.query.collectionName)
+  }
+  */
+
+  // コレクション名からコレクション内のデータを取得する副作用フック。コレクション名が更新されると再実行される
   useEffect(() => {
     // db.collection(コレクション名) : コレクションにアクセスするためのオブジェクト取得
     // db.collection(コレクション名).get() : コレクションにアクセスするためのオブジェクトからコレクションを取得。get() は非同期のメソッドで Promise を返す。そのため、非同期処理が完了した後 then() で非同期完了後の処理を定義する
@@ -68,7 +67,7 @@ export default function ShowFirestore() {
           const field = document.data()
 
           // フィールドの値を表形式のデータに変換して追加
-          body.push(
+          documentsJsx.push(
             <tr key={document.id}>
               <td style={indexStyle}>{field.id}</td>
               <td style={nameStyle}>{field.name}</td>
@@ -76,12 +75,22 @@ export default function ShowFirestore() {
           )
         })
         
-        setBodyData(body)
-        setMessage('Firebase Database')
-        console.log("body", body)
+        setDocumentsJsx(documentsJsx)
+        setMessage('documents')
       }
     )
   }, [collectionName])
+
+  //------------------------
+  // イベントハンドラ
+  //------------------------
+  // テキスト入力フォーム更新時のイベントハンドラ。このイベント処理を定義しないと、テキスト入力フォームにキーボードで入力したテキストが入らない
+  // 関数コンポーネント内なので、const 関数名 = () => {} の形式でイベントハンドラを定義する
+  const updateInputText = (e)=>{
+    // e.target.value に入力テキストが入る
+    setCollectionName(e.target.value)
+    //setDocumentsJsx([])
+  }
 
   //------------------------
   // JSX での表示処理
@@ -96,7 +105,7 @@ export default function ShowFirestore() {
       <table>
         <th style={indexStyle}>id</th>
         <th style={nameStyle}>name</th>
-        <tbody>{bodyData}</tbody>
+        <tbody>{documentsJsx}</tbody>
       </table>
     </div>
   );

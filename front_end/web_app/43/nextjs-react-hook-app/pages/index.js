@@ -41,12 +41,15 @@ export default function Home() {
             <td style={indexStyle}>3</td>
             <td style={nameStyle}><Link href="/delete"><a>Firestore を削除する</a></Link></td>
           </tr>
-          <tr>
-            <td style={indexStyle}>4</td>
-            <td style={nameStyle}><Link href="/find"><a>Firestore を検索する</a></Link></td>
-          </tr>
         </tbody>
       </table>      
     </div>
   );
 }
+
+/*
+<tr>
+<td style={indexStyle}>4</td>
+<td style={nameStyle}><Link href="/find"><a>Firestore を検索する</a></Link></td>
+</tr>
+*/

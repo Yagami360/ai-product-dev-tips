@@ -114,8 +114,136 @@
 
         > "Realtime Database: Configure a security rules file for Realtime Database and (optionally) provision default instance" を選択しスペースキーを押して、Realtime Database の機能を有効化する。
 
+1. `firebase/initFirebase.js` を作成する
+    FireBase の初期化処理を行う `initFirebase.js` を作成する
+
+    ```js
+    import firebase from "firebase";
+
+    // Firebaseの初期化
+    const firebaseConfig = {
+      apiKey: "AIzaSyBSKhjSkI0pERNnYhcrl3Uldl47ZyGvNqE",
+      authDomain: "react-firebase-app-2cc53.firebaseapp.com",
+      databaseURL: "https://react-firebase-app-2cc53-default-rtdb.firebaseio.com",
+      projectId: "react-firebase-app-2cc53",
+      storageBucket: "react-firebase-app-2cc53.appspot.com",
+      messagingSenderId: "686383733508",
+      appId: "1:686383733508:web:a1d5c2ec271201d87b4e51",
+      measurementId: "G-MCWN891SRK"   
+    };
+
+    if (firebase.apps.length == 0) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    ```
+
+    ポイントは、以下の通り
+
+	  - `firebase.initializeApp()` で firebase の初期化を行っている。このときの config 引数には、先の「[ウェブアプリをFirebaseに登録する](#ウェブアプリをFirebaseに登録する)」の処理時にコピーしていた値を設定すればよい。そして 一旦 firebase の初期化処理を行えば、どのコンポーネントからも firebase を利用することが出来るようになる。
+
+		  > このコンフィ値には、API キーの情報が含まれており、GitHub に公開することでセキュリティ上のリスクがあるように思えるが、公開前提の値であり隠すようなものではないらしい。<br>
+			> 詳細は、https://qiita.com/hoshymo/items/e9c14ed157200b36eaa5 などを参照のこと
+
+  	- Firebase API を version8 -> version9 に変更した場合は、Firebase の処理化部分のコードは以下のようなコードになることに注意<br>
+      ```js
+      import { initializeApp } from 'firebase/app';     // for version 9.x
+
+      // Firebaseの初期化
+      var firebaseConfig = {
+          apiKey: "AIzaSyBSKhjSkI0pERNnYhcrl3Uldl47ZyGvNqE",
+          authDomain: "react-firebase-app-2cc53.firebaseapp.com",
+          databaseURL: "https://react-firebase-app-2cc53-default-rtdb.firebaseio.com",
+          projectId: "react-firebase-app-2cc53",
+          storageBucket: "react-firebase-app-2cc53.appspot.com",
+          messagingSenderId: "686383733508",
+          appId: "1:686383733508:web:a1d5c2ec271201d87b4e51",
+          measurementId: "G-MCWN891SRK"   
+      };
+      initializeApp(firebaseConfig);                    // for version 9.x
+      ```
+    
+	  - `pages/index.js` 内で Firebase の初期化処理を行うと、他のページのコンポーネント（今回の場合は `pages/show.js` など）で Firebase が使えなくなるので、別の独立したファイルで初期化を行い、Firebase を使用する各ページのコンポーネントで、このファイルを import するようにする。
+
 1. `pages/index.js` を作成する
     ルートページである `index.js` を作成する
+
+    ```js
+    import React from 'react';
+    import firebase from "firebase";
+    import Link from 'next/link'
+    import '../firebase/initFirebase'
+
+    // ルートページ
+    export default function Home() {
+      // スタイル定義
+      const indexStyle = {
+        fontSize:"14pt",
+        backgroundColor:"blue",
+        color:"white",
+        padding:"5px 10px",
+        width:"50px"
+      }
+      const nameStyle = {
+        fontSize:"14pt",
+        backgroundColor:"white",
+        color:"darkblue",
+        padding:"5px 10px",
+        border:"1px solid lightblue",
+        minWidth:"300px"
+      }
+
+      return (
+        <div className="App">
+          <h1>Next.js & Firebase Sample App</h1>
+          <table>
+            <th style={indexStyle}>No</th>
+            <th style={nameStyle}>操作一覧</th>
+            <tbody>
+              <tr>
+                <td style={indexStyle}>1</td>
+                <td style={nameStyle}><Link href="/show"><a>Firestore を表示する</a></Link></td> 
+              </tr>
+              <tr>
+                <td style={indexStyle}>2</td>
+                <td style={nameStyle}><Link href="/add"><a>Firestore を追加する</a></Link></td>
+              </tr>
+              <tr>
+                <td style={indexStyle}>3</td>
+                <td style={nameStyle}><Link href="/delete"><a>Firestore を削除する</a></Link></td>
+              </tr>
+            </tbody>
+          </table>      
+        </div>
+      );
+    }
+    ```
+
+    ポイントは、以下の通り
+
+	  - `import Link from 'next/link'` で `Link` コンポーネントを import し、`<Link href="/show"><a>Firestore を表示する</a></Link>` とすることで、クリック時のページ移動を行うようにしている
+
+1. `pages/show.js` を作成する
+    Firestore のデータセットの表示ページのコンポーネントである `show.js` を作成する
+
+    ```js
+    ```
+
+    ポイントは、以下の通り
+
+	  - xxx
+
+1. `pages/add.js` を作成する
+    Firestore のデータセットの追加ページのコンポーネントである `add.js` を作成する
+
+    ```js
+    ```
+
+    ポイントは、以下の通り
+
+	  - xxx
+
+1. `pages/delete.js` を作成する
+    Firestore のデータセットの削除ページのコンポーネントである `delete.js` を作成する
 
     ```js
     ```

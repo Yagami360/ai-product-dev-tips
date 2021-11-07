@@ -71,7 +71,8 @@ export default function AddFirestore() {
     // 新規にコレクションを追加する場合も、このメソッドで作成できる
     db.collection(collectionName).add(document).then(ref=> {
       // 別ページにリダイレクト
-      router.push('/show')
+      //router.push('/show')
+      router.push('/show?collectionName=' + collectionName)      
     })
   })
 
@@ -82,7 +83,7 @@ export default function AddFirestore() {
     <div>
         <p>Please type your add data and click "Add" bottom</p>
       <form>
-        collection name : <input type="text" size="40" onChange={updateInputText} value={collectionName} />
+      <label>collection name : </label><input type="text" size="40" onChange={updateInputText} value={collectionName} />
       </form>
       <div className="text-left">
         <div className="form-group">
