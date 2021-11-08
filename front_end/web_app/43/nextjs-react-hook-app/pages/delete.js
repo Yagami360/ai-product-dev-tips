@@ -54,30 +54,32 @@ export default function DeleteFirestore() {
   const router = useRouter()
 
   // ドキュメントID表示用のステートフック
-  const [documentIds, setDocumentIds] = useState([])
-  const [documentIdsJsx, setDocumentIdsJsx] = useState([])
+  const documentIds_ = []
+  const documentIdsJsx_ = []
+  const [documentIds, setDocumentIds] = useState(documentIds_)
+  const [documentIdsJsx, setDocumentIdsJsx] = useState(documentIdsJsx_)
 
   // ドキュメントデータ表示用のステート
-  const [documentsJsx, setDocumentsJsx] = useState([])
+  const documentsJsx_ = []
+  const [documentsJsx, setDocumentsJsx] = useState(documentsJsx_)
   
   // 読み込み待ち表示のステートフック
   const [showMessage, setShowMessage] = useState('wait...')
-
 
   // コレクション名からドキュメントIDを取得する副作用フック。コレクション名が更新されたときに再実行される
   useEffect(() => {
     db.collection(collectionName).get().then((snapshot)=> {
       snapshot.forEach((document)=> {
         // リストの末端にデータ追加
-        documentIds.push(document.id)
-        setDocumentIds(documentIds)
+        documentIds_.push(document.id)
+        setDocumentIds(documentIds_)
       })
-      documentIdsJsx = documentIds.map((data,index)=>(<option key={index} value={index++}>{data.substring(0,20)}</option>));
-      setDocumentIdsJsx(documentIdsJsx)
+      documentIdsJsx_ = documentIds_.map((data,index)=>(<option key={index} value={index++}>{data.substring(0,20)}</option>));
+      setDocumentIdsJsx(documentIdsJsx_)
     });
   }, [collectionName])
 
-  // コレクション名からコレクション内のデータを取得する副作用フック。コレクション名が更新されると再実行される
+  // コレクション名からコレクション内のデータを取得する副作用フック。コレクション名か選択ボックスが更新されると再実行される
   useEffect(() => {
     // db.collection(コレクション名) : コレクションにアクセスするためのオブジェクト取得
     // db.collection(コレクション名).get() : コレクションにアクセスするためのオブジェクトからコレクションを取得。get() は非同期のメソッドで Promise を返す。そのため、非同期処理が完了した後 then() で非同期完了後の処理を定義する
@@ -86,14 +88,14 @@ export default function DeleteFirestore() {
       (snapshot)=> {
         //console.log("snapshot", snapshot)
         // snapshot.forEach((document)=> {..}) : snapshot から順にデータを取り出して処理を行う。無名関数の引数 document には、コレクション内の各ドキュメントが入る
-        snapshot.forEach((document)=> {
-          //console.log("document", document)
-          // document.data() : ドキュメント内のフィールド
-          const field = document.data()
-
-          // フィールドの値を表形式のデータに変換して追加
+        snapshot.forEach((document)=> {          
+          // 選択ボックスで選択したドキュメントID と一致する場合
           if( document.id == documentIds[selectIndex] ) {
-            documentsJsx.push(
+            // document.data() : ドキュメント内のフィールド
+            const field = document.data()
+
+            // フィールドの値を表形式のデータに変換して追加
+            documentsJsx_.push(
               <tr key={document.id}>
                 <td style={indexStyle}>{field.id}</td>
                 <td style={nameStyle}>{field.name}</td>
@@ -102,7 +104,7 @@ export default function DeleteFirestore() {
           }
         })
         
-        setDocumentsJsx(documentsJsx)
+        setDocumentsJsx(documentsJsx_)
         setShowMessage('fields')
       }
     )
@@ -116,11 +118,6 @@ export default function DeleteFirestore() {
   const updateInputText = (e)=>{
     // e.target.value に入力テキストが入る
     setCollectionName(e.target.value)
-
-    // リストクリア
-    setDocumentIds([])
-    setDocumentIdsJsx([])
-    setDocumentsJsx([])
   }
 
   // 選択ボックス更新時のイベントハンドラ
@@ -128,19 +125,14 @@ export default function DeleteFirestore() {
   const updateSelect = (e)=>{
     // e.target.value に選択ボックスの番号が入る
     setSelectIndex(e.target.value)
-    }
+  }
 
   // Delete ボタンクリック時のイベントハンドラ
-  const onSubmitDelete = ((e)=> {
-    // submit イベント e の発生元であるフォームが持つデフォルトのイベント処理をキャンセル
-    e.preventDefault();    // その処理を入れると、Delete ボタンクリック直後に（画面をリロードするまでは）メモの削除が行われなくなるのことに注意
+  const onClickDelete = ((e)=> {
+    // イベント e の発生元であるフォームが持つデフォルトのイベント処理をキャンセル
+    //e.preventDefault();
 
-    console.log("selectIndex : ", selectIndex)
-    console.log("documentIds[selectIndex] : ", documentIds[selectIndex])
-
-    // db.collection(コレクション名).add(ドキュメントデータ) で、コレクションに新たなドキュメントを追加する
-    // この時ドキュメントIDは自動的に割り振られる
-    // 新規にコレクションを追加する場合も、このメソッドで作成できる
+    // db.collection(コレクション名).doc(ドキュメントID).delete() で、ドキュメントを削除する
     db.collection(collectionName).doc(documentIds[selectIndex]).delete().then(ref=> {
       // ページ再読み込み（e.preventDefault() を追加したため）
       location.reload()
@@ -153,21 +145,19 @@ export default function DeleteFirestore() {
   //------------------------
   // JSX での表示処理
   //------------------------
-  console.log( "documentIds : ", documentIds )
-  console.log( "documentIdsJsx : ", documentIdsJsx )
   return (
     <div>
         <p>Please type your delete data and click "Delete" bottom</p>
       <form>
         collection name : <input type="text" size="40" onChange={updateInputText} value={collectionName} />
       </form>
-      <form onSubmit={onSubmitDelete}>
+      <form>
         <label>document id : </label>
         <select onChange={updateSelect} defaultValue="-1" style={selectStyle}>
           {documentIdsJsx}
         </select>
-        <input type="submit" style={btnStyle} value="Delete"/>
       </form>
+      <button onClick={onClickDelete} className="btn btn-primary" style={btnStyle}>Delete</button>
       <p>{showMessage}</p>
       <table>
         <th style={indexStyle}>id</th>

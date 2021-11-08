@@ -36,7 +36,8 @@ export default function ShowFirestore() {
   const [collectionName, setCollectionName] = useState('sample-database')
 
   // ドキュメント表示用のステートフック
-  const [documentsJsx, setDocumentsJsx] = useState([])
+  const documentsJsx_ = []    // 一時変数
+  const [documentsJsx, setDocumentsJsx] = useState(documentsJsx_)
 
   // 読み込み待ち表示のステートフック
   const [message, setMessage] = useState('wait...')
@@ -67,7 +68,8 @@ export default function ShowFirestore() {
           const field = document.data()
 
           // フィールドの値を表形式のデータに変換して追加
-          documentsJsx.push(
+          // ステート documentsJsx に直接 push すると、リストにデータが蓄積され続けるので、一旦一時変数 documentsJsx_ に push してから、setDocumentsJsx() でステートを更新する
+          documentsJsx_.push(
             <tr key={document.id}>
               <td style={indexStyle}>{field.id}</td>
               <td style={nameStyle}>{field.name}</td>
@@ -75,7 +77,7 @@ export default function ShowFirestore() {
           )
         })
         
-        setDocumentsJsx(documentsJsx)
+        setDocumentsJsx(documentsJsx_)
         setMessage('documents')
       }
     )
@@ -89,7 +91,6 @@ export default function ShowFirestore() {
   const updateInputText = (e)=>{
     // e.target.value に入力テキストが入る
     setCollectionName(e.target.value)
-    //setDocumentsJsx([])
   }
 
   //------------------------

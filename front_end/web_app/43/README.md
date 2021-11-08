@@ -226,31 +226,425 @@
     Firestore のデータセットの表示ページのコンポーネントである `show.js` を作成する
 
     ```js
+    import React from 'react';
+    import { useState } from 'react'
+    import { useEffect } from 'react'
+    import { useRouter } from 'next/router'
+    import firebase from "firebase";
+    import '../firebase/initFirebase'
+
+    // Firestore からデータを取り出し、それらを画面表示するコンポーネント
+    export default function ShowFirestore() {
+      // Firestore にアクセスするためのオブジェクト作成
+      const db = firebase.firestore()
+
+      //------------------------
+      // スタイル定義
+      //------------------------
+      const indexStyle = {
+        fontSize:"14pt",
+        backgroundColor:"blue",
+        color:"white",
+        padding:"5px 10px",
+        width:"50px"
+      }
+      const nameStyle = {
+        fontSize:"14pt",
+        backgroundColor:"white",
+        color:"darkblue",
+        padding:"5px 10px",
+        border:"1px solid lightblue",
+        minWidth:"300px"
+      }
+
+      //------------------------
+      // フック
+      //------------------------
+      // コレクション名入力フォームのステートフック
+      const [collectionName, setCollectionName] = useState('sample-database')
+
+      // ドキュメント表示用のステートフック
+      const documentsJsx_ = []    // 一時変数
+      const [documentsJsx, setDocumentsJsx] = useState(documentsJsx_)
+
+      // 読み込み待ち表示のステートフック
+      const [message, setMessage] = useState('wait...')
+
+      // コレクション名からコレクション内のデータを取得する副作用フック。コレクション名が更新されると再実行される
+      useEffect(() => {
+        // db.collection(コレクション名) : コレクションにアクセスするためのオブジェクト取得
+        // db.collection(コレクション名).get() : コレクションにアクセスするためのオブジェクトからコレクションを取得。get() は非同期のメソッドで Promise を返す。そのため、非同期処理が完了した後 then() で非同期完了後の処理を定義する
+        db.collection(collectionName).get().then(
+          // snapshot には、Firestore のコレクションに関連するデータやオブジェクトが入る
+          (snapshot)=> {
+            // snapshot.forEach((document)=> {..}) : snapshot から順にデータを取り出して処理を行う。無名関数の引数 document には、コレクション内の各ドキュメントが入る
+            snapshot.forEach((document)=> {
+              // document.data() : ドキュメント内のフィールド
+              const field = document.data()
+
+              // フィールドの値を表形式のデータに変換して追加
+              // ステート documentsJsx に直接 push すると、リストにデータが蓄積され続けるので、一旦一時変数 documentsJsx_ に push してから、setDocumentsJsx() でステートを更新する
+              documentsJsx_.push(
+                <tr key={document.id}>
+                  <td style={indexStyle}>{field.id}</td>
+                  <td style={nameStyle}>{field.name}</td>
+                </tr>
+              )
+            })
+            
+            setDocumentsJsx(documentsJsx_)
+            setMessage('documents')
+          }
+        )
+      }, [collectionName])
+
+      //------------------------
+      // イベントハンドラ
+      //------------------------
+      // テキスト入力フォーム更新時のイベントハンドラ。このイベント処理を定義しないと、テキスト入力フォームにキーボードで入力したテキストが入らない
+      // 関数コンポーネント内なので、const 関数名 = () => {} の形式でイベントハンドラを定義する
+      const updateInputText = (e)=>{
+        // e.target.value に入力テキストが入る
+        setCollectionName(e.target.value)
+      }
+
+      //------------------------
+      // JSX での表示処理
+      //------------------------
+      return (
+        <div>
+          <form>
+            <p>Please type your firestore collection name</p>
+            collection name : <input type="text" size="40" onChange={updateInputText} value={collectionName} />
+          </form>
+          <p>{message}</p>
+          <table>
+            <th style={indexStyle}>id</th>
+            <th style={nameStyle}>name</th>
+            <tbody>{documentsJsx}</tbody>
+          </table>
+        </div>
+      );
+    }
     ```
 
     ポイントは、以下の通り
 
-	  - xxx
+    - Firestore からデータベースを取得する一連の処理の大まかな処理は、以下のようになる。
+      1. `let db = firebase.database();` で、Firestore にアクセスするためのオブジェクト作成する。
+      1. `db.collection(props.collectionName)` で、コレクションにアクセスするためのオブジェクト取得する
+      1. `db.collection(props.collectionName).get()` で、コレクションにアクセスするためのオブジェクトからコレクションを取得する。この `get()` は非同期のメソッドで Promise を返す。そのため、非同期処理が完了した後 `db.collection(props.collectionName).get().then(...)` の `then(...)` 内で非同期完了後の処理を定義する
+          > Promise : JavaScriptにおいて、非同期処理の操作が完了したときに結果を返すもの
+          > https://techplay.jp/column/581
+      1. `then((snapshot)=>{...})` 内の無名関数の引数 `snapshot` には、Firestore のコレクションに関連するデータやオブジェクトが入る
+      1. `snapshot.forEach((document)=> {..})` で `snapshot` から順にデータを取り出して処理を行う。無名関数の引数 `document` には、コレクション内の各ドキュメントが入る
+      1. `document.data()` で、ドキュメント内のフィールドを取得する
+
+
+    - Firestore には契約内容によってアクセス可能数決まっているが、Firestore からデータベースを取得する `db.collection(props.collectionName).get().then((snapshot)=> {..})` の部分（＝関数）を `useEffect(関数名)` を使って副作用フックにすることで、特定のステート更新時のみ副作用フック内の処理を行うようにすることが出来るので、データベースにアクセスされすぎるのを防止することが出来る。今の場合、`useEffect(関数名, [ステート１，ステート２])` の第２引数の部分を `[collectionName]` で定義しているので、この副作用フックは、初回アクセス時と入力フォームに入力されたコレクション名が更新されたときのみ呼び出される。
+
+    - HTML タグ内の key 属性について<br>
+      `<tr key={i}>` の部分指定している key 属性は、HTMLでもともと定義されているタグ属性ではなく、React の機能であり、React が仮想DOM を更新する際に更新対象を識別するための一意の値になっている。<br>
+      key を設定しない場合は、データベースの内容が変わらなくても表示させる順が変化するするだけで、仮想DOMを再構成する必要がありパフォーマンスが低下する。一方、key を設定しない場合は、データベースの順番が変化しても、中身の値が変わらなければ、仮想DOMを再構成する必要がないのでパフォーマンスが向上するメリットがある。<br>
+      詳細は、以下のサイトを参考のこと<br>
+      - https://watablogtravel.com/react-key-props/
+
+	  - ステート `documentsJsx` は、リスト型のステートであるが、このリスト型のステートに直接 `push()` でデータを追加すると、副作用フックが呼びだれる度にリストの要素が増え続けてしまう。そのため、この副作用フック外では空リストになる一時的なリスト変数 `documentsJsx_` に一旦 push してから、この一時変数 `documentsJsx_` で `setDocumentsJsx` でステートを更新するようにしている
 
 1. `pages/add.js` を作成する
     Firestore のデータセットの追加ページのコンポーネントである `add.js` を作成する
 
     ```js
+    import React from 'react';
+    import { useState } from 'react'
+    import { useEffect } from 'react'
+    import { useRouter } from 'next/router'
+    import firebase from "firebase";
+    import '../firebase/initFirebase'
+
+    // Firestore に追加し、それらを画面表示するコンポーネント
+    export default function AddFirestore() {
+      // Firestore にアクセスするためのオブジェクト作成
+      const db = firebase.firestore()
+
+      //------------------------
+      // スタイル定義
+      //------------------------
+      const indexStyle = {
+        fontSize:"14pt",
+        backgroundColor:"blue",
+        color:"white",
+        padding:"5px 10px",
+        width:"50px"
+      }
+      const nameStyle = {
+        fontSize:"14pt",
+        backgroundColor:"white",
+        color:"darkblue",
+        padding:"5px 10px",
+        border:"1px solid lightblue",
+        minWidth:"300px"
+      }
+
+      //------------------------
+      // フック
+      //------------------------
+      // 入力フォームのステートフック
+      const [collectionName, setCollectionName] = useState('sample-database')
+      const [id, setId] = useState(0)
+      const [name, setName] = useState(0)
+
+      // リダイレクト（ユーザー操作ではないプログラム側での別ページへの移動）のための独自フック
+      const router = useRouter()
+
+      //------------------------
+      // イベントハンドラ
+      //------------------------
+      // テキスト入力フォーム更新時のイベントハンドラ。このイベント処理を定義しないと、テキスト入力フォームにキーボードで入力したテキストが入らない
+      // 関数コンポーネント内なので、const 関数名 = () => {} の形式でイベントハンドラを定義する
+      const updateInputText = (e)=>{
+        // e.target.value に入力テキストが入る
+        setCollectionName(e.target.value)
+      }
+
+      const onChangeId = ((e)=> {
+        setId(e.target.value)
+      })
+
+      const onChangeName = ((e)=> {
+        setName(e.target.value)
+      })
+
+      // Add ボタンクリック時のイベントハンドラ
+      const onClickAdd = ((e)=> {
+        // 新規に追加するドキュメントデータ
+        const document = {
+          id:id,      // 入力フォームの値を追加
+          name:name,  // 入力フォームの値を追加
+        }
+
+        // db.collection(コレクション名).add(ドキュメントデータ) で、コレクションに新たなドキュメントを追加する
+        // この時ドキュメントIDは自動的に割り振られる
+        // 新規にコレクションを追加する場合も、このメソッドで作成できる
+        db.collection(collectionName).add(document).then(ref=> {
+          // 別ページにリダイレクト
+          //router.push('/show')
+          router.push('/show?collectionName=' + collectionName)      
+        })
+      })
+
+      //------------------------
+      // JSX での表示処理
+      //------------------------
+      return (
+        <div>
+            <p>Please type your add data and click "Add" bottom</p>
+          <form>
+          <label>collection name : </label><input type="text" size="40" onChange={updateInputText} value={collectionName} />
+          </form>
+          <div className="text-left">
+            <div className="form-group">
+              <label>id : </label>
+              <input type="text" onChange={onChangeId} className="form-control" />
+            </div>
+            <div className="form-group">
+              <label>name : </label>
+              <input type="text" onChange={onChangeName} className="form-control" />
+            </div>
+          </div>
+        <button onClick={onClickAdd} className="btn btn-primary">Add</button>
+        </div>
+      );
+    }
+
     ```
 
     ポイントは、以下の通り
 
-	  - xxx
+	  - `db.collection(コレクション名).add(ドキュメントデータ)` で、コレクションに新たなドキュメントを追加する（※ この時ドキュメントIDは自動的に割り振られることに注意）。
+      この `add()` は Promise を返すので、`then(()=>{...})` で、非同期処理完了後の処理を定義する。ここでは、リダイレクト（＝別ページへの移動）を行う独自フック `const router = useRouter()` の `router.push()` メソッドを使用して、`show.js` で定義した別ページにリダイレクトするようにしている
+
 
 1. `pages/delete.js` を作成する
     Firestore のデータセットの削除ページのコンポーネントである `delete.js` を作成する
 
     ```js
+    import React from 'react';
+    import { useState } from 'react'
+    import { useEffect } from 'react'
+    import { useRouter } from 'next/router'
+    import firebase from "firebase";
+    import '../firebase/initFirebase'
+
+    // Firestore に追加し、それらを画面表示するコンポーネント
+    export default function DeleteFirestore() {
+      // Firestore にアクセスするためのオブジェクト作成
+      const db = firebase.firestore()
+
+      //------------------------
+      // スタイル定義
+      //------------------------
+      // スタイル定義
+      const selectStyle = {
+        fontSize:"12pt",
+        color:"#006",
+        padding:"1px",
+        margin:"5px 0px"
+      }
+      const btnStyle = {
+        fontSize:"10pt",
+        color:"#006",
+        padding:"2px 10px"
+      }
+      const indexStyle = {
+        fontSize:"14pt",
+        backgroundColor:"blue",
+        color:"white",
+        padding:"5px 10px",
+        width:"50px"
+      }
+      const nameStyle = {
+        fontSize:"14pt",
+        backgroundColor:"white",
+        color:"darkblue",
+        padding:"5px 10px",
+        border:"1px solid lightblue",
+        minWidth:"300px"
+      }
+      
+      //------------------------
+      // フック
+      //------------------------
+      // 入力フォームのステートフック
+      const [collectionName, setCollectionName] = useState('sample-database')
+
+      // 選択ボックスのステートフック
+      const [selectIndex, setSelectIndex] = useState(0)
+
+      // リダイレクト（ユーザー操作ではないプログラム側での別ページへの移動）のための独自フック
+      const router = useRouter()
+
+      // ドキュメントID表示用のステートフック
+      const documentIds_ = []
+      const documentIdsJsx_ = []
+      const [documentIds, setDocumentIds] = useState(documentIds_)
+      const [documentIdsJsx, setDocumentIdsJsx] = useState(documentIdsJsx_)
+
+      // ドキュメントデータ表示用のステート
+      const documentsJsx_ = []
+      const [documentsJsx, setDocumentsJsx] = useState(documentsJsx_)
+      
+      // 読み込み待ち表示のステートフック
+      const [showMessage, setShowMessage] = useState('wait...')
+
+      // コレクション名からドキュメントIDを取得する副作用フック。コレクション名が更新されたときに再実行される
+      useEffect(() => {
+        db.collection(collectionName).get().then((snapshot)=> {
+          snapshot.forEach((document)=> {
+            // リストの末端にデータ追加
+            documentIds_.push(document.id)
+            setDocumentIds(documentIds_)
+          })
+          documentIdsJsx_ = documentIds_.map((data,index)=>(<option key={index} value={index++}>{data.substring(0,20)}</option>));
+          setDocumentIdsJsx(documentIdsJsx_)
+        });
+      }, [collectionName])
+
+      // コレクション名からコレクション内のデータを取得する副作用フック。コレクション名か選択ボックスが更新されると再実行される
+      useEffect(() => {
+        // db.collection(コレクション名) : コレクションにアクセスするためのオブジェクト取得
+        // db.collection(コレクション名).get() : コレクションにアクセスするためのオブジェクトからコレクションを取得。get() は非同期のメソッドで Promise を返す。そのため、非同期処理が完了した後 then() で非同期完了後の処理を定義する
+        db.collection(collectionName).get().then(
+          // snapshot には、Firestore のコレクションに関連するデータやオブジェクトが入る
+          (snapshot)=> {
+            // snapshot.forEach((document)=> {..}) : snapshot から順にデータを取り出して処理を行う。無名関数の引数 document には、コレクション内の各ドキュメントが入る
+            snapshot.forEach((document)=> {          
+              // 選択ボックスで選択したドキュメントID と一致する場合
+              if( document.id == documentIds[selectIndex] ) {
+                // document.data() : ドキュメント内のフィールド
+                const field = document.data()
+
+                // フィールドの値を表形式のデータに変換して追加
+                documentsJsx_.push(
+                  <tr key={document.id}>
+                    <td style={indexStyle}>{field.id}</td>
+                    <td style={nameStyle}>{field.name}</td>
+                  </tr>
+                )
+              }
+            })
+            
+            setDocumentsJsx(documentsJsx_)
+            setShowMessage('fields')
+          }
+        )
+      }, [collectionName, selectIndex])
+
+      //------------------------
+      // イベントハンドラ
+      //------------------------
+      // テキスト入力フォーム更新時のイベントハンドラ。このイベント処理を定義しないと、テキスト入力フォームにキーボードで入力したテキストが入らない
+      // 関数コンポーネント内なので、const 関数名 = () => {} の形式でイベントハンドラを定義する
+      const updateInputText = (e)=>{
+        // e.target.value に入力テキストが入る
+        setCollectionName(e.target.value)
+      }
+
+      // 選択ボックス更新時のイベントハンドラ
+      // 関数コンポーネント内なので、const 関数名 = () => {} の形式でイベントハンドラを定義する
+      const updateSelect = (e)=>{
+        // e.target.value に選択ボックスの番号が入る
+        setSelectIndex(e.target.value)
+      }
+
+      // Delete ボタンクリック時のイベントハンドラ
+      const onSubmitDelete = ((e)=> {
+        // submit イベント e の発生元であるフォームが持つデフォルトのイベント処理をキャンセル
+        e.preventDefault();    // その処理を入れると、Delete ボタンクリック直後に（画面をリロードするまでは）メモの削除が行われなくなるのことに注意
+
+        // db.collection(コレクション名).doc(ドキュメントID).delete() で、ドキュメントを削除する
+        db.collection(collectionName).doc(documentIds[selectIndex]).delete().then(ref=> {
+          // ページ再読み込み（e.preventDefault() を追加したため）
+          location.reload()
+
+          // 別ページにリダイレクト
+          //router.push('/show')
+        })
+      })
+
+      //------------------------
+      // JSX での表示処理
+      //------------------------
+      return (
+        <div>
+            <p>Please type your delete data and click "Delete" bottom</p>
+          <form>
+            collection name : <input type="text" size="40" onChange={updateInputText} value={collectionName} />
+          </form>
+          <form onSubmit={onSubmitDelete}>
+            <label>document id : </label>
+            <select onChange={updateSelect} defaultValue="-1" style={selectStyle}>
+              {documentIdsJsx}
+            </select>
+            <input type="submit" style={btnStyle} value="Delete"/>
+          </form>
+          <p>{showMessage}</p>
+          <table>
+            <th style={indexStyle}>id</th>
+            <th style={nameStyle}>name</th>
+            <tbody>{documentsJsx}</tbody>
+          </table>
+        </div>
+      );
+    }
+
     ```
 
     ポイントは、以下の通り
 
-	  - xxx
+	  - `db.collection(コレクション名).doc(ドキュメントID).delete()` で、コレクションの中のドキュメントを削除する。この `delete()` は Promise を返すので、`then(()=>{...})` で、非同期処理完了後の処理を定義する。
+
+	  - ステート `documentIds`, `documentIdsJsx`, `documentsJsx` は、それぞれリスト型のステートであるが、このリスト型のステートに直接 `push()` でデータを追加すると、副作用フックが呼びだれる度にリストの要素が増え続けてしまう。そのため、この副作用フック外では空リストになる一時的なリスト変数 `documentIds_`, `documentIdsJsx_`, `documentsJsx_` に一旦 push してから、この一時変数で `setステート名()` でステートを更新するようにしている
 
 
 1. 【オプション】プロジェクトをビルドする<br>
