@@ -239,7 +239,6 @@
         - [【React】クラスコンポーネントでステートを使用する（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/26)
         - [【React】クラスコンポーネントでイベントを割り当てる（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/27)
         - [【React】クラスコンポーネントでコンテキストを使用する（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/28)
-        - 【React】クラスコンポーネントでレイアウトを行う
         - [【React】Redux を使用して値の状態管理を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/29)
         - [【React】Redux Persist で React アプリのデータを永続化する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/31)
         - 【React】Redux Persist で React アプリのデータの永続化を停止・再開する
@@ -249,6 +248,7 @@
         - [【React】React Hooks でステートフックを永続化する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/39)
         - [[In-progress]【React】Next.js を使用してサーバーサイドレンダリング（SSR）する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/32)
         - [[In-progress]【React】Next.js で Redux を使用して値の状態管理を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/35)
+        - 【React】Next.js アプリでレイアウトを関数コンポーネントで行う
         - [【React】React + Redux アプリで Firebase の Realtime Database を利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/33)
         - [【React】Next.js + React Hooks アプリで Firebase の Firestore Database を利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/42)
         - [【React】Next.js + React Hooks アプリで Firestore Database の基本的なデータベース操作を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/43)
