@@ -6,6 +6,9 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 //   props.header : ヘッダーの文字列
 //-----------------------------------------------
 export default function Header(props) {
+  //------------------------
+  // JSX での表示処理
+  //------------------------
   // Bootstrap の className
   // bg-色名 : 背景色。色名には red, blue などの色ではなく、primary, secondary などの役割を表す名前が指定できる
   // text-色名 : テキスト色

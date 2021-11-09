@@ -24,7 +24,7 @@ export default function Layout(props) {
         <h3 className="my-3 text-primary text-center">{props.title}</h3>
         {props.children}
       </div>
-      <Footer footer="footer" />
+      <Footer footer="" />
     </div>
   )
 }

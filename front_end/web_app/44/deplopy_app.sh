@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 ROOT_DIR=${PWD}
-PROJECT_NAME="nextjs-react-hook-firebse-app"
+PROJECT_NAME="nextjs-app"
 BUILD=0
 #BUILD=1
 
@@ -52,10 +52,11 @@ echo '{
   }
 }' > "package.json"
 
-# next.js, react, react-dom, fisebase API をインストールする
+# next.js, react, bootstrap をインストールする
 cd ${ROOT_DIR}/${PROJECT_NAME}
 npm install --save next
 npm install --save react
+npm install react-bootstrap bootstrap
 npm ls --depth=0
 
 rm -rf ".gitignore"

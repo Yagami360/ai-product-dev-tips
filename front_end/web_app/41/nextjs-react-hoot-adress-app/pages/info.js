@@ -1,9 +1,11 @@
+import 'bootstrap/dist/css/bootstrap.min.css'
 import React from 'react';
 import { useState } from 'react'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import firebase from "firebase";
 import '../firebase/initFirebase'
+import Layout from '../components/layout';
 
 // アドレスの詳細画面ページのコンポーネント
 export default function AdressInfo() {
@@ -15,23 +17,16 @@ export default function AdressInfo() {
   const documentId = '1'
   
   //------------------------
-  // スタイル定義
-  //------------------------
-  const nameStyle = {
-    fontSize:"14pt",
-    backgroundColor:"white",
-    color:"darkblue",
-    padding:"5px 10px",
-    border:"1px solid lightblue",
-    minWidth:"300px"
-  }
-
-  //------------------------
   // フック
   //------------------------
-  // ドキュメント表示用のステートフック
-  const documentsJsx_ = []    // 一時変数
-  const [documentsJsx, setDocumentsJsx] = useState(documentsJsx_)
+  // アドレス表示用のステートフック
+  const adressJsx_ = {   // 一時変数
+    name : <li className="list-group-item px-3 py-1"></li>,
+    email : <li className="list-group-item px-3 py-1"></li>,
+    tell : <li className="list-group-item px-3 py-1"></li>,
+    memo : <li className="list-group-item px-3 py-1"></li>,
+  }
+  const [adressJsx, setAdressJsx] = useState(adressJsx_)
 
   // 読み込み待ち表示のステートフック
   const [message, setMessage] = useState('wait...')
@@ -46,7 +41,6 @@ export default function AdressInfo() {
     db.collection(collectionName).get().then(
       // snapshot には、Firestore のコレクションに関連するデータやオブジェクトが入る
       (snapshot)=> {
-        //console.log("snapshot", snapshot)
         // snapshot.forEach((document)=> {..}) : snapshot から順にデータを取り出して処理を行う。無名関数の引数 document には、コレクション内の各ドキュメントが入る
         snapshot.forEach((document)=> {
           // ページ遷移直後は router.query.documentId = undefined になることに注意
@@ -55,44 +49,40 @@ export default function AdressInfo() {
 
             if( document.id == documentId ){
               // document.data() : ドキュメント内のフィールド
-              const field = document.data()
-
-              // フィールドの値を表形式のデータに変換して追加
-              // ステート documentsJsx に直接 push すると、リストにデータが蓄積され続けるので、一旦一時変数 documentsJsx_ に push してから、setDocumentsJsx() でステートを更新する
-              documentsJsx_.push(
-                <tr key={document.id}>
-                  <td style={nameStyle}>{field.name}</td>
-                  <td style={nameStyle}>{field.email}</td>
-                  <td style={nameStyle}>{field.tell}</td>
-                  <td style={nameStyle}>{field.memo}</td>
-                </tr>
-              )
+              let field = document.data()
+              adressJsx_.name = <li className="list-group-item px-3 py-1">{field.name}</li>
+              adressJsx_.email = <li className="list-group-item px-3 py-1">{field.email}</li>
+              adressJsx_.tell = <li className="list-group-item px-3 py-1">{field.tell}</li>
+              adressJsx_.memo = <li className="list-group-item px-3 py-1">{field.memo}</li>
             }
-            setMessage('adress info')
+            setMessage('')
           }
           else{
             setMessage('not find adress')
           }
         })
         
-        setDocumentsJsx(documentsJsx_)
+        //console.log("adressJsx_ : ", adressJsx_)
+        setAdressJsx(adressJsx_)
       }
     )
-  }, [])
+  }, [message])
 
   //------------------------
   // JSX での表示処理
   //------------------------
+  //console.log("adressJsx : ", adressJsx)
   return (
-    <div>
-      <p>{message}</p>
-      <table>
-        <th style={nameStyle}>name</th>
-        <th style={nameStyle}>email</th>
-        <th style={nameStyle}>tell</th>
-        <th style={nameStyle}>memo</th>
-        <tbody>{documentsJsx}</tbody>
-      </table>
+    <div className="container">
+      <Layout header="AdressBook App" title="adress info">
+        <div className="alert alert-primary text-left">
+          <p>{message}</p>
+          <div>name : {adressJsx.name}</div>
+          <div>email : {adressJsx.email}</div>
+          <div>tell : {adressJsx.tell}</div>
+          <div>memo : {adressJsx.memo}</div>
+        </div>
+      </Layout>
     </div>
   );
 }

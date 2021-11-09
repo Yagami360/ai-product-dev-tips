@@ -2,6 +2,7 @@
 set -eu
 ROOT_DIR=${PWD}
 PROJECT_NAME="nextjs-react-hoot-adress-app"
+FIREBASE_PROJECT_ID="react-firebase-app-2cc53"
 BUILD=0
 #BUILD=1
 
@@ -34,7 +35,7 @@ fi
 npm -v
 
 #-----------------------------
-# React のプロジェクトを作成し、起動する
+# React のプロジェクトを作成する
 #-----------------------------
 # React のプロジェクトを作成
 mkdir -p ${PROJECT_NAME}
@@ -57,6 +58,8 @@ cd ${ROOT_DIR}/${PROJECT_NAME}
 npm install --save next
 npm install --save react
 npm install --save react-dom
+npm install --save firebase@8.10.0
+npm install react-bootstrap bootstrap
 npm ls --depth=0
 
 rm -rf ".gitignore"
@@ -68,6 +71,28 @@ echo '.next' >> ".gitignore"
 mkdir -p ${ROOT_DIR}/${PROJECT_NAME}/pages
 touch ${ROOT_DIR}/${PROJECT_NAME}/pages/"index.js"
 
+#----------------------------- 
+# Firebase のプロジェクトを作成する
+#-----------------------------
+cd ${ROOT_DIR}/${PROJECT_NAME}
+
+# Firebase CLI のインストール
+#sudo npm install -g firebase-tools
+if [ ! "npm ls --depth=0 | grep firebase-tools@" ] ; then
+  sudo npm install --save firebase-tools
+fi
+
+# Firebase へのログイン
+firebase login --project ${FIREBASE_PROJECT_ID}
+
+# Firebase プロジェクトを初期化
+if [ ! -e ${ROOT_DIR}/${PROJECT_NAME}/"database.rules.json" ] ; then
+  firebase init --project ${FIREBASE_PROJECT_ID}
+fi
+
+#-----------------------------
+# React アプリを起動する
+#-----------------------------
 # プロジェクトをビルドする
 if [ ${BUILD} != 0 ] ; then
   # Next.js の設定ファイル `next.config.js` を作成する
