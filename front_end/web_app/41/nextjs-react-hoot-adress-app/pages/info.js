@@ -69,6 +69,14 @@ export default function AdressInfo() {
   }, [message])
 
   //------------------------
+  // イベントハンドラ
+  //------------------------
+  // 戻るボタンクリック時のイベントハンドラ
+  const onClickReturn = (e)=> {
+    router.push('/')      
+  }
+
+  //------------------------
   // JSX での表示処理
   //------------------------
   //console.log("adressJsx : ", adressJsx)
@@ -81,6 +89,9 @@ export default function AdressInfo() {
           <div>email : {adressJsx.email}</div>
           <div>tell : {adressJsx.tell}</div>
           <div>memo : {adressJsx.memo}</div>
+        </div>
+        <div className="text-center">
+          <button className="btn btn-primary" onClick={onClickReturn}>戻る</button>
         </div>
       </Layout>
     </div>

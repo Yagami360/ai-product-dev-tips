@@ -1,4 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
+import Link from 'next/link'
 
 //-----------------------------------------------
 // ヘッダーのレイアウトを設定して表示するコンポーネント
@@ -14,9 +15,14 @@ export default function Header(props) {
   // text-色名 : テキスト色
   // display-x : 通常のヘッダよりもさらに目立たせたいヘッダがあれば、.display-1～.display-4 を用いてさらに大きな見出しに出来る
   // px-x : 左右のパティング
+  // text-decoration-none : アンダーラインを消す
   return (
     <div>
-      <h1 className="bg-primary px-3 text-white display-4 text-right">{props.header}</h1>
+      <h1 className="bg-primary px-3 text-white display-4 text-right">
+        <Link href="/">
+          <a className="bg-primary px-3 text-white display-4 text-right text-decoration-none">{props.header}</a>
+        </Link>
+      </h1>
     </div>
   )
 }

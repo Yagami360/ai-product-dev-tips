@@ -63,6 +63,11 @@ export default function AddAdress() {
     })
   }
 
+  // 戻るボタンクリック時のイベントハンドラ
+  const onClickReturn = (e)=> {
+    router.push('/')      
+  }
+
   //------------------------
   // JSX での表示処理
   //------------------------
@@ -87,7 +92,10 @@ export default function AddAdress() {
             <label>memo : </label>
             <input type="text" onChange={onChangeMemo} className="form-control" />            
           </div>
-          <button className="btn btn-primary mt-3" onClick={onClickAdd}>Add</button>
+          <div className="text-center">
+            <button className="btn btn-primary mt-3 mx-3" onClick={onClickAdd}>Add</button>
+            <button className="btn btn-primary mt-3" onClick={onClickReturn}>戻る</button>            
+          </div>
         </div>
       </Layout>
     </div>

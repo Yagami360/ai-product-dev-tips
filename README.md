@@ -233,15 +233,14 @@
         - [【React】JSX を用いて階層構造のタグを表示する（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/21)
         - [【React】JSX に変数値を埋め込む（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/22)
         - [【React】JSX で HTML 属性に変数値を設定する（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/23)
-        - 【React】JSX で 関数を使用する（CDN 版での構成）
         - [【React】関数コンポーネントを使用する（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/24)
         - [【React】クラスコンポーネントを使用する（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/25)
         - [【React】クラスコンポーネントでステートを使用する（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/26)
         - [【React】クラスコンポーネントでイベントを割り当てる（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/27)
         - [【React】クラスコンポーネントでコンテキストを使用する（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/28)
+        - 【React】Bootstrap（CSSのフレームワーク）を React アプリケーション内で使用する
         - [【React】Redux を使用して値の状態管理を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/29)
         - [【React】Redux Persist で React アプリのデータを永続化する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/31)
-        - 【React】Redux Persist で React アプリのデータの永続化を停止・再開する
         - [【React】React Hooks のステートフックを使用して値の状態管理を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/36)
         - [【React】React Hooks で副作用フックを使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/37)
         - [【React】React Hooks で独自フックを使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/38)
@@ -252,6 +251,7 @@
         - [【React】React + Redux アプリで Firebase の Realtime Database を利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/33)
         - [【React】Next.js + React Hooks アプリで Firebase の Firestore Database を利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/42)
         - [【React】Next.js + React Hooks アプリで Firestore Database の基本的なデータベース操作を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/43)
+        - [[In-progress]【React】Next.js + React Hooks アプリで Firebase Authentication でのユーザー認証を利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/45)
         - [【React】React と Redux を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/30)
         - [【React】React と React Hooks を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/40)
         - [[In-progress]【React】Next.js と React Hooks と Firebase を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/41)
