@@ -7,6 +7,9 @@ import firebase from "firebase";
 import '../firebase/initFirebase'
 import Layout from '../components/layout';
 
+// ログイン認証の初期化
+const auth = firebase.auth()
+
 // アドレスの詳細画面ページのコンポーネント
 export default function AddAdress() {
   // Firestore にアクセスするためのオブジェクト作成
@@ -27,9 +30,16 @@ export default function AddAdress() {
   // リダイレクトのための独自フック。遷移元ページからクエリパラメータを取得するために使用
   const router = useRouter()
 
+  // ログインしてなければトップページに戻る副作用フック
+  useEffect(() => {
+    if (auth.currentUser == undefined) {
+      router.push('/')
+    }
+  },[])
+  
   //------------------------
   // イベントハンドラ
-  //------------------------
+  //------------------------  
   // 入力フォーム更新時のイベントハンドラ
   const onChangeName = (e)=> {
     setName(e.target.value)
@@ -45,6 +55,17 @@ export default function AddAdress() {
   }
 
   // Add ボタンクリック時のイベントハンドラ
+  // [データベース構造]
+  // adress-database +- ドキュメントID(ログインユーザーのemailの値) +-- adress-database  + ドキュメントID(ユーザー１のemailの値) +-- name
+  //                 |                                        |                    |                                  +-- email
+  //                 |                                        |                    |                                  +-- message-database + ドキュメントID(自動割り振り) +-- comment  // メッセージデータベース
+  //                 |                                        |                    |                                  |                                               +-- time
+  //                 |                                        |                    + ドキュメントID(ユーザー２のemailの値) +-- name
+  //                 |                                        |                    |                                  +-- email
+  //                 |                                        |                    |                                  +-- message-database + ドキュメントID(自動割り振り) +-- comment
+  //                 |                                        |                    |                                  |                                               +-- time
+  //                 |-- ドキュメントID(ユーザー１のemailの値)     +-- adress-database  + ドキュメントID(ログインユーザーのemailの値) +- message-database + ドキュメントID(自動割り振り) +-- comment
+  //                 |                                        |                    |                                       |                                              +-- time
   const onClickAdd = (e)=> {
     // 新規に追加するドキュメントデータ
     const document = {
@@ -54,10 +75,8 @@ export default function AddAdress() {
       memo : memo,
     }
 
-    // db.collection(コレクション名).add(ドキュメントデータ) で、コレクションに新たなドキュメントを追加する
-    // この時ドキュメントIDは自動的に割り振られる
-    // 新規にコレクションを追加する場合も、このメソッドで作成できる
-    db.collection(collectionName).add(document).then(ref=> {
+    // db.collection(コレクション名).doc(ドキュメントデータ).set(ドキュメントデータ) : 指定したドキュメントIDのドキュメントを設定 （※ add() ではドキュメントIDが自動的に割り振られたが doc().set() ではドキュメントIDを指定できる）
+    db.collection(collectionName).doc(auth.currentUser.email).collection(collectionName).doc(email).set(document).then(ref=> {
       // 別ページにリダイレクト
       router.push('/')      
     })
@@ -93,7 +112,7 @@ export default function AddAdress() {
             <input type="text" onChange={onChangeMemo} className="form-control" />            
           </div>
           <div className="text-center">
-            <button className="btn btn-primary mt-3 mx-3" onClick={onClickAdd}>Add</button>
+          <button className="btn btn-primary mt-3 mx-3" onClick={onClickAdd}>Add</button>
             <button className="btn btn-primary mt-3" onClick={onClickReturn}>戻る</button>            
           </div>
         </div>
