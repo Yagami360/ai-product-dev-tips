@@ -21,6 +21,12 @@
 	$ npx -y create-react-app ${PROJECT_NAME}
 	```
 
+	> JavaScript ではなく TypeScript での React アプリを作成する場合は、`--template typescript ` を追加すればよい
+	> ```sh
+	> # 強制 yes にする場合
+	> $ npx -y create-react-app ${PROJECT_NAME} --template typescript 
+	> ```	
+
 	上記コマンドでプロジェクトを作成すると、以下のようなディレクトリ構造で各種ファイルが出力される。
 
 	```sh
@@ -33,6 +39,8 @@
 	|                 + package.json          # npm でのパッケージ管理情報
 	```
 	
+	> JavaScript ではなく TypeScript での React アプリを作成した場合は、`*.js` の部分が `*.tsx` に置き換わる
+
 	- `index.html`<br>
 		```html
 		<!DOCTYPE html>
