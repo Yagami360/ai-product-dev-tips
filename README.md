@@ -254,7 +254,7 @@
         - [[In-progress]【React】Next.js + React Hooks アプリで Firebase Authentication でのユーザー認証を利用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/45)
         - [【React】React と Redux を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/30)
         - [【React】React と React Hooks を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/40)
-        - [[In-progress]【React】Next.js と React Hooks と Firebase を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/41)
+        - [【React】Next.js と React Hooks と Firebase を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/41)
         - 【React】React を使用して http 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する
 
 - Web アプリ開発

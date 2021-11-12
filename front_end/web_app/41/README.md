@@ -1,5 +1,8 @@
 # 【React】Next.js と React Hooks と Firebase を使用して簡単なウェブアプリを作成する
 
+ここでは、Next.js と React Hooks と Firebase を使用して簡単なウェブアプリの例として、送信機能付きアドレス帳アプリを作成する
+
+
 ## ■ 方法
 
 1. npm をインストール
