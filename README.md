@@ -226,7 +226,7 @@
         - [[In-progress]【Vue.js】コンポーネントで v 属性を利用する（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/15)
         - [【Vue.js】コンポーネントでイベント処理する（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/16)
         - 【Vue.js】Bootstrap（CSSのフレームワーク）を Vue.js アプリケーション内で使用する（CDN 版での構成）
-    - React / Next.js
+    - <a id="React"></a>React / Next.js
         - [[In-progress]【React】React の基礎事項](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/18)
         - [【React】CDN 版（スタンドアロン版）の React を使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/19)
         - [【React】Creat React App を用いて React アプリをデプロイする](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/20)
@@ -239,13 +239,15 @@
         - [【React】クラスコンポーネントでイベントを割り当てる（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/27)
         - [【React】クラスコンポーネントでコンテキストを使用する（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/28)
         - 【React】Bootstrap（CSSのフレームワーク）を React アプリケーション内で使用する
+        - [[In-progress]【React】React で Material-UI のコンポーネントを使用する（TypeScript 使用）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/46)
+        - 【React】React で Material-UI のテンプレートを使用する（TypeScript 使用）
         - [【React】Redux を使用して値の状態管理を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/29)
         - [【React】Redux Persist で React アプリのデータを永続化する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/31)
         - [【React】React Hooks のステートフックを使用して値の状態管理を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/36)
         - [【React】React Hooks で副作用フックを使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/37)
         - [【React】React Hooks で独自フックを使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/38)
         - [【React】React Hooks でステートフックを永続化する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/39)
-        - 【React】React で Material-UI を使用する（TypeScript 使用）
+        - 【React】React Router で複数ページの React アプリを作成する
         - [[In-progress]【React】Next.js を使用してサーバーサイドレンダリング（SSR）する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/32)
         - [[In-progress]【React】Next.js で Redux を使用して値の状態管理を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/35)
         - [[In-progress]【React】Next.js アプリでレイアウトを関数コンポーネントで行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/44)

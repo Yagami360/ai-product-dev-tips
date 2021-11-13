@@ -30,7 +30,6 @@ if [ ${OS} = "Mac" ] ; then
         brew install node
     fi
 fi
-
 npm -v
 
 #-----------------------------
@@ -43,9 +42,18 @@ fi
 cd ${ROOT_DIR}/${PROJECT_NAME}
 
 # 各種 npm パッケージをインストール
-npm install --save react-router-dom                       # ルーティング（リダイレクト）用パッケージ
-npm install --save-dev @types/react-router-dom            # ルーティング（リダイレクト）用パッケージ
-npm install --save @material-ui/core @material-ui/icons   # Material-UI
+if [ "npm ls --depth=0 | grep -E ' react-router-dom@'*" == "" ] ; then
+  npm install --save react-router-dom                       # ルーティング（リダイレクト）用パッケージ
+fi
+if [ "npm ls --depth=0 | grep -E ' @types/react-router-dom@'*" == "" ] ; then
+  npm install --save-dev @types/react-router-dom            # ルーティング（リダイレクト）用パッケージ
+fi
+if [ "npm ls --depth=0 | grep -E ' @material-ui/core@'*" == "" ] ; then
+  npm install --save @material-ui/core    # Material-UI
+fi
+if [ "npm ls --depth=0 | grep -E ' @material-ui/icons@'*" == "" ] ; then
+  npm install --save @material-ui/icons   # Material-UI
+fi
 npm ls --depth=0
 
 # プロジェクトをビルドする
