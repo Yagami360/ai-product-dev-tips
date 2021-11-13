@@ -238,7 +238,6 @@
         - [【React】クラスコンポーネントでステートを使用する（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/26)
         - [【React】クラスコンポーネントでイベントを割り当てる（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/27)
         - [【React】クラスコンポーネントでコンテキストを使用する（CDN 版での構成）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/28)
-        - 【React】Bootstrap（CSSのフレームワーク）を React アプリケーション内で使用する
         - [[In-progress]【React】React で Material-UI のコンポーネントを使用する（TypeScript 使用）](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/46)
         - 【React】React で Material-UI のテンプレートを使用する（TypeScript 使用）
         - [【React】Redux を使用して値の状態管理を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/29)
@@ -247,7 +246,7 @@
         - [【React】React Hooks で副作用フックを使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/37)
         - [【React】React Hooks で独自フックを使用する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/38)
         - [【React】React Hooks でステートフックを永続化する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/39)
-        - 【React】React Router で複数ページの React アプリを作成する
+        - [【React】React Router で複数ページの React アプリを作成する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/47)
         - [[In-progress]【React】Next.js を使用してサーバーサイドレンダリング（SSR）する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/32)
         - [[In-progress]【React】Next.js で Redux を使用して値の状態管理を行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/35)
         - [[In-progress]【React】Next.js アプリでレイアウトを関数コンポーネントで行う](https://github.com/Yagami360/MachineLearning_Tips/tree/master/front_end/web_app/44)
