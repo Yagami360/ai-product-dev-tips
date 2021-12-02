@@ -1,11 +1,13 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Link } from "react-router-dom";
-import './App.css';
 import HomePage from './pages/HomePage'
 import AboutPage from './pages/AboutPage'
 
 const App: React.FC = () => {
+  //------------------------
+  // JSX での表示処理
+  //------------------------
   return (
     <BrowserRouter>
       {/* ルーティング設定 */}

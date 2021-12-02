@@ -1,4 +1,4 @@
-# React】React で Material-UI のテンプレートを使用する（TypeScript 使用）
+# 【React】React Router で複数ページの React アプリを作成する
 
 ## ■ 方法
 
