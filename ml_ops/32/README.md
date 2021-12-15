@@ -89,7 +89,7 @@ GKE で構成された Web-API でうまくロギング処理をおこなため�
 			format none
 			#path /var/log/app.log
 			path /api/log/app.log
-			pos_file /api/log/app.log
+			pos_file /api/log/app.log.pos
 			tag app.log
 			</source>
 
@@ -209,7 +209,7 @@ GKE で構成された Web-API でうまくロギング処理をおこなため�
 		type tail
 		format none
 		path /api/log/app.log
-		pos_file /api/log/app.log
+		pos_file /api/log/app.log.pos
 		tag app.log
 	</source>
 	<match **>

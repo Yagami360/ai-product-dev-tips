@@ -11,7 +11,7 @@ data:
       format none
       #path /var/log/app.log
       path /api/log/app.log
-      pos_file /api/log/app.log
+      pos_file /api/log/app.log.pos
       tag app.log
     </source>
 
