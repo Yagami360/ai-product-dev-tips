@@ -68,7 +68,10 @@ AIプロダクト開発のための Tips 集。<br>
         - [【GKE】GKE で構成した Web API に Istio を使用したサーキットブレーカーを導入する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/27)
         - [【GKE】Istio の VirtualSevice を使用してリクエストデータのヘッダーに応じて異なる Web-API で推論する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/40)
         - [[In-progress]【GKE】GoogleマネージドSSL証明書を用いて、GKE 上の Web-API を https 化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/45)
-        - 【GKE】k8s のジョブを使用する
+        - [【GKE】k8s の Job を使用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/51)
+        - 【GKE】k8s の CronJob を使用する
+        - 【GKE】同期 REST API へのリクエストを k8s のジョブで管理する
+        - 【GKE】非同期 REST API へのリクエストを k8s のジョブを管理する
         - 【GKE】サイドカーで異なるコンテナ間のボリュームを共有する
         - 【GKE】k8s の PersistentVolume と hostpath を使用してコンテナ間のボリュームを永続的に共有する
 - 認証基盤      
@@ -107,7 +110,7 @@ AIプロダクト開発のための Tips 集。<br>
         - [FastAPI を使用した非同期処理での Web-API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成で動画データを扱うケース）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/48)
         - FastAPI を使用した非同期処理での機械学習モデル推論 API の構築（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + docker での構成）
         - [FastAPI を使用した複数の同期処理での Web-API を並列処理する（FastAPI + uvicorn + gunicorn + docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/38)
-        - [推論時間が異なる複数の API から構成される Web-API において、推論結果を複数段階に分けてレスポンスする（FastAPI + uvicorn + gunicorn + docker + docker-compose での構成）（FastAPI + uvicorn + gunicorn + docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/43)
+        - [推論時間が異なる複数の API から構成される Web-API において、推論結果を複数段階に分けてレスポンスする（FastAPI + uvicorn + gunicorn + docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/43)
         - FastAPI を使用した非同期処理での Web-API の出力結果を GSC に転送する
         - FastAPI を使用した非同期処理での Web-API の出力結果を GoogleDrive に転送する
         - FastAPI を使用した非同期処理での Web-API の出力完了結果を Slack に通知する
@@ -243,9 +246,14 @@ AIプロダクト開発のための Tips 集。<br>
         - [【React】Redux を使用して値の状態管理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/29)
         - [【React】Redux Persist で React アプリのデータを永続化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/31)
         - [【React】React Hooks のステートフックを使用して値の状態管理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/36)
+        - 【React】React Hooks のステートフックを使用して配列の状態管理を行う
         - [【React】React Hooks で副作用フックを使用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/37)
         - [【React】React Hooks で独自フックを使用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/38)
         - [【React】React Hooks でステートフックを永続化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/39)
+        - 【React】useRef を使用して DOM 要素を設定する
+        - 【React】useRef を使用して自動スクロールを行う
+        - 【React】useRef を再描画を行わないコンポーネント内変数として利用する
+        - 【React】useImperativeHandle を使用して親コンポーネントから子コンポーネントで定義したメソッドを呼び出す
         - [【React】React Router で複数ページの React アプリを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/47)
         - [[In-progress]【React】Next.js を使用してサーバーサイドレンダリング（SSR）する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/32)
         - [[In-progress]【React】Next.js で Redux を使用して値の状態管理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/35)
@@ -254,10 +262,15 @@ AIプロダクト開発のための Tips 集。<br>
         - [【React】Next.js + React Hooks アプリで Firebase の Firestore Database を利用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/42)
         - [【React】Next.js + React Hooks アプリで Firestore Database の基本的なデータベース操作を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/43)
         - [[In-progress]【React】Next.js + React Hooks アプリで Firebase Authentication でのユーザー認証を利用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/45)
+        - 【React】html2canvas を使用して React アプリでスクリーンショット画像を出力する
+        - 【React】GSAP を使用して React アプリで CSS アニメーションを行う
         - [【React】React と Redux を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/30)
         - [【React】React と React Hooks を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/40)
         - [【React】Next.js と React Hooks と Firebase を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/41)
         - 【React】React を使用して http 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する
+        - 【React】React アプリから Twitter API を使用する
+        - 【React】React アプリから Youtube Data API / YouTube Live Streaming API を使用する
+        - 【React】React アプリから IFrame Player API を使用する
 
 - Web アプリ開発
     - [【Firebase】Firebase Hosting を使用して静的なウェブサイトをデプロイする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/14)
@@ -281,6 +294,7 @@ AIプロダクト開発のための Tips 集。<br>
         - [【Firebase】Firebase の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/12)
         - 【Firebase】Firebase Cloud Function を JavaScript(`Node.js`) ではなく Google Cloud Function で登録した Python スクリプトで登録する
         - https 通信での Web サイトからリバースプロキシとしての Firebase Cloud Function 経由で http 通信での Web-API を呼び出す
+
 
 ## ■ 前処理・後処理（アプリケーション別）
 

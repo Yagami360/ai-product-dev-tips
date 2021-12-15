@@ -1,0 +1,23 @@
+---
+# Pod
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: predict-pod
+  labels:
+    app: predict-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: predict-pod
+  template:
+    metadata:
+      labels:
+        app: predict-pod
+    spec:
+      containers:
+      - name: predict-container
+        image: gcr.io/my-project2-303004/predict-image-gke:latest
+        command: ["/bin/sh","-c"]
+        args: ["gunicorn app:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:5000 --workers 1 --threads 1 --backlog 256 --reload"]

@@ -1,0 +1,18 @@
+---
+# Job
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sample-job
+spec:
+  completions: 10           # 正常終了する回数
+  parallelism: 2            # Jobで同時にPodを実行できる並列数
+  backoffLimit: 5           # 失敗したJobのリトライ回数（デフォルト6）
+  template:                 # Job で実行する Pod の Template
+    spec:
+      containers:
+      - name: sample-job-container
+        image: gcr.io/my-project2-303004/sample-job-image-gke:latest
+        command: ["/bin/sh","-c"]
+        args: ["python job.py"]
+      restartPolicy: Never  # コンテナが失敗した際の再起動のポリシー（OnFailure : 失敗時のみコンテナを再起動、Never : コンテナを再起動しない）。JOBを使用した場合で Never を設定すると、Pod がエラーになった際にはJobが新しいPodを作成して実行してくれる。
