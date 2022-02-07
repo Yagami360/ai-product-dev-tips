@@ -4,7 +4,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 ## ■ 基本事項
 
-<details open>
+<details>
 <summary>入出力処理</summary>
 
 - [【シェルスクリプト】フォルダ内のファイル数を確認する。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/io_processing/2)
@@ -14,7 +14,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>開発環境</summary>
 
 - git
@@ -24,7 +24,7 @@ AIプロダクト開発のための Tips 集。<br>
 - [Docker](#Docker)
 </details>
 
-<details open>
+<details>
 <summary>サーバー処理一般</summary>
 
 - 【シェルスクリプト】ssh 切れ対策のために `nohup` コマンドで実行する。
@@ -41,7 +41,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 ## ■ 機械学習基盤（MLOps）・バックエンド
 
-<details open>
+<details>
 <summary>クラウド環境一般</summary>
 
 - AWS
@@ -53,7 +53,7 @@ AIプロダクト開発のための Tips 集。<br>
     - 【GCP】インスタンスグループを利用したオートスケーリング、ロードバランサーの導入
 </details>
 
-<details open>
+<details>
 <summary>コンテナ基盤</summary>
 
 - <a id="Docker"></a>Docker
@@ -95,13 +95,13 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>認証基盤</summary>
 
 - [【GCP】GCP の認証システム](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/11)
 </details>
 
-<details open>
+<details>
 <summary>Web サーバー / WSGI サーバー</summary>
 
 - nginx
@@ -116,7 +116,7 @@ AIプロダクト開発のための Tips 集。<br>
 - Gunicorn
 </details>
 
-<details open>
+<details>
 <summary>Web フレームワーク</summary>
 
 - REST API / RESTful API
@@ -149,7 +149,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>インフラのコード化 / Infrastructure as Code</summary>
 
 - Terraform
@@ -162,7 +162,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>サーバレス / FaaS [Function as a Service]</summary>
 
 - Cloud Functions
@@ -177,7 +177,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>CI/CD</summary>
 
 - [CI/CD の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/4)
@@ -194,7 +194,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>データ基盤 / データ分析基盤</summary>
 
 - BigQuery
@@ -211,7 +211,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>メッセージングサービス・キューサービス</summary>
 
 - [メッセージングサービス・キューサービスの基本事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/17)
@@ -232,7 +232,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>機械学習ワークフロー</summary>
 
 - Kubeflow
@@ -245,7 +245,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>ロギング / モニタリング</summary>
 
 - 【Python】デコレーターを用いてロギング処理を共通化する
@@ -270,7 +270,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>品質テスト / 負荷テスト</summary>
 
 - 負荷テスト
@@ -282,7 +282,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>ジョブ管理</summary>
 
 - Slurm
@@ -291,35 +291,35 @@ AIプロダクト開発のための Tips 集。<br>
 
 ## ■ アプリ開発・フロントエンド
 
-<details open>
+<details>
 <summary>HTML</summary>
 
 - HTML の基礎事項
 
 </details>
 
-<details open>
+<details>
 <summary>CSS</summary>
 
 - xxx
 
 </details>
 
-<details open>
+<details>
 <summary>JavaScript / TypeScript</summary>
 
 - JavaScript の基礎事項
 
 </details>
 
-<details open>
+<details>
 <summary>サーバサイド</summary>
 
 - Node.js
 
 </details>
 
-<details open>
+<details>
 <summary>UI ライブラリ/ UI フレームワーク</summary>
 
 - jQuery
@@ -385,7 +385,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>サーバレス / FaaS [Function as a Service]</summary>
 
 - Firebase
@@ -395,7 +395,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>Web アプリ開発</summary>
 
 - [【Firebase】Firebase Hosting を使用して静的なウェブサイトをデプロイする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/14)
@@ -408,7 +408,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>iOS アプリ開発</summary>
 
 - iOS アプリ開発の基本事項
@@ -419,14 +419,14 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>アンドロイドアプリ開発</summary>
 
 - xxx
 
 </details>
 
-<details open>
+<details>
 <summary>UI デザイン / UX デザイン</summary>
 
 - UI デザイン / UX デザイン
@@ -438,7 +438,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 ## ■ 前処理・後処理・データセット作成
 
-<details open>
+<details>
 <summary>テーブルデータ処理</summary>
 
 - 【Python】pandas_profiling でテーブルデータの統計情報を確認する。
@@ -447,7 +447,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>画像処理</summary>
 
 - [【シェルスクリプト】画像ファイルの解像度を確認する。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/image_processing/1)
@@ -488,7 +488,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>動画処理</summary>
 
 - ffmpeg を使用して動画ファイル（mp4）をクロップする
@@ -496,14 +496,14 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>音声処理</summary>
 
 - [pydub と ffmpeg を用いて音声ファイルの無音部分をクレンジングする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/audio_processing/1)
 
 </details>
 
-<details open>
+<details>
 <summary>Web スクレイピング</summary>
 
 - [【Python】WEB 上の画像データを収集する。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/web_scraping/1)
@@ -511,14 +511,14 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>自然言語処理</summary>
 
 - xxx
 
 </details>
 
-<details open>
+<details>
 <summary>高速化処理</summary>
 
 - [【Python】for ループ内の処理を複数 CPU の並列処理で高速化する。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/acceleration_processing/2)
@@ -532,7 +532,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 ## ■ 機械学習フレームワーク
 
-<details open>
+<details>
 <summary>PyTorch</summary>
 
 - 学習＆推論処理
@@ -566,7 +566,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>Tensorflow</summary>
 
 - 【Tensorflow】Dataset API を使用したデータローダー（tensorflow 1.4以降, tensoflow 2.x）
@@ -578,7 +578,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-<details open>
+<details>
 <summary>Keras</summary>
 
 - 【Keras】独自データセットの DataLoader
@@ -591,7 +591,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 ## ■ その他
 
-<details open>
+<details>
 <summary>xxx</summary>
 
 - xxx
