@@ -292,7 +292,6 @@ AIプロダクト開発のための Tips 集。<br>
 
 ## ■ アプリ開発・フロントエンド
 
-
 <details>
 <summary>Web アプリ開発</summary>
 
@@ -394,6 +393,8 @@ AIプロダクト開発のための Tips 集。<br>
 
 - Flutter
     - [【Flutter】Flutter を使用して Web アプリの Hello World を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/1)
+    - 【Flutter】`statefulWidget`, `setState` を使用して値の状態管理を行う
+    - 【Flutter】`pubspec.yml` でパッケージ管理（ライブラリ管理）を行う
 - React Native
 
 </details>
