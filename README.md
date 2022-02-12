@@ -394,7 +394,9 @@ AIプロダクト開発のための Tips 集。<br>
 - Flutter
     - [【Flutter】Flutter を使用して Web アプリの Hello World を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/1)
     - 【Flutter】`statefulWidget`, `setState` を使用して値の状態管理を行う
-    - 【Flutter】`pubspec.yml` でパッケージ管理（ライブラリ管理）を行う
+    - [【Flutter】`pubspec.yml` でパッケージ管理（ライブラリ管理）を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/2)
+    - 【Flutter】Navigator の `pop()`, `push()` メソッドを使用して画面のページ遷移を行う
+    - 【Flutter】Navigator の `popNamed()`, `pushNamed()` メソッドを使用して画面のページ遷移を行う
 - React Native
 
 </details>

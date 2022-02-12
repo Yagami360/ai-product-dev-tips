@@ -29,8 +29,16 @@
 
 4. VSCode を再起動する<br>
 
-5.  VCCode のコマンドパレットから新しいプロジェクトを作成する。<br>
-  「表示 > コマンドパレット > Flutter New Application Project」で作成する。
+5. Flutter プロジェクトを作成する。<br>
+  - CLI コマンドを使用する場合<br>
+    以下の CLI コマンドで Flutter プロジェクトを作成できる。
+    ```sh
+    # Flutter プロジェクトを作成する
+    flutter create -t app --project-name ${PROJECT_NAME} ./${PROJECT_NAME}
+    ```
+
+  - VSCode を使用する場合<br>
+    VSCode の「表示 > コマンドパレット > Flutter New Application Project」で Flutter プロジェクトを作成できる。
 
   プロジェクト（＝アプリ）のフォルダ構成は、以下のようになる
 
@@ -149,7 +157,17 @@
     Stateful な変数であるようにするために `setState()` で値の更新処理を定義し、`MyHomePage` を `StatefulWidget` を継承したクラスで定義し Stateful なページであることを明示している。（`StatefulWidget` を継承したクラスでのみ `setState()` が使える）
 
 7. 作成したプロジェクトのアプリをエミュレータで実行する<br>
-  「実行 > デバッグ > Dart & Flutter」ボタンをクリックすると Chrome 上でアプリが実行される
+
+  - CLI コマンドを使用する場合<br>
+    以下の CLI コマンドを実行することでアプリを実行できる。
+
+    ```sh
+    $ cd ${PROJECT_NAME}
+    $ flutter run
+    ```
+
+  - VSCode を使用する場合<br>
+    VSCode の「実行 > デバッグ > Dart & Flutter」ボタンをクリックすると Chrome 上でアプリが実行される。
 
 8. アプリをデプロイする
 

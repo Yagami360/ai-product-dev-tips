@@ -25,5 +25,63 @@ Flutter では、Flutter の CLI コマンドで外部パッケージ（＝ラ�
   ```dart
   import 'package:url_launcher/url_launcher.dart';
   ...
+
+  class _MyHomePageState extends State<MyHomePage> {
+    String url = "https://www.google.co.jp";
+
+    // ボタンクリック時の非同期メソッド
+    // Dart 言語では、`_メソッド名` で定義するとプライベートメソッド扱いになる
+    // Dart 言語では、`関数名 asuync {...}` の形式で非同期メソッドを定義する
+    void _onPressedButton() async{
+      // url_launcher パッケージでは、URL を `launch()` メソッドに渡すことで、その URL に合ったアプリケーションが起動できる。
+      // ただし、システムによっては、その URL を処理できるアプリケーションが存在しない可能性もある。 このため `canLaunch()` メソッドで処理可能かどうかチェックし、OK の場合のみ `launch()` メソッドを呼ぶようする
+      // url_launcher の `launch()`, `canLaunch()` メソッドは非同期メソッドなので、`await` で非同期処理が完了するまで処理を待って次の処理を行うようにする
+      if (await canLaunch(url)) {
+        await launch(url);
+      }
+    }
+
+    @override
+    Widget build(BuildContext context) {
+      // This method is rerun every time setState is called, for instance as done
+      // by the _incrementCounter method above.
+      //
+      // The Flutter framework has been optimized to make rerunning build methods
+      // fast, so that you can just rebuild anything that needs updating rather
+      // than having to individually change instances of widgets.
+      return Scaffold(
+        appBar: AppBar(
+          // Here we take the value from the MyHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+          title: Text(widget.title),
+        ),
+        body: Column(children: [
+          Text("Hello Flutter Sample App"),
+          IconButton(
+            icon: Icon(Icons.open_in_browser),
+            onPressed: _onPressedButton,
+          ),
+        ]),
+      );
+    }
+  }
   ```
+
+  > `import '追加したパッケージのパッケージ';` の形式で追加したパッケージを import して利用可能にする
+
+  > アイコンクリック時のコールバック関数 `_onPressedButton()` を定義し、この内で url_launcher パッケージを使用している。
+  
+  > Dart 言語では、`_メソッド名` で定義するとプライベートメソッド扱いになる。
+  
+  > またDart 言語では、`関数名 asuync {...}` の形式で定義すると非同期メソッドを定義する
+
+  > url_launcher パッケージでは、URL を `launch()` メソッドに渡すことで、その URL に合ったアプリケーションが起動できる。
+
+  > ただし、システムによっては、その URL を処理できるアプリケーションが存在しない可能性もある。 このため `canLaunch()` メソッドで処理可能かどうかチェックし、OK の場合のみ `launch()` メソッドを呼ぶようする
+
+  > url_launcher の `launch()`, `canLaunch()` メソッドは非同期メソッドなので、`await` で非同期処理が完了するまで処理を待って次の処理を行うようにする
+
+## ■ 参考サイト
+
+- https://zenn.dev/kazutxt/books/flutter_practice_introduction/viewer/beginner_package
 
