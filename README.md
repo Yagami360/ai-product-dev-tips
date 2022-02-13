@@ -1,6 +1,6 @@
 # ai-product-dev-tips
 AIプロダクト開発のための Tips 集。<br>
-｛前処理/後処理・機械学習フレームワーク・バックエンド/機械学習基盤（MLOps）・フロントエンド/アプリ開発 ｝などのAIプロダクト開発に関わる幅広い範囲の Tips 集になってます。
+｛前処理/後処理・機械学習フレームワーク・バックエンド/機械学習基盤（MLOps）・フロントエンド/アプリ開発｝などのAIプロダクト開発に関わる幅広い範囲の Tips 集になってます。
 
 ## ■ 基本事項
 
@@ -374,30 +374,35 @@ AIプロダクト開発のための Tips 集。<br>
 <summary>iOS アプリ開発</summary>
 
 - iOS アプリ開発の基本事項
-- [【Firebase】iOS アプリ（Xcodeプロジェクト）に Firebase を登録する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/ios_app/2)
-- [【Firebase】iOS アプリから Firebase Cloud Functions を利用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/ios_app/3)
-- 【Firebase】Firebase Authentication を使用して iOS アプリに Authentication 機能を導入する
-- 【Firebase】Firebase Hosting と Firebase Cloud Function を使用して GKE 上の http 通信での WebAPI からの出力を返す iOS アプリを作成する（リバースプロキシとしての firebase cloud function 経由で API を呼び出す）
+- Swift
+- Firebase
+    - [【Firebase】iOS アプリ（Xcodeプロジェクト）に Firebase を登録する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/ios_app/2)
+    - [【Firebase】iOS アプリから Firebase Cloud Functions を利用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/ios_app/3)
+    - 【Firebase】Firebase Authentication を使用して iOS アプリに Authentication 機能を導入する
+    - 【Firebase】Firebase Hosting と Firebase Cloud Function を使用して GKE 上の http 通信での WebAPI からの出力を返す iOS アプリを作成する（リバースプロキシとしての firebase cloud function 経由で API を呼び出す）
 
 </details>
 
 <details>
 <summary>アンドロイドアプリ開発</summary>
 
-- xxx
+- Kotlin
 
 </details>
 
 <details>
 <summary>クロスプラットホームアプリ開発</summary>
 
-- Flutter
-    - [【Flutter】Flutter を使用して Web アプリの Hello World を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/1)
-    - 【Flutter】`statefulWidget`, `setState` を使用して値の状態管理を行う
-    - [【Flutter】`pubspec.yml` でパッケージ管理（ライブラリ管理）を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/2)
-    - 【Flutter】Navigator の `pop()`, `push()` メソッドを使用して画面のページ遷移を行う
-    - 【Flutter】Navigator の `popNamed()`, `pushNamed()` メソッドを使用して画面のページ遷移を行う
-- React Native
+- Dart 言語
+- UI フレームワーク
+    - Flutter
+        - [【Flutter】Flutter を使用して Web アプリの Hello World を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/1)
+        - 【Flutter】`statefulWidget`, `setState` を使用して値の状態管理を行う
+        - [【Flutter】`pubspec.yml` でパッケージ管理（ライブラリ管理）を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/2)
+        - 【Flutter】Container を使用して HTML での div 要素のようにアプリ画面の領域を指定する
+        - [【Flutter】Navigator の `pop()`, `push()` メソッドを使用して画面のページ遷移を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/3)
+        - 【Flutter】Navigator の `popNamed()`, `pushNamed()` メソッドを使用して画面のページ遷移を行う
+    - React Native
 
 </details>
 

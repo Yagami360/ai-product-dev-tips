@@ -32,16 +32,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -59,12 +49,14 @@ class _MyHomePageState extends State<MyHomePage> {
         Text("Hello Flutter Sample App"),
         TextButton(
           onPressed: () => {
-            // push() メソッドでスタックに次のページオブジェクトを push すｒことで、「進む」遷移を行う
+            // push() メソッドでスタックに次のページオブジェクトを push することで、「進む」遷移を行う
             Navigator.of(context).push(
+              // `push()` メソッドの引数として `MaterialPageRoute` オブジェクトを指定することで、MaterialDesign（Google のデザイン規格）に則ったアニメーションを行う
+              // `MaterialPageRoute` の `builder` プロパティに、遷移先のページのオブジェクト（今回の例では `Page1`）を return することで、そのページへのページ遷移を実現できる。
               MaterialPageRoute(builder: (context){
                 return Page1();
               })
-            )            
+            );            
           },
           child: Text("進む", style: TextStyle(fontSize: 20))
         )
