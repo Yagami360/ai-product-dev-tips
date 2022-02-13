@@ -40,7 +40,15 @@ class _MyHomePageState extends State<MyHomePage> {
         height: 300,                                    // コンテナの縦幅
         margin: EdgeInsets.fromLTRB(50, 50, 50, 50),    // マージン（Container外側の余白）
         padding: EdgeInsets.fromLTRB(100, 100, 100, 100),   // パディング（Container内側の余白）
-        color: Colors.blue,                           // コンテナの色
+        //color: Colors.blue,                           // コンテナの色
+        decoration: BoxDecoration(                      // ボーダーのスタイル。color プロパティと decoration プロパティを同時に指定することはできない
+          color: Colors.blue,
+          borderRadius: BorderRadius.circular(5.0),
+          border: Border.all(
+            color: Colors.black,
+            width: 3,
+          ),
+        ),
       )
     );
   }

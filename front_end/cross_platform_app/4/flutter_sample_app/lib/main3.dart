@@ -36,11 +36,13 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Container(                                  // Container は HTML の <div> 相当
-        width: 500,                                     // コンテナの横幅
-        height: 300,                                    // コンテナの縦幅
+        //width: 500,                                     // コンテナの横幅
+        //height: 300,                                    // コンテナの縦幅
         margin: EdgeInsets.fromLTRB(50, 50, 50, 50),    // マージン（Container外側の余白）
-        padding: EdgeInsets.fromLTRB(100, 100, 100, 100),   // パディング（Container内側の余白）
+        //padding: EdgeInsets.fromLTRB(100, 100, 100, 100),   // パディング（Container内側の余白）
         color: Colors.blue,                           // コンテナの色
+        child: Text('child Widget'),                    // Container の子 Widget（１つのみ指定可能）
+        //alignment: Alignment.center,                    // child プロパティの位置
       )
     );
   }
