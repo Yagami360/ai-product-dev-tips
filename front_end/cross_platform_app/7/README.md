@@ -18,13 +18,89 @@ AppBar に対しての Sliver 系 Widget である SliverAppBar を使用すれ�
 
 1. `lib/main.dart` を修正する<br>
     ```dart
+    class MyHomePage extends StatefulWidget {
+      const MyHomePage({Key? key, required this.title}) : super(key: key);
+      final String title;
+
+      @override
+      State<MyHomePage> createState() => _MyHomePageState();
+    }
+
+    class _MyHomePageState extends State<MyHomePage> {
+      @override
+      Widget build(BuildContext context) {
+        return Scaffold(
+          // `SliverAppBar` を使用する場合は、`Scaffold` の `appBar` プロパティを使用せず、`body` プロパティに `CustomScrollView` オブジェクトを設定する
+          body: CustomScrollView(
+            // `CustomScrollView` オブジェクトの `slivers` プロパティ（リスト形式）の１つの要素として `SliverAppBar` のオブジェクトを設定
+            slivers: [
+              SliverAppBar(
+                backgroundColor: Colors.blueAccent.withOpacity(0.3),
+                floating: true,         // true の場合は、最上段までスクロールしなくても上スクロール時にヘッダーが表示されるようになる。
+                pinned: true,           // true の場合は、ヘッダーを完全に隠すのではなくタイトルの１行文は常に表示する
+                snap: false,            // `floating` が true の場合に有効で true の場合は、ヘッダーがスクロールにより部分的に表示されるのではなく、完全に表示する
+                expandedHeight: 180,    // ヘッダーの完全表示時の高さ
+                toolbarHeight: 60,
+                // flexibleSpace : ヘッダーのコンテンツ
+                // 通常 `FlexibleSpaceBar` オブジェクトを設定する。そして`FlexibleSpaceBar` オブジェクトの `title` プロパティにヘッダーのタイトルを設定し、`background` にヘッダーの背景画像を設定するといった具合で、ヘッダーのコンテンツを設定する形式になる。
+                flexibleSpace: FlexibleSpaceBar(
+                  title: Text('Flutter Sample App'),
+                  background: Image.network('https://avatars.githubusercontent.com/u/25688193?v=4', fit: BoxFit.cover),
+                )
+              ),
+              // ヘッダーに各種 Widget を追加したい場合は、`CustomScrollView` オブジェクトの `slivers` プロパティ（リスト形式）に `SliverList` オブジェクトを追加する。
+              SliverList(
+                // `SliverList` オブジェクトの `delegate` プロパティに追加した Widget を設定する。
+                // この際に、ヘッダーにグリッドやリストの Widget を追加したい場合は、`SliverList` オブジェクトの `delegate` プロパティには、`SliverChildBuilderDelegate` オブジェクトを設定し、その引数に各種 Widget を追加していく形式になる。
+                // それ以外の各種 Widget を追加したい場合は、`SliverList` オブジェクトの `delegate` プロパティには、`SliverChildListDelegate` オブジェクトを設定し、その引数に各種 Widget を追加していく形式になる。
+                delegate: SliverChildListDelegate(
+                  // `SliverChildListDelegate` オブジェクトの引数に各種 Widget を追加していく
+                  <Widget>[
+                    Container(
+                      child: Column(
+                        children: [
+                          Text("Text1", style: TextStyle(fontSize: 64)),
+                          Text("Text2", style: TextStyle(fontSize: 64)),
+                          Text("Text3", style: TextStyle(fontSize: 64)),
+                          Text("Text4", style: TextStyle(fontSize: 64)),
+                          Text("Text5", style: TextStyle(fontSize: 64)),
+                          Text("Text6", style: TextStyle(fontSize: 64)),
+                          Text("Text7", style: TextStyle(fontSize: 64)),
+                          Text("Text8", style: TextStyle(fontSize: 64)),
+                          Text("Text9", style: TextStyle(fontSize: 64)),
+                          Text("Text10", style: TextStyle(fontSize: 64)),
+                        ],
+                      ),     
+                    )
+                  ]
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+    }
     ```
+
+    <img width="800" alt="image" src="https://user-images.githubusercontent.com/25688193/154053552-a31d66a1-3d9b-4d3c-9cf0-d4c52b5dd94b.png">
 
     ポイントは、以下の通り
 
-    - `SliverAppBar` を使用する場合は、`Scaffold` の `appBar` プロパティを使用せず、`body` プロパティに `CustomScrollView` オブジェクトを設定し、`CustomScrollView` オブジェクトの構成要素として `SliverAppBar` のオブジェクトを設定する形式になる。
+    - `SliverAppBar` を使用する場合は、`Scaffold` の `appBar` プロパティを使用せず、`body` プロパティに `CustomScrollView` オブジェクトを設定し、`CustomScrollView` オブジェクトの `slivers` プロパティ（リスト形式）の１つの要素として `SliverAppBar` のオブジェクトを設定する形式になる。
 
-    - xxx
+    - ここで、`SliverAppBar` オブジェクトのプロパティは、以下のようになる。<br>
+      - `floating` : true の場合は、最上段までスクロールしなくても上スクロール時にヘッダーが表示されるようになる。<br>
+      - `pinned` : true の場合は、ヘッダーを完全に隠すのではなくタイトルの１行文は常に表示する<br>
+      - `snap` : `floating` が true の場合に有効で true の場合は、ヘッダーがスクロールにより部分的に表示されるのではなく、完全に表示する<br>
+      - `expandedHeight` : ヘッダーの完全表示時の高さ<br>
+      - `toolbarHeight` : ヘッダーの部分表示時の高さ<br>
+      - `flexibleSpace` : ヘッダーのコンテンツ。<br>
+          通常 `FlexibleSpaceBar` オブジェクトを設定する。そして`FlexibleSpaceBar` オブジェクトの `title` プロパティにヘッダーのタイトルを設定し、`background` にヘッダーの背景画像を設定するといった具合で、ヘッダーのコンテンツを設定する形式になる。
+
+    - body に各種 Widget を追加したい場合は、`CustomScrollView` オブジェクトの `slivers` プロパティ（リスト形式）に `SliverList` オブジェクトを追加し、`SliverList` オブジェクトの `delegate` プロパティに追加した Widget を設定する。<br>
+      - この際に、ヘッダーにグリッドやリストの Widget を追加したい場合は、`SliverList` オブジェクトの `delegate` プロパティには、`SliverChildBuilderDelegate` オブジェクトを設定し、その引数に各種 Widget を追加していく形式になる。
+      - それ以外の各種 Widget を追加したい場合は、`SliverList` オブジェクトの `delegate` プロパティには、`SliverChildListDelegate` オブジェクトを設定し、その引数に各種 Widget を追加していく形式になる。
+
 
 1. 作成したプロジェクトのアプリをエミュレータで実行する<br>
     - CLI コマンドを使用する場合<br>
@@ -41,4 +117,5 @@ AppBar に対しての Sliver 系 Widget である SliverAppBar を使用すれ�
 
 ## ■ 参考サイト
 
+- https://qiita.com/canisterism/items/6ec326e8593425630c1a
 - https://dev.classmethod.jp/articles/flutter_widget_intro_sliver_app_bar/
