@@ -568,12 +568,17 @@ AIプロダクト開発のための Tips 集。<br>
 - UI フレームワーク
     - Flutter
         - [【Flutter】Flutter を使用して Web アプリの Hello World を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/1)
-        - 【Flutter】`statefulWidget`, `setState` を使用して値の状態管理を行う
         - [【Flutter】`pubspec.yml` でパッケージ管理（ライブラリ管理）を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/2)
+        - [【Flutter（外部サイト）】`statefulWidget` のライフサイクル](https://zenn.dev/kazutxt/books/flutter_practice_introduction/viewer/intermediate_lifecycle)
+        - 【Flutter】`statefulWidget`, `setState` を使用して値の状態管理を行う
         - [【Flutter】Container を使用して HTML での div 要素のようにアプリ画面の領域を指定する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/4)
-        - 【Flutter】ListView を使用してリストレイアウトを行う
-        - [【Flutter】GridView の `GridView.builder(...)` を使用してグリッドレイアウトを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/5)
+        - [【Flutter】ListView の `ListView(...)` を使用して固定リスト長のリストレイアウトを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/8)
+        - [【Flutter】ListView の `ListView.builder(...)` を使用して可変リスト長のリストレイアウトを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/9)
+        - [【Flutter】GridView の `GridView.builder(...)` を使用して可変グリッド数のグリッドレイアウトを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/5)
         - [【Flutter】SliverAppBar を使用してスクロール時に大きさが変わるヘッダーを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/7)
+        - 【Flutter】BottomNavigationBar を使用してフッターを作成する
+        - 【Flutter】独自のフッターを作成する
+        - 【Flutter】スクロール時に大きさが変わるフッターを作成する
         - [【Flutter】Navigator の `pop()`, `push()` メソッドを使用して画面のページ遷移を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/3)
         - 【Flutter】Navigator の `popNamed()`, `pushNamed()` メソッドを使用して画面のページ遷移を行う
         - [【Flutter】ScrollController を使用してスクロール位置を指定した位置に動かす](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/6)

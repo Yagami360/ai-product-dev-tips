@@ -1,4 +1,4 @@
-# 【Flutter】GridView の `GridView.builder(...)` を使用してグリッドレイアウトを行う
+# 【Flutter】GridView の `GridView.builder(...)` を使用して可変グリッド数のグリッドレイアウトを行う
 
 GridView を使用してグリッドレイアウトを構成するためには以下の4つの方法がある。ここでは、`GridView.builder(...)` を使用した方法を記載する
 
@@ -48,25 +48,27 @@ GridView を使用してグリッドレイアウトを構成するためには�
             // グリッドの表示方法の指定。SliverGridDelegateWithFixedCrossAxisCount() を指定した場合は、列の数を基準として表示される
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,      // 列数
-              crossAxisSpacing: 10,   // グリッド間のスペース
-              mainAxisSpacing: 10,    // グリッド間のスペース
-            ),
-            // グリッドの Widget を設定
-            itemBuilder: (context, index) => Container(
-              color: Colors.blue,
-              margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-              child: Center(
-                child: Text(
-                  "Grid" + index.toString(),
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
+              crossAxisSpacing: 10,   // グリッド間の横スペース
+              mainAxisSpacing: 10,    // グリッド間の縦スペース
             ),
             // グリッド数
             itemCount: 10,
+            // グリッドの Widget を設定
+            itemBuilder: (BuildContext context, int index) {
+              return Container(
+                color: Colors.blue,
+                margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                child: Center(
+                  child: Text(
+                    "Grid" + index.toString(),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         );
       }
@@ -86,10 +88,10 @@ GridView を使用してグリッドレイアウトを構成するためには�
         - `crossAxisSpacing` : グリッド間の横スペース
         - `mainAxisSpacing` : グリッド間の縦スペース
 
-    - `itemBuilder` プロパティで、グリッドの Widget を設定する。<br>
-      ここでは例として、青色の Container に "GridX" のテキストを描く Widget を設定している。このとき無名関数 `(context, index) => {...}` の `index` には、`itemCount` プロパティで指定したグリッドの数まで繰り返し index 値が入る
-
     - `itemCount` プロパティで、グリッドの数を指定する。
+
+    - `itemBuilder` プロパティで、グリッドの Widget を設定する。<br>
+      ここでは例として、青色の Container に "GridX" のテキストを描く Widget を設定し return ている。このとき無名関数 `(BuildContext context, int index) {...}` の `index` には、`itemCount` プロパティで指定したグリッドの数まで繰り返し index 値が入る
     
 1. 作成したプロジェクトのアプリをエミュレータで実行する<br>
     - CLI コマンドを使用する場合<br>
