@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';    // ScrollDirection を使用するために import
 import 'package:flutter_app/CustomBottomNavigationBar.dart';
 
 void main() {
@@ -30,6 +31,38 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final ScrollController _scrollController = ScrollController();  //  
+  bool isScrollingReverse = false;                                // 下方向にスクロール中かどうか
+
+  // スクロールを検知したときに呼ばれるリスナー（コールバック関数）
+  void _scrollListener() {
+      // 下方向にスクロール中の場合
+      if (_scrollController.position.userScrollDirection == ScrollDirection.reverse) {
+        isScrollingReverse = true;
+      }
+      // 上方向にスクロール中の場合
+      else {
+        isScrollingReverse = false;
+      }
+      //print('isScrollingReverse : ${isScrollingReverse}');
+
+      // isScrollingReverse は Stateful にしない
+      setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // スクロールを検知したときに処理をしたいリスナー（コールバック関数）を設定
+    _scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();   // ScrollController オブジェクトを dispose() 
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,20 +86,18 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Center(
                   child: Text(
                     "List" + index.toString(),
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.white,),
                   ),
                 ),
               );
-            }
+            },
+            controller: _scrollController,   // 
           ),
           // Stack の子要素は Positioned で Widget の配置位置を指定できる
           // Positioned(...) で CustomBottomNavigationBar() の位置指定することで、スクロールしてもフッダーが表示されたままにする
           Positioned(
             bottom: 0,
-            child: CustomBottomNavigationBar(height: 50,),
+            child: CustomBottomNavigationBar(height: 50, isScrollingReverse: isScrollingReverse,),
           ),
         ],
       )

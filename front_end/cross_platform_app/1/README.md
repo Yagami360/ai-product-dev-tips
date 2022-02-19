@@ -8,7 +8,7 @@
     $ wget https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/${SDK_FILE_NAME}.zip
     ```
 
-2. flutter コマンドへのパスを設定する<br>
+1. flutter コマンドへのパスを設定する<br>
     `~/.bash_profile` に `export PATH="$PATH:`${flutter SDKのディレクトリパス}`/flutter/bin"` を追加して、flutter コマンドへのパスを設定する
 
     ```sh
@@ -25,11 +25,11 @@
     $ flutter doctor  
     ```
 
-3. VSCode で [Flutter の拡張機能](https://marketplace.visualstudio.com/items?itemName=Dart-Code.flutter) を追加する<br>
+1. VSCode で [Flutter の拡張機能](https://marketplace.visualstudio.com/items?itemName=Dart-Code.flutter) を追加する<br>
 
-4. VSCode を再起動する<br>
+1. VSCode を再起動する<br>
 
-5. Flutter プロジェクトを作成する。<br>
+1. Flutter プロジェクトを作成する。<br>
     - CLI コマンドを使用する場合<br>
       以下の CLI コマンドで Flutter プロジェクトを作成できる。
       ```sh
@@ -48,7 +48,7 @@
     - andriod : アンドロイドアプリ固有のコード
     - test : テストコード
 
-6. `lib/main.dart` のコードを修正する<br>
+1. `lib/main.dart` のコードを修正する<br>
 
     ```dart
     import 'package:flutter/material.dart';
@@ -156,19 +156,61 @@
     - `_MyHomePageState` クラスで定義している `_counter` は値が変わると即座に画面表示の変わる Stateful な変数（React でいう useState()）である必要がある。<br>
       Stateful な変数であるようにするために `setState()` で値の更新処理を定義し、`MyHomePage` を `StatefulWidget` を継承したクラスで定義し Stateful なページであることを明示している。（`StatefulWidget` を継承したクラスでのみ `setState()` が使える）
 
-7. 作成したプロジェクトのアプリをエミュレータで実行する<br>
+1. 作成したプロジェクトのアプリを Chrome ブラウザのエミュレータで実行する<br>
     - CLI コマンドを使用する場合<br>
       以下の CLI コマンドを実行することでアプリを実行できる。
-
       ```sh
       $ cd ${PROJECT_NAME}
       $ flutter run
       ```
 
     - VSCode を使用する場合<br>
-      VSCode の「実行 > デバッグ > Dart & Flutter」ボタンをクリックすると Chrome 上でアプリが実行される。
+      1. VSCode の右下にある device をクリックし、実行デバイスとして Chrome を選択する。
+      1. VSCode の「実行 > デバッグ > Dart & Flutter」ボタンをクリックし、Chrome エミュレータ上でアプリを実行する
 
-8. アプリをデプロイする<br>
+1. 作成したプロジェクトのアプリを iOS エミュレータで実行する<br>
+    Xcode をインストールした上で、以下の操作を実行する。<br>
+
+    - CLI コマンドを使用する場合<br>
+      1. 以下の CLI コマンドを実行して、iOS のエミュレータを起動する
+          ```sh
+          $ open -a simulator
+          ```
+      1. 以下の CLI コマンドを実行して、iOS エミュレータ上でアプリを実行する
+          ```sh
+          $ cd ${PROJECT_NAME}
+          $ flutter run
+          ```
+
+    - VSCode を使用する場合<br>
+      1. 以下の CLI コマンドを実行して、iOS のエミュレータを起動する
+          ```sh
+          $ open -a simulator
+          ```
+      1. VSCode の右下にある device をクリックし、実行デバイスとして iOS を選択する。
+      1. VSCode の「実行 > デバッグ > Dart & Flutter」ボタンをクリックし、iOS エミュレータ上でアプリを実行する
+
+1. 作成したプロジェクトのアプリを android エミュレータで実行する<br>
+    Android Studio をインストールした上で、以下の操作を実行する。<br>
+
+    - CLI コマンドを使用する場合<br>
+      1. 以下の CLI コマンドを実行して、android のエミュレータを起動する
+          ```sh
+          ```
+      1. 以下の CLI コマンドを実行して、android エミュレータ上でアプリを実行する
+          ```sh
+          $ cd ${PROJECT_NAME}
+          $ flutter run
+          ```
+
+    - VSCode を使用する場合<br>
+      1. 以下の CLI コマンドを実行して、android のエミュレータを起動する
+          ```sh
+          ```
+      1. VSCode の右下にある device をクリックし、実行デバイスとして android を選択する。
+      1. VSCode の「実行 > デバッグ > Dart & Flutter」ボタンをクリックし、android エミュレータ上でアプリを実行する
+
+1. アプリをデプロイする<br>
     アプリを公開する場合は、xxx でアプリをデプロイする。
 
 ## ■ 参考サイト

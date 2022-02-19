@@ -4,6 +4,7 @@ class CustomIconTextItem extends StatelessWidget {
   final double deviceWidth;
   final IconData icon;
   final String title;
+  final bool isScrollingReverse;    // 下方向にスクロール中かどうか
 
   // コンストラクタ（required : 必須引数）
   const CustomIconTextItem({
@@ -11,6 +12,7 @@ class CustomIconTextItem extends StatelessWidget {
     required this.deviceWidth,
     required this.icon,
     required this.title,
+    this.isScrollingReverse = false,
   }) : super(key: key);
   
   @override
@@ -30,14 +32,18 @@ class CustomIconTextItem extends StatelessWidget {
               size: 24,
             ),
           ),
-          // bottomCenter にアイコンを配置
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Text(
-              title,
-              style: const TextStyle(fontSize: 16),
+          // AnimatedOpacity() を使用して、アニメーション的に透明度を変化させることで、下方向スクロール時はアイコンのテキストを消去するようにする
+          AnimatedOpacity(
+            opacity: isScrollingReverse ? 0 : 1,  // 透明度。下方向スクロール中は1、そうでない場合は0
+            duration: const Duration(milliseconds: 120),
+            curve: Curves.easeInQuart,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Text(title, style: const TextStyle(fontSize: 16),),
             ),
-          ),
+          )
+          // bottomCenter にアイコンを配置
+          
         ],
       ),
     );
