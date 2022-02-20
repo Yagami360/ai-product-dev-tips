@@ -1,6 +1,6 @@
 # 【Flutter】スクロール時に大きさが変わる独自のフッターを作成する
 
-ここでは、[【Flutter】独自のフッターを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/10) で作成した独自のフッターをベースに、`ScrollController`, `AnimatedContainer`, `Curves` を使用して、スクロール時に大きさが変わる独自のフッターを作成する。
+ここでは、[【Flutter】独自のフッターを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/10) で作成した独自のフッターをベースに、`ScrollController`, `AnimatedContainer`, `AnimatedOpacity` を使用して、スクロール時に大きさが変わる独自のフッターを作成する。
 
 ## ■ 方法
 
@@ -53,7 +53,7 @@
                   size: 24,
                 ),
               ),
-              // AnimatedOpacity() を使用して、アニメーション的に透明度を変化させることで、下方向スクロール時はアイコンのテキストを消去するようにする
+              // AnimatedOpacity() を使用して、アニメーション的に Widget の透明度を変化させることで、下方向スクロール時はアイコンのテキストを消去するようにする
               AnimatedOpacity(
                 opacity: isScrollingReverse ? 0 : 1,  // 透明度。下方向スクロール中は1、そうでない場合は0
                 duration: const Duration(milliseconds: 120),
@@ -80,7 +80,7 @@
 
     - アイコンとテキストの内容は、コンストラクタで指定できるようにしている
 
-    - xxx
+    - `AnimatedOpacity()` を使用して、アニメーション的に Widget の透明度を変化させる。具体的には、下方向スクロール時 `isScrollingReverse=true` は、`opacity=1` にして透明にすることで、アイコンのテキストを消去するようにする
 
 1. `lib/CustomBottomNavigationBar.dart` を作成する<br>
     フッターを表示するためのクラスである `CustomBottomNavigationBar` クラスを作成する
@@ -104,10 +104,12 @@
       Widget build(BuildContext context) {
         final width = MediaQuery.of(context).size.width;
 
-        // AnimatedContainer() を使用して Conatiner の各種プロパティの内容を段階的（アニメーション的に）に切り替える
+        // `Container(...)` の代わりに、`AnimatedContainer()` を使用して Conatiner の各種プロパティの内容を段階的（アニメーション的に）に切り替える。
         return AnimatedContainer(
-          duration: const Duration(milliseconds: 200),      // アニメーション時間
-          height: isScrollingReverse ? height/2 + 5 : height,   // 下方向にスクロール中は height の値を半分にする。プロパティの値はアニメーション的に変化する
+          // duration : アニメーション時間
+          duration: const Duration(milliseconds: 200),
+          // `height` プロパティの値を、下方向にスクロール中 `isScrollingReverse=true` に半分程度にする。そうすることで、`height` プロパティの値が下方向スクロール時にアニメーション的に変化する
+          height: isScrollingReverse ? height/2 + 5 : height,
           color: const Color(0xFFFEEAE6),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
@@ -148,9 +150,9 @@
 
     ポイントは、以下の通り
 
-    - `Container(...)` 内に、複数の `CustomIconTextItem` を `Padding(...)` と `Row(...)` の配置で配置する
+    - `Container(...)` の代わりに、`AnimatedContainer()` を使用して Conatiner の各種プロパティの内容を段階的（アニメーション的に）に切り替える。具体的には、`height` プロパティの値を、下方向にスクロール中 `isScrollingReverse=true` に半分程度にする。そうすることで、`height` プロパティの値が下方向スクロール時にアニメーション的に変化する
 
-    - xxx
+    - `AnimatedContainer(...)` 内に、複数の `CustomIconTextItem` を `Padding(...)` と `Row(...)` の配置で配置する
 
 1. `lib/main.dart` を修正する<br>
     ```dart
@@ -206,6 +208,7 @@
           setState(() {});
       }
 
+      // Widget ツリーの初期化を行うタイミングで呼び出されるコールバック関数
       @override
       void initState() {
         super.initState();
@@ -247,6 +250,8 @@
                     ),
                   );
                 },
+                // controller プロパティに作成した `ScrollController` オブジェクトを割り当てる。
+                // こうすることで、`ListView` の表示領域でスクロールしたときに、スクロールを検知できるようにする
                 controller: _scrollController,   // 
               ),
               // Stack の子要素は Positioned で Widget の配置位置を指定できる
@@ -268,7 +273,18 @@
 
     - この際に、フッダー以外の body 部分は Stack の `Positioned(...)` を指定せず、フッダー部分の `CustomBottomNavigationBar(...)` に関してのみ Stack の `Positioned(...)` を指定して表示位置を固定することで、スクロール時にフッダー以外の body 部分はスクロールされるが、フッダー部分はスクロールされず固定位置で表示されたままの挙動になる。
 
-    - xxx
+    - 下方向スクロールを検知するために、`ScrollController` を使用した以下の処理を行う
+      1. `ScrollController` のオブジェクトを作成する。<br>
+          この例では、クラスのメンバにて `_scrollController` という変数名で作成している。
+      1. `body` プロパティに設定している `ListView` オブジェクトの `controller` に、作成した`ScrollController` のオブジェクトを設定する。<br>
+          こうすることで、`ListView` の表示領域でスクロールしたときに、スクロールを検知できるようにする。<br>
+      1. `initState()` 内にて、`ScrollController` のオブジェクト の `addListener(コールバック関数名)` メソッドを呼び出し、スクロール検出時のコールバック関数（リスナー）を設定する<br>
+          - このメソッド `addListener(...)` の引数には、スクロール検出時のコールバック関数（リスナー）を設定する。今回の場合では、`_scrollListener()` がこれに該当する
+      1. スクロール検出時のコールバック関数（リスナー）の中身を実装する。<br>
+          今回のケースでは、下方向スクロールのみ検知したいので、`_scrollController.position.userScrollDirection == ScrollDirection.reverse` の条件でこれを検知する。
+      1. `dispose()` メソッド呼び出し、`ScrollController` のオブジェクトを破棄する。<br>
+          この例では、`_MyHomePageState` クラスの `dispose()` メソッド（＝オブジェクトが Widget ツリーから完全に削除され、2度とビルドされなくなったら呼ばれるコールバック関数）内でこの処理を行っている
+
 
 1. 作成したプロジェクトのアプリをエミュレータで実行する<br>
     - CLI コマンドを使用する場合<br>
@@ -285,3 +301,4 @@
 ## ■ 参考サイト
 
 - https://kwmt27.net/2018/09/03/flutter-scroll/
+- https://zenn.dev/kazutxt/books/flutter_practice_introduction/viewer/beginner_animation#animated%E7%B3%BBwidget

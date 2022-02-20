@@ -497,6 +497,7 @@ AIプロダクト開発のための Tips 集。<br>
         - [【React】クラスコンポーネントでコンテキストを使用する（CDN 版での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/28)
         - [[In-progress]【React】React で Material-UI のコンポーネントを使用する（TypeScript 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/46)
         - 【React】React で Material-UI のテンプレートを使用する（TypeScript 使用）
+        - 【React】React でレスポンシブデザインを行う
         - [【React】Redux を使用して値の状態管理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/29)
         - [【React】Redux Persist で React アプリのデータを永続化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/31)
         - [【React】React Hooks のステートフックを使用して値の状態管理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/36)
@@ -578,11 +579,18 @@ AIプロダクト開発のための Tips 集。<br>
         - [【Flutter】SliverAppBar を使用してスクロール時に大きさが変わるヘッダーを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/7)
         - 【Flutter】BottomNavigationBar を使用してフッターを作成する
         - [【Flutter】独自のフッターを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/10)
-        - 【Flutter】スクロール時に大きさが変わる独自のフッターを作成する
+        - [【Flutter】スクロール時に大きさが変わる独自のフッターを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/11)
+        - 【Flutter】ポートレートモード（縦向き）でのレスポンシブデザインを行う
+        - 【Flutter】ポートレートモード（縦向き）とランドスケープモード（横向き）双方でのレスポンシブデザインを行う
         - [【Flutter】Navigator の `pop()`, `push()` メソッドを使用して画面のページ遷移を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/3)
         - 【Flutter】Navigator の `popNamed()`, `pushNamed()` メソッドを使用して画面のページ遷移を行う
         - [【Flutter】ScrollController を使用してスクロール位置を指定した位置に動かす](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/6)
         - 【Flutter】Google Font を使用する
+        - 【Flutter】Hero を使用してアニメーションを行う
+        - 【Flutter】画面のページ遷移時のアニメーションを行う
+        - 【Flutter】animations パッケージを使用してアニメーションを行う
+        - 【Flutter】AnimationController を使用してアニメーションを行う
+        - 【Flutter】Tween を使用してアニメーションを行う
     - React Native
 
 </details>

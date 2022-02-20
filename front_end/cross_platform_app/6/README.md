@@ -46,7 +46,7 @@
             title: Text(widget.title),
           ),
           body: GridView.builder(
-            // ScrollController のオブジェクトを設定
+            // ScrollController のオブジェクトを設定。こうすることで、`GridView` の表示領域に `animateTo(...)` でジャンプできるようになる。
             controller: _scrollController,
             // グリッドの表示方法の指定。SliverGridDelegateWithFixedCrossAxisCount() を指定した場合は、列の数を基準として表示される
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -98,7 +98,8 @@
       1. `ScrollController` オブジェクトを作成する。<br>
           この例では、`_MyHomePageState` クラスのフィールド内で `final ScrollController _scrollController = ScrollController();` として作成している。（`final` は、再代入不可の変数を表す Dart 言語の構文）
       1. 作成した `ScrollController` オブジェクトを、`build(...)` メソッドで return する `Scaffold` オブジェクトの `body` プロパティに設定する。<br>
-          この例では、グリッド表示を行う `GridView` の `GridView.builder(...)` メソッドの `controller` プロパティに、`ScrollController` オブジェクトを設定している。
+          この例では、グリッド表示を行う `GridView` の `GridView.builder(...)` メソッドの `controller` プロパティに、`ScrollController` オブジェクトを設定している。こうすることで、`GridView` の表示領域に `animateTo(...)` でジャンプできるようになる。
+
       1. `ScrollController` オブジェクトの `animateTo(...)` メソッドを使用して、指定したスクロール位置までジャンプする。<br>
           この例では、`floatingActionButton` プロパティの `onPressed` イベントハンドラ内にて、`animateTo(...)` を実行することで、画面右下のボタンクリック時に画面最上部までスクロールするようにしている。
       

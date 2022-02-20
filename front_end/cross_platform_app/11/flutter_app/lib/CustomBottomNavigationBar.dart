@@ -16,10 +16,12 @@ class CustomBottomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
 
-    // AnimatedContainer() を使用して Conatiner の各種プロパティの内容を段階的（アニメーション的に）に切り替える
+    // `Container(...)` の代わりに、`AnimatedContainer()` を使用して Conatiner の各種プロパティの内容を段階的（アニメーション的に）に切り替える。
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),      // アニメーション時間
-      height: isScrollingReverse ? height/2 + 5 : height,   // 下方向にスクロール中は height の値を半分にする。プロパティの値はアニメーション的に変化する
+      // duration : アニメーション時間
+      duration: const Duration(milliseconds: 200),
+      // `height` プロパティの値を、下方向にスクロール中 `isScrollingReverse=true` に半分程度にする。そうすることで、`height` プロパティの値が下方向スクロール時にアニメーション的に変化する
+      height: isScrollingReverse ? height/2 + 5 : height,
       color: const Color(0xFFFEEAE6),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),

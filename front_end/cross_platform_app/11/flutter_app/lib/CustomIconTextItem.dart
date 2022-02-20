@@ -32,7 +32,7 @@ class CustomIconTextItem extends StatelessWidget {
               size: 24,
             ),
           ),
-          // AnimatedOpacity() を使用して、アニメーション的に透明度を変化させることで、下方向スクロール時はアイコンのテキストを消去するようにする
+          // AnimatedOpacity() を使用して、アニメーション的に Widget の透明度を変化させることで、下方向スクロール時はアイコンのテキストを消去するようにする
           AnimatedOpacity(
             opacity: isScrollingReverse ? 0 : 1,  // 透明度。下方向スクロール中は1、そうでない場合は0
             duration: const Duration(milliseconds: 120),

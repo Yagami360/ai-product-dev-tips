@@ -50,6 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {});
   }
 
+  // Widget ツリーの初期化を行うタイミングで呼び出されるコールバック関数
   @override
   void initState() {
     super.initState();
@@ -91,7 +92,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               );
             },
-            controller: _scrollController,   // 
+            // controller プロパティに作成した `ScrollController` オブジェクトを割り当てる。
+            // こうすることで、`ListView` の表示領域でスクロールしたときに、スクロールを検知できるようにする
+            controller: _scrollController,
           ),
           // Stack の子要素は Positioned で Widget の配置位置を指定できる
           // Positioned(...) で CustomBottomNavigationBar() の位置指定することで、スクロールしてもフッダーが表示されたままにする
