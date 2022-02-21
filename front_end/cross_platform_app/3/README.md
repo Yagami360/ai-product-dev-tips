@@ -100,18 +100,39 @@ Navigator は、Flutter でページ遷移を実装する際に使用する Widg
 
     - アプリ画面の「進む」遷移は、`Navigator.of(context).pop(...)` メソッドを使用して、スタックに前のページオブジェクトを pop することで、「戻る」遷移を行う
 
-
-1. 作成したプロジェクトのアプリをエミュレータで実行する<br>
+1. 作成したプロジェクトのアプリを Chrome ブラウザのエミュレータで実行する<br>
     - CLI コマンドを使用する場合<br>
       以下の CLI コマンドを実行することでアプリを実行できる。
-
       ```sh
       $ cd ${PROJECT_NAME}
       $ flutter run
       ```
 
     - VSCode を使用する場合<br>
-      VSCode の「実行 > デバッグ > Dart & Flutter」ボタンをクリックすると Chrome 上でアプリが実行される。
+      1. VSCode の右下にある device をクリックし、実行デバイスとして Chrome を選択する。
+      1. VSCode の「実行 > デバッグ > Dart & Flutter」ボタンをクリックし、Chrome エミュレータ上でアプリを実行する
+
+1. 作成したプロジェクトのアプリを iOS エミュレータで実行する<br>
+    Xcode をインストールした上で、以下の操作を実行する。<br>
+
+    - CLI コマンドを使用する場合<br>
+      1. 以下の CLI コマンドを実行して、iOS のエミュレータを起動する
+          ```sh
+          $ open -a simulator
+          ```
+      1. 以下の CLI コマンドを実行して、iOS エミュレータ上でアプリを実行する
+          ```sh
+          $ cd ${PROJECT_NAME}
+          $ flutter run
+          ```
+
+    - VSCode を使用する場合<br>
+      1. 以下の CLI コマンドを実行して、iOS のエミュレータを起動する
+          ```sh
+          $ open -a simulator
+          ```
+      1. VSCode の右下にある device をクリックし、実行デバイスとして iOS を選択する。
+      1. VSCode の「実行 > デバッグ > Dart & Flutter」ボタンをクリックし、iOS エミュレータ上でアプリを実行する
 
 
 ## ■ 参考サイト

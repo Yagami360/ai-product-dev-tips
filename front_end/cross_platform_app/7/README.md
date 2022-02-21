@@ -101,18 +101,39 @@ AppBar に対しての Sliver 系 Widget である SliverAppBar を使用すれ�
       - この際に、ヘッダーにグリッドやリストの Widget を追加したい場合は、`SliverList` オブジェクトの `delegate` プロパティには、`SliverChildBuilderDelegate` オブジェクトを設定し、その引数に各種 Widget を追加していく形式になる。
       - それ以外の各種 Widget を追加したい場合は、`SliverList` オブジェクトの `delegate` プロパティには、`SliverChildListDelegate` オブジェクトを設定し、その引数に各種 Widget を追加していく形式になる。
 
-
-1. 作成したプロジェクトのアプリをエミュレータで実行する<br>
+1. 作成したプロジェクトのアプリを Chrome ブラウザのエミュレータで実行する<br>
     - CLI コマンドを使用する場合<br>
       以下の CLI コマンドを実行することでアプリを実行できる。
-
       ```sh
       $ cd ${PROJECT_NAME}
       $ flutter run
       ```
 
     - VSCode を使用する場合<br>
-      VSCode の「実行 > デバッグ > Dart & Flutter」ボタンをクリックすると Chrome 上でアプリが実行される。
+      1. VSCode の右下にある device をクリックし、実行デバイスとして Chrome を選択する。
+      1. VSCode の「実行 > デバッグ > Dart & Flutter」ボタンをクリックし、Chrome エミュレータ上でアプリを実行する
+
+1. 作成したプロジェクトのアプリを iOS エミュレータで実行する<br>
+    Xcode をインストールした上で、以下の操作を実行する。<br>
+
+    - CLI コマンドを使用する場合<br>
+      1. 以下の CLI コマンドを実行して、iOS のエミュレータを起動する
+          ```sh
+          $ open -a simulator
+          ```
+      1. 以下の CLI コマンドを実行して、iOS エミュレータ上でアプリを実行する
+          ```sh
+          $ cd ${PROJECT_NAME}
+          $ flutter run
+          ```
+
+    - VSCode を使用する場合<br>
+      1. 以下の CLI コマンドを実行して、iOS のエミュレータを起動する
+          ```sh
+          $ open -a simulator
+          ```
+      1. VSCode の右下にある device をクリックし、実行デバイスとして iOS を選択する。
+      1. VSCode の「実行 > デバッグ > Dart & Flutter」ボタンをクリックし、iOS エミュレータ上でアプリを実行する
 
 
 ## ■ 参考サイト
