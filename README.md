@@ -466,6 +466,7 @@ AIプロダクト開発のための Tips 集。<br>
 <summary>Web アプリ開発</summary>
 
 - HTML
+    - Google タグマネージャー（GMT）
 - CSS
 - JavaScript / TypeScript
 - UI フレームワーク
@@ -576,21 +577,23 @@ AIプロダクト開発のための Tips 集。<br>
         - [【Flutter】ListView の `ListView(...)` を使用して固定リスト長のリストレイアウトを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/8)
         - [【Flutter】ListView の `ListView.builder(...)` を使用して可変リスト長のリストレイアウトを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/9)
         - [【Flutter】GridView の `GridView.builder(...)` を使用して可変グリッド数のグリッドレイアウトを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/5)
-        - [【Flutter】SliverAppBar を使用してスクロール時に大きさが変わるヘッダーを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/7)
-        - 【Flutter】BottomNavigationBar を使用してフッターを作成する
-        - [【Flutter】独自のフッターを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/10)
-        - [【Flutter】スクロール時に大きさが変わる独自のフッターを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/11)
+        - 【Flutter】BottomNavigationBar を使用してフッターを作成する        
         - [【Flutter】ポートレートモード（縦向き）でのレスポンシブデザインを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/12)
         - 【Flutter】ポートレートモード（縦向き）とランドスケープモード（横向き）双方でのレスポンシブデザインを行う
         - [【Flutter】Navigator の `pop()`, `push()` メソッドを使用して画面のページ遷移を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/3)
         - 【Flutter】Navigator の `popNamed()`, `pushNamed()` メソッドを使用して画面のページ遷移を行う
         - [【Flutter】ScrollController を使用してスクロール位置を指定した位置に動かす](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/6)
         - 【Flutter】Google Font を使用する
+        - 【Flutter】Animated 系 Widget を使用して（暗黙的な）アニメーションを行う
+        - [【Flutter】AnimationController を使用してアニメーションを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/13)
+        - 【Flutter】Tween を使用してアニメーションを行う
+        - 【Flutter】AnimationController と Transition 系 Widget を使用してアニメーションを行う
         - 【Flutter】Hero を使用してアニメーションを行う
         - 【Flutter】画面のページ遷移時のアニメーションを行う
         - 【Flutter】animations パッケージを使用してアニメーションを行う
-        - 【Flutter】AnimationController を使用してアニメーションを行う
-        - 【Flutter】Tween を使用してアニメーションを行う
+        - [【Flutter】SliverAppBar を使用してスクロール時に大きさが変わるヘッダーを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/7)
+        - [【Flutter】独自のフッターを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/10)
+        - [【Flutter】スクロール時に大きさが変わる独自のフッターを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/11)
     - React Native
 
 </details>
