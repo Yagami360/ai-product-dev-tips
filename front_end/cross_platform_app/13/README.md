@@ -163,7 +163,15 @@
 
     - `_animationController.value` の値は、指定した Duration の間に、 0.0 から 1.0 までの範囲の数で変化する
 
-    - xxx
+    - `_animationController.forward` でアニメーションを再生する。アニメーション再生時は、`_animationController.value` の値が 0.0 -> 1.0 に遷移時間かけて変化していく。
+
+    - `_animationController.stop` でアニメーションを停止する
+
+    - `_animationController.stop` でアニメーションをリセット（`_animationController.value=0.0` に戻る）
+
+    - この例では、`CircularProgressIndicator` の `value` プロパティに、`_animationController.value` を設定することで、進捗インジケーターのアニメーションを行っている
+
+    - `_value` の値を表示させる際にに、iPhone では `_value` の数値によって数値表示の横幅が違うので、そのまま _value の値をアニメーションさせると横ブレが発生する。`FontFeature.tabularFigures()` で等幅フォントにすることで、iPhone 表示で `_value` の値が変化しても、表示が横ブレしなくなる。`FontFeature.tabularFigures()` を使用するためには、`import 'dart:ui';` とする必要がある。
 
 1. 作成したプロジェクトのアプリを Chrome ブラウザのエミュレータで実行する<br>
     - CLI コマンドを使用する場合<br>

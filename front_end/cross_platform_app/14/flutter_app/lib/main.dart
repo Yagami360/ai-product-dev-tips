@@ -37,21 +37,30 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   // AnimationController(...) の初期化（＝オブジェクト作成）時に、`vsync` プロパティを this に設定する必要があるが、クラスのメンバ宣言時には this は使えないので、初期化処理は this にアクセスできる initState() で初期化処理を行うようにする
   late AnimationController _animationController;
 
-  int _seconds = 15;  // アニメーション遷移時間
-  double _value = 0;  // _animationController.value の値の Stateful 変数（指定した Duration の間に、 0.0 から 1.0 までの範囲の数で変化）
+  final int _seconds = 15;  // アニメーション遷移時間
+  double _value = 0;        // _animationController.value の値の Stateful 変数（指定した Duration の間に、 0.0 から 1.0 までの範囲の数で変化）
+
+  // 各種変数型に対しての Tween。初期化処理は `initState()` 内で行う
+  late Animation<int> _intAnimation;                      // int 値に対しての Tween
+  late Animation<double> _doubleAnimation;                // double 値に対しての Tween
+  late Animation<Color?> _colorAnimation;                 // color 値に対しての Tween
 
   @override
   void initState() {
     super.initState();
 
+    //------------------------------------------------------------------------
     // AnimationController の処理化処理
     // AnimationController(...) の初期化（＝オブジェクト作成）時に、`vsync` プロパティを this に設定する必要があるが、with SingleTickerProviderStateMixin としたことで、initState() に内で this にアクセスできるようになっている
+    //------------------------------------------------------------------------
     _animationController = AnimationController(
       vsync: this,                            // this を設定 
       duration: Duration(seconds: _seconds),  // アニメーションの遷移時間
     );
 
+    //------------------------------------------------------------------------
     // AnimationController の値が変化するタイミングで呼び出されるコールバック関数（リスナー）を追加 
+    //------------------------------------------------------------------------
     _animationController.addListener(() {
       // _animationController.value の値を Stateful 変数にする
       setState(() {
@@ -59,6 +68,42 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         _value = _animationController.value;
       });
     });
+
+    //------------------------------------------------------------------------
+    // AnimationController の `drive(...)` メソッドに Tween オブジェクトを設定する
+    // `_integer = IntTween(begin: 0, end: _seconds).animate(_animationController);` のように Tween オブジェクトの `animate(...)` メソッドに、AnimationController を設定する方法でもよい
+    //------------------------------------------------------------------------
+    _intAnimation = _animationController.drive(
+      // IntTween で int 型のアニメーションを設定する
+      // _animationController.value の値が 0.0 ~ 1.0 の遷移時に、0 ~ 15 の整数値で遷移するようにする
+      IntTween(begin: 0, end: _seconds),
+    );
+
+    _doubleAnimation = _animationController
+      // CurveTween() の curve プロパティでアニメーションの補間方法（線形補間など）を設定する。CurveTween() を先に設定する必要があることに注意
+      .drive(
+        CurveTween(
+          curve: const Interval(0, 0.5),
+        ),
+      )
+      // Tween() で double 型のアニメーションを設定する
+      .drive(
+        Tween(begin: 0, end: 10),
+      );
+
+    _colorAnimation = _animationController
+      .drive(
+        CurveTween(
+          curve: const Interval(0.3,0.6,),
+        ),
+      )
+      // ColorTween() で color 型のアニメーションを設定する
+      .drive(
+        ColorTween(
+          begin: Colors.red,
+          end: Colors.blue,
+        ),
+      );
   }
 
   @override
@@ -78,7 +123,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              "_animationController.value : " + _value.toStringAsFixed(2),
+              "_animationController.value",
+              style: const TextStyle(
+                fontSize: 18,
+              ),
+            ),
+            Text(
+              _value.toStringAsFixed(2),
               style: const TextStyle(
                 fontSize: 21,
                 // iPhone では `_value` の数値によって、数値表示の横幅が違うので、そのまま _value の値をアニメーションさせると横ブレが発生する。
@@ -89,9 +140,58 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               ),
             ),
             const SizedBox(height: 12,),
+            Text(
+              "_intAnimation.value",
+              style: const TextStyle(
+                fontSize: 18,
+              ),
+            ),
+            Text(
+              _intAnimation.value.toString(),
+              style: const TextStyle(
+                fontSize: 21,
+                fontFeatures: [
+                  FontFeature.tabularFigures(),
+                ],                
+              ),
+            ),
+            const SizedBox(height: 12,),
+            Text(
+              "_doubleAnimation.value",
+              style: const TextStyle(
+                fontSize: 18,
+              ),
+            ),
+            Text(
+              _doubleAnimation.value.toStringAsFixed(2),
+              style: const TextStyle(
+                fontSize: 21,
+                fontFeatures: [
+                  FontFeature.tabularFigures(),
+                ],                
+              ),
+            ),
+            const SizedBox(height: 12,),
+            Text(
+              "_colorAnimation.value",
+              style: const TextStyle(
+                fontSize: 18,
+              ),
+            ),
+            Text(
+              _colorAnimation.value.toString(),
+              style: const TextStyle(
+                fontSize: 12,
+                fontFeatures: [
+                  FontFeature.tabularFigures(),
+                ],                
+              ),
+            ),
+            const SizedBox(height: 12,),
             CircularProgressIndicator(
-              value: _animationController.value,    // CircularProgressIndicator の value プロパティに、_animationController.value を設定することで、アニメーションさせる
-              backgroundColor: Colors.grey[300],
+              value: _animationController.value,    // CircularProgressIndicator の value プロパティに _animationController.value を設定することで、アニメーションさせる
+              strokeWidth: _doubleAnimation.value,  // CircularProgressIndicator の strokeWidth プロパティに _doubleAnimation.value を設定することで、インジゲーターの幅を変化させる
+              color: _colorAnimation.value,         // CircularProgressIndicator の color プロパティに _colorAnimation.value を設定することで、インジゲーターの色を変化させる
             ),
             const SizedBox(height: 12,),
             SizedBox(

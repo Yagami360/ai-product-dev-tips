@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-PROJECT_NAME="flutter_sample_app"
+PROJECT_NAME="flutter_app"
 
 # Flutter プロジェクトを作成する
 if [ ! -e "./${PROJECT_NAME}" ] ; then
@@ -9,7 +9,6 @@ fi
 
 # iOS エミュレーターを起動する
 open -a simulator
-sleep 5
 
 # Flutter アプリを起動する
 cd ${PROJECT_NAME}

@@ -449,13 +449,15 @@ AIプロダクト開発のための Tips 集。<br>
 <details>
 <summary>機械学習ワークフロー</summary>
 
+- Luigi / gokart
+    - Luigi を使用して複雑な処理を行う API のパイプラインを管理する
+- MLflow
+- Airflow
 - Kubeflow
     - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/1)
     - [[In-progress]【Kubeflow】GKE クラスタに Kubeflow を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/2)
     - [【Kubeflow】Google AI Platform Pipelines を利用して Kubeflow Pipelines の構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/3)
-- Luigi
-    - Luigi を使用して複雑な処理を行う API のパイプラインを管理する
-- Airflow
+- Vertex Pipelines
 
 </details>
 
@@ -586,14 +588,17 @@ AIプロダクト開発のための Tips 集。<br>
         - 【Flutter】Google Font を使用する
         - 【Flutter】Animated 系 Widget を使用して（暗黙的な）アニメーションを行う
         - [【Flutter】AnimationController を使用してアニメーションを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/13)
-        - 【Flutter】Tween を使用してアニメーションを行う
-        - 【Flutter】AnimationController と Transition 系 Widget を使用してアニメーションを行う
+        - [【Flutter】Tween を使用してアニメーションを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/14)
+        - 【Flutter】AnimationController, Tween と Transition 系 Widget を使用してアニメーションを行う
+        - 【Flutter】Transition 系 Widget を使用して画面のページ遷移時のアニメーションを行う
         - 【Flutter】Hero を使用してアニメーションを行う
-        - 【Flutter】画面のページ遷移時のアニメーションを行う
         - 【Flutter】animations パッケージを使用してアニメーションを行う
         - [【Flutter】SliverAppBar を使用してスクロール時に大きさが変わるヘッダーを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/7)
         - [【Flutter】独自のフッターを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/10)
         - [【Flutter】スクロール時に大きさが変わる独自のフッターを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/11)
+        - 【Flutter】Flutter Web アプリで Firebase Hosting を使用する。
+        - 【Flutter】Flutter アプリで Firebase Authentication でのユーザー認証を利用する
+        - 【Flutter】Flutter アプリで Firestore Database を使用する。
     - React Native
 
 </details>

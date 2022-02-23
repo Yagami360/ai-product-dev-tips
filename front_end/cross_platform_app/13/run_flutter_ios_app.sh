@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-PROJECT_NAME="flutter_sample_app"
+PROJECT_NAME="flutter_app"
 
 # Flutter プロジェクトを作成する
 if [ ! -e "./${PROJECT_NAME}" ] ; then
