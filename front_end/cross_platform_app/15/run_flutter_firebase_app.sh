@@ -1,5 +1,6 @@
 #!/bin/sh
 set -eu
+ROOT_DIR=${PWD}
 PROJECT_NAME="flutter_app"
 FIREBASE_PROJECT_ID="flutter-app"
 #PLATFORM="web"

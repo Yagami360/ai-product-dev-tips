@@ -575,6 +575,7 @@ AIプロダクト開発のための Tips 集。<br>
         - [【Flutter】`pubspec.yml` でパッケージ管理（ライブラリ管理）を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/2)
         - [【Flutter（外部サイト）】`statefulWidget` のライフサイクル](https://zenn.dev/kazutxt/books/flutter_practice_introduction/viewer/intermediate_lifecycle)
         - 【Flutter】`statefulWidget`, `setState` を使用して値の状態管理を行う
+        - 【Flutter】Provider を使用して値の状態管理を行う
         - [【Flutter】Container を使用して HTML での div 要素のようにアプリ画面の領域を指定する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/4)
         - [【Flutter】ListView の `ListView(...)` を使用して固定リスト長のリストレイアウトを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/8)
         - [【Flutter】ListView の `ListView.builder(...)` を使用して可変リスト長のリストレイアウトを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/9)
@@ -597,6 +598,7 @@ AIプロダクト開発のための Tips 集。<br>
         - 【Flutter】Flutter Web アプリから Firebase Hosting を使用する。
         - 【Flutter】Flutter アプリから Firebase Authentication でのユーザー認証を利用する
         - [[In-progress]【Flutter】Flutter アプリから Firestore Database を使用する。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/15)
+        - 【Flutter】Flutter Web アプリから Firebase Cloud Storage を使用する。
         - 【Flutter】Flutter アプリから非同期 API を使用する
         - 【Flutter】Flutter アプリから Twitter API を使用する
         - 【Flutter】Flutter アプリから Youtube Data API / YouTube Live Streaming API を使用する

@@ -97,11 +97,30 @@
 
             cupertino_icons: ^1.0.2
             firebase_core: ^1.3.0       # For Firebase
-            firebase_storage: ^9.0.0    # For Firebase Storage
             cloud_firestore: ^2.3.0     # For Firebase Firestore
             ...
         ```
 
+        > 上記のようにして、Firebase のパッケージをインストールした場合に、iOS 環境でのビルド時に `CocoaPods could not find compatible versions for pod Firebase/Core ...` といった内容のエラーが発生するケースがある。この場合は、`${FLUTTER_PROJECT_DIR}/ios/Podfile` にあるファイルに `platform :ios, '12.0'` の行を追加して、CocoaPods の iOS バージョンを 12.0 に指定すれば解決される。
+        > - 参考サイト : https://zenn.dev/umi_mori/articles/328fb6f96dfc4e
+
+        - `ios/Podfile`
+            ```yaml
+            # この行を追加
+            platform :ios, '12.0'
+
+            # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+            ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+            project 'Runner', {
+                'Debug' => :debug,
+                'Profile' => :release,
+                'Release' => :release,
+            }
+            ...
+            ```
+
+<!--
     1. `${FLUTTER_PROJECT_DIR}/Runner/AppDelegate.swift` を以下のように修正し、Firebase の初期化コードを追加する
 
         ```swift
@@ -122,6 +141,7 @@
             }
         }
         ```
+-->
 
 1. Firestore Database を作成する。<br>
     1. [Firebase コンソール画面](https://console.firebase.google.com/?hl=ja&pli=1) の左側画面の「Firestore Database」→「データベースの作成」ボタンをクリックする<br>

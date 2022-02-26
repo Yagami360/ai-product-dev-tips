@@ -42,21 +42,21 @@ packages:
       name: cloud_firestore
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.5.4"
+    version: "1.0.7"
   cloud_firestore_platform_interface:
     dependency: transitive
     description:
       name: cloud_firestore_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.5.1"
+    version: "4.0.3"
   cloud_firestore_web:
     dependency: transitive
     description:
       name: cloud_firestore_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.6.10"
+    version: "1.0.7"
   collection:
     dependency: transitive
     description:
@@ -71,6 +71,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.2"
+  cupertino_icons:
+    dependency: "direct main"
+    description:
+      name: cupertino_icons
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.4"
   fake_async:
     dependency: transitive
     description:
@@ -113,34 +120,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.6.1"
-  firebase_storage:
-    dependency: "direct main"
-    description:
-      name: firebase_storage
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "9.0.0"
-  firebase_storage_platform_interface:
-    dependency: transitive
-    description:
-      name: firebase_storage_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.0"
-  firebase_storage_web:
-    dependency: transitive
-    description:
-      name: firebase_storage_web
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.0"
   flutter:
     dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
   flutter_lints:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: flutter_lints
       url: "https://pub.dartlang.org"
@@ -183,7 +169,7 @@ packages:
       name: image_picker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.8.4+10"
+    version: "0.7.5+4"
   image_picker_for_web:
     dependency: transitive
     description:
@@ -233,13 +219,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
-  nested:
-    dependency: transitive
-    description:
-      name: nested
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0"
   path:
     dependency: transitive
     description:
@@ -317,13 +296,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.2.4"
-  provider:
-    dependency: "direct main"
-    description:
-      name: provider
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "5.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
