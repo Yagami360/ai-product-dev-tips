@@ -586,19 +586,21 @@ AIプロダクト開発のための Tips 集。<br>
         - 【Flutter】Navigator の `popNamed()`, `pushNamed()` メソッドを使用して画面のページ遷移を行う
         - [【Flutter】ScrollController を使用してスクロール位置を指定した位置に動かす](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/6)
         - 【Flutter】Google Font を使用する
-        - 【Flutter】Animated 系 Widget を使用して（暗黙的な）アニメーションを行う
+        - 【Flutter】Animated 系 Widget を使用してアニメーションを行う
         - [【Flutter】AnimationController を使用してアニメーションを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/13)
         - [【Flutter】Tween を使用してアニメーションを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/14)
-        - 【Flutter】AnimationController, Tween と Transition 系 Widget を使用してアニメーションを行う
+        - 【Flutter】Transition 系 Widget を使用してアニメーションを行う
         - 【Flutter】Transition 系 Widget を使用して画面のページ遷移時のアニメーションを行う
-        - 【Flutter】Hero を使用してアニメーションを行う
-        - 【Flutter】animations パッケージを使用してアニメーションを行う
         - [【Flutter】SliverAppBar を使用してスクロール時に大きさが変わるヘッダーを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/7)
         - [【Flutter】独自のフッターを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/10)
         - [【Flutter】スクロール時に大きさが変わる独自のフッターを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/11)
-        - 【Flutter】Flutter Web アプリで Firebase Hosting を使用する。
-        - 【Flutter】Flutter アプリで Firebase Authentication でのユーザー認証を利用する
-        - 【Flutter】Flutter アプリで Firestore Database を使用する。
+        - 【Flutter】Flutter Web アプリから Firebase Hosting を使用する。
+        - 【Flutter】Flutter アプリから Firebase Authentication でのユーザー認証を利用する
+        - [[In-progress]【Flutter】Flutter アプリから Firestore Database を使用する。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/15)
+        - 【Flutter】Flutter アプリから非同期 API を使用する
+        - 【Flutter】Flutter アプリから Twitter API を使用する
+        - 【Flutter】Flutter アプリから Youtube Data API / YouTube Live Streaming API を使用する
+        - 【Flutter】Flutter アプリから IFrame Player API を使用する
     - React Native
 
 </details>
