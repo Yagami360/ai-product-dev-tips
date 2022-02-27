@@ -8,7 +8,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Firebase の初期化処理
-  await Firebase.initializeApp();
+  //await Firebase.initializeApp();
 
   // アプリを起動
   runApp(const MyApp());
@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ]
                 )
               ],
-            )
+            ),
             // Database への追加
             const Text(
               'Add',
