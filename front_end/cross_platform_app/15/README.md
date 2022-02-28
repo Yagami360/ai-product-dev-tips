@@ -24,7 +24,7 @@
     1. 「設定」ボタン→「全般」タブから、GCP リソースのリージョンを指定する<br>
         <img src="https://user-images.githubusercontent.com/25688193/107106996-d4759180-6871-11eb-909c-14915bde83c6.png" width="500"><br>    
 
-1. <a id="ウェブアプリをFirebaseに登録する"></a>ウェブアプリを Firebase に登録する<br>
+1. ウェブアプリを Firebase に登録する<br>
     1. Firebase コンソールの「プロジェクトの概要」ページの中央にあるウェブアイコン `</>` をクリックし、設定ワークフローを起動する。<br>
         <img src="https://user-images.githubusercontent.com/25688193/107107327-bd37a380-6873-11eb-972d-4957992a748c.png" width="300"><br>
 
@@ -75,6 +75,11 @@
 
     1. ダウンロードした設定ファイル `GoogleService-Info.plist` を Flutter アプリの `${FLUTTER_PROJECT_DIR}/ios/Runner` ディレクトリ以下に配置し、「次へ」ボタンをクリックする
 
+        > VSCode を使って `GoogleService-Info.plist` で単純にコピーしても参照情報などのリンクがうまく作られないことがあるので、この配置処理は、VSCode ではなく XCode で行う必要があることに注意。作成した Flutter プロジェクトを XCode で開くには、以下のコマンドを実行すればよい。
+        > ```sh
+        > $ open ${FLUTTER_PROJECT_DIR}/ios/Runner.xcodeproj
+        > ```
+
         > ダウンロードした設定ファイル `GoogleService-Info.plist` は、GitHub 上に公開しないようにすること
 
         <img width="800" alt="image" src="https://user-images.githubusercontent.com/25688193/155834122-b85ce2d5-df1a-4c0f-b49d-44b7f140b039.png">
@@ -119,29 +124,6 @@
             }
             ...
             ```
-
-<!--
-    1. `${FLUTTER_PROJECT_DIR}/Runner/AppDelegate.swift` を以下のように修正し、Firebase の初期化コードを追加する
-
-        ```swift
-        import UIKit
-        import Flutter
-        import Firebase // <- 追加
-        import FirebaseCore // <- 追加
-
-        @UIApplicationMain
-        @objc class AppDelegate: FlutterAppDelegate {
-            override func application(
-                _ application: UIApplication,
-                didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-            ) -> Bool {
-                FirebaseApp.configure()  // <- 追加
-                GeneratedPluginRegistrant.register(with: self)
-                return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-            }
-        }
-        ```
--->
 
 1. Firestore Database を作成する。<br>
     1. [Firebase コンソール画面](https://console.firebase.google.com/?hl=ja&pli=1) の左側画面の「Firestore Database」→「データベースの作成」ボタンをクリックする<br>
@@ -238,5 +220,6 @@
 
 ## ■ 参考サイト
 
+- https://zenn.dev/kazutxt/books/flutter_practice_introduction/viewer/firebase_overview#ios%E3%81%AE%E8%A8%AD%E5%AE%9A
 - https://github.com/nzigen/flutter_book_samples/tree/main/5_database/firebase_sample
 - https://zenn.dev/captain_blue/articles/checking-bundle-id-in-flutter
