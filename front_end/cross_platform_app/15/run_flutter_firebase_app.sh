@@ -26,37 +26,6 @@ else
 fi
 
 #----------------------------- 
-# Firebase
-#-----------------------------
-<<COMMENTOUT
-if [ ${PLATFORM} = "web" ] ; then
-  # npm をインストール
-  if [ ${OS} = "Mac" ] ; then
-      if [ ! "brew list | grep node" ] ; then
-          brew install node
-      fi
-  fi
-  npm -v
-
-  cd ${ROOT_DIR}/${PROJECT_NAME}
-
-  # Firebase CLI のインストール
-  #sudo npm install -g firebase-tools
-  if [ ! "npm ls --depth=0 | grep firebase-tools@" ] ; then
-    sudo npm install --save firebase-tools
-  fi
-
-  # Firebase へのログイン
-  firebase login --project ${FIREBASE_PROJECT_ID}
-
-  # Firebase プロジェクトを初期化
-  if [ ! -e ${ROOT_DIR}/${PROJECT_NAME}/"database.rules.json" ] ; then
-    firebase init --project ${FIREBASE_PROJECT_ID}
-  fi
-fi
-COMMENTOUT
-
-#----------------------------- 
 # Flutter
 #-----------------------------
 # Flutter プロジェクトを作成する

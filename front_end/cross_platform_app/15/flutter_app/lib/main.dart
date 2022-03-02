@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';      // For Firebase
 import 'package:cloud_firestore/cloud_firestore.dart';  // For Firestore
 
-//import "package:intl/intl.dart";
-//import 'package:intl/date_symbol_data_local.dart';
-
 // main 関数を非同期関数にする
 Future<void> main() async {
   // Firebase.initializeApp() する前に必要な処理。この処理を行わないと Firebase.initializeApp() 時にエラーがでる
@@ -43,9 +40,12 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final String collectionName = "todo_database";
-  String _todoText = "";
+  String _todoText = "";  // Add ボタンクリック時に入力フィールドの値を参照できるように、フィールド変数で定義
 
-  void onPressedAdd() {
+  //---------------------------------
+  // Add ボタンクリック時のコールバック関数
+  //---------------------------------
+  void _onPressedAdd() {
     print("call onPressedAdd()");
 
     // Firestore のコレクションに自動ドキュメントIDでフィールドを追加する。コレクションがない場合はコレクションも作成する
@@ -55,12 +55,25 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  //---------------------------------
+  // Delete ボタンクリック時のコールバック関数
+  //---------------------------------
+  void _onPressedDelete(String docId) {
+    print("call onPressedDelete()");
+
+    // 指定したドキュメントID のデータを削除する
+    FirebaseFirestore.instance.collection(collectionName).doc(docId).delete();
+  }
+
+  //---------------------------------
+  // Firestore 内のデータ一覧を表示する Widget を返す関数
+  //---------------------------------
   Widget _buildTodoList(BuildContext context) {
     // StreamBuilder を使用して Firestore のコレクションに更新があった場合に、自動的に再描画する
     return StreamBuilder(
-      // Stream に Firestore のコレクションの snapshots を設定
-      stream: FirebaseFirestore.instance.collection(collectionName).snapshots(),
-      //
+      // stream プロパティに入力データとしての Firestore のコレクションの snapshots を設定
+      stream: FirebaseFirestore.instance.collection(collectionName).orderBy('createdAt', descending: true).snapshots(),
+      // builder プロパティに stream プロパティで設定した入力データを元に出力されるデータが非同期的に入る。出力データは snapshot 引数に格納される
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         // エラーの場合
         if (snapshot.hasError) {
@@ -70,52 +83,46 @@ class _MyHomePageState extends State<MyHomePage> {
           return Container();
         }
         else {
-          return ListView(
-            children: snapshot.data!.docs.map(
-              (DocumentSnapshot todoFields) {
-                //String createdAtString = todoFields["createdAt"].toString();
-                //var formatter = new DateFormat('yyyy/MM/dd(E) HH:mm', "ja_JP");
-                //var createdAtString = formatter.format(todoFields["createdAt"]);
-                //print(createdAtString);
-
-                return Container(
-                    //color: Colors.blue,
-                    margin: EdgeInsets.fromLTRB(4, 4, 4, 4),
+          // Flexible(ListView(...)) : Column の中で ListView を使う場合、そのまま使うと ListView の大きさが定まらず、エラーが発生する。Flexible を用いると、ListView が Overflow する限界まで広がり、エラーなしで表示できるようになる。
+          return Flexible(
+            child: ListView(
+              // snapshot.data!.docs に各ドキュメントIDのドキュメントデータ全体が格納されているので、これを map(...) で　　Widget に変換したものを ListView の children プロパティに設定する
+              // ※ ! は「non-nullableな型にキャスト」することを明示するための Dart 構文
+              children: snapshot.data!.docs.map(
+                (DocumentSnapshot document) {
+                  //print("document: ${document}");
+                  //print("document[text]: ${document["text"]}");
+                  String createdAtString = document["createdAt"].toDate().toString().split(".")[0];
+                  return Container(
+                    color: Colors.lightBlue.shade50,
+                    margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,  // 中央配置
+                      //mainAxisAlignment: MainAxisAlignment.center,  // 中央配置
                       children : [
-                        DataTable(
-                          columns: [
-                            DataColumn(label: Text("text")),
-                            DataColumn(label: Text("createdAt")),
-                          ],
-                          rows: [
-                            DataRow(
-                              cells: [
-                                DataCell(Text(todoFields["text"])),
-                                //DataCell(Text(createdAtString)),
-                                DataCell(Text("aaa")),
-                                
-                              ]
-                            )
-                          ],
-                        ),
+                        Text(createdAtString, textAlign: TextAlign.center,),
+                        Spacer(flex: 1,),         // `Spacer` を使用して、余白を確保する
+                        Text(document["text"], textAlign: TextAlign.left ),
+                        Spacer(flex: 1,),
                         // Database の削除
                         OutlinedButton(
-                          onPressed: () { /* ボタンがタップされた時の処理 */ },
+                          onPressed: () { _onPressedDelete(document.id); },
                           child: Text('Delete'),
                         ),
                       ],
-                    )                    
+                    )
                   );
-              },
-            ).toList(),
+                },
+              ).toList()
+            )
           );
         }
-      },
+      }
     );
   }
 
+  //---------------------------------
+  // build 関数
+  //---------------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,79 +131,48 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Container(
         margin: EdgeInsets.fromLTRB(10, 10, 10, 10),    // マージン（Container外側の余白）
-        child : Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'Flutter Firebase App',
+        child : Column(
+          children: <Widget>[
+            //--------------------------
+            // Database への追加 UI
+            //--------------------------
+            Text(
+              'Firestore Database にデータ追加',
+              style: TextStyle(
+                fontSize: 16,
               ),
-              // Database への追加
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,  // 中央配置
-                children : [
-                  Flexible(
-                    child: TextField(
-                      enabled: true,
-                      onChanged: (value) {
-                        _todoText = value;
-                      },
-                    ),
+            ),
+            SizedBox(height: 8,),              
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,  // 中央配置
+              children : [
+                Flexible(
+                  child: TextField(
+                    enabled: true,
+                    onChanged: (value) {
+                      _todoText = value;
+                    },
                   ),
-                  OutlinedButton(
-                    onPressed: onPressedAdd,
-                    child: Text('Add'),
-                  ),
-                ],
+                ),
+                OutlinedButton(
+                  onPressed: _onPressedAdd,
+                  child: Text('Add'),
+                ),
+              ],
+            ),
+            SizedBox(height: 20,),
+            //--------------------------
+            // Database 内容表示 UI
+            //--------------------------
+            Text(
+              'Firestore Database の内容表示',
+              style: TextStyle(
+                fontSize: 16,
               ),
-              // Database の表示
-              Text(
-                'Firestore Database',
-              ),
-              _buildTodoList(context),
-              /*
-              ListView.builder(
-                //physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                // リスト数
-                itemCount: 10,                
-                // itemBuilder プロパティで、リストの Widget を設定する
-                itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    //color: Colors.blue,
-                    margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,  // 中央配置
-                      children : [
-                        DataTable(
-                          columns: [
-                            DataColumn(label: Text("index")),
-                            DataColumn(label: Text("text")),
-                            DataColumn(label: Text("createdAt")),
-                          ],
-                          rows: [
-                            DataRow(
-                              cells: [
-                                DataCell(Text('1')),
-                                DataCell(Text('aaa')),
-                                DataCell(Text('03/01')),
-                              ]
-                            )
-                          ],
-                        ),
-                        // Database の削除
-                        OutlinedButton(
-                          onPressed: () { /* ボタンがタップされた時の処理 */ },
-                          child: Text('Delete'),
-                        ),
-                      ],
-                    )                    
-                  );
-                }
-              ),
-              */
-            ],
-          ),
+            ),
+            SizedBox(height: 8,),              
+            _buildTodoList(context),
+          ],
         ),
       ),
     );

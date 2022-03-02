@@ -28,41 +28,149 @@
     1. Firebase コンソールの「プロジェクトの概要」ページの中央にあるウェブアイコン `</>` をクリックし、設定ワークフローを起動する。<br>
         <img src="https://user-images.githubusercontent.com/25688193/107107327-bd37a380-6873-11eb-972d-4957992a748c.png" width="300"><br>
 
-    1. Web アプリ用の firebase SDK をインストールする<br>
-        ```sh
-        $ cd ${PROJECT_NAME}
-        $ npm install --save firebase@8.10.0
-        ```
-
-          > バージョン指定なしの `npm install --save firebase` でインストールすると、現時点（21/10/31）では version 9.x の Firebase がインストールされるが、version8 -> version9 へ変更した場合は、firebase の import 方法が、`import firebase from 'firebase/app';` -> `import { initializeApp } from 'firebase/app';` に変更されたりしており、version8 の Firebase コードが動かなくなることに注意
-
-    1. 設定ワークフロー画面でアプリ名を入力後、「アプリを登録」ボタンをクリックする。このとき、以下の画面のコードをコピーし、`${FLUTTER_PROJECT_DIR}/web/index.html` にコードを追加し、Firebase の初期化コードを追加する。
-
+    1. 設定ワークフロー画面でアプリ名を入力後、「アプリを登録」ボタンをクリックする。
+    
+    1. `${FLUTTER_PROJECT_DIR}/web/index.html` を以下のような内容に書き変えて、Firebase の初期化コードを追加する。
+        このとき、`firebaseConfig` の値は、以下の画面のコードの内容にする
         <img src="https://user-images.githubusercontent.com/25688193/138590270-3304ca03-787d-43d2-8c81-e6f65e754b6e.png" width="300"><br>
 
-        ```js
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "firebase/app";
-        import { getAnalytics } from "firebase/analytics";
-        // TODO: Add SDKs for Firebase products that you want to use
-        // https://firebase.google.com/docs/web/setup#available-libraries
+        ```html
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <!--
+                If you are serving your web app in a path other than the root, change the
+                href value below to reflect the base path you are serving from.
 
-        // Your web app's Firebase configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-        const firebaseConfig = {
-          apiKey: " APIキー ",
-          authDomain: "プロジェクト.firebaseapp.com",
-          databaseURL: "https://プロジェクト.firebaseio.com",
-          projectId: "プロジェクト",
-          storageBucket: "プロジェクト.appspot.com",
-          messagingSenderId: " ID番号 "
-          appId: "appid",
-          measurementId: "measurementId"
-        };
+                The path provided below has to start and end with a slash "/" in order for
+                it to work correctly.
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
+                For more details:
+                * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+                This is a placeholder for base href that will be replaced by the value of
+                the `--base-href` argument provided to `flutter build`.
+            -->
+            <base href="$FLUTTER_BASE_HREF">
+
+            <meta charset="UTF-8">
+            <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+            <meta name="description" content="A new Flutter project.">
+
+            <!-- iOS meta tags & icons -->
+            <meta name="apple-mobile-web-app-capable" content="yes">
+            <meta name="apple-mobile-web-app-status-bar-style" content="black">
+            <meta name="apple-mobile-web-app-title" content="flutter_app">
+            <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+            <!-- Favicon -->
+            <link rel="icon" type="image/png" href="favicon.png"/>
+
+            <title>flutter_app</title>
+            <link rel="manifest" href="manifest.json">
+        </head>
+        <body>
+            <!-- This script installs service_worker.js to provide PWA functionality to
+                application. For more information, see:
+                https://developers.google.com/web/fundamentals/primers/service-workers -->
+            <script>
+                var serviceWorkerVersion = null;
+                var scriptLoaded = false;
+                function loadMainDartJs() {
+                if (scriptLoaded) {
+                    return;
+                }
+                scriptLoaded = true;
+                var scriptTag = document.createElement('script');
+                scriptTag.src = 'main.dart.js';
+                scriptTag.type = 'application/javascript';
+                document.body.append(scriptTag);
+                }
+
+                if ('serviceWorker' in navigator) {
+                // Service workers are supported. Use them.
+                window.addEventListener('load', function () {
+                    // Wait for registration to finish before dropping the <script> tag.
+                    // Otherwise, the browser will load the script multiple times,
+                    // potentially different versions.
+                    var serviceWorkerUrl = 'flutter_service_worker.js?v=' + serviceWorkerVersion;
+                    navigator.serviceWorker.register(serviceWorkerUrl)
+                    .then((reg) => {
+                        function waitForActivation(serviceWorker) {
+                        serviceWorker.addEventListener('statechange', () => {
+                            if (serviceWorker.state == 'activated') {
+                            console.log('Installed new service worker.');
+                            loadMainDartJs();
+                            }
+                        });
+                        }
+                        if (!reg.active && (reg.installing || reg.waiting)) {
+                        // No active web worker and we have installed or are installing
+                        // one for the first time. Simply wait for it to activate.
+                        waitForActivation(reg.installing || reg.waiting);
+                        } else if (!reg.active.scriptURL.endsWith(serviceWorkerVersion)) {
+                        // When the app updates the serviceWorkerVersion changes, so we
+                        // need to ask the service worker to update.
+                        console.log('New service worker available.');
+                        reg.update();
+                        waitForActivation(reg.installing);
+                        } else {
+                        // Existing service worker is still good.
+                        console.log('Loading app from service worker.');
+                        loadMainDartJs();
+                        }
+                    });
+
+                    // If service worker doesn't succeed in a reasonable amount of time,
+                    // fallback to plaint <script> tag.
+                    setTimeout(() => {
+                    if (!scriptLoaded) {
+                        console.warn(
+                        'Failed to load app from service worker. Falling back to plain <script> tag.',
+                        );
+                        loadMainDartJs();
+                    }
+                    }, 4000);
+                });
+                } else {
+                // Service workers not supported. Just drop the <script> tag.
+                loadMainDartJs();
+                }
+            </script>
+
+            <!-- The core Firebase JS SDK is always required and must be listed first -->
+            <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+            <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+            <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+            <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
+
+            <script>
+                // Import the functions you need from the SDKs you need
+                import { initializeApp } from "firebase/app";
+                import { getAnalytics } from "firebase/analytics";
+                // TODO: Add SDKs for Firebase products that you want to use
+                // https://firebase.google.com/docs/web/setup#available-libraries
+
+                // Your web app's Firebase configuration
+                // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+                const firebaseConfig = {
+                    apiKey: " APIキー ",
+                    authDomain: "プロジェクト.firebaseapp.com",
+                    databaseURL: "https://プロジェクト.firebaseio.com",
+                    projectId: "プロジェクト",
+                    storageBucket: "プロジェクト.appspot.com",
+                    messagingSenderId: " ID番号 "
+                    appId: "appid",
+                    measurementId: "measurementId"
+                };
+
+                // Initialize Firebase
+                const app = initializeApp(firebaseConfig);
+                const analytics = getAnalytics(app);
+            </script>
+            <script src="main.dart.js" type="application/javascript"></script>
+        </body>
+        </html>
         ```
 
 1. iOS アプリを Firebase に登録する<br>
@@ -84,46 +192,49 @@
 
         <img width="800" alt="image" src="https://user-images.githubusercontent.com/25688193/155834122-b85ce2d5-df1a-4c0f-b49d-44b7f140b039.png">
 
-    1. iOS アプリ用の firebase SDK をインストールする<br>
-        `${FLUTTER_PROJECT_DIR}/pubspec.yaml` を以下のように修正し、Firebase SDK をインストールする
+1. android アプリを Firebase に登録する<br>
+    xxx
 
+1. Flutter の firebase SDK をインストールする<br>
+    `${FLUTTER_PROJECT_DIR}/pubspec.yaml` を以下のように修正し、Firebase SDK をインストールする
+
+    ```yaml
+    name: flutter_app
+    description: A new Flutter project.
+    publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+    version: 1.0.0+1
+
+    environment:
+        sdk: ">=2.16.0 <3.0.0"
+
+    dependencies:
+        flutter:
+            sdk: flutter
+
+        cupertino_icons: ^1.0.2
+        firebase_core: ^1.3.0       # For Firebase
+        cloud_firestore: ^2.3.0     # For Firebase Firestore
+        ...
+    ```
+
+    > 上記のようにして、Firebase のパッケージをインストールした場合に、iOS 環境でのビルド時に `CocoaPods could not find compatible versions for pod Firebase/Core ...` といった内容のエラーが発生するケースがある。この場合は、`${FLUTTER_PROJECT_DIR}/ios/Podfile` にあるファイルに `platform :ios, '12.0'` の行を追加して、CocoaPods の iOS バージョンを 12.0 に指定すれば解決される。
+    > - 参考サイト : https://zenn.dev/umi_mori/articles/328fb6f96dfc4e
+
+    - `ios/Podfile`
         ```yaml
-        name: flutter_app
-        description: A new Flutter project.
-        publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-        version: 1.0.0+1
+        # この行を追加
+        platform :ios, '12.0'
 
-        environment:
-            sdk: ">=2.16.0 <3.0.0"
+        # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+        ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
-        dependencies:
-            flutter:
-                sdk: flutter
-
-            cupertino_icons: ^1.0.2
-            firebase_core: ^1.3.0       # For Firebase
-            cloud_firestore: ^2.3.0     # For Firebase Firestore
-            ...
+        project 'Runner', {
+            'Debug' => :debug,
+            'Profile' => :release,
+            'Release' => :release,
+        }
+        ...
         ```
-
-        > 上記のようにして、Firebase のパッケージをインストールした場合に、iOS 環境でのビルド時に `CocoaPods could not find compatible versions for pod Firebase/Core ...` といった内容のエラーが発生するケースがある。この場合は、`${FLUTTER_PROJECT_DIR}/ios/Podfile` にあるファイルに `platform :ios, '12.0'` の行を追加して、CocoaPods の iOS バージョンを 12.0 に指定すれば解決される。
-        > - 参考サイト : https://zenn.dev/umi_mori/articles/328fb6f96dfc4e
-
-        - `ios/Podfile`
-            ```yaml
-            # この行を追加
-            platform :ios, '12.0'
-
-            # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
-            ENV['COCOAPODS_DISABLE_STATS'] = 'true'
-
-            project 'Runner', {
-                'Debug' => :debug,
-                'Profile' => :release,
-                'Release' => :release,
-            }
-            ...
-            ```
 
 1. Firestore Database を作成する。<br>
     1. [Firebase コンソール画面](https://console.firebase.google.com/?hl=ja&pli=1) の左側画面の「Firestore Database」→「データベースの作成」ボタンをクリックする<br>
@@ -177,11 +288,193 @@
 
 1. `lib/main.dart` を作成する<br>
     ```dart
+    import 'package:flutter/material.dart';
+    import 'package:firebase_core/firebase_core.dart';      // For Firebase
+    import 'package:cloud_firestore/cloud_firestore.dart';  // For Firestore
+
+    // main 関数を非同期関数にする
+    Future<void> main() async {
+    // Firebase.initializeApp() する前に必要な処理。この処理を行わないと Firebase.initializeApp() 時にエラーがでる
+    WidgetsFlutterBinding.ensureInitialized();
+
+    // Firebase の初期化処理
+    await Firebase.initializeApp();
+
+    // アプリを起動
+    runApp(const MyApp());
+    }
+
+    class MyApp extends StatelessWidget {
+    const MyApp({Key? key}) : super(key: key);
+
+    // This widget is the root of your application.
+    @override
+    Widget build(BuildContext context) {
+    return MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+        primarySwatch: Colors.blue,
+        ),
+        home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    );
+    }
+    }
+
+    class MyHomePage extends StatefulWidget {
+    const MyHomePage({Key? key, required this.title}) : super(key: key);
+    final String title;
+
+    @override
+    State<MyHomePage> createState() => _MyHomePageState();
+    }
+
+    class _MyHomePageState extends State<MyHomePage> {
+    final String collectionName = "todo_database";
+    String _todoText = "";  // Add ボタンクリック時に入力フィールドの値を参照できるように、フィールド変数で定義
+
+    //---------------------------------
+    // Add ボタンクリック時のコールバック関数
+    //---------------------------------
+    void _onPressedAdd() {
+    print("call onPressedAdd()");
+
+    // Firestore のコレクションに自動ドキュメントIDでフィールドを追加する。コレクションがない場合はコレクションも作成する
+    FirebaseFirestore.instance.collection(collectionName).add({
+        'createdAt': Timestamp.fromDate(DateTime.now()),
+        "text": _todoText,
+    });
+    }
+
+    //---------------------------------
+    // Delete ボタンクリック時のコールバック関数
+    //---------------------------------
+    void _onPressedDelete(String docId) {
+    print("call onPressedDelete()");
+
+    // 指定したドキュメントID のデータを削除する
+    FirebaseFirestore.instance.collection(collectionName).doc(docId).delete();
+    }
+
+    //---------------------------------
+    // Firestore 内のデータ一覧を表示する Widget を返す関数
+    //---------------------------------
+    Widget _buildTodoList(BuildContext context) {
+    // StreamBuilder を使用して Firestore のコレクションに更新があった場合に、自動的に再描画する
+    return StreamBuilder(
+        // stream プロパティに入力データとしての Firestore のコレクションの snapshots を設定
+        stream: FirebaseFirestore.instance.collection(collectionName).orderBy('createdAt', descending: true).snapshots(),
+        // builder プロパティに stream プロパティで設定した入力データを元に出力されるデータが非同期的に入る。出力データは snapshot 引数に格納される
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        // エラーの場合
+        if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+        }
+        else if (!snapshot.hasData) {
+            return Container();
+        }
+        else {
+            // Flexible(ListView(...)) : Column の中で ListView を使う場合、そのまま使うと ListView の大きさが定まらず、エラーが発生する。Flexible を用いると、ListView が Overflow する限界まで広がり、エラーなしで表示できるようになる。
+            return Flexible(
+            child: ListView(
+                // snapshot.data!.docs に各ドキュメントIDのドキュメントデータ全体が格納されているので、これを map(...) で　　Widget に変換したものを ListView の children プロパティに設定する
+                // ※ ! は「non-nullableな型にキャスト」することを明示するための Dart 構文
+                children: snapshot.data!.docs.map(
+                (DocumentSnapshot document) {
+                    //print("document: ${document}");
+                    //print("document[text]: ${document["text"]}");
+                    String createdAtString = document["createdAt"].toDate().toString().split(".")[0];
+                    return Container(
+                    color: Colors.lightBlue.shade50,
+                    margin: EdgeInsets.fromLTRB(2, 2, 2, 2),
+                    child: Row(
+                        //mainAxisAlignment: MainAxisAlignment.center,  // 中央配置
+                        children : [
+                        Text(createdAtString, textAlign: TextAlign.center,),
+                        Spacer(flex: 1,),         // `Spacer` を使用して、余白を確保する
+                        Text(document["text"], textAlign: TextAlign.left ),
+                        Spacer(flex: 1,),
+                        // Database の削除
+                        OutlinedButton(
+                            onPressed: () { _onPressedDelete(document.id); },
+                            child: Text('Delete'),
+                        ),
+                        ],
+                    )
+                    );
+                },
+                ).toList()
+            )
+            );
+        }
+        }
+    );
+    }
+
+    //---------------------------------
+    // build 関数
+    //---------------------------------
+    @override
+    Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+        title: Text(widget.title),
+        ),
+        body: Container(
+        margin: EdgeInsets.fromLTRB(10, 10, 10, 10),    // マージン（Container外側の余白）
+        child : Column(
+            children: <Widget>[
+            //--------------------------
+            // Database への追加 UI
+            //--------------------------
+            Text(
+                'Firestore Database にデータ追加',
+                style: TextStyle(
+                fontSize: 16,
+                ),
+            ),
+            SizedBox(height: 8,),              
+            Row(
+                mainAxisAlignment: MainAxisAlignment.center,  // 中央配置
+                children : [
+                Flexible(
+                    child: TextField(
+                    enabled: true,
+                    onChanged: (value) {
+                        _todoText = value;
+                    },
+                    ),
+                ),
+                OutlinedButton(
+                    onPressed: _onPressedAdd,
+                    child: Text('Add'),
+                ),
+                ],
+            ),
+            SizedBox(height: 20,),
+            //--------------------------
+            // Database 内容表示 UI
+            //--------------------------
+            Text(
+                'Firestore Database の内容表示',
+                style: TextStyle(
+                fontSize: 16,
+                ),
+            ),
+            SizedBox(height: 8,),              
+            _buildTodoList(context),
+            ],
+        ),
+        ),
+    );
+    }
+    }
     ```
 
     ポイントは、以下の通り
 
     - xxx
+
+    - StreamBuilderは、ある Stream を監視して、イベント（データ）が通知される度に Widget を更新（再描画）する機能
 
 
 1. 作成したプロジェクトのアプリを Chrome ブラウザのエミュレータで実行する<br>
