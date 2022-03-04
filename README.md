@@ -209,6 +209,13 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
+<details>
+<summary>scikit-learn</summary>
+
+- [【scikit-learn】scikit-learn を使用した 非DNN の機械学習モデルの実装コード集](https://github.com/Yagami360/MachineLearning_Exercises_Python_scikit-learn)
+
+</details>
+
 ## ■ 機械学習基盤（MLOps）・バックエンド
 
 <details>
