@@ -604,11 +604,11 @@ AIプロダクト開発のための Tips 集。<br>
         - [【Flutter】SliverAppBar を使用してスクロール時に大きさが変わるヘッダーを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/7)
         - [【Flutter】独自のフッターを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/10)
         - [【Flutter】スクロール時に大きさが変わる独自のフッターを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/11)
-        - 【Flutter】Flutter Web アプリから Firebase Hosting を使用する。
         - 【Flutter】Flutter アプリから Firebase Authentication でのユーザー認証を利用する
         - [【Flutter】Flutter アプリから Firestore Database を使用する。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/cross_platform_app/15)
         - 【Flutter】Flutter アプリから Firebase Cloud Storage を使用する。
         - 【Flutter】Flutter アプリから Firebase Cloud Function を使用する。
+        - 【Flutter】Flutter Web アプリから Firebase Hosting を使用する。
         - 【Flutter】Flutter アプリから非同期 API を使用する
         - 【Flutter】Flutter アプリから Twitter API を使用する
         - 【Flutter】Flutter アプリから Youtube Data API / YouTube Live Streaming API を使用する
