@@ -30,7 +30,8 @@
 
     1. 設定ワークフロー画面でアプリ名を入力後、「アプリを登録」ボタンをクリックする。
     
-    1. `${FLUTTER_PROJECT_DIR}/web/index.html` を以下のような内容に書き変えて、Firebase の初期化コードを追加する。
+    1. 【旧 Firebase のバージョンを使用する場合のみ必要な処理】<br>
+        `${FLUTTER_PROJECT_DIR}/web/index.html` を以下のような内容に書き変えて、Firebase の初期化コードを追加する。
         このとき、`firebaseConfig` の値は、以下の画面のコードの内容にする
         <img src="https://user-images.githubusercontent.com/25688193/138590270-3304ca03-787d-43d2-8c81-e6f65e754b6e.png" width="300"><br>
 
@@ -70,6 +71,37 @@
             <link rel="manifest" href="manifest.json">
         </head>
         <body>
+            <!-- The core Firebase JS SDK is always required and must be listed first -->
+            <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+            <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+            <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+            <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
+
+            <script>
+                // Import the functions you need from the SDKs you need
+                import { initializeApp } from "firebase/app";
+                import { getAnalytics } from "firebase/analytics";
+                // TODO: Add SDKs for Firebase products that you want to use
+                // https://firebase.google.com/docs/web/setup#available-libraries
+
+                // Your web app's Firebase configuration
+                // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+                const firebaseConfig = {
+                    apiKey: " APIキー ",
+                    authDomain: "プロジェクト.firebaseapp.com",
+                    databaseURL: "https://プロジェクト.firebaseio.com",
+                    projectId: "プロジェクト",
+                    storageBucket: "プロジェクト.appspot.com",
+                    messagingSenderId: " ID番号 "
+                    appId: "appid",
+                    measurementId: "measurementId"
+                };
+
+                // Initialize Firebase
+                const app = initializeApp(firebaseConfig);
+                const analytics = getAnalytics(app);
+            </script>
+
             <!-- This script installs service_worker.js to provide PWA functionality to
                 application. For more information, see:
                 https://developers.google.com/web/fundamentals/primers/service-workers -->
@@ -138,40 +170,16 @@
                 }
             </script>
 
-            <!-- The core Firebase JS SDK is always required and must be listed first -->
-            <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-            <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-            <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-            <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
-
-            <script>
-                // Import the functions you need from the SDKs you need
-                import { initializeApp } from "firebase/app";
-                import { getAnalytics } from "firebase/analytics";
-                // TODO: Add SDKs for Firebase products that you want to use
-                // https://firebase.google.com/docs/web/setup#available-libraries
-
-                // Your web app's Firebase configuration
-                // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-                const firebaseConfig = {
-                    apiKey: " APIキー ",
-                    authDomain: "プロジェクト.firebaseapp.com",
-                    databaseURL: "https://プロジェクト.firebaseio.com",
-                    projectId: "プロジェクト",
-                    storageBucket: "プロジェクト.appspot.com",
-                    messagingSenderId: " ID番号 "
-                    appId: "appid",
-                    measurementId: "measurementId"
-                };
-
-                // Initialize Firebase
-                const app = initializeApp(firebaseConfig);
-                const analytics = getAnalytics(app);
-            </script>
             <script src="main.dart.js" type="application/javascript"></script>
         </body>
         </html>
         ```
+
+        > `service_worker.js` や `main.dart.js` の読み込みは、Firebase の初期化後に行う必要があることに注意
+
+        > 本処理は、旧 Firebase のバージョンでのみ必要な処理になっていることに注意。新しい Firebase のバージョンでは、`index.html` はそのままで、`main.dart` で `Firebase.initializeApp(...)` で Firebase を初期化処理する際に、API キーなどの各種コンフィグ値を設定するだけでよくなっている。今回の Firebase バージョンでは、後者の方法を採用している
+        > - 参照サイト
+        >     - https://stackoverflow.com/questions/70232931/firebaseoptions-cannot-be-null-when-creating-the-default-app
 
 1. iOS アプリを Firebase に登録する<br>
     1. Firebase コンソールの「プロジェクトの概要」ページの中央にある iOS アイコン `iOS+` をクリックし、「Apple アプリへの Firebase の追加」画面を起動する。<br>
@@ -289,6 +297,7 @@
 1. `lib/main.dart` を作成する<br>
     ```dart
     import 'package:flutter/material.dart';
+    import 'dart:io';
     import 'package:firebase_core/firebase_core.dart';      // For Firebase
     import 'package:cloud_firestore/cloud_firestore.dart';  // For Firestore
 
@@ -297,10 +306,54 @@
     // Firebase.initializeApp() する前に必要な処理。この処理を行わないと Firebase.initializeApp() 時にエラーがでる
     WidgetsFlutterBinding.ensureInitialized();
 
+    //-------------------------------
     // Firebase の初期化処理
+    //-------------------------------
+    // ios/andriod で起動する場合
     await Firebase.initializeApp();
 
+    // Chrome で起動する場合
+    /*
+    await Firebase.initializeApp(
+        options: FirebaseOptions(
+            apiKey: " APIキー ",
+            authDomain: "プロジェクト.firebaseapp.com",
+            databaseURL: "https://プロジェクト.firebaseio.com",
+            projectId: "プロジェクト",
+            storageBucket: "プロジェクト.appspot.com",
+            messagingSenderId: " ID番号 "
+            appId: "appid",
+            measurementId: "measurementId"
+        ),    
+    );
+    */
+
+    /*
+    print("Platform.isIOS : ${Platform.isIOS}");
+    print("Platform.isAndroid : ${Platform.isAndroid}");
+
+    // runApp(...) の前では Platform.isIOS の値は取れない？
+    if(Platform.isIOS || Platform.isAndroid ) {
+        await Firebase.initializeApp();
+    }
+    else {
+        await Firebase.initializeApp(
+        options: FirebaseOptions(
+            apiKey: "AIzaSyBe2uVN91FHE_d86h5zfdoHvvj2StIl3lo",
+            authDomain: "flutter-app-20eec.firebaseapp.com",
+            projectId: "flutter-app-20eec",
+            storageBucket: "flutter-app-20eec.appspot.com",
+            messagingSenderId: "712798902626",
+            appId: "1:712798902626:web:920f725cbda10bedccf43b",
+            measurementId: "G-1FELNJ9ZQ5",
+        ),    
+        );
+    }
+    */
+    
+    //-------------------------------
     // アプリを起動
+    //-------------------------------
     runApp(const MyApp());
     }
 
@@ -363,7 +416,7 @@
     return StreamBuilder(
         // stream プロパティに入力データとしての Firestore のコレクションの snapshots を設定
         stream: FirebaseFirestore.instance.collection(collectionName).orderBy('createdAt', descending: true).snapshots(),
-        // builder プロパティに stream プロパティで設定した入力データを元に出力されるデータが非同期的に入る。出力データは snapshot 引数に格納される
+        // builder プロパティに stream プロパティで設定した入力データを元に出力されるデータが非同期的に入ってくる度に呼び出されるコールバック関数を設定する。出力データは、コールバック関数の snapshot 引数に格納される
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         // エラーの場合
         if (snapshot.hasError) {
@@ -472,9 +525,42 @@
 
     ポイントは、以下の通り
 
-    - xxx
+    - `import 'package:firebase_core/firebase_core.dart'` で Firebase をコアパッケージを import し、`import 'package:cloud_firestore/cloud_firestore.dart'` で Firestore のパッケージを import する
 
-    - StreamBuilderは、ある Stream を監視して、イベント（データ）が通知される度に Widget を更新（再描画）する機能
+    - `main()` 関数内にて、`runApp()` でアプリを起動する前に、`Firebase.initializeApp()` を呼び出し、Firebase を初期化する。
+        - このとき、`Firebase.initializeApp()` は非同期関数なので、`await Firebase.initializeApp();` の形式で呼び出し、処理が完了するまで await する。
+        - `main()` 関数で await できるようにするために、`main()` 関数は、`Future<void> main() async {...}` の形式で定義して非同期関数にする。
+        - 更に、`Firebase.initializeApp()` を呼び出す前に、`WidgetsFlutterBinding.ensureInitialized();` を呼び出すようにする。この処理を行わないと `Firebase.initializeApp()` 呼び出し時にエラーがでる。
+        
+            > `WidgetsFlutterBinding.ensureInitialized();` は、`runApp()` でアプリを起動する前に Flutter Engine の機能（iOS や android などのプラットフォームでレンダリングなどをする機能）を利用したい場合にコールする関数。今回のケースでは、`runApp()` でアプリを起動する前に `Firebase.initializeApp()` を呼び出しているが、`Firebase.initializeApp()` 内で Flutter Engine の機能を利用するので、呼び出す必要がある。
+
+            > - 参照サイト
+            >     - https://qiita.com/kurun_pan/items/04f34a47cc8cee0fe542
+
+        - ios/android アプリで動作させる場合は、`Firebase.initializeApp()` の引数は設定しなくていいが、今回の Firebase バージョンで Chrome アプリで動作させる場合は、`Firebase.initializeApp()` の `options` プロパティに、 `FirebaseOptions(...)` で API キーなどの各種コンフィグ値を設定する必要がある。
+
+            > - 参照サイト
+            >     - https://stackoverflow.com/questions/70232931/firebaseoptions-cannot-be-null-when-creating-the-default-app
+
+    - Firestore の CRUD 処理は、以下のメソッドで行う。
+        - `FirebaseFirestore.instance.collection(collectionName).add(...)` を使用して、Firestore のコレクションにデータを追加することができる。この関数でデータを追加する場合は、ドキュメントID は自動的に割り振られた ID になる。指定したコレクション名のコレクションがない場合はコレクションも作成する
+
+        - `FirebaseFirestore.instance.collection(collectionName).doc(docId).delete();` を使用して、指定したドキュメントID のデータを削除する
+
+        - `FirebaseFirestore.instance.collection(collectionName).snapshots()` を使用して、指定したコレクション名のデータ（`snapshots`）を取得することができる。更に、`FirebaseFirestore.instance.collection(collectionName).orderBy('createdAt', descending: true).snapshots()` のようにすることで、フィールドの値に応じてデータをソートすることもできる
+
+    - 今回の例では、Firestore のコレクション `todo_database` のデータを動的に表示させるために、StreamBuilder を使用して Firestore のコレクションに更新があった場合に、自動的に再描画するようにしている。
+        - より詳細には、`StreamBuilder` の `stream` プロパティ（入力側）に、`FirebaseFirestore.instance.collection(collectionName).orderBy('createdAt', descending: true).snapshots()` を設定し、Firestore のコレクションの `snapshots` を設定する。
+        - そして、`StreamBuilder` の `builder` プロパティ（出力側）には、`stream` プロパティで設定した入力データを元に出力されるデータが非同期的に入ってくる度に呼び出されるコールバック関数 `(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) { ... }` を設定する。このとき出力データ（Firestore のコレクションデータ）は、コールバック関数の `snapshot` 引数に格納される
+
+        - Firestore のコレクションデータは、`snapshot` に格納されているが、ドキュメントデータは、`snapshot.data!.docs` でアクセスすることができる。
+            今回の例では、`snapshot.data!.docs` を `map(...)` で、コレクション内のフィールド値を表示する Widget に変換し、それを `ListView` の `children` プロパティに設定することで、コレクション内のフィールド値を可変長のリスト表示するようにしている。
+            
+        > Stream（小川）とは、データを作った側（小川の上流）は、自分がデータを作ったらStream（小川）に set して、データを使う側（小川の下流）は、Stream を監視しておき、データが流れてきたら get するというように、小川の上流で物（データ）を流す人（オブジェクト）と小川の下流で物（データ）を受け取る人（オブジェクト）がいるというイメージの機能。<br>
+        > Stream を使用することで、非同期な連続したデータの受け渡しに対応できるメリットがある。<br>
+        > そして StreamBuilder は、ある Stream を監視して、イベント（データ）が通知される度に Widget を更新（再描画）する機能
+        > - 参照サイト
+        >     - https://zenn.dev/kazutxt/books/flutter_practice_introduction/viewer/intermediate_bloc
 
 
 1. 作成したプロジェクトのアプリを Chrome ブラウザのエミュレータで実行する<br>
@@ -516,3 +602,4 @@
 - https://zenn.dev/kazutxt/books/flutter_practice_introduction/viewer/firebase_overview#ios%E3%81%AE%E8%A8%AD%E5%AE%9A
 - https://github.com/nzigen/flutter_book_samples/tree/main/5_database/firebase_sample
 - https://zenn.dev/captain_blue/articles/checking-bundle-id-in-flutter
+
