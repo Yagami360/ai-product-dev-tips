@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';      // For Firebase
 import 'package:firebase_auth/firebase_auth.dart';      // For Firebase Auth
 import 'package:google_sign_in/google_sign_in.dart';    // Google アカウントでのログイン機能パッケージ
 
-import 'package:flutter_signin_button/button_view.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';  // ログインボタン用パッケージ
 
 // main 関数を非同期関数にする
 Future<void> main() async {
@@ -108,12 +108,17 @@ class _MyHomePageState extends State<MyHomePage> {
       print("user : ${user}");
       if (user == null) {
         print('User is currently signed out!');
-        _photoURL = "";
+        setState(() {
+          _photoURL = "";
+        });
       }
       else {
         print('User is signed in!');
-        //_photoURL = user.photoURL;
+        setState(() {
+          _photoURL = user.photoURL!;
+        });
       }
+      print("_photoURL : ${_photoURL}");
     });
   }
 
@@ -159,8 +164,9 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             CircleAvatar(
-              //backgroundImage: FirebaseAuth.instance.currentUser != null ? NetworkImage(FirebaseAuth.instance.currentUser.!photoURL) : NetworkImage(""),
+              //backgroundImage: FirebaseAuth.instance.currentUser != null ? NetworkImage(FirebaseAuth.instance.currentUser!.photoURL!) : NetworkImage(""),
               backgroundImage: NetworkImage(_photoURL),
+              maxRadius: 30.0,
             ),
             SignInButton(
               Buttons.Google,

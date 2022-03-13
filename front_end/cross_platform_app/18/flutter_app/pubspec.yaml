@@ -37,7 +37,7 @@ dependencies:
   firebase_core: ^1.3.0       # For Firebase
   firebase_auth: ^1.1.1       # For Firebase Auth
   google_sign_in: ^5.0.2      # Google アカウントでのログインを行う場合に必要
-  flutter_signin_button: ^1.1.0   # ログインボタンの Widget 追加用
+  flutter_signin_button: ^2.0.0   # ログインボタンの Widget 追加用
 
 dev_dependencies:
   flutter_test:
