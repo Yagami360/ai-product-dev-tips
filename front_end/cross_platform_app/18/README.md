@@ -1,5 +1,11 @@
 # 【Flutter】Flutter アプリから Firebase Authentication でのユーザー認証を利用する
 
+## ■ ToDO
+
+- Mail アドレスでのログイン処理
+- Twitter アカウントでのログイン処理
+- GitHub アカウントでのログイン処理
+
 ## ■ 方法
 
 ### I. Flutter の設定
@@ -201,23 +207,31 @@
         <img width="800" alt="image" src="https://user-images.githubusercontent.com/25688193/155834122-b85ce2d5-df1a-4c0f-b49d-44b7f140b039.png">
 
     1. `{FLUTTER_PROJECT_DIR}/ios/Runner/info.plist` に、以下のコードを追加する<br>
-        ```
-        <array>
-            <dict>
-                <key>CFBundleTypeRole</key>
-                <string>Editor</string>
-                <key>CFBundleURLSchemes</key>
-                <array>
-                    <string>{REVERSED_CLIENT_ID}</string>
-                </array>
-            </dict>
-        </array>
+        ```html
+        ...
+        <plist version="1.0">
+        <dict>
+        ...
+            // 以下を追記
+            <key>CFBundleURLTypes</key>
+            <array>
+                <dict>
+                    <key>CFBundleTypeRole</key>
+                    <string>Editor</string>
+                    <key>CFBundleURLSchemes</key>
+                    <array>
+                        <string>{REVERSED_CLIENT_ID}</string>
+                    </array>
+                </dict>
+            </array>
+        </dict>
+        </plist>
         ```
 
         このとき `{REVERSED_CLIENT_ID}` には、`GoogleService-Info.plist` 内の `REVERSED_CLIENT_ID` の値を設定する
 
 1. android アプリを Firebase に登録する<br>
-    xxx
+    > 実装中
 
 1. Flutter の firebase SDK をインストールする<br>
     `${FLUTTER_PROJECT_DIR}/pubspec.yaml` を以下のように修正し、Firebase SDK をインストールする
@@ -239,6 +253,7 @@
         firebase_core: ^1.3.0       # For Firebase
         firebase_auth: ^1.0.1       # For Firebase Auth
         google_sign_in: ^5.0.2      # Google アカウントでのログインを行う場合に必要
+        flutter_signin_button: ^1.1.0   # ログインボタンの Widget 追加用
         ...
     ```
 
@@ -272,6 +287,9 @@
     1. Google アカウントでのログインを有効にする場合の設定<br>
         「Authenctication > Sign-in method」から、「Google」を選択し、Google アカウントでのログインを有効化する
 
+    1. Twitter アカウントでのログインを有効にする場合の設定<br>
+        > 実装中...
+
     1. GitHub を有効にする場合の設定<br>
         GitHub を有効にする場合は、GitHub のクライアントIDとクライアントシークレットが必要になる。<br>
         <image src="https://user-images.githubusercontent.com/25688193/107350003-3d783600-6b0c-11eb-8b29-f4fbfd400164.png" width="500"><br>
@@ -288,24 +306,47 @@
 
     ポイントは、以下の通り
 
-    - `import 'package:firebase_core/firebase_core.dart'` で Firebase をコアパッケージを import し、`import 'package:cloud_firestore/cloud_firestore.dart'` で Firestore のパッケージを import する
+    - Firebase の初期化処理<br>
+        1. `import 'package:firebase_core/firebase_core.dart'` で Firebase をコアパッケージを import し、`import 'package:firebase_auth/firebase_auth.dart';` で Firebase Auth のパッケージを import する
 
-    - `main()` 関数内にて、`runApp()` でアプリを起動する前に、`Firebase.initializeApp()` を呼び出し、Firebase を初期化する。
-        - このとき、`Firebase.initializeApp()` は非同期関数なので、`await Firebase.initializeApp();` の形式で呼び出し、処理が完了するまで await する。
-        - `main()` 関数で await できるようにするために、`main()` 関数は、`Future<void> main() async {...}` の形式で定義して非同期関数にする。
-        - 更に、`Firebase.initializeApp()` を呼び出す前に、`WidgetsFlutterBinding.ensureInitialized();` を呼び出すようにする。この処理を行わないと `Firebase.initializeApp()` 呼び出し時にエラーがでる。
+        1. `main()` 関数内にて、`runApp()` でアプリを起動する前に、`Firebase.initializeApp()` を呼び出し、Firebase を初期化する。
+            - このとき、`Firebase.initializeApp()` は非同期関数なので、`await Firebase.initializeApp();` の形式で呼び出し、処理が完了するまで await する。
+            - `main()` 関数で await できるようにするために、`main()` 関数は、`Future<void> main() async {...}` の形式で定義して非同期関数にする。
+            - 更に、`Firebase.initializeApp()` を呼び出す前に、`WidgetsFlutterBinding.ensureInitialized();` を呼び出すようにする。この処理を行わないと `Firebase.initializeApp()` 呼び出し時にエラーがでる。
+            
+                > `WidgetsFlutterBinding.ensureInitialized();` は、`runApp()` でアプリを起動する前に Flutter Engine の機能（iOS や android などのプラットフォームでレンダリングなどをする機能）を利用したい場合にコールする関数。今回のケースでは、`runApp()` でアプリを起動する前に `Firebase.initializeApp()` を呼び出しているが、`Firebase.initializeApp()` 内で Flutter Engine の機能を利用するので、呼び出す必要がある。
+
+                > - 参照サイト
+                >     - https://qiita.com/kurun_pan/items/04f34a47cc8cee0fe542
+
+            - ios/android アプリで動作させる場合は、`Firebase.initializeApp()` の引数は設定しなくていいが、今回の Firebase バージョンで Chrome アプリで動作させる場合は、`Firebase.initializeApp()` の `options` プロパティに、 `FirebaseOptions(...)` で API キーなどの各種コンフィグ値を設定する必要がある。
+
+                > - 参照サイト
+                >     - https://stackoverflow.com/questions/70232931/firebaseoptions-cannot-be-null-when-creating-the-default-app
+
+    - Google アカウントでのログイン/ログアウト処理
+        1. `import 'package:google_sign_in/google_sign_in.dart';` で、Google アカウントでのログイン機能パッケージを import する
+        1. Firebase の初期化処理実行後、Google アカウントを取得するために `GoogleSignIn(...)` オブジェクト（今回の例では `_googleSignIn` の名前）を作成する
+        1. `GoogleSignIn(...)` オブジェクトの `signIn()` メソッドを使用して、Google アカウントのクラス `GoogleSignInAccount` のオブジェクト（今回の例では、`signinAccount` の名前）を取得する。ここで、`signIn()` メソッドは非同期関数なので、await して処理が完了するまで待つようにする<br>            
+            > このとき、`GoogleSignInAccount signinAccount = await _googleSignIn.signIn();` のようにすると、以下のエラーが発生するので、`?` 演算子付きの `GoogleSignInAccount? signinAccount = await _googleSignIn.signIn();` の形式で宣言する必要があることに注意
+            > ```sh
+            > A value of type 'GoogleSignInAccount?' can't be assigned to a variable of type > 'GoogleSignInAccount'.
+            > Try changing the type of the variable, or casting the right-hand type to 'GoogleSignInAccount'.
+            ```
+        1. 取得した Google アカウントを元に `GoogleSignInAuthentication googlAuth = await signinAccount.authentication;` のようにして、Google アカウントの Auth 情報のクラス `GoogleSignInAuthentication` のオブジェクトを取得する 
+        1. Google アカウントの Auth 情報のクラス `GoogleSignInAuthentication` のオブジェクトを元に、 `GoogleAuthProvider.credential(...)` で Google 認証を行い、Google 認証情報のクラス `AuthCredential` のオブジェクトを取得する
+        1. Google認情報を元に、Firebase Auth オブジェクトの `signInWithCredential()` メソッドで Firebase に認証情報を登録し、ログインユーザーを取得する
         
-            > `WidgetsFlutterBinding.ensureInitialized();` は、`runApp()` でアプリを起動する前に Flutter Engine の機能（iOS や android などのプラットフォームでレンダリングなどをする機能）を利用したい場合にコールする関数。今回のケースでは、`runApp()` でアプリを起動する前に `Firebase.initializeApp()` を呼び出しているが、`Firebase.initializeApp()` 内で Flutter Engine の機能を利用するので、呼び出す必要がある。
+        1. ログイン処理完了後は、`FirebaseAuth.instance.currentUser` でログインユーザーを取得できる
+        
+    - Mail でのログイン/ログアウト処理
+        > 実装中
 
-            > - 参照サイト
-            >     - https://qiita.com/kurun_pan/items/04f34a47cc8cee0fe542
+    - Twitter アカウントでのログイン/ログアウト処理
+        > 実装中
 
-        - ios/android アプリで動作させる場合は、`Firebase.initializeApp()` の引数は設定しなくていいが、今回の Firebase バージョンで Chrome アプリで動作させる場合は、`Firebase.initializeApp()` の `options` プロパティに、 `FirebaseOptions(...)` で API キーなどの各種コンフィグ値を設定する必要がある。
-
-            > - 参照サイト
-            >     - https://stackoverflow.com/questions/70232931/firebaseoptions-cannot-be-null-when-creating-the-default-app
-
-    - xxx
+    - GitHub アカウントでのログイン/ログアウト処理
+        > 実装中
 
 1. 作成したプロジェクトのアプリを Chrome ブラウザのエミュレータで実行する<br>
     - CLI コマンドを使用する場合<br>
@@ -345,3 +386,4 @@
 
 - https://zenn.dev/kazutxt/books/flutter_practice_introduction/viewer/firebase_authentication
 - https://qiita.com/smiler5617/items/f94fdc1afe088586715b
+- https://zenn.dev/tatsuhiko/books/b938417d5cb04d/viewer/d980bb

@@ -4,6 +4,9 @@ import 'package:firebase_core/firebase_core.dart';      // For Firebase
 import 'package:firebase_auth/firebase_auth.dart';      // For Firebase Auth
 import 'package:google_sign_in/google_sign_in.dart';    // Google アカウントでのログイン機能パッケージ
 
+import 'package:flutter_signin_button/button_view.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
+
 // main 関数を非同期関数にする
 Future<void> main() async {
   // Firebase.initializeApp() する前に必要な処理。この処理を行わないと Firebase.initializeApp() 時にエラーがでる
@@ -85,42 +88,56 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // Google アカウントを取得するために GoogleSignIn(...) オブジェクトを作成する
-  static final _googleSignIn = GoogleSignIn(
+  final _googleSignIn = GoogleSignIn(
     scopes: [
       'email',
       'https://www.googleapis.com/auth/contacts.readonly',
     ]
   );
 
-  //
+  // Firebase Auth オブジェクト
   final _firebaseAuth = FirebaseAuth.instance;
+
+  // ログインユーザーのアイコン画像URL
+  String _photoURL = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _firebaseAuth.authStateChanges().listen((User? user) {
+      print("user : ${user}");
+      if (user == null) {
+        print('User is currently signed out!');
+        _photoURL = "";
+      }
+      else {
+        print('User is signed in!');
+        //_photoURL = user.photoURL;
+      }
+    });
+  }
 
   //-------------------------------------------------------
   // Google アカウントでのログインボタンクリック時のコールバック関数。
   // 内部で非同期関数を呼び出す際に await するので非同期関数で定義する
   //-------------------------------------------------------
-  //Future<void> _onPressedLoginWithGoogle() async {
-  /*
-  void _onPressedLoginWithGoogle() async {
+  Future<UserCredential> loginWithGoogle() async {
     // GoogleSignIn(...).signIn() を使用して Google アカウントを取得する
-    GoogleSignInAccount signinAccount = await _googleSignIn.signIn();
-    if (signinAccount == null) return;
-    
-    // 取得した Google アカウントを元に GoogleSignInAuthentication, AuthCredential で Google 認証を行う
+    GoogleSignInAccount? signinAccount = await _googleSignIn.signIn();
+    if (signinAccount == null) return Future.value(null);
+
+    // 取得した Google アカウントを元に Google アカウントの Auth 情報のクラス GoogleSignInAuthentication のオブジェクトを取得する
     GoogleSignInAuthentication googlAuth = await signinAccount.authentication;
-    final AuthCredential credential = GoogleAuthProvider.credential(
+    
+    // Google アカウントの Auth 情報のクラス GoogleSignInAuthentication のオブジェクトを元に、 GoogleAuthProvider.credential(...) で Google 認証を行い、Google 認証情報のクラス AuthCredential のオブジェクトを取得する
+    AuthCredential credential = GoogleAuthProvider.credential(
       idToken: googlAuth.idToken,
       accessToken: googlAuth.accessToken,
     );
 
-    // Google認情報を元に Firebase に認証情報を登録し、ログインユーザーを取得する
-    User user = (await _firebaseAuth.signInWithCredential(credential)).user;
-
-    //
-    if (user != null) {
-    }    
+    // Google認情報を元に、Firebase Auth オブジェクトの signInWithCredential() メソッドで Firebase に認証情報を登録し、ログインユーザーを取得する
+    return await _firebaseAuth.signInWithCredential(credential);
   }
-  */
 
   //-------------------------------------------------------
   // ログアウトボタンクリック時のコールバック関数。
@@ -132,6 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print("FirebaseAuth.instance.currentUser : ${FirebaseAuth.instance.currentUser}");
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -140,30 +158,24 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'Hello Flutter App',
+            CircleAvatar(
+              //backgroundImage: FirebaseAuth.instance.currentUser != null ? NetworkImage(FirebaseAuth.instance.currentUser.!photoURL) : NetworkImage(""),
+              backgroundImage: NetworkImage(_photoURL),
             ),
-            TextButton(
+            SignInButton(
+              Buttons.Google,
               // ログインボタンクリック時のコールバック関数
-              //onPressed: _onPressedLoginWithGoogle,
               onPressed: () async {
-                // GoogleSignIn(...).signIn() を使用して Google アカウントを取得する
-                GoogleSignInAccount signinAccount = await _googleSignIn.signIn();
-                if (signinAccount == null) return;
-                
-                // 取得した Google アカウントを元に GoogleSignInAuthentication, AuthCredential で Google 認証を行う
-                GoogleSignInAuthentication googlAuth = await signinAccount.authentication;
-                final AuthCredential credential = GoogleAuthProvider.credential(
-                  idToken: googlAuth.idToken,
-                  accessToken: googlAuth.accessToken,
-                );
-
-                // Google認情報を元に Firebase に認証情報を登録し、ログインユーザーを取得する
-                User user = (await _firebaseAuth.signInWithCredential(credential)).user;
-              }
-              child: Text("login with Google"),
+                try {
+                  await loginWithGoogle();
+                }
+                on Exception catch (e) {
+                  print('Other Exception');
+                  print('${e.toString()}');
+                }
+              },
             ),
-            TextButton(
+            OutlinedButton(
               // ログアウトボタンクリック時のコールバック関数
               onPressed: _onPressedLogout,
               child: Text("logout"),
