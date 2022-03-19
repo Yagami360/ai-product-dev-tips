@@ -423,7 +423,7 @@ AIプロダクト開発のための Tips 集。<br>
         - 【Datadog】GKE 上の Web-API の各種ログを Datadog で表示する 
         - 【Datadog】アプリの各種ログを Datadog で表示する 
     - Sentry
-        - 【Sentry】Sentry を使用して　FastAPI を使用した Web-API のエラーを監視する（FastAPI + uvicorn + gunicorn + docker + docker-compose + Sentry での構成）
+        - [【Sentry】Sentry を使用して FastAPI を使用した Web-API のエラーを監視する（FastAPI + uvicorn + gunicorn + docker + docker-compose + Sentry での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/53)
     - Grafana
 - ログフォワーダ
     - [Fluentd (td-​agent) を使用してログデータを転送する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/29)
@@ -534,6 +534,7 @@ AIプロダクト開発のための Tips 集。<br>
         - 【React】html2canvas を使用して React アプリでスクリーンショット画像を出力する
         - 【React】window.requestAnimationFrame を使用してアニメーションを行う
         - 【React】GSAP を使用して React アプリで CSS アニメーションを行う
+        - 【React】Sentry を使用して React アプリのエラーを監視する
         - [【React】React と Redux を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/30)
         - [【React】React と React Hooks を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/40)
         - [【React】Next.js と React Hooks と Firebase を使用して簡単なウェブアプリを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/41)
@@ -610,6 +611,7 @@ AIプロダクト開発のための Tips 集。<br>
         - 【Flutter】Flutter アプリから Firebase Cloud Storage を使用する。
         - 【Flutter】Flutter アプリから Firebase Cloud Function を使用する。
         - 【Flutter】Flutter Web アプリから Firebase Hosting を使用する。
+        - 【Flutter】Sentry を使用して Flutter アプリのエラーを監視する
         - 【Flutter】Flutter アプリから非同期 API を使用する
         - 【Flutter】Flutter アプリから Twitter API を使用する
         - 【Flutter】Flutter アプリから Youtube Data API / YouTube Live Streaming API を使用する

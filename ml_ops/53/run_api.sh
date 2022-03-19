@@ -1,8 +1,7 @@
 #!/bin/sh
 set -eu
-
 HOST=0.0.0.0
-PORT=5000
+PORT=5001
 
 IN_IMAGES_DIR=in_images
 OUT_IMAGES_DIR=out_images
@@ -25,4 +24,7 @@ echo "\n"
 
 # リクエスト処理
 pip3 install Pillow
-python request.py --host ${HOST} --port ${PORT} --in_images_dir ${IN_IMAGES_DIR} --out_images_dir ${OUT_IMAGES_DIR}
+pip3 install tqdm
+pip3 install requests
+
+python3 request.py --host ${HOST} --port ${PORT} --in_images_dir ${IN_IMAGES_DIR} --out_images_dir ${OUT_IMAGES_DIR}
