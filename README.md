@@ -423,6 +423,7 @@ AIプロダクト開発のための Tips 集。<br>
         - 【Datadog】GKE 上の Web-API の各種ログを Datadog で表示する 
         - 【Datadog】アプリの各種ログを Datadog で表示する 
     - Sentry
+        - 【Sentry】Sentry を使用して　FastAPI を使用した Web-API のエラーを監視する（FastAPI + uvicorn + gunicorn + docker + docker-compose + Sentry での構成）
     - Grafana
 - ログフォワーダ
     - [Fluentd (td-​agent) を使用してログデータを転送する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/29)
