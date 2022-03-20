@@ -418,7 +418,7 @@ AIプロダクト開発のための Tips 集。<br>
     - [【GCP】Cloud Monitoring（旧 Stackdriver Monitoring）にカスタム指標を書き込む（FastAPI + uvicorn + gunicorn + redis + バッチサーバー + モニタリングサーバー + docker での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/49)
     - Datadog
         - 【Datadog】Datadog の基礎事項
-        - [[In-progress]【Datadog】GCE の各種メトリクスとログデータを Datadog で表示する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/52)
+        - [【Datadog】GCE の各種メトリクスとログデータを Datadog で表示する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/52)
         - 【Datadog】GCE 上の Web-API の各種ログを Datadog で表示する 
         - 【Datadog】GKE 上の Web-API の各種ログを Datadog で表示する 
         - 【Datadog】アプリの各種ログを Datadog で表示する 
