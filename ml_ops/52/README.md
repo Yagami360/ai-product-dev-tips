@@ -1,5 +1,7 @@
 # 【Datadog】GCE の各種メトリクスとログデータを Datadog で表示する 
 
+<img width="929" alt="image" src="https://user-images.githubusercontent.com/25688193/159199555-ea76ea74-74fb-4841-9e9a-e62eee373508.png">
+
 ## ■ 方法
 
 1. [Datadog サイト](https://www.datadoghq.com/ja/) から「無料トライアルを開始」ボタンをクリックして、ユーザー登録を行う<br>
@@ -12,6 +14,10 @@
     <img width="500" alt="image" src="https://user-images.githubusercontent.com/25688193/159150523-c5497c0b-68fd-45ce-aed3-dd9fd88e4460.png"><br>
     <img width="500" alt="image" src="https://user-images.githubusercontent.com/25688193/159150558-65e53cc6-3102-43bb-b479-fd254ab69810.png"><br>
 
+1. GCE インスタンスを作成する<br>
+	今回は、Debian をベースイメージとした GCE インスタンスを作成する
+	ファイアウォール設定で、Datadog Agent が通信を行うためのポート `10516` を開放させておく。
+
 1. Datadog Agent を GCE インスタンスにインストールする<br>
 	Debian をベースイメージとした GCE インスタンスの場合は、Debian を選択後、画面右側に赤枠に表示されるインストールコマンドをコピペして、GCE インスタンス（Debian）に Datadog Agent をインストールする
 
@@ -21,6 +27,22 @@
 
 	<img width="1197" alt="image" src="https://user-images.githubusercontent.com/25688193/159151213-ae6bd767-d8d1-4aa8-84ed-7789c516b94e.png">
 
+	> GCE インスタンスのポート `10514` または `10516` を開放していない場合は、`/etc/datadog-agent/datadog.yaml` に次の設定を追加することで、http 通信で Datadog Agent がログを転送するよう構成することができる。（`datadog.yaml` は、sudo権限のファイルなので、`sudo vi /etc/datadog-agent/datadog.yaml` などで編集可能）
+	> ```yaml
+	> logs_config:
+  	>     use_http: true
+	> ```
+	> 尚、修正した `datadog.yaml` を有効化するためには、`sudo service datadog-agent restart` コマンドで Datadog Agent を再起動する必要があることに注意
+
+	- Datadog Agent のステータス確認コマンド
+		```sh
+		$ sudo service datadog-agent status
+		```
+
+	- Datadog Agent の再起動コマンド
+		```sh
+		$ sudo service datadog-agent restart
+		```
 
 1. Datadog　から各種 GCP サービスにアクセスするためのサービスアカウントを作成する。<br>
     Datadog　から各種 GCP サービスにアクセスするためのサービスアカウントを作成し、サービスアカウントの json 鍵を作成する。このとき、サービスアカウントには、「Compute 閲覧者」、「モニタリング閲覧者」、「クラウドアセット閲覧者」の権限を付与する
@@ -74,6 +96,8 @@
 
 	1. GCE のメトリクスやログデータを Datadog に転送するための Cloud Pub/Sub の作成を行い、PUSH 型のサブスクリプションを作成する<br>
 
+		> このときの PUSH 型のサブスクリプションのエンドポイント URL には、先の画面に表示されている `https://gcp-intake.logs.datadoghq.com/v1/input/${DATADOG_API_KEY}を入力する`
+
 		> Cloud Pub/Sub については、「[【GCP】Google Cloud Pub/Sub の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/18)」を参考のこと
 
 		- CLI で行う場合<br>
@@ -109,13 +133,12 @@
 			gcloud pubsub subscriptions list
 			```
 
-			> このときの PUSH 型のサブスクリプションのエンドポイント URL には、先の画面に表示されている `https://gcp-intake.logs.datadoghq.com/v1/input/${DATADOG_API_KEY}を入力する`
-
-
 		- GUI で行う場合<br>
 			xxx
 
-	1. Cloud Minitering（旧 StackDriver）から Cloud Pub/Sub へ、ログをエクスポートするための設定を行う<br>
+	1. Cloud Logging（旧 StackDriver）経由で Cloud Pub/Sub へログを転送するための設定（ログルーティングとシンク）を行う<br>
+
+		> Cloud Logging におけるログルーティングとシンクについては、https://blog.g-gen.co.jp/entry/cloud-logging-explained を参考のこと
 
 		- CLI で行う場合<br>
 			```sh
@@ -160,3 +183,4 @@
 
 - https://qiita.com/suzuyui/items/b18a7e686bab69d9ecd2
 - https://docs.datadoghq.com/ja/integrations/google_cloud_platform/?tab=datadogussite
+- https://docs.datadoghq.com/ja/logs/guide/log-collection-troubleshooting-guide/
