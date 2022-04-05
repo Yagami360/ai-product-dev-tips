@@ -180,7 +180,6 @@ AIプロダクト開発のための Tips 集。<br>
 - [【PyTorch】PyTorch を使用した深層学習モデルの実装コード集](https://github.com/Yagami360/MachineLearning_Exercises_Python_PyTorch)
 - [【PyTorch】PyTorch を使用した強化学習モデルの実装コード集](https://github.com/Yagami360/ReinforcementLearning_Exercises)
 - [【PyTorch】PyTorch を使用した 3D Reconstruction モデルの実装コード集](https://github.com/Yagami360/3d-reconstruction_exercises_pytorch)
-- [【PyTorch】PyTorch を使用した仮想試着モデルの実装コード集（非公開）](https://github.com/Yagami360/virtual-try-on_exercises_pytorch)
 
 </details>
 
