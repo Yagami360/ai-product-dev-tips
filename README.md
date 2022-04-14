@@ -454,7 +454,7 @@ AIプロダクト開発のための Tips 集。<br>
 </details>
 
 <details>
-<summary>機械学習ワークフロー</summary>
+<summary>機械学習ワークフロー / 機械学習パイプライン</summary>
 
 - Luigi / gokart
     - Luigi を使用して複雑な処理を行う API のパイプラインを管理する
@@ -463,11 +463,11 @@ AIプロダクト開発のための Tips 集。<br>
 - Kubeflow
     - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/1)
     - [[In-progress]【Kubeflow】GKE クラスタに Kubeflow を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/2)
-    - [【Kubeflow】Google AI Platform Pipelines を利用して Kubeflow Pipelines の構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/3)
+    - [【Kubeflow】Google AI Platform Pipelines を利用して Kubeflow Pipelines の機械学習パイプラインを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/3)
 - Vertex Pipelines
+    - [[In-progress]【Vertex Pipelines】Vertex Pipelines を使用して機械学習パイプラインを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/54)
 
 </details>
-
 
 ## ■ アプリ開発・フロントエンド
 

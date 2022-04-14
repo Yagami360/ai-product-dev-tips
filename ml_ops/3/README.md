@@ -1,4 +1,4 @@
-# 【Kubeflow】Google AI Platform Pipelines を利用して Kubeflow Pipelines を構築する
+# 【Kubeflow】Google AI Platform Pipelines を利用して Kubeflow Pipelines の機械学習パイプラインを構築する
 「[【Kubeflow】GKE クラスタに Kubeflow を構築する](https://github.com/Yagami360/MachineLearning_Tips/tree/master/ml_ops/2) 」記載の方法でも Kubeflow Pipelines を構築することができるが、Google AI Platform Pipelines を利用することで、より手軽に Kubeflow Pipelines を構築することができる。
 
 ## ■ AI Platform Pipelines を使用した kubeflow をデプロイした GKE クラスタの構築
