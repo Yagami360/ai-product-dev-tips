@@ -88,13 +88,94 @@
     ```python
     ```
 
-1. パイプラインのコードを JSON ファイルにコンパイルするコードを実装する
-    ```python
-    from kfp.v2 import compiler
-    compiler.Compiler().compile(pipeline_func=pipeline, package_path='image_classif_pipeline.json')
-    ```
+    ポイントは、以下の通り
 
-1. xxx
+    1. パイプラインの内容を定義
+        ```python
+        # Pipeline を構築する関数には @kfp.dsl.pipeline デコレータを付与する
+        # @kfp.dsl.pipelineデコレータを付与した関数への引数は、PipelineからRunを生成する際に外挿するパラメータとなります。
+        # pipeline_root : Vertex AI用サービスアカウントがアクセスできるGCSパケットパス
+        @kfp.dsl.pipeline(name='automl-image-training-v2', pipeline_root="gs://vertex-ai-bucket-360")
+        def make_pipeline(
+            project_id: str = "my-project2-303004",
+        ):
+            # The first step of your workflow is a dataset generator.
+            # This step takes a Google Cloud pipeline component, providing the necessary
+            # input arguments, and uses the Python variable `ds_op` to define its
+            # output. Note that here the `ds_op` only stores the definition of the
+            # output but not the actual returned object from the execution. The value
+            # of the object is not accessible at the dsl.pipeline level, and can only be
+            # retrieved by providing it as the input to a downstream component.
+            ds_op = gcc_aip.ImageDatasetCreateOp(
+                project=project_id,
+                display_name="flowers",
+                gcs_source="gs://cloud-samples-data/vision/automl_classification/flowers/all_data_v2.csv",
+                import_schema_uri=aiplatform.schema.dataset.ioformat.image.single_label_classification,
+            )
+
+            # The second step is a model training component. It takes the dataset
+            # outputted from the first step, supplies it as an input argument to the
+            # component (see `dataset=ds_op.outputs["dataset"]`), and will put its
+            # outputs into `training_job_run_op`.
+            training_job_run_op = gcc_aip.AutoMLImageTrainingJobRunOp(
+                project=project_id,
+                display_name="train-iris-automl-mbsdk-1",
+                prediction_type="classification",
+                model_type="CLOUD",
+                #base_model=None,
+                dataset=ds_op.outputs["dataset"],
+                model_display_name="iris-classification-model-mbsdk",
+                training_fraction_split=0.6,
+                validation_fraction_split=0.2,
+                test_fraction_split=0.2,
+                budget_milli_node_hours=8000,
+            )
+
+            # The third and fourth step are for deploying the model.
+            create_endpoint_op = gcc_aip.EndpointCreateOp(
+                project=project_id,
+                display_name = "create-endpoint",
+            )
+
+            model_deploy_op = gcc_aip.ModelDeployOp(
+                model=training_job_run_op.outputs["model"],
+                endpoint=create_endpoint_op.outputs['endpoint'],
+                automatic_resources_min_replica_count=1,
+                automatic_resources_max_replica_count=1,
+            )
+
+            return
+        ```
+
+        > Kubeflow では、`@dsl.pipeline(...)` を使用していたが、`@kfp.dsl.pipeline(...)` を使用していることに注意
+
+    1. パイプラインのコードを JSON ファイルに変換
+        ```python
+        # パイプラインを定義する JSON ファイルを生成
+        kfp.v2.compiler.Compiler().compile(
+            pipeline_func = make_pipeline, 
+            package_path = args.pipeline_json_path
+        )
+        ```
+
+        > Kubeflow では、`kfp.compiler` を使用していたが、`kfp.v2.compiler` を使用していることに注意
+
+    1. Vertex AI Python クライアントを使用して JSON 化したパイプラインを送信する
+        ```python
+        # Vertex AI Python クライアントを使用して JSON 化したパイプラインを送信する
+        job = aip.PipelineJob(
+            display_name="automl-image-training-v2",
+            template_path=args.pipeline_json_path,
+            pipeline_root=args.pipeline_root_path,
+            parameter_values={
+                'project_id': args.project_id
+            }
+        )
+        job.submit()
+        ```
+
+1. Vertex AI のコンソール画面を確認する<br>
+    [Vertex AI のパイプラインコンソール画面](https://console.cloud.google.com/vertex-ai/pipelines?hl=ja&project=my-project2-303004) から、構築したパイプラインを確認する
 
 
 ## ■ 参考サイト

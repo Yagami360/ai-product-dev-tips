@@ -4,6 +4,7 @@ PROJECT_ID=my-project2-303004
 SERVICE_ACCOUNT_NAME=vertex-ai-account
 GCS_BUCKET_NAME=vertex-ai-bucket-360
 
+
 # デフォルト値の設定
 gcloud config set project ${PROJECT_ID}
 gcloud config list
@@ -51,6 +52,10 @@ if [ ! "$(gsutil list | grep "gs://${GCS_BUCKET_NAME}/")" ] ;then
     # Vertex AI 用サービスアカウントに作成した GCS パケットへの読み書きアクセス権限を付与
     gsutil iam ch serviceAccount:${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com:roles/storage.objectCreator,objectViewer gs://${GCS_BUCKET_NAME}
     gsutil iam ch serviceAccount:${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com:roles/storage.objectViewer gs://${GCS_BUCKET_NAME}
+
+    # GCE デフォルトサービスアカウントに、GCS パケットへの読み書きアクセス権限を付与
+    gsutil iam ch 85607256401-compute@developer.gserviceaccount.com:roles/storage.objectCreator,objectViewer gs://${GCS_BUCKET_NAME}
+    gsutil iam ch 85607256401-compute@developer.gserviceaccount.com:roles/storage.objectViewer gs://${GCS_BUCKET_NAME}
 fi
 
 #-----------------------------------------------
@@ -74,3 +79,8 @@ fi
 
 pip3 list
 
+#-----------------------------------------------
+# パイプラインのコードを実行し、JSON ファイルに変換
+#-----------------------------------------------
+cd pipelines
+python3 pipeline.py --project_id ${PROJECT_ID} --pipeline_root_path "gs://${GCS_BUCKET_NAME}/"
