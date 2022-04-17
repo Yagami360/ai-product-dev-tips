@@ -464,8 +464,10 @@ AIプロダクト開発のための Tips 集。<br>
     - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/1)
     - [[In-progress]【Kubeflow】GKE クラスタに Kubeflow を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/2)
     - [【Kubeflow】Google AI Platform Pipelines を利用して Kubeflow Pipelines の機械学習パイプラインを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/3)
-- Vertex Pipelines
-    - [[In-progress]【Vertex Pipelines】Vertex Pipelines を使用して機械学習パイプラインを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/54)
+- Vertex AI
+    - 【Vertex AI】Vertex AI の基礎事項
+    - [【Vertex AI】Vertex Pipelines を使用して機械学習パイプラインを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/54)
+    - 【Vertex AI】Vertex Pipelines を使用して独自のパイプラインコンポーネントでの機械学習パイプラインを構築する
 
 </details>
 
