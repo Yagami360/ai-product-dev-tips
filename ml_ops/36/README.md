@@ -1,5 +1,8 @@
 # 【MySQL】MySQL に Web-API のログデータを書き込む（FastAPI + uvicorn + gunicorn + MySQL + SQLAlchemy + docker + docker-compose での構成）
 
+ログデータを外部ファイルに書き込むことでもロギング自体は行えるが、ログデータを MySQL などのデータベースに保存するようにすればこれらまでのログデータの集計ができるので、今までのログデータの傾向や統計情報から、エラー検出をするといった処理を行うことが可能になるので、便利である。
+
+
 <img src="https://user-images.githubusercontent.com/25688193/123530517-2aba7280-d736-11eb-8c10-159f5e488761.png" width="500"><br>
 
 ## ■ 方法

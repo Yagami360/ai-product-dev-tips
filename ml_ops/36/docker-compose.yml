@@ -34,7 +34,7 @@ services:
       - ${PWD}/api:/api
       - ${PWD}/mysql_utils:/mysql_utils
     ports:
-      - "5000:5000"
+      - "5010:5010"
     tty: true
     environment:                                                # config.py のための環境変数を追加
       TZ: "Asia/Tokyo"
@@ -48,5 +48,5 @@ services:
       MYSQL_PORT: "3306"
     depends_on:
       - mysql-server
-    command: bash -c "gunicorn app:app --bind 0.0.0.0:5000 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+    command: bash -c "gunicorn app:app --bind 0.0.0.0:5010 -w 1 -k uvicorn.workers.UvicornWorker --reload"
   

@@ -1,0 +1,66 @@
+---
+# Pod
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fast-api-pod
+  labels:
+    app: fast-api-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fast-api-pod
+  template:
+    metadata:
+      labels:
+        app: fast-api-pod
+    spec:
+      containers:
+      - name: fast-api-container
+        image: gcr.io/my-project2-303004/fast-api-image-gke:latest
+        ports:
+        - containerPort: 5000
+          name: http-server
+        env:
+          - name: DEBUG
+            value: "True"
+        command: ["/bin/sh","-c"]
+        args: ["bash setup_gke.sh ; gunicorn app:app --bind 0.0.0.0:5000 -k uvicorn.workers.UvicornWorker --workers 1 --threads 1 --backlog 100 --timeout 1000000 --reload"]
+#        resources:
+#          requests:
+#            cpu: 1
+#            memory: "0.1Gi"
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: fast-api-server
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 5000
+      targetPort: 5000
+      protocol: TCP
+  selector:
+    app: fast-api-pod
+---
+# HorizontalPodAutoscaler
+#apiVersion: autoscaling/v2beta1
+#kind: HorizontalPodAutoscaler
+#metadata:
+#  name: fast-api-auto-scale
+#  namespace: default
+#spec:
+#  scaleTargetRef:     # autoscale 対象となる `scaled resource object` を指定
+#    apiVersion: apps/v1
+#    kind: Deployment
+#    name: fast-api-pod
+#  minReplicas: 1      # 最小 Pod 数
+#  maxReplicas: 4      # 最大 Pod 数
+#  metrics:
+#  - type: External  # 外部メトリクス（kubernetesクラスタ内のリソースとは関係しないメトリクス）
+#    external:
+#      metricName: custom.googleapis.com|n_queues_in_redis   # Kubernetes API では指標名にスラッシュを使用できないため、パイプ記号（|）で置き換える必要がある
+#      targetValue: 0.5                                      # 1つのPodが処理すべき値を決め打ちで指定する。

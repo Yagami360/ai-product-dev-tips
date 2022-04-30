@@ -245,29 +245,30 @@ AIプロダクト開発のための Tips 集。<br>
     - [【Docker】requests モジュールを用いてコンテナ間通信するときの、IP アドレス指定方式（コンテナ名で指定）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/docker_processing/8)
     - 【Docker】Docker コンテナ内から別の Docker コンテナを認識する
 - Kubernetes (k8s)
-    - [【GKE】Kubernetes (k8s) と GKE [Google Kubernetes Engine] の基本事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/9)
-    - [【GKE】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/10)
-    - [【GKE】GKE を用いた機械学習モデルの推論 API の構築](https://github.com/Yagami360/graphonomy_api-server_gke)
-    - [[In-progress]【GKE】GKE でのオートスケールの基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/31)
-    - [【GKE】Cloud Monitoring でのカスタム指標を k8s の外部メトリックとしてオートスケールする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/50)
-    - 【GKE】Workload Identity を用いた GKE クラスタから GCP リソースへのアクセス
-    - 【GKE】GKE の外部公開サービスの IP アドレスを固定する
-    - 【GKE】Pod 間で通信する
-    - 【GKE】Pod 内のコンテナ間で通信する
-    - 【GKE】Pod でのコンテナの起動順を設定する
-    - 【GKE】Pod 内のコンテナ内から別の Pod を認識する
-    - 【GKE】GKE クラスタをマルチゾーンクラスタにして安定性を向上させる
-    - 【GKE】GKE クラスタをマルチリージョン＆マルチゾーンクラスタにして安定性を向上させる
+    - [【GCP】Kubernetes (k8s) と GKE [Google Kubernetes Engine] の基本事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/9)
+    - [【GCP】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/10)
+    - [【GCP】GKE を用いた機械学習モデルの推論 API の構築](https://github.com/Yagami360/graphonomy_api-server_gke)
+    - [[In-progress]【GCP】GKE でのオートスケールの基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/31)
+    - [【GCP】Cloud Monitoring でのカスタム指標を k8s の外部メトリックとしてオートスケールする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/50)
+    - 【GCP】Workload Identity を用いた GKE クラスタから GCP リソースへのアクセス
+    - 【GCP】GKE の外部公開サービスの IP アドレスを固定する
+    - 【GCP】Pod 間で通信する
+    - 【GCP】Pod 内のコンテナ間で通信する
+    - 【GCP】Pod でのコンテナの起動順を設定する
+    - 【GCP】Pod 内のコンテナ内から別の Pod を認識する
+    - 【GCP】GKE クラスタをマルチゾーンクラスタにして安定性を向上させる
+    - 【GCP】GKE クラスタをマルチリージョン＆マルチゾーンクラスタにして安定性を向上させる
     - 【k8s】Istio の基礎事項
-    - [【GKE】GKE で構成した Web API に Istio を使用したサーキットブレーカーを導入する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/27)
-    - [【GKE】Istio の VirtualSevice を使用してリクエストデータのヘッダーに応じて異なる Web-API で推論する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/40)
-    - [[In-progress]【GKE】GoogleマネージドSSL証明書を用いて、GKE 上の Web-API を https 化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/45)
-    - [【GKE】k8s の Job を使用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/51)
-    - 【GKE】k8s の CronJob を使用する
-    - 【GKE】同期 REST API へのリクエストを k8s のジョブで管理する
-    - 【GKE】非同期 REST API へのリクエストを k8s のジョブを管理する
-    - 【GKE】サイドカーで異なるコンテナ間のボリュームを共有する
-    - 【GKE】k8s の PersistentVolume と hostpath を使用してコンテナ間のボリュームを永続的に共有する
+    - [【GCP】GKE で構成した Web API に Istio を使用したサーキットブレーカーを導入する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/27)
+    - [【GCP】Istio の VirtualSevice を使用してリクエストデータのヘッダーに応じて異なる Web-API で推論する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/40)
+    - [[In-progress]【GCP】GoogleマネージドSSL証明書を用いて、GKE 上の Web-API を https 化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/45)
+    - [【GCP】k8s の Job を使用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/51)
+    - 【GCP】k8s の CronJob を使用する
+    - 【GCP】同期 REST API へのリクエストを k8s のジョブで管理する
+    - 【GCP】非同期 REST API へのリクエストを k8s のジョブを管理する
+    - 【GCP】サイドカーで異なるコンテナ間のボリュームを共有する
+    - 【GCP】k8s の PersistentVolume と hostpath を使用してコンテナ間のボリュームを永続的に共有する
+    - [[In-progess]【GCP】GKE 上の Web-API に対して Google Cloud Armor の WAF 機能を使用してクライアントIP単位での RateLimit 制限を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/55)
 
 </details>
 
@@ -321,6 +322,7 @@ AIプロダクト開発のための Tips 集。<br>
     - FastAPI を使用した非同期処理での Web-API の出力結果を GSC に転送する
     - FastAPI を使用した非同期処理での Web-API の出力結果を GoogleDrive に転送する
     - FastAPI を使用した非同期処理での Web-API の出力完了結果を Slack に通知する
+
 - httpx を用いて複数の　Web-API に並列実行でリクエストする
 
 </details>
@@ -333,7 +335,7 @@ AIプロダクト開発のための Tips 集。<br>
     - [【Terraform】Terraform を利用して AWS インスタンスを自動的に構築する。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/11)
     - 【Terraform】Terraform を利用して GCP インスタンスを自動的に構築する。
     - 【Terraform】Terraform を利用して機械学習環境の GCP インスタンスを自動的に構築する。
-- DeploymentManager
+- 【GCP】DeploymentManager
     - 【GCP】DeploymentManager の基礎事項
 
 </details>
@@ -341,12 +343,12 @@ AIプロダクト開発のための Tips 集。<br>
 <details>
 <summary>サーバレス / FaaS [Function as a Service]</summary>
 
-- Cloud Functions
+- 【GCP】Cloud Functions
     - [【GCP】Cloud Functions を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/7)
     - 【GCP】Cloud Functions の単体テスト＆結合テスト   
     - 【GCP】Cloud Functions で GPU を使用可能にする
     - 【GCP】Cloud Functions を用いた機械学習モデルの推論 API の構築
-- Cloud Run
+- 【GCP】Cloud Run
     - [【GCP】Cloud Run を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/8)
     - 【GCP】Cloud Run で GPU を使用可能にする
     - 【GCP】Cloud Run を用いた機械学習モデルの推論 API の構築
@@ -360,7 +362,7 @@ AIプロダクト開発のための Tips 集。<br>
 - GitHub Actions
     - [GitHub Actions を用いた CI/CD](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/5)
     - GitHub Actions を用いて機械学習の推論APIの CI/CD を行う
-- Cloud Build
+- 【GCP】Cloud Build
     - [【GCP】Cloud Build を用いてローカルPC 上で CI/CD を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/12)
     - 【GCP】Cloud Build を用いて GCE 上で CI/CD を行う
     - [【GCP】Cloud Build を用いて Cloud Run 上で CI/CD を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/13)
@@ -373,18 +375,20 @@ AIプロダクト開発のための Tips 集。<br>
 <details>
 <summary>データ基盤 / データ分析基盤</summary>
 
-- BigQuery
-    - [【BigQuery】BigQuery の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/6)
-    - [【BigQuery】BigQuery を使用したデータ処理（GUI使用時）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/7)
-    - [【BigQuery】BigQuery を使用したデータ処理（CLI使用時）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/8)
-    - 【BigQuery】BigQuery を使用したデータ処理（Python 用 BigQuery Storage API ライブラリ使用時）
 - MySQL
     - [【MySQL】SQLAlchemy を使用して Python スクリプトから MySQL に接続する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/34)
     - [【MySQL】SQLAlchemy を使用して Python スクリプトから MySQL に接続する（docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/35)
     - [【MySQL】MySQL に Web-API のログデータを書き込む（FastAPI + uvicorn + gunicorn + MySQL + SQLAlchemy + docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/36)
     - 【MySQL】MySQL に書き込んだ Web-API のログデータを監視する（FastAPI + uvicorn + gunicorn + MySQL + SQLAlchemy + docker + docker-compose での構成）
     - [[In-progress]【MySQL】MySQL に保存したジョブデータをバッチ単位で処理する Web-API（FastAPI + uvicorn + gunicorn + MySQL + SQLAlchemy + docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/37)
-
+- PostgreSQL
+- 【GCP】BigQuery
+    - [【GCP】BigQuery の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/6)
+    - [【GCP】BigQuery を使用したデータ処理（GUI使用時）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/7)
+    - [【GCP】BigQuery を使用したデータ処理（CLI使用時）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/8)
+    - 【GCP】BigQuery を使用したデータ処理（Python 用 BigQuery Storage API ライブラリ使用時）
+- 【GCP】Google Cloud SQL
+    
 </details>
 
 <details>
@@ -460,14 +464,14 @@ AIプロダクト開発のための Tips 集。<br>
     - Luigi を使用して複雑な処理を行う API のパイプラインを管理する
 - MLflow
 - Airflow
-- Kubeflow
+- 【GCP】Kubeflow
     - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/1)
     - [[In-progress]【Kubeflow】GKE クラスタに Kubeflow を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/2)
     - [【Kubeflow】Google AI Platform Pipelines を利用して Kubeflow Pipelines の機械学習パイプラインを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/3)
-- Vertex AI
-    - 【Vertex AI】Vertex AI の基礎事項
-    - [【Vertex AI】Vertex Pipelines を使用して機械学習パイプラインを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/54)
-    - 【Vertex AI】Vertex Pipelines を使用して独自のパイプラインコンポーネントでの機械学習パイプラインを構築する
+- 【GCP】Vertex AI
+    - 【GCP】Vertex AI の基礎事項
+    - [【GCP】Vertex Pipelines を使用して機械学習パイプラインを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/54)
+    - 【GCP】Vertex Pipelines を使用して独自のパイプラインコンポーネントでの機械学習パイプラインを構築する
 
 </details>
 
