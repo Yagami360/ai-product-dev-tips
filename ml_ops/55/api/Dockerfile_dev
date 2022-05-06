@@ -40,17 +40,21 @@ RUN pip3 install uvicorn
 RUN pip3 install Gunicorn
 RUN pip3 install requests
 
+# install gcloud
+RUN curl https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz > /tmp/google-cloud-sdk.tar.gz
+RUN mkdir -p /usr/local/gcloud \
+  && tar -C /usr/local/gcloud -xvf /tmp/google-cloud-sdk.tar.gz \
+  && /usr/local/gcloud/google-cloud-sdk/install.sh
+
+ENV PATH $PATH:/usr/local/gcloud/google-cloud-sdk/bin
+
+# install kubectl
+RUN gcloud components install kubectl
+
 #-----------------------------
 # ソースコードの書き込み
 #-----------------------------
-#WORKDIR /api
-#COPY *.py /api/
-
-#-----------------------------
-# ポート開放
-#-----------------------------
-EXPOSE 5000
-EXPOSE 5001
+#COPY . .
 
 #-----------------------------
 # コンテナ起動後に自動的に実行するコマンド

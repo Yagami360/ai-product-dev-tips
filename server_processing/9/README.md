@@ -54,7 +54,44 @@ Kubernetes は、以下のようなコンポーネントから構成される
     xxx
 
 - Service（ネットワーク管理）<br>
-    クラスタ内の各 Pod に対して、アクセス可能な IP アドレスを付与し、外部からアクセスできるようにしたもの。Service の設定は yaml ファイルで記述する。
+    クラスタ内の各 Pod に対して、アクセス可能な IP アドレスを付与し、外部からアクセスできるようにした k8s リソース。Service の設定は yaml ファイルで記述する。<br>
+    Service には、以下のような種類（ServiceType）がある
+
+    - ClusterIP<br>
+        <img width="300" alt="image" src="https://user-images.githubusercontent.com/25688193/167106728-cf5d7c5b-20b2-462a-bb66-5c11e5376f9b.png">
+
+        k8s クラスター内での通信で利用する場合に、同じ種類の複数 Pod に同じ IP アドレスでアクセスできるようにする。k8s クラスター外からはアクセスができないことに注意。
+        デフォルトの ServiceType.
+
+    - NodePort<br>
+        <img width="300" alt="image" src="https://user-images.githubusercontent.com/25688193/167106834-a050ccb7-d0d3-42ee-82a3-ddfca6e6ae4a.png">
+
+        k8s クラスター内の Node のランダムなポートを使用して、k8s クラスター外の外部サーバーからアクセスできるようにしたもの。その他は ClusterIP と同じで、同じ種類の複数 Pod に同じ IP アドレスでアクセスできるようにしている
+
+    - LoadBalancer<br>
+        <img width="300" alt="image" src="https://user-images.githubusercontent.com/25688193/167106877-29dbc4b6-8d83-4089-aba6-f731d2ce70e0.png">
+
+        外部の L4 ロードバランサを有りで、k8s クラスター外の外部サーバーからアクセスできるようにしたもの。
+        その他は NodePort と同じで、同じ種類の複数 Pod に同じ IP アドレスでアクセスできるようにしている
+
+    - ExternalName<br>
+        xxx
+
+- Ingress<br>
+    <img width="300" alt="image" src="https://user-images.githubusercontent.com/25688193/167107256-1c21ade6-81f0-4b2f-9b3d-190c54917849.png">
+
+    Service の手前で　L7 ロードバランサーとして機能する k8s リソース。Ingress の設定は yaml ファイルで記述する。<br>
+    Ingress だけではサービスを外部に公開できないため, Service (ServiceType : NodePort) などと併用する必要があることに注意。
+
+    > - Service (ServiceType : LoadBalancer) と Ingress の違い
+    >   ServiceType : LoadBalancer の Service は、L4 ロードバランサーとして動作する。
+    >   L4 ロードバランサーでは、L4（トランスポート層）で定義されている基本的なロードバランシング機能しかないので、 個別のHTTPリクエスト内容を元にしたフィルタリングするといったようなすることはできない
+    >   一方で Ingress は L7 ロードバランサーとして動作する。L7 ロードバランサーは、L7（アプリケーション層）で定義されている機能も持ったロードバランサーなので、ホストやパスの値に応じて複数のサービスに対するリクエストを制御するいったようなアプリケーション固有の処理も可能になる。
+
+    > - L4 ロードバランサーと L7 ロードバランサー<br>
+    >   ここでの L4, L7 は、通信プロトコルにおける L4（トランスポート層）と L7（アプリケーション層）のこと。<br>
+    >   L4 ロードバランサーは、L4（トランスポート層）で定義されている基本的なロードバランシングの機能のみを持ったロードバランサー<br>
+    >   L7 ロードバランサーは、L7（アプリケーション層）で定義されている機能も持ったロードバランサーなので、アプリケーションやWebブラウザごとにロードバランシング先を決めることもできる<br>
 
 
 ### ◎ GKE の基本事項

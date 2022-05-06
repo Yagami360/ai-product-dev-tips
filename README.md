@@ -268,7 +268,7 @@ AIプロダクト開発のための Tips 集。<br>
     - 【GCP】非同期 REST API へのリクエストを k8s のジョブを管理する
     - 【GCP】サイドカーで異なるコンテナ間のボリュームを共有する
     - 【GCP】k8s の PersistentVolume と hostpath を使用してコンテナ間のボリュームを永続的に共有する
-    - [[In-progess]【GCP】GKE 上の Web-API に対して Google Cloud Armor の WAF 機能を使用してクライアントIP単位での RateLimit 制限を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/55)
+    - [【GCP】GKE 上の Web-API に対して Google Cloud Armor の WAF 機能を使用してクライアントIP単位での RateLimit 制限を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/55)
 
 </details>
 

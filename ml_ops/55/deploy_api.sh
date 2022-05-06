@@ -2,27 +2,30 @@
 set -eu
 PROJECT_ID=my-project2-303004
 
+UPDATE_GCLOUD=0
+ENABLE_BUILD=0
+
 REGION=us-central1
 ZONE=us-central1-b
 CPU_TYPE=n1-standard-1
 DISK_SIZE=64
-CLUSTER_NAME=fast-api-cluster
+CLUSTER_NAME=fast-api-rate-limit-cluster
 NUM_NODES=1
 MIN_NODES=1
 MAX_NODES=1
-ENABLE_BUILD=1
 
 SERVICE_ACCOUNT_NAME=cloud-armor-account
-SECURITY_POLICY_NAME=clients-policy
-
-HOST=0.0.0.0
-PORT=5000
-
-RATE_LIMIT_THRESHOLD_COUNT=100
+SECURITY_POLICY_NAME=rate-limit-policy
+RATE_LIMIT_THRESHOLD_COUNT=10
+RATE_LIMIT_INTERVAL_SEC=60
 
 #-----------------------------------------------
 # GCP 環境のデフォルト値の設定
 #-----------------------------------------------
+if [ ! ${UPDATE_GCLOUD} = 0 ] ; then
+    sudo gcloud components update
+fi
+gcloud --version
 gcloud config set project ${PROJECT_ID}
 gcloud config list
 
@@ -48,11 +51,34 @@ if [ ! -e "api/key/${SERVICE_ACCOUNT_NAME}.json" ] ; then
         mkdir -p api/key
         gcloud iam service-accounts keys create api/key/${SERVICE_ACCOUNT_NAME}.json --iam-account=${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com
     fi
+fi
 
-    # 作成した json 鍵を環境変数に反映
-    #export GOOGLE_APPLICATION_CREDENTIALS="key/{SERVICE_ACCOUNT_NAME}.json"
-    #gcloud auth activate-service-account SERVICEACCOUNTNAME@{PROJECT_ID}.iam.gserviceaccount.com --key-file ROOTDIR/api/key/{SERVICE_ACCOUNT_NAME}.json
-    #gcloud auth list
+#-----------------------------------------------
+# セキュリティポリシーの作成
+#-----------------------------------------------
+if [ "$(gcloud compute security-policies list | grep "${SECURITY_POLICY_NAME}")" ] ; then
+    # すでにセキュリティポリシーが存在する場合は削除
+    set +e
+    gcloud compute security-policies delete ${SECURITY_POLICY_NAME}
+    set -e
+fi
+
+if [ ! "$(gcloud compute security-policies list | grep "${SECURITY_POLICY_NAME}")" ] ; then
+    # GKE のロードバランサーに適用するためのセキュリティポリシーを作成
+    gcloud compute security-policies create ${SECURITY_POLICY_NAME} --description "rate-limit policy for GKE Load balancer"
+
+    # セキュリティーポリシーのルール（RateLimit 制限）を作成する
+    gcloud compute security-policies rules create 10 \
+        --security-policy ${SECURITY_POLICY_NAME}    \
+        --src-ip-ranges="*" \
+        --action=throttle   \
+        --rate-limit-threshold-count=${RATE_LIMIT_THRESHOLD_COUNT}  \
+        --rate-limit-threshold-interval-sec=${RATE_LIMIT_INTERVAL_SEC}  \
+        --conform-action=allow  \
+        --exceed-action=deny-429    \
+        --enforce-on-key=IP \
+        --description "rate-limit rule"
+    #    --src-ip-ranges="0.0.0.0/1" \
 fi
 
 #-----------------------------------------------
@@ -84,74 +110,14 @@ fi
 gcloud container clusters get-credentials ${CLUSTER_NAME} --region ${ZONE} --project ${PROJECT_ID}
 
 # k8s リソース（Pod, Service, HorizontalPodAutoscaler, configmap 等）の作成
-kubectl apply -f k8s/fast_api.yml
+kubectl apply -f k8s/fast_api_rate_limit.yml
 
+# セキュリティポリシーをバックエンドサービス（L7ロードバランサー）に接続する
+#BACKEND_SERVICE_NAME="k8s2-um-btap4v85-default-fast-api-rate-limit-ingress-9r8cddkf"
+#gcloud compute backend-services update ${BACKEND_SERVICE_NAME} --security-policy ${SECURITY_POLICY_NAME}
 
-#-----------------------------------------------
-# セキュリティポリシーの作成
-#-----------------------------------------------
-# GKE のロードバランサーに適用するためのセキュリティポリシーを作成
-gcloud compute security-policies create ${SECURITY_POLICY_NAME} --description "policy for external users"
+# 作成した Pod のコンテナログを確認
+#kubectl logs `kubectl get pods | grep "fast-api-rate-limit-pod" | awk '{print $1}'`
 
-# セキュリティーポリシーのルール（RateLimit 制限）を作成する
-gcloud compute security-policies rules create 10 \
-    --security-policy sec-policy    \
-    --src-ip-ranges=="0.0.0.0/1"    \
-    --action=throttle               \
-    --rate-limit-threshold-count=${RATE_LIMIT_THRESHOLD_COUNT}  \
-    --rate-limit-threshold-interval-sec=60  \
-    --conform-action=allow          \
-    --exceed-action=deny-429        \
-    --enforce-on-key=IP
-
-#-----------------------------------------------
-# API を実行する
-#-----------------------------------------------
-<<COMMENTOUT
-# API 起動
-docker-compose -f docker-compose.yml stop
-docker-compose -f docker-compose.yml up -d
-sleep 5
-
-# health check
-echo "[GET method] ヘルスチェック\n"
-curl http://${HOST}:${PORT}/health
-echo "\n"
-
-# metadata 取得
-echo "[GET method] metadata 取得\n"
-curl http://${HOST}:${PORT}/metadata
-echo "\n"
-
-# GET method でのリクエスト処理
-echo "[GET method] パスパラメーターで指定\n"
-curl http://${HOST}:${PORT}/users_name/0
-curl http://${HOST}:${PORT}/users_name/1
-curl http://${HOST}:${PORT}/users_name/2
-echo "\n"
-
-echo "[GET method] クエリパラメーターで指定\n"
-curl http://${HOST}:${PORT}/users_name/?users_id=0
-curl http://${HOST}:${PORT}/users_name/?users_id=1
-curl http://${HOST}:${PORT}/users_name/?users_id=2
-echo "\n"
-
-echo "[GET method] パスパラメーター & クエリパラメーターで指定\n"
-curl http://${HOST}:${PORT}/users/name?users_id=0
-curl http://${HOST}:${PORT}/users/age?users_id=0
-curl http://${HOST}:${PORT}/users/name?users_id=1
-curl http://${HOST}:${PORT}/users/age?users_id=1
-curl http://${HOST}:${PORT}/users/name?users_id=2
-curl http://${HOST}:${PORT}/users/age?users_id=2
-echo "\n"
-
-# POST method でのリクエスト処理
-echo "[POST method] ユーザー追加\n"
-curl -X POST -H "Content-Type: application/json" \
-    -d '{"id":4, "name":"user4", "age":"100"}' \
-    http://${HOST}:${PORT}/add_users/
-
-echo "\n"
-
-docker-compose logs --tail 50
-COMMENTOUT
+# 作成した Pod のコンテナにアクセス
+#kubectl exec -it `kubectl get pods | grep "fast-api-rate-limit-pod" | awk '{print $1}'` /bin/bash

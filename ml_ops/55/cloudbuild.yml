@@ -1,6 +1,6 @@
 # 変数値の置換
 substitutions:
-  _JOB_IMAGE_NAME: fass-api-image-gke
+  _JOB_IMAGE_NAME: fast-api-rate-limit-image-gke
 
 steps:
   #-----------------------------------
@@ -20,7 +20,7 @@ steps:
       'build', 
       '-t', 'gcr.io/${PROJECT_ID}/${_JOB_IMAGE_NAME}:latest', 
       '--cache-from', 'gcr.io/${PROJECT_ID}/${_JOB_IMAGE_NAME}:latest',
-      '-f', 'job/Dockerfile',
+      '-f', 'api/Dockerfile',
       '.'
     ]
 

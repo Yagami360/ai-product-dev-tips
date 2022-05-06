@@ -1,0 +1,69 @@
+---
+# Pod
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fast-api-rate-limit-pod
+  labels:
+    app: fast-api-rate-limit-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fast-api-rate-limit-pod
+  template:
+    metadata:
+      labels:
+        app: fast-api-rate-limit-pod
+    spec:
+      containers:
+      - name: fast-api-container
+        image: gcr.io/my-project2-303004/fast-api-rate-limit-image-gke:latest
+        ports:
+        - containerPort: 5000
+          name: http-server
+        env:
+          - name: DEBUG
+            value: "True"
+        command: ["/bin/sh","-c"]
+        args: ["bash setup_gke.sh ; gunicorn app:app --bind 0.0.0.0:5000 -k uvicorn.workers.UvicornWorker --workers 1 --threads 1 --backlog 100 --timeout 1000000 --reload"]
+#        resources:
+#          requests:
+#            cpu: 1
+#            memory: "0.1Gi"
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: fast-api-rate-limit-server
+  annotations:
+    cloud.google.com/backend-config: '{"default": "fast-api-rate-limit-backendconfig"}'  # annotations で BackendConfig を関連付ける
+spec:
+#  type: LoadBalancer   # L4 ロードバランサーは使用しない。代わりに L7 ロードバランサーである Ingress を使用する
+  type: NodePort
+  ports:
+    - port: 5000
+      targetPort: 5000
+      protocol: TCP
+  selector:
+    app: fast-api-rate-limit-pod
+---
+# Ingress
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: fast-api-rate-limit-ingress
+spec:
+  backend:
+    serviceName: fast-api-rate-limit-server
+    servicePort: 5000
+---
+# BackendConfig
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: fast-api-rate-limit-backendconfig
+spec:
+  securityPolicy:
+    name: rate-limit-policy  # `gcloud compute security-policies create` コマンドで作成した security policy の名前

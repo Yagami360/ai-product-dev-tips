@@ -2,7 +2,7 @@
 #set -eu
 PROJECT_ID=my-project2-303004
 SERVICE_ACCOUNT_NAME=cloud-armor-account
-CLUSTER_NAME=fast-api-cluster
+CLUSTER_NAME=fast-api-rate-limit-cluster
 REGION=us-central1
 
 # GCE サービスアカウント -> API 用サービスアカウントへの切替え
