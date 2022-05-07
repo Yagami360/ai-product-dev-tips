@@ -111,7 +111,7 @@
 	1. Web-API サーバーの Dockerfile を作成する<br>
 		```dockerfile
 		```
-		
+
 	1. Web-API サーバーの k8s マニフェストファイルを作成する<br>
 		- Pod<br>
 			```yaml
@@ -285,8 +285,57 @@
 1. リクエスト処理を送信する<br>
 	`curl` コマンドなどで、起動した API サーバーのエンドポイントに繰り返しリクエスト処理を行い、RateLimit 制限が適切に機能しているか確認する
 	```sh
-	$ curl http://${HOST}:${PORT}
+	INGRESS_NAME=fast-api-rate-limit-ingress
+	HOST=`kubectl get ingress | grep ${INGRESS_NAME} | awk '{print $4}'`
+
+	N_REQUESTS=15
+	INTERVAL_SEC=1
+
+	# health check
+	echo "[GET method] ヘルスチェック\n"
+	for i in `seq 1 ${N_REQUESTS}`
+	do
+		curl http://${HOST}/health
+		echo "\n"
+		sleep ${INTERVAL_SEC}
+	done
 	```
+
+	- 出力結果
+		```sh
+		request 1 : 
+		{"health":"ok"}
+		request 2 : 
+		{"health":"ok"}
+		request 3 : 
+		{"health":"ok"}
+		request 4 : 
+		{"health":"ok"}
+		request 5 : 
+		{"health":"ok"}
+		request 6 : 
+		{"health":"ok"}
+		request 7 : 
+		{"health":"ok"}
+		request 8 : 
+		{"health":"ok"}
+		request 9 : 
+		{"health":"ok"}
+		request 10 : 
+		{"health":"ok"}
+		request 11 : 
+		<!doctype html><meta charset="utf-8"><meta name=viewport content="width=device-width, initial-scale=1"><title>429</title>429 Too Many Requests
+		request 12 : 
+		<!doctype html><meta charset="utf-8"><meta name=viewport content="width=device-width, initial-scale=1"><title>429</title>429 Too Many Requests
+		request 13 : 
+		<!doctype html><meta charset="utf-8"><meta name=viewport content="width=device-width, initial-scale=1"><title>429</title>429 Too Many Requests
+		request 14 : 
+		<!doctype html><meta charset="utf-8"><meta name=viewport content="width=device-width, initial-scale=1"><title>429</title>429 Too Many Requests
+		request 15 : 
+		<!doctype html><meta charset="utf-8"><meta name=viewport content="width=device-width, initial-scale=1"><title>429</title>429 Too Many Requests
+		```
+
+		> `--rate-limit-threshold-count=10`, `--rate-limit-threshold-interval-sec=60` で設定したインターバル時間以上リクエストを行うと RateLimit 制限がかかっている
 
 ## ■ 参考サイト
 - https://cloud.google.com/armor/docs/rate-limiting-overview

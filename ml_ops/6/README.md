@@ -1,5 +1,7 @@
 # 【BigQuery】BigQuery の基礎事項
 
+<img width="475" alt="image" src="https://user-images.githubusercontent.com/25688193/167242282-37c400e6-a6f8-4baa-aa5b-bdd83d8dbcc8.png">
+
 - BigQuery : <br>
     Google が提供しているクラウド環境でのデータベース管理システム（DBMS）。大量のデータを高速にデータ処理でき、比較的安い領域で利用できるのが大きなメリット<br>
     SQL を使用してデータにアクセスできる<br>
