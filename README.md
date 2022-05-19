@@ -352,6 +352,8 @@ AIプロダクト開発のための Tips 集。<br>
     - [【GCP】Cloud Run を利用したサーバーレス Web-API の構築](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/8)
     - 【GCP】Cloud Run で GPU を使用可能にする
     - 【GCP】Cloud Run を用いた機械学習モデルの推論 API の構築
+- 【AWS】AWS Lambda
+    - [[In-progress]【AWS】AWS Lambda を使用してサーバレス Web-API を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/58)
 
 </details>
 
