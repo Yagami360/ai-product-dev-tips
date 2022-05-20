@@ -6,26 +6,72 @@ AWS Lambda は、GCP でいうところの Cloud Function に該当するもの�
 
 ここでは、AWS Lambda を使用してサーバレス Web-API を構築する方法を記載するが、AWS Lambda の実行トリガーには、APIへのリクエスト要求以外にも、様々な実行トリガーが指定可能になっている。
 
+尚、AWS Lambda を使用してサーバレス Web-API を構築するには、API Gateway を併用する方法もあるが、今回の例では、API Gateway を使用せず 関数 URL を使用した方法を記載する
+
 ## ■ 方法
 
 ### ◎ GUI で行う場合
 
 1. Lambda 関数を作成する<br>
     1. 「[AWS Lambda コンソール画面](https://us-west-2.console.aws.amazon.com/lambda/home?region=us-west-2#/functions)」から「関数を作成」ボタンをクリックする<br>
-        <img width="800" alt="image" src="https://user-images.githubusercontent.com/25688193/169259070-f96281ce-866b-469c-ae80-f0bb1b62ddb8.png"><br>
-    1. 今回は、FastAPI での API コードを１から作成するので、「１から作成」を選択し、ランタイムを「Python」に選択する。また「関数 URL を有効化」をクリックする。最後に「関数を作成」ボタンをクリックし、Lambda 関数を作成する<br>
-        <img width="800" alt="image" src="https://user-images.githubusercontent.com/25688193/169259350-e12cbdbb-760a-421e-aad0-c07566d5e087.png"><br>
-        <img width="800" alt="image" src="https://user-images.githubusercontent.com/25688193/169260971-951bd9c3-80f3-4745-9aab-b7b6ec4c1686.png"><br>
-
+        <img width="700" alt="image" src="https://user-images.githubusercontent.com/25688193/169259070-f96281ce-866b-469c-ae80-f0bb1b62ddb8.png"><br>
+    1. 「関数の作成」画面から各種必要な値を設定する<br>
+        今回は、Python での API コードを１から作成するので、「１から作成」を選択し、ランタイムを「Python」に選択する。<br>
+        <img width="700" alt="image" src="https://user-images.githubusercontent.com/25688193/169259350-e12cbdbb-760a-421e-aad0-c07566d5e087.png"><br>
         > ランタイムには、他にも Node.js などを選択可能
 
-    1. xxx
+        また「関数 URL を有効化」をクリックする。最後に「関数を作成」ボタンをクリックし、Lambda 関数を作成する<br>
+        <img width="700" alt="image" src="https://user-images.githubusercontent.com/25688193/169260971-951bd9c3-80f3-4745-9aab-b7b6ec4c1686.png"><br>
 
 1. API のコードを修正する<br>
-    xxx
+    「[AWS Lambda コンソール画面](https://us-west-2.console.aws.amazon.com/lambda/home?region=us-west-2#/functions)」から、作成した関数を選択し、「コード」タブにあるコードエディター上から、API のコードを修正する
+    
+    <img width="700" alt="image" src="https://user-images.githubusercontent.com/25688193/169514981-42f92969-c6ab-46bb-b916-d4046477d0a4.png"><br>
+
+    ```python
+    import json
+
+    def lambda_handler(event, context):
+        # TODO implement
+        return {
+            'statusCode': 200,
+            'body': json.dumps('Hello from Lambda!')
+        }
+    ```
+
+    > API のコードを Docker イメージ化して、その Docker image をアップロードする方法もあるが、今回は AWS のコードエディター上で直接コードを編集する方法を記載している
 
 1. Lambda 関数を呼び出す<br>
-    xxx
+    `aws lambda invoke` コマンドを使用すれば、作成した Lambda 関数を呼び出すことができる。或いは、関数 URL を生成した場合は、関数 URL を `curl` コマンドで叩くことでも Lambda 関数を呼び出すこともできる
+
+    - 同期呼び出しする場合<br>
+        ```sh
+        aws lambda invoke \
+            --function-name ${FUNCTION_NAME} \
+            --payload '{"key1":" value1", "key2":"value2", "key3":"value3"}' \
+            --cli-binary-format raw-in-base64-out response.json
+        ```
+        - `--cli-binary-format` : `--payload` のフォーマット
+            - `raw-in-base64-out` : base64 変換前のフォーマットを base64 に変換
+
+    - 非同期呼び出しする場合<br>
+        ```sh
+        aws lambda invoke \
+            --invocation-type Event \
+            --function-name ${FUNCTION_NAME} \
+            --payload '{"key1":" value1", "key2":"value2", "key3":"value3"}' \
+            --cli-binary-format raw-in-base64-out response.json
+        ```
+
+    - 関数 URL を使用する場合<br>
+        関数 URL を生成した場合は、関数 URL を `curl` コマンドで叩くことでも Lambda 関数を呼び出すこともできる
+        ```sh
+        FUNCTION_URL=`aws lambda get-function-url-config --function-name ${FUNCTION_NAME} --query FunctionUrl`
+        curl ${FUNCTION_URL}
+        ```
+
+        > クエリパラメータなどは、 `curl https://xxx.lambda-url.${REGION}.on.aws/?param1=hoge` のような形式で渡せば良い
+
 
 ### ◎ CLI で行う場合
 
@@ -50,13 +96,13 @@ AWS Lambda は、GCP でいうところの Cloud Function に該当するもの�
         {
             "Version": "2012-10-17",
             "Statement": [
-            {
-                "Effect": "Allow",
-                "Principal": {
-                "Service": "lambda.amazonaws.com"
-                },
-                "Action": "sts:AssumeRole"
-            }
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "lambda.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
             ]
         }
         ```
@@ -74,6 +120,7 @@ AWS Lambda は、GCP でいうところの Cloud Function に該当するもの�
         ```
 
 1. API のコードを作成する<br>
+    API のコード `lambda_function.py` を作成する
     ```python
     import json
 
@@ -87,7 +134,7 @@ AWS Lambda は、GCP でいうところの Cloud Function に該当するもの�
 
 1. API コードを zip ファイルにする<br>
     ```sh
-    zip -r app.zip app.py
+    zip -r lambda_function.zip lambda_function.py
     ```
 
 1. Lambda 関数を作成する<br>
@@ -96,27 +143,62 @@ AWS Lambda は、GCP でいうところの Cloud Function に該当するもの�
     aws lambda create-function \
         --function-name ${FUNCTION_NAME} \
         --runtime python3.9 \
-        --zip-file fileb://app.zip  \
-        --handler "lambda_handler" \
+        --zip-file fileb://lambda_function.zip  \
+        --handler "lambda_function.lambda_handler" \
         --role arn:aws:iam::${AWS_ACCOUNT_ID}:role/${IAM_ROLE_NAME}
     ```
     - `--zip-file` : Lambda 関数のスクリプトを zip 化したファイル
-    - `--handler` : Lambda 関数のスクリプト内のエントリーポイントの関数名
+    - `--handler` : Lambda 関数のスクリプトとエントリーポイントの関数名。`スクリプトのファイル名.エントリーポイントの関数名` の形式で指定する
+
+    > `--role arn:aws:iam::${AWS_ACCOUNT_ID}:role/lambda-url-role` も必要？
+
+1. 関数 URL のエンドポイント作成<br>
+    作成した Lambda 関数を関数 URL でアクセスできるようにするためのエンドポイントを作成する
+    ```sh
+    aws lambda create-function-url-config \
+        --function-name ${FUNCTION_NAME} \
+        --auth-type NONE \
+        --cors 'AllowCredentials=false,AllowMethods=GET,AllowOrigins=*'        
+    ```
+    - `--auth-type` :
+        - `NONE` : 外部公開
+    - `--cors` : CORS 設定
+        - `'AllowCredentials=false,AllowMethods=GET,AllowOrigins=*'` : 全アクセス許可
 
 1. Lambda 関数を呼び出す<br>
-    ```sh
-    aws lambda invoke \
-        --invocation-type Event \
-        --function-name ${FUNCTION_NAME} \
-        --payload '{"key1":" value1", "key2":"value2", "key3":"value3"}' \
-        outputfile.txt
-    ```
+    `aws lambda invoke` コマンドを使用すれば、作成した Lambda 関数を呼び出すことができる。或いは、関数 URL を生成した場合は、関数 URL を `curl` コマンドで叩くことでも Lambda 関数を呼び出すこともできる
 
-<!--
-1. API Gatewayの設定<br>
--->
+    - 同期呼び出しする場合<br>
+        ```sh
+        aws lambda invoke \
+            --function-name ${FUNCTION_NAME} \
+            --payload '{"key1":" value1", "key2":"value2", "key3":"value3"}' \
+            --cli-binary-format raw-in-base64-out response.json
+        ```
+        - `--cli-binary-format` : `--payload` のフォーマット
+            - `raw-in-base64-out` : base64 変換前のフォーマットを base64 に変換
+
+    - 非同期呼び出しする場合<br>
+        ```sh
+        aws lambda invoke \
+            --invocation-type Event \
+            --function-name ${FUNCTION_NAME} \
+            --payload '{"key1":" value1", "key2":"value2", "key3":"value3"}' \
+            --cli-binary-format raw-in-base64-out response.json
+        ```
+
+    - 関数 URL を使用する場合<br>
+        関数 URL を生成した場合は、関数 URL を `curl` コマンドで叩くことでも Lambda 関数を呼び出すこともできる
+        ```sh
+        FUNCTION_URL=`aws lambda get-function-url-config --function-name ${FUNCTION_NAME} --query FunctionUrl`
+        curl ${FUNCTION_URL}
+        ```
+
+        > クエリパラメータなどは、 `curl https://xxx.lambda-url.${REGION}.on.aws/?param1=hoge` のような形式で渡せば良い
+
 
 ## ■ 参考サイト
 - https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/services-apigateway.html
 - https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/gettingstarted-awscli.html
+- https://docs.aws.amazon.com/lambda/latest/dg/urls-tutorial.html
 - https://qiita.com/ekzemplaro/items/7dc187885dffe0be6341
