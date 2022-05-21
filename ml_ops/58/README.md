@@ -90,8 +90,9 @@ AWS Lambda は、GCP でいうところの Cloud Function に該当するもの�
         sudo ./aws/install
         ```
 
-1. Lambda 関数実行のための IAM 権限を作成する<br>
-    1. IAM 権限の内容を定義した json ファイルを作成<br>
+1. Lambda 関数実行のための IAM を作成する<br>
+    1. IAM ポリシーの内容を定義した json ファイルを作成<br>
+        IAM ロールに割り当てるための IAM ポリシーの内容を定義した json ファイルを作成する
         ```json
         {
             "Version": "2012-10-17",
@@ -106,18 +107,26 @@ AWS Lambda は、GCP でいうところの Cloud Function に該当するもの�
             ]
         }
         ```
-    1. `aws iam create-role` コマンドで IAM 権限を作成<br>
+        - `` : xxx
+
+    1. IAM ロールを作成<br>
+        `aws iam create-role` コマンドを使用して、Lambda 関数実行のための IAM ロールを作成する
         ```sh
         aws iam create-role \
             --role-name ${IAM_ROLE_NAME} \
             --assume-role-policy-document "file://${IAM_ROLE_FILE_PATH}"
         ```
-    1. 作成した IAM 権限にアクセス権限を付与する<br>
+        - `--assume-role-policy-document` : IAM ポリシーの内容を定義した json ファイルを指定。
+
+    1. 作成した IAM ロールにアクセス権限を付与する<br>
+        作成した IAM ロールに、Lambda サービスにアクセスできるようにするための IAM ポリシーを付与する
         ```sh
         aws iam attach-role-policy \
             --role-name ${IAM_ROLE_NAME} \
             --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
         ```
+
+    > IAM の詳細は、「[【AWS】AWS の認証システム](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/58)」を参考
 
 1. API のコードを作成する<br>
     API のコード `lambda_function.py` を作成する
@@ -152,18 +161,63 @@ AWS Lambda は、GCP でいうところの Cloud Function に該当するもの�
 
     > `--role arn:aws:iam::${AWS_ACCOUNT_ID}:role/lambda-url-role` も必要？
 
+    > ARN [Amazon Resource Name] : AWSサービスのリソースを一意に識別するための命名規則。<br>
+    > ```sh
+    > # ARN の構文
+    > arn:partition:service:region:account-id:resource
+    > arn:partition:service:region:account-id:resourcetype/resource
+    > arn:partition:service:region:account-id:resourcetype:resource
+    > ```
+    > ```sh
+    > # ARN の例
+    > arn:aws:ec2:region:account-id:instance/instance-id
+    > arn:aws:ec2:region:account-id:volume/volume-id
+    > ```
+    > - `partition` : 基本的にAWS
+    > - `service` : AWS製品名
+
 1. 関数 URL のエンドポイント作成<br>
     作成した Lambda 関数を関数 URL でアクセスできるようにするためのエンドポイントを作成する
     ```sh
     aws lambda create-function-url-config \
         --function-name ${FUNCTION_NAME} \
-        --auth-type NONE \
-        --cors 'AllowCredentials=false,AllowMethods=GET,AllowOrigins=*'        
+        --auth-type NONE
     ```
-    - `--auth-type` :
-        - `NONE` : 外部公開
+    - `--auth-type` : 関数 URL の認証タイプ
+        - `NONE` : 関数 URL へのリクエストに対して IAM 認証を実行しない。<br>
+            内部動作的には、`NONE` を指定した場合、以下の IAM ポリシーが自動的に生成され適用され、これにより関数URLに外部アクセスできるようになる
+            ```json
+            {
+                "StatementId": "FunctionURLAllowPublicAccess",
+                "Effect": "Allow",
+                "Principal": "*",
+                "Action": "lambda:InvokeFunctionUrl",
+                "Resource": "arn:aws:lambda:ap-northeast-1:123456789012:function:Lambda_Function_URLs_Policy_Test",
+                "Condition": {
+                    "StringEquals": {
+                       "lambda:FunctionUrlAuthType": "NONE"
+                    }
+                }
+            }
+            ```
+
+            > `--auth-type=NONE` を指定して生成した場合、上記 IAM ポリシーが自動的に適用されない動作になり、関数 URL に外部アクセスできなかった。そのため、後述するように、`aws lambda add-permission` コマンドを使用して `--auth-type=NONE` で作成した Lambda 関数に対して、関数URLにアクセスできるようにするためのリソースポリシーを追加する必要がある
+
+        - `AWS_IAM` : 認証された IAM ユーザーとロールのみが、関数 URL にリクエストを行うことができます。
+
     - `--cors` : CORS 設定
-        - `'AllowCredentials=false,AllowMethods=GET,AllowOrigins=*'` : 全アクセス許可
+        - 設定例 : `'AllowCredentials=false,AllowMethods=GET,AllowOrigins=*'` : GET メソッドでの全アクセス許可
+
+1. Lambda 関数にリソースポリシーを追加する<br>
+    `--auth-type=NONE` で作成した Lambda 関数に対して、関数URLにアクセスできるようにするためのリソースポリシーを追加する
+    ```sh
+    aws lambda add-permission \
+        --function-name ${FUNCTION_NAME} \
+        --function-url-auth-type NONE \
+        --statement-id FunctionURLAllowPublicAccess \
+        --principal "*" \
+        --action lambda:InvokeFunctionUrl
+    ```
 
 1. Lambda 関数を呼び出す<br>
     `aws lambda invoke` コマンドを使用すれば、作成した Lambda 関数を呼び出すことができる。或いは、関数 URL を生成した場合は、関数 URL を `curl` コマンドで叩くことでも Lambda 関数を呼び出すこともできる
@@ -202,3 +256,4 @@ AWS Lambda は、GCP でいうところの Cloud Function に該当するもの�
 - https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/gettingstarted-awscli.html
 - https://docs.aws.amazon.com/lambda/latest/dg/urls-tutorial.html
 - https://qiita.com/ekzemplaro/items/7dc187885dffe0be6341
+- https://qiita.com/hayao_k/items/d091081a692f41226d71

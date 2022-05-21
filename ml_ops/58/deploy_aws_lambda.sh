@@ -1,9 +1,9 @@
 #!/bin/sh
 set -eu
 AWS_ACCOUNT_ID=735015535886
+IAM_ROLE_NAME="lambda-iam-role"
+IAM_POLICY_FILE_PATH="lambda-iam-policy.json"
 FUNCTION_NAME="sample-function-cli"
-IAM_ROLE_NAME="lambda-iam"
-IAM_ROLE_FILE_PATH="lambda-iam.json"
 
 #-----------------------------
 # OS判定
@@ -41,15 +41,21 @@ aws --version
 COMMENTOUT
 
 #-----------------------------
-# Lambda 関数にアクセスするための IAM 権限を作成する
+# Lambda 関数実行のための IAM を作成する
 #-----------------------------
+#if [ `aws iam list-roles --query 'Roles[].RoleName' | grep ${IAM_ROLE_NAME}` ] ; then
+#    aws iam delete-role --role-name ${IAM_ROLE_NAME}
+#fi
+
 if [ ! `aws iam list-roles --query 'Roles[].RoleName' | grep ${IAM_ROLE_NAME}` ] ; then
-    # IAM 権限の内容を定義した json ファイルから IAM 権限を作成する
+    # Lambda 関数実行のための IAM ロールを作成する
     aws iam create-role \
         --role-name ${IAM_ROLE_NAME} \
-        --assume-role-policy-document "file://${IAM_ROLE_FILE_PATH}"
+        --assume-role-policy-document "file://${IAM_POLICY_FILE_PATH}" &
 
-    # 作成した IAM 権限にアクセス権限を付与する
+    sleep 10
+
+    # 作成した IAM ロールに、Lambda サービスにアクセスできるようにするための IAM ポリシーを付与する
     aws iam attach-role-policy \
         --role-name ${IAM_ROLE_NAME} \
         --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -90,9 +96,18 @@ set -eu
 
 aws lambda create-function-url-config \
     --function-name ${FUNCTION_NAME} \
-    --auth-type NONE \
-    --cors 'AllowCredentials=false,AllowMethods=GET,AllowOrigins=*'
+    --auth-type NONE
 
+#    --cors 'AllowCredentials=false,AllowMethods=GET,AllowOrigins=*'
+
+# Lambda 関数に関数URLにアクセスできるようにするためのリソースポリシーを追加する
+aws lambda add-permission \
+    --function-name ${FUNCTION_NAME} \
+    --function-url-auth-type NONE \
+    --statement-id FunctionURLAllowPublicAccess \
+    --principal "*" \
+    --action lambda:InvokeFunctionUrl  
+  
 #-----------------------------
 # Lambda 関数を呼び出す
 #-----------------------------
@@ -103,13 +118,11 @@ aws lambda invoke \
     --cli-binary-format raw-in-base64-out response.json
 
 # 非同期呼び出し
-<<COMMENTOUT
 aws lambda invoke \
     --invocation-type Event \
     --function-name ${FUNCTION_NAME} \
     --payload '{"key1":" value1", "key2":"value2", "key3":"value3"}' \
     --cli-binary-format raw-in-base64-out response.json
-COMMENTOUT
 
 # 関数 URL を呼び出し
 FUNCTION_URL=`aws lambda get-function-url-config --function-name ${FUNCTION_NAME} --query FunctionUrl`

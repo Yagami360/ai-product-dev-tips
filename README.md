@@ -245,6 +245,7 @@ AIプロダクト開発のための Tips 集。<br>
     - [【Docker】requests モジュールを用いてコンテナ間通信するときの、IP アドレス指定方式（コンテナ名で指定）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/docker_processing/8)
     - 【Docker】Docker コンテナ内から別の Docker コンテナを認識する
 - Kubernetes (k8s)
+- 【GCP】GKE [Google Kubernetes Engine]
     - [【GCP】Kubernetes (k8s) と GKE [Google Kubernetes Engine] の基本事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/9)
     - [【GCP】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/10)
     - [【GCP】GKE を用いた機械学習モデルの推論 API の構築](https://github.com/Yagami360/graphonomy_api-server_gke)
@@ -269,13 +270,15 @@ AIプロダクト開発のための Tips 集。<br>
     - 【GCP】サイドカーで異なるコンテナ間のボリュームを共有する
     - 【GCP】k8s の PersistentVolume と hostpath を使用してコンテナ間のボリュームを永続的に共有する
     - [【GCP】GKE 上の Web-API に対して Google Cloud Armor の WAF 機能を使用してクライアントIP単位での RateLimit 制限を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/55)
-
+- 【AWS】Amazon EKS [Amazon Elastic Kubernetes Service]
+    - 【AWS】Amazon EKS を用いて Web API を構築する
 </details>
 
 <details>
 <summary>認証基盤</summary>
 
 - [【GCP】GCP の認証システム](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/11)
+- [[In-progress]【AWS】AWS の認証システム](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/58)
 </details>
 
 <details>
@@ -353,7 +356,7 @@ AIプロダクト開発のための Tips 集。<br>
     - 【GCP】Cloud Run で GPU を使用可能にする
     - 【GCP】Cloud Run を用いた機械学習モデルの推論 API の構築
 - 【AWS】AWS Lambda
-    - [[In-progress]【AWS】AWS Lambda を使用してサーバレス Web-API を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/58)
+    - [【AWS】AWS Lambda を使用してサーバレス Web-API を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/58)
 
 </details>
 
