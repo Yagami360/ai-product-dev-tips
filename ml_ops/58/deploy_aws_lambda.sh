@@ -3,7 +3,7 @@ set -eu
 AWS_ACCOUNT_ID=735015535886
 IAM_ROLE_NAME="lambda-iam-role"
 IAM_POLICY_FILE_PATH="lambda-iam-policy.json"
-FUNCTION_NAME="sample-function-cli"
+FUNCTION_NAME="lambda-function-cli"
 
 #-----------------------------
 # OS判定
@@ -25,20 +25,20 @@ fi
 #-----------------------------
 # AWS CLI のインストール
 #-----------------------------
-<<COMMENTOUT
-if [ ${OS} = "Mac" ] ; then
-    curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
-    sudo installer -pkg AWSCLIV2.pkg -target /
-    rm AWSCLIV2.pkg
-elif [ ${OS} = "Linux" ] ; then
-    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-    unzip awscliv2.zip
-    sudo ./aws/install
-    rm awscliv2.zip
+aws --version &> /dev/null
+if [ $? -ne 0 ] ; then
+    if [ ${OS} = "Mac" ] ; then
+        curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+        sudo installer -pkg AWSCLIV2.pkg -target /
+        rm AWSCLIV2.pkg
+    elif [ ${OS} = "Linux" ] ; then
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install
+        rm awscliv2.zip
+    fi
 fi
-
 aws --version
-COMMENTOUT
 
 #-----------------------------
 # Lambda 関数実行のための IAM を作成する

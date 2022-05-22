@@ -271,7 +271,7 @@ AIプロダクト開発のための Tips 集。<br>
     - 【GCP】k8s の PersistentVolume と hostpath を使用してコンテナ間のボリュームを永続的に共有する
     - [【GCP】GKE 上の Web-API に対して Google Cloud Armor の WAF 機能を使用してクライアントIP単位での RateLimit 制限を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/55)
 - 【AWS】Amazon EKS [Amazon Elastic Kubernetes Service]
-    - 【AWS】Amazon EKS を用いて Web API を構築する
+    - [[In-progress]【AWS】Amazon EKS を用いて Web API を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/60)
 </details>
 
 <details>
