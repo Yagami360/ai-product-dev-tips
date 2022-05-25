@@ -43,11 +43,11 @@ aws --version
 #-----------------------------
 # Lambda 関数実行のための IAM を作成する
 #-----------------------------
-#if [ `aws iam list-roles --query 'Roles[].RoleName' | grep ${IAM_ROLE_NAME}` ] ; then
+#if [ `aws iam list-roles --query 'Roles[].RoleName' | grep -x ${IAM_ROLE_NAME}` ] ; then
 #    aws iam delete-role --role-name ${IAM_ROLE_NAME}
 #fi
 
-if [ ! `aws iam list-roles --query 'Roles[].RoleName' | grep ${IAM_ROLE_NAME}` ] ; then
+if [ ! `aws iam list-roles --query 'Roles[].RoleName' | grep -x ${IAM_ROLE_NAME}` ] ; then
     # Lambda 関数実行のための IAM ロールを作成する
     aws iam create-role \
         --role-name ${IAM_ROLE_NAME} \
@@ -70,7 +70,7 @@ zip -r lambda_function.zip lambda_function.py
 # Lambda 関数を作成する
 #-----------------------------
 # Lambda 関数を作成
-if [ `aws lambda list-functions --query 'Functions[].FunctionName' | grep ${FUNCTION_NAME}` ] ; then
+if [ `aws lambda list-functions --query 'Functions[].FunctionName' | grep -x ${FUNCTION_NAME}` ] ; then
     aws lambda delete-function --function-name ${FUNCTION_NAME}
 fi
 

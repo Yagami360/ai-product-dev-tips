@@ -1,0 +1,37 @@
+---
+# Pod
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: predict-pod
+  labels:
+    app: predict-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: predict-pod
+  template:
+    metadata:
+      labels:
+        app: predict-pod
+    spec:
+      containers:
+      - name: predict-container
+        image: 735015535886.dkr.ecr.us-west-2.amazonaws.com/predict-server-image-eks:latest
+        command: ["/bin/sh","-c"]
+        args: ["gunicorn app:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:5001 --workers 1 --threads 1 --backlog 256 --reload"]
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: predict-server
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 5001
+      targetPort: 5001
+      protocol: TCP
+  selector:
+    app: predict-pod

@@ -70,12 +70,7 @@ RUN pip3 install contextlib2
 #-----------------------------
 # ソースコードの書き込み
 #-----------------------------
-WORKDIR /api/predict-server
-WORKDIR /api/config
-WORKDIR /api/utils
-COPY api/predict-server/ /api/predict-server/
-COPY api/config/ /api/config/
-COPY api/utils/ /api/utils/
+COPY . . 
 
 #-----------------------------
 # ポート開放

@@ -67,12 +67,6 @@ RUN conda install -y -c conda-forge Gunicorn && conda clean -ya
 RUN conda install -y -c conda-forge dataclasses && conda clean -ya
 
 #-----------------------------
-# ソースコードの書き込み
-#-----------------------------
-#WORKDIR /predict
-#COPY *.py /predict/
-
-#-----------------------------
 # ポート開放
 #-----------------------------
 

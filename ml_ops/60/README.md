@@ -186,10 +186,167 @@
 
 1. API の Dockerfile を作成する<br>
     ```Dockerfile
+    #-----------------------------
+    # Docker イメージのベースイメージ
+    #-----------------------------
+    FROM python:3.8-slim
+    #FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7
+
+    #-----------------------------
+    # 基本ライブラリのインストール
+    #-----------------------------
+    # インストール時のキー入力待ちをなくす環境変数
+    ENV DEBIAN_FRONTEND noninteractive
+
+    RUN set -x && apt-get update && apt-get install -y --no-install-recommends \
+        sudo \
+        git \
+        curl \
+        wget \
+        bzip2 \
+        ca-certificates \
+        libx11-6 \
+        python3-pip \
+        # imageのサイズを小さくするためにキャッシュ削除
+        && apt-get clean \
+        && rm -rf /var/lib/apt/lists/*
+
+    RUN pip3 install --upgrade pip
+
+    #-----------------------------
+    # 環境変数
+    #-----------------------------
+    ENV LC_ALL=C.UTF-8
+    ENV export LANG=C.UTF-8
+    ENV PYTHONIOENCODING utf-8
+
+    #-----------------------------
+    # 追加ライブラリのインストール
+    #-----------------------------
+    # miniconda のインストール
+    RUN curl -LO http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    RUN bash Miniconda3-latest-Linux-x86_64.sh -p /miniconda -b
+    RUN rm Miniconda3-latest-Linux-x86_64.sh
+    ENV PATH=/miniconda/bin:${PATH}
+    RUN conda update -y conda
+        
+    # conda 上で Python 3.6 環境を構築
+    ENV CONDA_DEFAULT_ENV=py36
+    RUN conda create -y --name ${CONDA_DEFAULT_ENV} python=3.6.9 && conda clean -ya
+    ENV CONDA_PREFIX=/miniconda/envs/${CONDA_DEFAULT_ENV}
+    ENV PATH=${CONDA_PREFIX}/bin:${PATH}
+    RUN conda install conda-build=3.18.9=py36_3 && conda clean -ya
+
+    # OpenCV3 のインストール
+    RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
+        libgtk2.0-0 \
+        libcanberra-gtk-module \
+        && sudo rm -rf /var/lib/apt/lists/*
+
+    RUN conda install -y -c menpo opencv3=3.1.0 && conda clean -ya
+
+    # Others
+    RUN conda install -y tqdm && conda clean -ya
+    RUN conda install -y -c anaconda pillow==6.2.1 && conda clean -ya
+    RUN conda install -y -c anaconda requests && conda clean -ya
+    RUN conda install -y -c conda-forge fastapi && conda clean -ya
+    RUN conda install -y -c conda-forge uvicorn && conda clean -ya
+    RUN conda install -y -c conda-forge Gunicorn && conda clean -ya
+    RUN conda install -y -c conda-forge dataclasses && conda clean -ya
+    RUN pip3 install contextlib2
+
+    #-----------------------------
+    # ソースコードの書き込み
+    #-----------------------------
+    WORKDIR /api/predict-server
+    WORKDIR /api/utils
+    COPY api/predict-server/ /api/predict-server/
+    COPY api/utils/ /api/utils/
+
+    #-----------------------------
+    # ポート開放
+    #-----------------------------
+
+    #-----------------------------
+    # コンテナ起動後に自動的に実行するコマンド
+    #-----------------------------
+
+    #-----------------------------
+    # コンテナ起動後の作業ディレクトリ
+    #-----------------------------
+    WORKDIR /api/predict-server
     ```
+
+1. Amazon ECR [Elastic Container Registry] に Docker image を push する<br>
+    1. Docker image を作成する<br>
+        ```sh
+        cd api/predict-server
+        docker build./  -t ${IMAGE_NAME}
+        cd ../..
+        ```
+    1. ECR リポジトリを作成する<br>
+        ```sh
+        aws ecr create-repository --repository-name ${ECR_REPOSITORY_NAME} --image-scanning-configuration scanOnPush=true
+        ```
+    1. ECR にログインする<br>
+        ```sh
+        aws ecr get-login-password --profile ${AWS_PROFILE} --region ${REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
+        ```
+        > ECR を使用する場合は、`docker login` コマンドの `--username` オプションのユーザー名は `AWS` になる
+
+        > `--profile` の値は `cat ~/.aws/config` で確認できる
+
+    1. ローカルの docker image に ECR リポジトリ名での tag を付ける<br>
+        ```sh
+        docker tag ${IMAGE_NAME}:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${IMAGE_NAME}:latest
+        ```
+    1. ECR に Docker image を push する<br>
+        ```sh
+        docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${IMAGE_NAME}:latest
+        ```
+
+    > - Amazon ECR の参考サイト
+    >    - https://docs.aws.amazon.com/ja_jp/AmazonECR/latest/userguide/getting-started-cli.html
 
 1. API の k8s マニフェストを作成する<br>
     ```yaml
+    ---
+    # Pod
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+    name: predict-pod
+    labels:
+        app: predict-pod
+    spec:
+    replicas: 1
+    selector:
+        matchLabels:
+        app: predict-pod
+    template:
+        metadata:
+        labels:
+            app: predict-pod
+        spec:
+        containers:
+        - name: predict-container
+            image: 735015535886.dkr.ecr.us-west-2.amazonaws.com/predict-server-image-eks:latest
+            command: ["/bin/sh","-c"]
+            args: ["gunicorn app:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:5001 --workers 1 --threads 1 --backlog 256 --reload"]
+    ---
+    # Service
+    apiVersion: v1
+    kind: Service
+    metadata:
+    name: predict-server
+    spec:
+    type: LoadBalancer
+    ports:
+        - port: 5001
+        targetPort: 5001
+        protocol: TCP
+    selector:
+        app: predict-pod
     ```
 
 1. EKS クラスターを作成する<br>
@@ -205,9 +362,24 @@
 
 1. 各種 k8s リソースをデプロイする<br>
     ```sh
+    kubectl apply -f k8s/predict.yml
+    ```
+
+1.EKS 上の API に対してリクエスト処理を行う
+    ```sh
+    SERVICE_NAME=predict-server
+    HOST=`kubectl describe service ${SERVICE_NAME} | grep "LoadBalancer Ingress" | awk '{print $3}'`
+    PORT=5001
+
+    IN_IMAGES_DIR=in_images
+    OUT_IMAGES_DIR=out_images
+    rm -rf ${OUT_IMAGES_DIR}
+
+    # リクエスト処理
+    python3 request.py --host ${HOST} --port ${PORT} --in_images_dir ${IN_IMAGES_DIR} --out_images_dir ${OUT_IMAGES_DIR}
     ```
 
 ## ■ 参考サイト
 
 - https://docs.aws.amazon.com/ja_jp/eks/latest/userguide/getting-started.html
-- xxx
+- https://dev.classmethod.jp/articles/aws-summit-online-2020-hol-06/
