@@ -4,17 +4,13 @@ AWS_ACCOUNT_ID=735015535886
 AWS_PROFILE=Yagami360
 REGION="us-west-2"
 
-IAM_ROLE_NAME="eks-iam-role"
-IAM_POLICY_FILE_PATH="eks-iam-policy.json"
-
 CLUSTER_NAME="eks-cluster"
 CLUSTER_NODE_TYPE="t2.micro"
 MIN_NODES=1
 MAX_NODES=1
 
 IMAGE_NAME=predict-server-image-eks
-ECR_REPOSITORY_NAME=predict-server-image-repo
-
+ECR_REPOSITORY_NAME=${IMAGE_NAME}
 #ENABLE_BUILD=0
 ENABLE_BUILD=1
 
@@ -51,7 +47,8 @@ if [ $? -ne 0 ] ; then
         rm awscliv2.zip
     fi
 fi
-aws --version
+
+echo "aws version : `aws --version`"
 
 #-----------------------------
 # kubectl コマンドをインストールする
@@ -75,7 +72,7 @@ if [ $? -ne 0 ] ; then
     fi
 fi
 
-kubectl version
+echo "kubectl version : `kubectl version`"
 
 #-----------------------------
 # eksctl コマンドをインストールする
@@ -104,29 +101,6 @@ echo "eksctl version : `eksctl version`"
 #-----------------------------
 
 #-----------------------------
-# EKS 用 IAM 作成
-#-----------------------------
-<<COMMENTOUT
-if [ `aws iam list-roles --query 'Roles[].RoleName' | grep -x ${IAM_ROLE_NAME}` ] ; then
-    aws iam delete-role --role-name ${IAM_ROLE_NAME}
-fi
-
-if [ ! `aws iam list-roles --query 'Roles[].RoleName' | grep -x ${IAM_ROLE_NAME}` ] ; then
-    # Lambda 関数実行のための IAM ロールを作成する
-    aws iam create-role \
-        --role-name ${IAM_ROLE_NAME} \
-        --assume-role-policy-document "file://${IAM_POLICY_FILE_PATH}" &
-
-    sleep 10
-
-    # 作成した IAM ロールに、Lambda サービスにアクセスできるようにするための IAM ポリシーを付与する
-    #aws iam attach-role-policy \
-    #    --role-name ${IAM_ROLE_NAME} \
-    #    --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-fi
-COMMENTOUT
-
-#-----------------------------
 # Amazon ECR に Docker image を push する
 #-----------------------------
 if [ ! ${ENABLE_BUILD} = 0 ] ; then
@@ -136,7 +110,10 @@ if [ ! ${ENABLE_BUILD} = 0 ] ; then
     cd ../..
 
     # ECR リポジトリを作成する
-    if [ "$( aws ecr batch-get-repository-scanning-configuration --query scanningConfigurations[*].repositoryName | grep -x "${ECR_REPOSITORY_NAME}")" ] ; then
+    if [ "$( aws ecr batch-get-repository-scanning-configuration --repository-names ${ECR_REPOSITORY_NAME} --query scanningConfigurations[*].repositoryName | grep "${ECR_REPOSITORY_NAME}")" ] ; then
+        if [ "$( aws ecr list-images --repository-name ${ECR_REPOSITORY_NAME} --query imageIds[*].imageTag | grep "latest")" ] ; then
+            aws ecr batch-delete-image --repository-name ${ECR_REPOSITORY_NAME} --image-ids imageTag=latest
+        fi
         aws ecr delete-repository --repository-name ${ECR_REPOSITORY_NAME}
     fi
     aws ecr create-repository --repository-name ${ECR_REPOSITORY_NAME} --image-scanning-configuration scanOnPush=true
@@ -145,32 +122,32 @@ if [ ! ${ENABLE_BUILD} = 0 ] ; then
     aws ecr get-login-password --profile ${AWS_PROFILE} --region ${REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
 
     # ローカルの docker image に ECR リポジトリ名での tag を付ける
-    docker tag ${IMAGE_NAME}:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${IMAGE_NAME}:latest
+    docker tag ${IMAGE_NAME}:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:latest
 
     # ECR に Docker image を push する
-    docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${IMAGE_NAME}:latest
+    docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:latest
 fi
 
 #-----------------------------
 # クラスタを作成
 #-----------------------------
-<<COMMENTOUT
-if [ "$( aws eks list-clusters --query clusters | grep -x "${CLUSTER_NAME}")" ] ; then
-    kubectl delete svc kube-dns -n kube-system
-    kubectl delete svc kubernetes
+if [ "$( aws eks list-clusters --query clusters | grep "${CLUSTER_NAME}")" ] ; then
     eksctl delete cluster --name ${CLUSTER_NAME} --region ${REGION} --wait
 fi
 
-if [ ! "$( aws eks list-clusters --query clusters | grep -x "${CLUSTER_NAME}")" ] ; then
+if [ ! "$( aws eks list-clusters --query clusters | grep "${CLUSTER_NAME}")" ] ; then
     eksctl create cluster --name ${CLUSTER_NAME} \
         --region ${REGION} \
         --fargate \
         --node-type ${CLUSTER_NODE_TYPE} \
         --nodes-min ${MIN_NODES} --nodes-max ${MAX_NODES}
 fi
-COMMENTOUT
 
 #-----------------------------
 # 各種 k8s リソースを作成する
 #-----------------------------
 kubectl apply -f k8s/predict.yml
+
+#-----------------------------
+# セキュリティーグループを設定
+#-----------------------------

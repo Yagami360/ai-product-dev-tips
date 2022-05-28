@@ -28,6 +28,7 @@ kind: Service
 metadata:
   name: predict-server
 spec:
+#  type: NodePort
   type: LoadBalancer
   ports:
     - port: 5001

@@ -1,4 +1,15 @@
-# 【AWS】Amazon EKS を用いて Web API を構築する
+# 【AWS】 Amazon EKS を用いて Web API を構築する
+
+Amazon EKS を用いて EKS クラスターを作成する方法には、以下の２種類がある
+
+1. `eksctl` コマンドで EKS クラスターを作成する方法<br>
+    `eksctl` コマンドで EKS クラスターを作成する場合は、EKS 用の VPC や IAM ロールの作成などが全て自動的に行われ、簡単に EKS クラスターを作成できる
+
+1. `aws` コマンドで EKS クラスターを作成する方法<br>
+    `aws` コマンドで EKS クラスターを作成する場合は、EKS 用の VPC や IAM ロールなどを自分で行う必要があるので、少し煩雑な方法になる
+
+ここでは、最も容易な１つ目の `eksctl` コマンドで EKS クラスターを作成する方法を記載する。
+
 
 ## ■ 方法
 
@@ -278,7 +289,7 @@
     ```
 
 1. Amazon ECR [Elastic Container Registry] に Docker image を push する<br>
-    1. Docker image を作成する<br>
+    1. API の Docker image を作成する<br>
         ```sh
         cd api/predict-server
         docker build./  -t ${IMAGE_NAME}
@@ -297,16 +308,14 @@
         > `--profile` の値は `cat ~/.aws/config` で確認できる
 
     1. ローカルの docker image に ECR リポジトリ名での tag を付ける<br>
+        ECR での docker image 名は ``${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:latest` になるので、`docker tag` でローカルにある docker image に別名をつける
         ```sh
-        docker tag ${IMAGE_NAME}:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${IMAGE_NAME}:latest
+        docker tag ${IMAGE_NAME}:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:latest
         ```
     1. ECR に Docker image を push する<br>
         ```sh
-        docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${IMAGE_NAME}:latest
+        docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:latest
         ```
-
-    > - Amazon ECR の参考サイト
-    >    - https://docs.aws.amazon.com/ja_jp/AmazonECR/latest/userguide/getting-started-cli.html
 
 1. API の k8s マニフェストを作成する<br>
     ```yaml
@@ -315,24 +324,24 @@
     apiVersion: apps/v1
     kind: Deployment
     metadata:
-    name: predict-pod
-    labels:
-        app: predict-pod
-    spec:
-    replicas: 1
-    selector:
-        matchLabels:
-        app: predict-pod
-    template:
-        metadata:
+        name: predict-pod
         labels:
             app: predict-pod
-        spec:
-        containers:
-        - name: predict-container
-            image: 735015535886.dkr.ecr.us-west-2.amazonaws.com/predict-server-image-eks:latest
-            command: ["/bin/sh","-c"]
-            args: ["gunicorn app:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:5001 --workers 1 --threads 1 --backlog 256 --reload"]
+    spec:
+        replicas: 1
+        selector:
+            matchLabels:
+            app: predict-pod
+        template:
+            metadata:
+            labels:
+                app: predict-pod
+            spec:
+            containers:
+            - name: predict-container
+                image: 735015535886.dkr.ecr.us-west-2.amazonaws.com/predict-server-image-eks:latest
+                command: ["/bin/sh","-c"]
+                args: ["gunicorn app:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:5001 --workers 1 --threads 1 --backlog 256 --reload"]
     ---
     # Service
     apiVersion: v1
@@ -340,14 +349,19 @@
     metadata:
     name: predict-server
     spec:
-    type: LoadBalancer
+        type: NodePort
+        #type: LoadBalancer
     ports:
         - port: 5001
-        targetPort: 5001
-        protocol: TCP
+          targetPort: 5001
+          protocol: TCP
     selector:
         app: predict-pod
     ```
+
+
+    > EKS において `type: LoadBalancer` で Service リソースをデプロイした場合、`aacde1380ec0149da89649c5eebf63ab-1308085615.us-west-2.elb.amazonaws.com` のような URL で `EXTERNAL-IP` が割り当てられる。
+
 
 1. EKS クラスターを作成する<br>
     ```sh
@@ -357,15 +371,68 @@
         --node-type ${CLUSTER_NODE_TYPE} \
         --nodes-min ${MIN_NODES} --nodes-max ${MAX_NODES}
     ```
+    - `--fargate` : 指定した場合は AWS Fargate で Linux アプリケーションを実行。指定しない場合はマネージド型ノードになる<br>
 
-    > Amazon EKS クラスターを使用するには、`[AmazonEKSClusterPolicy](https://us-east-1.console.aws.amazon.com/iam/home#/policies/arn:aws:iam::aws:policy/AmazonEKSClusterPolicy$jsonEditor)` という IAM ポリシーをもつ IAM ロールが必要であるが、`eksctl create cluster` コマンドで EKS クラスターを作成すれば、この IAM ポリシー `AmazonEKSClusterPolicy` をもつ IAM ロールが自動的に作成される。
+        > Fargate : Amazon EC2 インスタンスを管理せずに Kubernetes ポッドをデプロイできるサーバーレスコンピューティングエンジン
+
+        > マネージド型ノード : Amazon EC2 インスタンスで Amazon Linux アプリケーションを実行する
+
+    > Amazon EKS クラスターを使用するには、`[AmazonEKSClusterPolicy](https://us-east-1.console.aws.amazon.com/iam/home#/policies/arn:aws:iam::aws:policy/AmazonEKSClusterPolicy$jsonEditor)` という IAM ポリシーをもつ IAM ロールや VPC などが必要であるが、`eksctl` コマンドで EKS クラスターを作成すれば、この IAM ポリシー `AmazonEKSClusterPolicy` をもつ IAM ロールや VPC などが全て自動的に作成される。
+
+    >`aws` コマンドで EKS クラスターを作成する場合は、EKS 用の VPC や IAM ロールを自分で作成する必要がある
 
 1. 各種 k8s リソースをデプロイする<br>
     ```sh
     kubectl apply -f k8s/predict.yml
     ```
 
-1.EKS 上の API に対してリクエスト処理を行う
+1. 【オプション】EKS クラスター・Pod・Service を確認する<br>
+    EKS クラスター・Pod・Service を確認し、正常に動作していることを確認する
+
+    - コンソール画面を使用する場合
+        作成した EKS クラスターは、「[AWS の EKS コンソール画面](https://us-west-2.console.aws.amazon.com/eks/home?region=us-west-2#/clusters)」から確認できる。また、Pod や Service は、作成したクラスター内のコンソール画面から確認できる
+
+        <img width="500" alt="image" src="https://user-images.githubusercontent.com/25688193/170808767-a669d493-d180-4f4c-898d-261b62764d19.png"><br>
+        <img width="500" alt="image" src="https://user-images.githubusercontent.com/25688193/170808821-c025e4ad-f296-433f-b7f4-3de90625a76f.png"><br>
+
+    - CLI を使用する場合
+        - Pod の確認
+            ```sh
+            kubectl get pod
+            ```
+
+        - Service の確認
+            ```sh
+            kubectl get service
+            ```
+
+1. 【オプション】APIのコンテナログ ＆ APIログを確認する<br>
+    APIのコンテナログ ＆ APIログを確認するし、正常に動作していることを確認する
+
+    - API のコンテナログ確認<br>
+        ```sh
+        kubectl logs `kubectl get pods | grep "predict-pod" | awk '{print $1}'`
+        ```
+
+    - API のコンテナログ確認<br>
+        ```sh
+        kubectl exec -it `kubectl get pods | grep "predict-pod" | awk '{print $1}'` /bin/bash
+        cat log/app.log
+        ```
+
+<!--
+1. セキュリティグループを設定する<br>
+    GKE クラスター上にデプロイした `type: LoadBalancer` での Service の `EXTERNAL-IP` に外部アクセスできるようにするために、セキュリティグループを設定する
+
+    - GUI で行う場合
+        「[AWS の VPC コンソール画面](https://us-west-2.console.aws.amazon.com/vpc/home?region=us-west-2#securityGroups:)」から、セキュリティーグループを確認
+
+    - CLI で行う場合
+        ```sh
+        ```
+-->
+
+1. EKS 上の API に対してリクエスト処理を行う<br>
     ```sh
     SERVICE_NAME=predict-server
     HOST=`kubectl describe service ${SERVICE_NAME} | grep "LoadBalancer Ingress" | awk '{print $3}'`
@@ -381,5 +448,13 @@
 
 ## ■ 参考サイト
 
-- https://docs.aws.amazon.com/ja_jp/eks/latest/userguide/getting-started.html
-- https://dev.classmethod.jp/articles/aws-summit-online-2020-hol-06/
+- Amazon EKS
+    - https://docs.aws.amazon.com/ja_jp/eks/latest/userguide/getting-started.html
+    - https://docs.aws.amazon.com/ja_jp/eks/latest/userguide/getting-started-eksctl.html
+    - https://dev.classmethod.jp/articles/aws-summit-online-2020-hol-06/
+    - https://dev.classmethod.jp/articles/eks_basic/
+- Amazon ECR
+    - https://docs.aws.amazon.com/ja_jp/AmazonECR/latest/userguide/getting-started-cli.html
+
+## ■ ToDO
+- [ ] EKS において `type: LoadBalancer` で Service リソースをデプロイした場合、`aacde1380ec0149da89649c5eebf63ab-1308085615.us-west-2.elb.amazonaws.com` のような URL で `EXTERNAL-IP` が割り当てられるが、この URL に外部から `curl` でアクセスしても、API のエンドポイントにアクセスできなかったので、外部アクセスできるようにする

@@ -8,11 +8,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Any, Dict
 
-from api_utils import graph_cut
-
-import sys
-sys.path.append(os.path.join(os.getcwd(), '../utils'))
-from utils import conv_base64_to_pillow, conv_pillow_to_base64
+from utils.api_utils import graph_cut
+from utils.utils import conv_base64_to_pillow, conv_pillow_to_base64
 
 # logger
 if not os.path.isdir("log"):
