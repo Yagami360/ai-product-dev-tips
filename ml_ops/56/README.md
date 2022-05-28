@@ -23,8 +23,6 @@ Cloud SQL は、以下のようなコンポーネントから構成される
 
     <img width="400" alt="image" src="https://user-images.githubusercontent.com/25688193/167243077-1b2a7671-ea1d-4dcc-bf89-18c9522c095f.png">
 
-- xxx
-
 - Cloud SQL インスタンスへの接続方式<br>
     Cloud SQL インスタンスへの接続を行う際には、以下のような公開範囲や接続方法を選択できる
 

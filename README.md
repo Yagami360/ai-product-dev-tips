@@ -394,7 +394,8 @@ AIプロダクト開発のための Tips 集。<br>
     - 【GCP】BigQuery を使用したデータ処理（Python 用 BigQuery Storage API ライブラリ使用時）
 - 【GCP】Google Cloud SQL
     - [【GCP】Google Cloud SQL の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/56)
-    - [[In-progress]【GCP】Google Cloud SQL を使用して MySQL に Web-API のログデータを書き込む（FastAPI + uvicorn + gunicorn + MySQL + docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/57)
+    - [[In-progress]【GCP】Google Cloud SQL を使用して SQL インスタンス上に MySQL データベースを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/57)
+    - 【GCP】Google Cloud SQL を使用して MySQL に Web-API のログデータを書き込む（FastAPI + uvicorn + gunicorn + MySQL + docker + docker-compose での構成）
     
 </details>
 

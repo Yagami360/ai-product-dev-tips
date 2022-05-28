@@ -288,6 +288,19 @@ Amazon EKS を用いて EKS クラスターを作成する方法には、以下�
     WORKDIR /api/predict-server
     ```
 
+<!--
+1. API 用の固定 IP アドレスを確保する<br>
+    ECR クラスター上の API Pod に Service 経由で外部アクセスするための固定 IP アドレスを確保する
+
+    - GUI で行う場合<br>
+        「[AWS の VPC コンソール画面](https://us-west-2.console.aws.amazon.com/vpc/home?region=us-west-2#Addresses:)」の Elastic IP 画面から「Elastic IP アドレスを割り当てる」ボタンをクリックする
+
+    - CLI で行う場合<br>
+        ```sh
+        aws ec2 allocate-address --domain vpc --tag-specifications "ResourceType=elastic-ip,Tags=[{Key=Name,Value='${CLUSTER_NAME}-predict-server-ip'}]"
+        ```
+-->
+
 1. Amazon ECR [Elastic Container Registry] に Docker image を push する<br>
     1. API の Docker image を作成する<br>
         ```sh
@@ -349,8 +362,9 @@ Amazon EKS を用いて EKS クラスターを作成する方法には、以下�
     metadata:
     name: predict-server
     spec:
-        type: NodePort
-        #type: LoadBalancer
+        #type: NodePort
+        type: LoadBalancer
+        loadBalancerIP: 44.225.109.227   # IP アドレス固定
     ports:
         - port: 5001
           targetPort: 5001
@@ -362,11 +376,13 @@ Amazon EKS を用いて EKS クラスターを作成する方法には、以下�
 
     > EKS において `type: LoadBalancer` で Service リソースをデプロイした場合、`aacde1380ec0149da89649c5eebf63ab-1308085615.us-west-2.elb.amazonaws.com` のような URL で `EXTERNAL-IP` が割り当てられる。
 
+    > [ToDo] 但し、この `EXTERNAL-IP` の URL に外部アクセスできなかった。原因は不明。URL で外部アクセスできるようにする
+
+    > [ToDo] そのため、Elastic IP で作成した固定 IP を割り当てが、今度は `EXTERNAL-IP` が pending のままになってしまう。Elastic IP で外部アクセスできるようにする
 
 1. EKS クラスターを作成する<br>
     ```sh
     eksctl create cluster --name ${CLUSTER_NAME} \
-        --region ${REGION} \
         --fargate \
         --node-type ${CLUSTER_NODE_TYPE} \
         --nodes-min ${MIN_NODES} --nodes-max ${MAX_NODES}

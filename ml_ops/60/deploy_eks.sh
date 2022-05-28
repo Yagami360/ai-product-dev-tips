@@ -129,6 +129,11 @@ if [ ! ${ENABLE_BUILD} = 0 ] ; then
 fi
 
 #-----------------------------
+# API 用の固定 IP アドレスを確保する
+#-----------------------------
+#aws ec2 allocate-address --domain vpc --tag-specifications "ResourceType=elastic-ip,Tags=[{Key=Name,Value='${CLUSTER_NAME}-predict-server-ip'}]"
+
+#-----------------------------
 # クラスタを作成
 #-----------------------------
 if [ "$( aws eks list-clusters --query clusters | grep "${CLUSTER_NAME}")" ] ; then
@@ -137,7 +142,6 @@ fi
 
 if [ ! "$( aws eks list-clusters --query clusters | grep "${CLUSTER_NAME}")" ] ; then
     eksctl create cluster --name ${CLUSTER_NAME} \
-        --region ${REGION} \
         --fargate \
         --node-type ${CLUSTER_NODE_TYPE} \
         --nodes-min ${MIN_NODES} --nodes-max ${MAX_NODES}
