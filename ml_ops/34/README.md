@@ -10,7 +10,7 @@ SQLAlchemy は、Python から MySQL に接続するための ORM 指向の Pyth
 1. MySQL をインストールする<br>
     - MacOS の場合
         ```sh
-        $ MySQL をインストールする
+        $ brew install mysql
         ```
 
 1. PyMySQL をインストールする<br>

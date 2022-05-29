@@ -394,9 +394,9 @@ AIプロダクト開発のための Tips 集。<br>
     - 【GCP】BigQuery を使用したデータ処理（Python 用 BigQuery Storage API ライブラリ使用時）
 - 【GCP】Google Cloud SQL
     - [【GCP】Google Cloud SQL の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/56)
-    - [[In-progress]【GCP】Google Cloud SQL を使用して SQL インスタンス上に MySQL データベースを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/57)
+    - [【GCP】Google Cloud SQL を使用して SQL インスタンス上の MySQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/57)
     - 【GCP】Google Cloud SQL を使用して MySQL に Web-API のログデータを書き込む（FastAPI + uvicorn + gunicorn + MySQL + docker + docker-compose での構成）
-    
+
 </details>
 
 <details>
@@ -471,7 +471,11 @@ AIプロダクト開発のための Tips 集。<br>
 - Luigi / gokart
     - Luigi を使用して複雑な処理を行う API のパイプラインを管理する
 - MLflow
-- Airflow
+- 【Apahe】Apahe Airflow
+- 【GCP】CloudComposer
+    - [【GCP】CloudComposer の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/61)
+    - [【GCP】CloudComposer v1 を使用して簡単なワークフローを構成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/62)
+    - 【GCP】CloudComposer v2 を使用して簡単なワークフローを構成する
 - 【GCP】Kubeflow
     - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/1)
     - [[In-progress]【Kubeflow】GKE クラスタに Kubeflow を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/2)
