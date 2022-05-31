@@ -68,5 +68,3 @@ CloudComposer のバージョンには、v1 と v2 がある
 ## ■ 参考サイト
 - https://www.topgate.co.jp/cloud-composer
 - https://cloud.google.com/composer/docs/concepts/overview?hl=ja
-- https://qiita.com/minarai/items/28b4269736ea0df136ff#cloud-composer%E7%B7%A8
-- https://medium.com/eureka-engineering/data-mgmt-cloud-composer-29ba3fcbffe0

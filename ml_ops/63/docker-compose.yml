@@ -1,0 +1,21 @@
+version: '2.3'
+
+services:
+  predict-server:
+    container_name: predict-container
+    image: predict-server-image
+    build:
+      context: "api/predict-server/"
+      dockerfile: Dockerfile
+#      dockerfile: Dockerfile_dev
+#    volumes:
+#      - ${PWD}/api/predict-server:/api/predict-server
+    ports:
+      - "5001:5001"
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    command: bash -c "gunicorn app:app --bind 0.0.0.0:5001 -w 1 -k uvicorn.workers.UvicornWorker --reload"
+

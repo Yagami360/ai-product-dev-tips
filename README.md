@@ -331,19 +331,6 @@ AIプロダクト開発のための Tips 集。<br>
 </details>
 
 <details>
-<summary>インフラのコード化 / Infrastructure as Code</summary>
-
-- Terraform
-    - [【Terraform】Terraform の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/10)
-    - [【Terraform】Terraform を利用して AWS インスタンスを自動的に構築する。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/11)
-    - 【Terraform】Terraform を利用して GCP インスタンスを自動的に構築する。
-    - 【Terraform】Terraform を利用して機械学習環境の GCP インスタンスを自動的に構築する。
-- 【GCP】DeploymentManager
-    - 【GCP】DeploymentManager の基礎事項
-
-</details>
-
-<details>
 <summary>サーバレス / FaaS [Function as a Service]</summary>
 
 - 【GCP】Cloud Functions
@@ -357,23 +344,6 @@ AIプロダクト開発のための Tips 集。<br>
     - 【GCP】Cloud Run を用いた機械学習モデルの推論 API の構築
 - 【AWS】AWS Lambda
     - [【AWS】AWS Lambda を使用してサーバレス Web-API を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/58)
-
-</details>
-
-<details>
-<summary>CI/CD</summary>
-
-- [CI/CD の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/4)
-- GitHub Actions
-    - [GitHub Actions を用いた CI/CD](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/5)
-    - GitHub Actions を用いて機械学習の推論APIの CI/CD を行う
-- 【GCP】Cloud Build
-    - [【GCP】Cloud Build を用いてローカルPC 上で CI/CD を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/12)
-    - 【GCP】Cloud Build を用いて GCE 上で CI/CD を行う
-    - [【GCP】Cloud Build を用いて Cloud Run 上で CI/CD を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/13)
-    - [【GCP】Cloud Build を用いて Cloud Function 上で CI/CD を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/14)
-    - [【GCP】Cloud Build を用いて GKE（CPU動作）上で CI/CD を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/15)
-    - [【GCP】Cloud Build を用いて GKE（GPU動作）上で CI/CD を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/16)
 
 </details>
 
@@ -484,6 +454,38 @@ AIプロダクト開発のための Tips 集。<br>
     - 【GCP】Vertex AI の基礎事項
     - [【GCP】Vertex Pipelines を使用して機械学習パイプラインを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/54)
     - 【GCP】Vertex Pipelines を使用して独自のパイプラインコンポーネントでの機械学習パイプラインを構築する
+
+</details>
+
+<details>
+<summary>インフラのコード化 / Infrastructure as Code</summary>
+
+- Terraform
+    - [【Terraform】Terraform の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/10)
+    - [【Terraform】Terraform を利用して AWS インスタンスを自動的に構築する。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/11)
+    - 【Terraform】Terraform を利用して GCP インスタンスを自動的に構築する。
+    - 【Terraform】Terraform を利用して機械学習環境の GCP インスタンスを自動的に構築する。
+- 【GCP】DeploymentManager
+    - 【GCP】DeploymentManager の基礎事項
+
+</details>
+
+<details>
+<summary>CI/CD</summary>
+
+- [CI/CD の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/4)
+- GitHub Actions
+    - [GitHub Actions を用いた CI/CD](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/5)
+    - GitHub Actions を用いて機械学習の推論APIの CI/CD を行う
+- 【GCP】Cloud Build
+    - [【GCP】Cloud Build を用いてローカルPC 上で CI/CD を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/12)
+    - 【GCP】Cloud Build を用いて GCE 上で CI/CD を行う
+    - [【GCP】Cloud Build を用いて Cloud Run 上で CI/CD を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/13)
+    - [【GCP】Cloud Build を用いて Cloud Function 上で CI/CD を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/14)
+    - [【GCP】Cloud Build を用いて GKE（CPU動作）上で CI/CD を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/15)
+    - [【GCP】Cloud Build を用いて GKE（GPU動作）上で CI/CD を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/16)
+- ArgoCD
+    - ArgoCD を使用して Web-API を Kubernetes（Amazon EKS）上に継続的にデプロイ（CD）する
 
 </details>
 

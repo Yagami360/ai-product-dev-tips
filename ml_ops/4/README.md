@@ -29,3 +29,9 @@
 - DevOps（デブオプス）
     xxx
 
+- GitOps<br>
+    Git コマンド（git push, git pull など）を起点として Kubernetes のリソースの CI/CD を行う仕組み<br>
+    GithubActions のような CI/CD ツールを利用して構築することも可能であるが、ArgoCD などの専用 CI/CD ツールで実現することもできる
+
+- MLOps
+
