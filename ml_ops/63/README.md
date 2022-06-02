@@ -238,7 +238,6 @@ Github Actions のような CI/CD ツールを利用して Kubernetes へのデ�
         app: predict-pod
     ```
 
-
     > EKS において `type: LoadBalancer` で Service リソースをデプロイした場合、`aacde1380ec0149da89649c5eebf63ab-1308085615.us-west-2.elb.amazonaws.com` のような URL で `EXTERNAL-IP` が割り当てられる。
 
     > [ToDo] 但し、この `EXTERNAL-IP` の URL に外部アクセスできなかった。原因は不明。URL で外部アクセスできるようにする
@@ -248,15 +247,17 @@ Github Actions のような CI/CD ツールを利用して Kubernetes へのデ�
 1. EKS クラスターを作成する<br>
     ```sh
     eksctl create cluster --name ${CLUSTER_NAME} \
-        --fargate \
         --node-type ${CLUSTER_NODE_TYPE} \
-        --nodes-min ${MIN_NODES} --nodes-max ${MAX_NODES}
+        --nodes-min ${MIN_NODES} --nodes-max ${MAX_NODES} \
+        --managed
     ```
     - `--fargate` : 指定した場合は AWS Fargate で Linux アプリケーションを実行。指定しない場合はマネージド型ノードになる<br>
 
         > Fargate : Amazon EC2 インスタンスを管理せずに Kubernetes ポッドをデプロイできるサーバーレスコンピューティングエンジン
 
         > マネージド型ノード : Amazon EC2 インスタンスで Amazon Linux アプリケーションを実行する
+
+        > `--fargate` を指定すると、ArgoCD Pod が正常に起動しないので、`--fargate` 指定なしで EKS クラスターを作成する必要があることに注意
 
     > Amazon EKS クラスターを使用するには、`[AmazonEKSClusterPolicy](https://us-east-1.console.aws.amazon.com/iam/home#/policies/arn:aws:iam::aws:policy/AmazonEKSClusterPolicy$jsonEditor)` という IAM ポリシーをもつ IAM ロールや VPC などが必要であるが、`eksctl` コマンドで EKS クラスターを作成すれば、この IAM ポリシー `AmazonEKSClusterPolicy` をもつ IAM ロールや VPC などが全て自動的に作成される。
 
@@ -346,3 +347,4 @@ Github Actions のような CI/CD ツールを利用して Kubernetes へのデ�
 - https://qiita.com/bindingpry/items/8f10a701015599a00953
 - https://dev.classmethod.jp/articles/getting-started-argocd/
 - https://qiita.com/MahoTakara/items/b52c2bdd1243c8190ee9
+- https://sotoiwa.hatenablog.com/entry/2020/05/25/184227

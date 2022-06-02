@@ -6,8 +6,8 @@ REGION="us-west-2"
 
 CLUSTER_NAME="eks-cluster"
 CLUSTER_NODE_TYPE="t2.micro"
-MIN_NODES=1
-MAX_NODES=1
+MIN_NODES=3
+MAX_NODES=3
 
 IMAGE_NAME=predict-server-image-eks
 ECR_REPOSITORY_NAME=${IMAGE_NAME}
@@ -157,9 +157,9 @@ fi
 
 if [ ! "$( aws eks list-clusters --query clusters | grep "${CLUSTER_NAME}")" ] ; then
     eksctl create cluster --name ${CLUSTER_NAME} \
-        --fargate \
         --node-type ${CLUSTER_NODE_TYPE} \
-        --nodes-min ${MIN_NODES} --nodes-max ${MAX_NODES}
+        --nodes-min ${MIN_NODES} --nodes-max ${MAX_NODES} \
+        --managed
 fi
 
 #-----------------------------
@@ -196,3 +196,16 @@ echo `ArgoCD passward : ${ARGOCD_PASSWARD}`
 
 # ログイン
 argocd login ${ARGOCD_SERVER_DOMAIN} --name ${ARGOCD_USERNAME} --password ${ARGOCD_PASSWARD}
+
+#-----------------------------
+# ArgoCD で管理したい k8s マニフェストファイルと Git リポジトリーの同期を行う
+#-----------------------------
+# ArgoCD で管理するクラスターを選択し設定する
+argocd cluster add ${CLUSTER_NAME}
+
+# ArgoCD で管理する GitHub の k8s マニフェストファイルのフォルダーを設定
+argocd app create ${APP_NAME} \
+    --repo ${REPOSITORY_URL} \
+    --path ${K8S_MANIFESTS_DIR} \
+    --dest-server https://kubernetes.default.svc \
+    --dest-namespace default
