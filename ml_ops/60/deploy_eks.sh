@@ -5,9 +5,10 @@ AWS_PROFILE=Yagami360
 REGION="us-west-2"
 
 CLUSTER_NAME="eks-cluster"
-CLUSTER_NODE_TYPE="t2.micro"
+#CLUSTER_NODE_TYPE="t2.micro"
+CLUSTER_NODE_TYPE="t2.medium"
 MIN_NODES=1
-MAX_NODES=1
+MAX_NODES=3
 
 IMAGE_NAME=predict-server-image-eks
 ECR_REPOSITORY_NAME=${IMAGE_NAME}
