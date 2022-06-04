@@ -46,9 +46,16 @@ Opsgenie を利用することで、サーバーで発生したアラートを�
             sudo ./aws/install
             ```
 
-    1. VPC を作成する
+    1. VPC を作成する<br>
         ```sh
-        aws ec2 create-vpc --cidr-block 10.10.0.0/16
+        # VPC 作成
+        aws ec2 create-vpc --cidr-block ${CIDR_BLOCK}/16
+
+        # 作成した VPC の VPC ID 取得
+        VPC_ID=`aws ec2 describe-vpcs --filter "Name=cidr-block,Values=${CIDR_BLOCK}/16" --query Vpcs[*].VpcId | grep vpc- | sed 's/ //g' | sed 's/"//g'`
+
+        # VPC に名前をつける
+        aws ec2 create-tags --resources ${VPC_ID} --tags Key=Name,Value=${VPC_NAME}
         ```
 
         > VPC [Virtual Private Cloud] : AWS専用の仮想ネットワーク。インターネットを利用する際、ルーターやゲートウェイなどのネットワーク機器が必要となるが、VPCはそれらの機器を仮想的に用意し、ネットワーク環境を構築できるようにしている。
@@ -59,17 +66,27 @@ Opsgenie を利用することで、サーバーで発生したアラートを�
 
     1. サブネットを作成する<br>
         ```sh
+        # サブネットマスクを作成
         aws ec2 create-subnet \
             --vpc-id ${VPC_ID} \
-            --cidr-block 10.10.0.0/24 \
-            --availability-zone ${REGION}
+            --cidr-block ${CIDR_BLOCK}/24 \
+            --availability-zone ${ZONE}
+
+        # サブネット ID を取得
+        SUBNET_ID=`aws ec2 describe-subnets --filter "Name=cidr-block,Values=${CIDR_BLOCK}/24" --query Subnets[*].SubnetId | grep subnet- | sed 's/ //g' | sed 's/"//g'`
+
+        # サブネットに名前をつける
+        aws ec2 create-tags --resources ${SUBNET_ID} --tags Key=Name,Value=${SUBENET_NAME}
         ```
+
+        > `--vpc-id` は、`aws ec2 describe-vpcs --filter "Name=cidr-block,Values=${CIDR_BLOCK}/16" --query Vpcs[*].VpcId` で取得可能
 
         > サブネット : １つの大きなネットワークを管理しやすくするために、より小さなネットワークに分割したときのサブネットワークのこと。<br>
         
         > `aws ec2 create-vpc` の `--cidr_block` で指定する VPC の IP アドレスと `aws ec2 create-subnet` の `--cidr_block` で指定するサブネットの IP アドレスは、サブネット部のみ変更された値となり、サブネットマスクは /24 = 255.255.255.0 のサブネット部のマスク値になる
 
         > <img src="https://user-images.githubusercontent.com/25688193/114671501-21c52200-9d3f-11eb-8d31-e22711f96c4b.png" width="300"><br>
+
 
     1. インターネットゲートウェイを作成する<br>
         ```sh
@@ -85,7 +102,7 @@ Opsgenie を利用することで、サーバーで発生したアラートを�
         > インターネットゲートウェイ : コンピュータネットワークにおいて、通信プロトコルが異なるネットワーク同士がデータをやり取りする際、中継する役割を担うルータのような機能を備えた機器やそれに関するソフトウェア
 
     1. xxx
-    
+
 1. Datadog の設定<br>
 
 
