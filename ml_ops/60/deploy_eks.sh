@@ -4,7 +4,8 @@ AWS_ACCOUNT_ID=735015535886
 AWS_PROFILE=Yagami360
 REGION="us-west-2"
 
-CLUSTER_NAME="eks-cluster"
+#CLUSTER_NAME="eks-fargate-cluster"
+CLUSTER_NAME="eks-managed-cluster"
 #CLUSTER_NODE_TYPE="t2.micro"
 CLUSTER_NODE_TYPE="t2.medium"
 MIN_NODES=1
@@ -12,8 +13,8 @@ MAX_NODES=3
 
 IMAGE_NAME=predict-server-image-eks
 ECR_REPOSITORY_NAME=${IMAGE_NAME}
-#ENABLE_BUILD=0
-ENABLE_BUILD=1
+ENABLE_BUILD=0
+#ENABLE_BUILD=1
 
 #-----------------------------
 # OS判定
@@ -143,15 +144,20 @@ fi
 
 if [ ! "$( aws eks list-clusters --query clusters | grep "${CLUSTER_NAME}")" ] ; then
     eksctl create cluster --name ${CLUSTER_NAME} \
-        --fargate \
         --node-type ${CLUSTER_NODE_TYPE} \
-        --nodes-min ${MIN_NODES} --nodes-max ${MAX_NODES}
+        --nodes-min ${MIN_NODES} --nodes-max ${MAX_NODES} \
+        --managed
+#        --fargate
 fi
 
 #-----------------------------
 # 各種 k8s リソースを作成する
 #-----------------------------
 kubectl apply -f k8s/predict.yml
+sleep 30
+
+kubectl get pods
+kubectl get service
 
 #-----------------------------
 # セキュリティーグループを設定
