@@ -64,6 +64,8 @@ Opsgenie を利用することで、サーバーで発生したアラートを�
         > 例えば、/16 => 11111111.11111111.00000000.00000000 => 255.255.0.0 のサブネットマスクとなり、<br>
         > /24 => 11111111.11111111.11111111.00000000 => 255.255.255.0 のサブネットマスクとなる。<br>
 
+        > `--vpc-id` は、`aws ec2 describe-vpcs --filter "Name=cidr-block,Values=${CIDR_BLOCK}/16" --query Vpcs[*].VpcId` などで取得可能
+
     1. サブネットを作成する<br>
         ```sh
         # サブネットマスクを作成
@@ -76,10 +78,8 @@ Opsgenie を利用することで、サーバーで発生したアラートを�
         SUBNET_ID=`aws ec2 describe-subnets --filter "Name=cidr-block,Values=${CIDR_BLOCK}/24" --query Subnets[*].SubnetId | grep subnet- | sed 's/ //g' | sed 's/"//g'`
 
         # サブネットに名前をつける
-        aws ec2 create-tags --resources ${SUBNET_ID} --tags Key=Name,Value=${SUBENET_NAME}
+        aws ec2 create-tags --resources ${SUBNET_ID} --tags Key=Name,Value=${SUBNET_NAME}
         ```
-
-        > `--vpc-id` は、`aws ec2 describe-vpcs --filter "Name=cidr-block,Values=${CIDR_BLOCK}/16" --query Vpcs[*].VpcId` で取得可能
 
         > サブネット : １つの大きなネットワークを管理しやすくするために、より小さなネットワークに分割したときのサブネットワークのこと。<br>
         
@@ -93,7 +93,10 @@ Opsgenie を利用することで、サーバーで発生したアラートを�
         # インターネットゲートウェイの作成
         aws ec2 create-internet-gateway
 
-        # 作成したインターネットゲートウェイをアタッチ
+        # インターネットゲートウェイID取得
+        INTERNET_GATEWAY_ID=`aws ec2 describe-internet-gateways --filter "Name=cidr-block,Values=${CIDR_BLOCK}/24" --query InternetGateways[*].InternetGatewayId | grep igw- | sed 's/ //g' | sed 's/"//g'`
+        
+        # 作成したインターネットゲートウェイに VPC をアタッチする
         aws ec2 attach-internet-gateway 
             --internet-gateway-id ${INTERNET_GATEWAY_ID} \
             --vpc-id ${VPC_ID}

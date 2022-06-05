@@ -1,6 +1,5 @@
 #!/bin/sh
 set -eu
-AWS_ACCOUNT_ID=735015535886
 REGION="us-west-2"
 ZONE="us-west-2a"
 
@@ -45,6 +44,29 @@ fi
 echo "aws version : `aws --version`"
 
 #-----------------------------
+# EC2 リソースを削除する
+#（各種リソースが関連付けられているので作成順の逆に削除）
+#-----------------------------
+VPC_ID=`aws ec2 describe-vpcs --filter "Name=cidr-block,Values=${CIDR_BLOCK}/16" --query Vpcs[*].VpcId | grep vpc- | sed 's/ //g' | sed 's/"//g'`
+SUBNET_ID=`aws ec2 describe-subnets --filter "Name=cidr-block,Values=${CIDR_BLOCK}/24" --query Subnets[*].SubnetId | grep subnet- | sed 's/ //g' | sed 's/"//g'`
+#INTERNET_GATEWAY_ID=`aws ec2 describe-internet-gateways --filter "Name=VpcId,Values=${VPC_ID}" --query InternetGateways[*].InternetGatewayId | grep igw- | sed 's/ //g' | sed 's/"//g'`
+
+# インターネットゲートウェイを削除
+#if [ "$( aws ec2 describe-internet-gateways --filter "Name=VpcId,Values=${VPC_ID}" --query InternetGateways[*].InternetGatewayId | grep igw- )" ] ; then
+#	aws ec2 delete-internet-gateway --internet-gateway-id ${INTERNET_GATEWAY_ID}
+#fi
+
+# サブネットを削除する
+if [ "$( aws ec2 describe-subnets --filter "Name=cidr-block,Values=${CIDR_BLOCK}/24" --query Subnets[*].SubnetId | grep subnet- )" ] ; then
+	aws ec2 delete-subnet --subnet-id ${SUBNET_ID}
+fi
+
+# VPC を削除
+if [ "$( aws ec2 describe-vpcs --filter "Name=cidr-block,Values=${CIDR_BLOCK}/16" --query Vpcs[*].VpcId | grep vpc- )" ] ; then
+	aws ec2 delete-vpc --vpc-id ${VPC_ID}
+fi
+
+#-----------------------------
 # VPC を作成する
 #-----------------------------
 # VPC を作成
@@ -71,7 +93,7 @@ SUBNET_ID=`aws ec2 describe-subnets --filter "Name=cidr-block,Values=${CIDR_BLOC
 echo "SUBNET_ID : ${SUBNET_ID}"
 
 # サブネットに名前をつける
-aws ec2 create-tags --resources ${SUBNET_ID} --tags Key=Name,Value=${SUBENET_NAME}
+aws ec2 create-tags --resources ${SUBNET_ID} --tags Key=Name,Value=${SUBNET_NAME}
 
 #-----------------------------
 # インターネットゲートウェイを作成する
@@ -80,9 +102,9 @@ aws ec2 create-tags --resources ${SUBNET_ID} --tags Key=Name,Value=${SUBENET_NAM
 aws ec2 create-internet-gateway
 
 # インターネットゲートウェイID取得
-INTERNET_GATEWAY_ID=
+INTERNET_GATEWAY_ID=`aws ec2 describe-internet-gateways --filter "Name=VpcId,Values=${VPC_ID}" --query InternetGateways[*].InternetGatewayId | grep igw- | sed 's/ //g' | sed 's/"//g'`
 
-# 作成したインターネットゲートウェイをアタッチ
+# 作成したインターネットゲートウェイに VPC をアタッチする
 aws ec2 attach-internet-gateway 
     --internet-gateway-id ${INTERNET_GATEWAY_ID} \
     --vpc-id ${VPC_ID}
