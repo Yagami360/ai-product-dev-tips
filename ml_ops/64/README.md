@@ -31,6 +31,36 @@ Opsgenie を利用することで、サーバーで発生したアラートを�
             作成したチームに対して、Slack のインテグレーションを行う<br>
 
 1. EC2インスタンスの作成<br>
+    <img width="500" alt="image" src="https://user-images.githubusercontent.com/25688193/172035178-ae152147-2056-489f-850a-72da46833dab.png">
+
+    > - VPC [Virtual Private Cloud]<br>
+    > AWS専用の仮想ネットワーク。インターネットを利用する際、ルーターやゲートウェイなどのネットワーク機器が必要となるが、VPCはそれらの機器を仮想的に用意し、ネットワーク環境を構築できるようにしている。
+
+    <br>
+
+    > - サブネット<br>
+    > １つの大きなネットワークを管理しやすくするために、より小さなネットワークに分割したときのサブネットワークのこと。<br>
+
+    <br>
+
+    > - インターネットゲートウェイ<br>
+    > コンピュータネットワークにおいて、通信プロトコルが異なるネットワーク同士がデータをやり取りする際、中継する役割を担うルータのような機能を備えた機器やそれに関するソフトウェア
+
+    <br>
+
+    > - ルーティングテーブル<br>
+    > ルーターに記録される経路情報で、ルーティング処理を行う際に参照されるテーブルデータ。インターネットゲートウェイ経由で VPC へアクセスできるようにするために必要になる
+
+    <br>
+
+    > - CIDR 表記<br>
+    > `198.51.100.xxx/24` のような形で、IPアドレスの後ろに `/` と２進数のサブネットマスクにおける１の個数を書く表記方法。<br>
+    > 例えば、`/16 => 11111111.11111111.00000000.00000000 => 255.255.0.0` のサブネットマスクとなり、
+    > `/24 => 11111111.11111111.11111111.00000000 => 255.255.255.0` のサブネットマスクとなる。<br>
+    > <img src="https://user-images.githubusercontent.com/25688193/114671501-21c52200-9d3f-11eb-8d31-e22711f96c4b.png" width="300"><br>
+
+    <br>
+
     1. AWS CLI をインストールする<br>
         - MacOS の場合<br>
             ```sh
@@ -58,12 +88,6 @@ Opsgenie を利用することで、サーバーで発生したアラートを�
         aws ec2 create-tags --resources ${VPC_ID} --tags Key=Name,Value=${VPC_NAME}
         ```
 
-        > VPC [Virtual Private Cloud] : AWS専用の仮想ネットワーク。インターネットを利用する際、ルーターやゲートウェイなどのネットワーク機器が必要となるが、VPCはそれらの機器を仮想的に用意し、ネットワーク環境を構築できるようにしている。
-
-        > CIDR 表記 : `198.51.100.xxx/24` のような形で、IPアドレスの後ろに `/` と２進数のサブネットマスクにおける１の個数を書く表記方法。<br>
-        > 例えば、/16 => 11111111.11111111.00000000.00000000 => 255.255.0.0 のサブネットマスクとなり、<br>
-        > /24 => 11111111.11111111.11111111.00000000 => 255.255.255.0 のサブネットマスクとなる。<br>
-
         > `--vpc-id` は、`aws ec2 describe-vpcs --filter "Name=cidr-block,Values=${CIDR_BLOCK}/16" --query Vpcs[*].VpcId` などで取得可能
 
     1. サブネットを作成する<br>
@@ -80,8 +104,6 @@ Opsgenie を利用することで、サーバーで発生したアラートを�
         # サブネットに名前をつける
         aws ec2 create-tags --resources ${SUBNET_ID} --tags Key=Name,Value=${SUBNET_NAME}
         ```
-
-        > サブネット : １つの大きなネットワークを管理しやすくするために、より小さなネットワークに分割したときのサブネットワークのこと。<br>
         
         > `aws ec2 create-vpc` の `--cidr_block` で指定する VPC の IP アドレスと `aws ec2 create-subnet` の `--cidr_block` で指定するサブネットの IP アドレスは、サブネット部のみ変更された値となり、サブネットマスクは /24 = 255.255.255.0 のサブネット部のマスク値になる
 
@@ -90,21 +112,85 @@ Opsgenie を利用することで、サーバーで発生したアラートを�
 
     1. インターネットゲートウェイを作成する<br>
         ```sh
-        # インターネットゲートウェイの作成
-        aws ec2 create-internet-gateway
+        # インターネットゲートウェイの作成＆インターネットゲートウェイID取得
+        INTERNET_GATEWAY_ID=$( aws ec2 create-internet-gateway | jq -r '.InternetGateway.InternetGatewayId' )
 
-        # インターネットゲートウェイID取得
-        INTERNET_GATEWAY_ID=`aws ec2 describe-internet-gateways --filter "Name=cidr-block,Values=${CIDR_BLOCK}/24" --query InternetGateways[*].InternetGatewayId | grep igw- | sed 's/ //g' | sed 's/"//g'`
-        
+        # インターネットゲートウェイの名前を設定
+        aws ec2 create-tags --resources ${INTERNET_GATEWAY_ID} --tags Key=Name,Value=${INTERNET_GATEWAY_ID}     
+
         # 作成したインターネットゲートウェイに VPC をアタッチする
-        aws ec2 attach-internet-gateway 
+        aws ec2 attach-internet-gateway \
             --internet-gateway-id ${INTERNET_GATEWAY_ID} \
             --vpc-id ${VPC_ID}
         ```
+        > インターネットゲートウェイの作成は、`aws ec2 create-internet-gateway` で行えるが、インターネットゲートウェイIDも同時に取得させるために、`aws ec2 create-internet-gateway` コマンドの json 出力結果に対して、`jq` コマンドで json 出力の要素を抽出し、インターネットゲートウェイID取得を出力している
 
-        > インターネットゲートウェイ : コンピュータネットワークにおいて、通信プロトコルが異なるネットワーク同士がデータをやり取りする際、中継する役割を担うルータのような機能を備えた機器やそれに関するソフトウェア
+    1. ルーティングテーブルの作成<br>
+        インターネットゲートウェイ経由で VPC へアクセスできるようにするためのルートテーブルを作成し、インターネットゲートウェイとサブネットに紐付ける。
 
-    1. xxx
+        ```sh
+        # ルートテーブルの作成＆ルートテーブルID取得
+        ROUTE_TABLE_ID=$( aws ec2 create-route-table --vpc-id ${VPC_ID} | jq -r '.RouteTable.RouteTableId' )
+        echo "created route-table id=${ROUTE_TABLE_ID}"
+
+        # ルートテーブルの名前を設定
+        aws ec2 create-tags --resources ${ROUTE_TABLE_ID} --tags Key=Name,Value=${ROUTE_TABLE_NAME}
+
+        # ルート（ルートテーブルの各要素でインターネットネットゲートウェイとの紐付け情報）を作成
+        aws ec2 create-route \
+            --route-table-id ${ROUTE_TABLE_ID} \
+            --destination-cidr-block 0.0.0.0/0 \
+            --gateway-id ${INTERNET_GATEWAY_ID}
+
+        # ルートをサブネットに紐付け
+        aws ec2 associate-route-table \
+            --route-table-id ${ROUTE_TABLE_ID} \
+            --subnet-id ${SUBNET_ID}
+        ```
+
+    1. セキュリティーグループの作成<br>
+        ```sh
+        # セキュリティーグループの作成＆セキュリティグループIDを取得
+        SECURITY_GROUP_ID=$( aws ec2 create-security-group --group-name ${SECURITY_GROUP_NAME} --description "security group for ec2 instance" --vpc-id ${VPC_ID} | jq -r '.GroupId' )
+        echo "created security-group id=${SECURITY_GROUP_ID}"
+
+        # セキュリティグループのインバウンドルールを設定
+        aws ec2 authorize-security-group-ingress \
+            --group-id ${SECURITY_GROUP_ID} \
+            --protocol tcp \
+            --port 22 \
+            --cidr 0.0.0.0/0
+        ```
+
+    1. SSH Key の登録<br>
+        EC2 インスタンスに ssh 接続するための `.ssh/*.pem` 形式での SSH 鍵が存在しない場合は、SSH 鍵を生成する
+        ```sh
+        aws ec2 create-key-pair --key-name ${SSH_KEY_NAME} --query 'KeyMaterial' --output text > ${HOME}/.ssh/${SSH_KEY_NAME}
+        chmod 400 ${HOME}/.ssh/${SSH_KEY_NAME}
+        ```
+
+    1. EC2 インスタンスの作成<br>
+        ```sh
+        # サブネット内の EC2 インスタンスにパブリックIPアドレスを自動的に割り当て
+        aws ec2 modify-subnet-attribute \
+            --subnet-id ${SUBNET_ID} \
+            --map-public-ip-on-launch
+
+        # EC2 インスタンスの作成
+        aws ec2 run-instances \
+            --image-id ${IMAGE_ID} \ 
+            --instance-type ${INSTANCE_TYPE} \
+            --count 1 \
+            --key-name ${HOME}/.ssh/${SSH_KEY_NAME} \
+            --security-group-ids ${SECURITY_GROUP_ID} \
+            --subnet-id ${SUBNET_ID}
+        ```
+
+    1. EC2 インスタンスに接続する<br>
+        ```sh
+        ssh -i ${HOME}/.ssh/${SSH_KEY_NAME} ec2-user@${INSTANCE_ID}
+        ```
+
 
 1. Datadog の設定<br>
 
