@@ -9,9 +9,10 @@ SUBNET_NAME="datadog-ec2-subnet"
 INTERNET_GATEWAY_NAME="datadog-ec2-internet-gateway"
 ROUTE_TABLE_NAME="datadog-ec2-route-table"
 SECURITY_GROUP_NAME="datadog-ec2-security-group"
-SSH_KEY_NAME="key.pem"
+SSH_KEY_NAME="ec2-key"
+INSTANCE_NAME="datadog-ec2-instance"
 
-IMAGE_ID="ami-00f045aed21a55240"
+IMAGE_ID="ami-008b09448b998a562"		# Ubuntu Server 16.04 LTS (HVM), SSD Volume Type
 INSTANCE_TYPE="t2.micro"
 
 #-----------------------------
@@ -65,6 +66,12 @@ fi
 echo "jq version : `jq --version`"
 
 #-----------------------------
+# AWS デフォルト値の設定
+#-----------------------------
+export AWS_DEFAULT_REGION=${REGION}
+#aws configure
+
+#-----------------------------
 # EC2 リソースを削除する（各種リソースが関連付けられているので削除順に注意）
 #-----------------------------
 VPC_ID=`aws ec2 describe-vpcs --filter "Name=cidr-block,Values=${CIDR_BLOCK}/16" --query Vpcs[*].VpcId | grep vpc- | sed 's/ //g' | sed 's/"//g'`
@@ -72,6 +79,13 @@ SUBNET_ID=`aws ec2 describe-subnets --filter "Name=cidr-block,Values=${CIDR_BLOC
 INTERNET_GATEWAY_ID=`aws ec2 describe-internet-gateways --filter "Name=attachment.vpc-id,Values=${VPC_ID}" --query InternetGateways[*].InternetGatewayId | grep igw- | sed 's/ //g' | sed 's/"//g'`
 #ROUTE_TABLE_ID=$( aws ec2 describe-route-tables --filter "Name=vpc-id,Values=${VPC_ID}" --query RouteTables[*].RouteTableId  | grep rtb- | sed 's/ //g' | sed 's/"//g' )
 #SECURITY_GROUP_ID=$( aws ec2 describe-security-groups --filter "Name=vpc-id,Values=${VPC_ID}" --query SecurityGroups[*].GroupId | grep sg- | sed 's/ //g' | sed 's/"//g' )
+INSTANCE_ID=`aws ec2 describe-instances --filter "Name=subnet-id,Values=${SUBNET_ID}" --query Reservations[*].Instances[*].InstanceId | grep i- | sed 's/ //g' | sed 's/"//g'`
+
+# EC2 インスタンスの削除
+if [ ${INSTANCE_ID} ] ; then
+	aws ec2 terminate-instances --instance-ids "${INSTANCE_ID}"
+	echo "deleted ec2-instances id=${SUBNET_ID}"
+fi
 
 # セキュリティーグループの削除
 
@@ -199,9 +213,9 @@ aws ec2 authorize-security-group-ingress \
 #-----------------------------
 # SSH 鍵の登録
 #-----------------------------
-if [ ! ${HOME}/.ssh/${SSH_KEY_NAME} ] ; then
-	aws ec2 create-key-pair --key-name ${SSH_KEY_NAME} --query 'KeyMaterial' --output text > ${HOME}/.ssh/${SSH_KEY_NAME}
-	chmod 400 ${HOME}/.ssh/${SSH_KEY_NAME}
+if [ ! "${HOME}/.ssh/${SSH_KEY_NAME}.pem" ] ; then
+	aws ec2 create-key-pair --key-name ${SSH_KEY_NAME} --query 'KeyMaterial' --output text > "${HOME}/.ssh/${SSH_KEY_NAME}.pem"
+	chmod 400 "${HOME}/.ssh/${SSH_KEY_NAME}.pem"
 fi
 
 #-----------------------------
@@ -214,20 +228,24 @@ aws ec2 modify-subnet-attribute \
 
 # EC2 インスタンスの作成
 aws ec2 run-instances \
-	--image-id ${IMAGE_ID} \ 
+	--image-id ${IMAGE_ID} \
 	--instance-type ${INSTANCE_TYPE} \
 	--count 1 \
-	--key-name ${HOME}/.ssh/${SSH_KEY_NAME} \
+	--key-name ${SSH_KEY_NAME} \
 	--security-group-ids ${SECURITY_GROUP_ID} \
 	--subnet-id ${SUBNET_ID}
 
 # インスタンスIDを取得
-INSTANCE_ID=""
+INSTANCE_ID=`aws ec2 describe-instances --filter "Name=subnet-id,Values=${SUBNET_ID}" --query Reservations[*].Instances[*].InstanceId | grep i- | sed 's/ //g' | sed 's/"//g'`
+echo "created ec2-instance id=${INSTANCE_ID}"
 
 # インスタンスの名前を設定
-aws ec2 create-tags --resources ${INSTANCE_ID} --tags Key=Name,Value=${INSTANCE_ID}
+aws ec2 create-tags --resources ${INSTANCE_ID} --tags Key=Name,Value=${INSTANCE_NAME}
 
 #-----------------------------
 # EC2 インスタンスに接続する
 #-----------------------------
-ssh -i ${HOME}/.ssh/${SSH_KEY_NAME} ec2-user@${INSTANCE_ID}
+#IP_ADDRESS=`aws ec2 describe-instances --filter "Name=subnet-id,Values=${SUBNET_ID}" --query Reservations[*].Instances[*].PublicIpAddress | sed 's/ //g' | sed 's/"//g'`
+#echo "ec2-instance ip=${IP_ADDRESS}"
+
+#ssh -i "${HOME}/.ssh/${SSH_KEY_NAME}.pem" ubuntu@${IP_ADDRESS}

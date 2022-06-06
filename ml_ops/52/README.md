@@ -10,7 +10,7 @@
 
 	> Google アカウントでサインインすれば、会社名の記入不要でおすすめ
 
-1. 「Your STack」に GCP を追加し、「Next」ボタンをクリックする<br>
+1. 「Your Stack」に GCP を追加し、「Next」ボタンをクリックする<br>
     <img width="500" alt="image" src="https://user-images.githubusercontent.com/25688193/159150523-c5497c0b-68fd-45ce-aed3-dd9fd88e4460.png"><br>
     <img width="500" alt="image" src="https://user-images.githubusercontent.com/25688193/159150558-65e53cc6-3102-43bb-b479-fd254ab69810.png"><br>
 

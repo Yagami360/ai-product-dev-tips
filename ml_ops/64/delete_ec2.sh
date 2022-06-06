@@ -68,12 +68,20 @@ SUBNET_ID=`aws ec2 describe-subnets --filter "Name=cidr-block,Values=${CIDR_BLOC
 INTERNET_GATEWAY_ID=`aws ec2 describe-internet-gateways --filter "Name=attachment.vpc-id,Values=${VPC_ID}" --query InternetGateways[*].InternetGatewayId | grep igw- | sed 's/ //g' | sed 's/"//g'`
 ROUTE_TABLE_ID=$( aws ec2 describe-route-tables --filter "Name=vpc-id,Values=${VPC_ID}" --query RouteTables[*].RouteTableId  | grep rtb- | sed 's/ //g' | sed 's/"//g' )
 SECURITY_GROUP_ID=$( aws ec2 describe-security-groups --filter "Name=vpc-id,Values=${VPC_ID}" --query SecurityGroups[*].GroupId | grep sg- | sed 's/ //g' | sed 's/"//g' )
+INSTANCE_ID=`aws ec2 describe-instances --filter "Name=subnet-id,Values=${SUBNET_ID}" --query Reservations[*].Instances[*].InstanceId | grep i- | sed 's/ //g' | sed 's/"//g'`
 
+echo "delete taget ec2-instance id=${VPC_ID}"
 echo "delete taget security-group id=${SECURITY_GROUP_ID}"
 echo "delete taget subnet id=${SUBNET_ID}"
 echo "delete taget route-table id=${ROUTE_TABLE_ID}"
 echo "delete taget internet-gateway id=${INTERNET_GATEWAY_ID}"
 echo "delete taget vpc id=${VPC_ID}"
+
+# EC2 インスタンスの削除
+if [ ${INSTANCE_ID} ] ; then
+	aws ec2 terminate-instances --instance-ids "${INSTANCE_ID}"
+	echo "deleted ec2-instances id=${SUBNET_ID}"
+fi
 
 # 非 default のセキュリティーグループの削除（default のセキュリティーグループは VPC 削除時に削除される）
 #if [ "$( aws ec2 describe-security-groups --filter "Name=vpc-id,Values=${VPC_ID}" --query SecurityGroups[*].GroupId | grep sg- )" ] ; then
