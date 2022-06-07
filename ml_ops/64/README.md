@@ -211,6 +211,69 @@ Opsgenie を利用することで、サーバーで発生したアラートを�
 
     > Google アカウントでサインインすれば、会社名の記入不要でおすすめ
 
+1. EC2 のインテグレーション<br>
+    1. 「Integrations」タブから AWS を選択する<br>
+        <img width="500" alt="image" src="https://user-images.githubusercontent.com/25688193/172161685-7cf61860-8cba-4bba-8699-a1c80d19e926.png"><br>
+
+    1. 「設定」タブから EC2 を選択した上で、「Install Integration」ボタンをクリックする<br>
+        <img width="500" alt="image" src="https://user-images.githubusercontent.com/25688193/172161303-17ddfd6d-a68f-466e-940b-f77d42813bf0.png"><br> 
+
+    1. Datadog Agent を EC2 インスタンスにインストールする<br>
+        Ubuntu の image id (`ami-008b09448b998a562` など)とする EC2 インスタンスの場合は、Ubuntu を選択後、画面右側に赤枠に表示されるインストールコマンドをコピペして、EC2 インスタンス（Ubuntu）に Datadog Agent をインストールする
+
+        ```sh
+        DD_AGENT_MAJOR_VERSION=7 DD_API_KEY=e22df3d0958810817576e2d94c0bedfb DD_SITE="datadoghq.com" bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script.sh)"
+        ```
+
+        <img width="1157" alt="image" src="https://user-images.githubusercontent.com/25688193/172387695-f1f2a125-4909-400c-9572-2b9ec7e3a104.png">
+
+    1. 【オプション】Datadog　から各種 EC2 インスタンスにアクセスするための IAM ユーザーを作成する。<br>
+        使用したい IAM ユーザーに EC2 インスタンスへのアクセス権が付与されていない場合は、EC2 インスタンスへのアクセス権を付与する
+
+        > 既存の IAM ユーザーに、EC2 と CloudWatch の Read 権限が付与されている場合は、下記処理は不要
+
+        1. IAM ロールの内容を定義した json ファイルを作成する<br>
+            ```json
+            {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Action": [
+                            "cloudwatch:Describe*",
+                            "cloudwatch:Get*",
+                            "cloudwatch:List*",
+                            "ec2:Describe*",
+                            "ec2:Get*",
+                            "ecs:Describe*",
+                            "ecs:List*"
+                        ],
+                        "Effect": "Allow",
+                        "Resource": "*"
+                    }
+                ]
+            }
+            ```
+
+            > 最低限、EC2 と CloudWatch の Read 権限が必要
+
+        1. IAM ロールを作成する<br>
+            ```sh
+            ```
+
+        1. IAM ポリシーを作成する<br>
+            ```sh
+            ```
+
+        1. IAM ユーザーに IAM ポリシーを付与する<br>
+            ```sh
+            ```
+
+    1. 【オプション】Datadog が EC2 インスタンスが認証していることを確認<br>
+        Datadog コンソール画面の「Infrastructure」から EC2 インスタンスが認証されていることを確認する
+
+        <img width="800" alt="image" src="https://user-images.githubusercontent.com/25688193/172395610-33296a4f-9c4f-4f01-93c0-e7757e40274f.png"><br>
+
+
 1. Opsgenie のインテグレーション
     1. 「Integrations」タブから Opsgenie を選択する<br>
         <img width="500" alt="image" src="https://user-images.githubusercontent.com/25688193/172161536-9f106ae9-e01d-488a-8f0f-6545c498788b.png"><br>
@@ -218,27 +281,15 @@ Opsgenie を利用することで、サーバーで発生したアラートを�
     1. 設定タブから Service「+New」ボタンをクリックし、「Service Name」と「Opsgenie API Key」を入力し、「Save」ボタンをクリックする。このとき API キーには、Opsgenie コンソール画面からコピーした API キーを設定する<br>
         <img width="500" alt="image" src="https://user-images.githubusercontent.com/25688193/172162090-901f4915-ec86-46f9-b1b3-eb20b2a42853.png">
 
+<!--
     1. 【オプション】Datadog と Opsgenie の連携が正常に動作していることを確認するため、Datadog の「Event」タグから「Add」ボタンをクリックし、`@opsgenie` で
 
         <img width="500" alt="image" src="https://user-images.githubusercontent.com/25688193/172163959-66dbec86-7bcd-445c-aa02-19508bfbe122.png"><br>
         <img width="500" alt="image" src="https://user-images.githubusercontent.com/25688193/172163986-ab519830-3860-414d-86e8-39eb6ca82e8d.png"><br>
-
-
-1. EC2 のインテグレーション
-    1. 「Integrations」タブから AWS を選択する<br>
-        <img width="500" alt="image" src="https://user-images.githubusercontent.com/25688193/172161685-7cf61860-8cba-4bba-8699-a1c80d19e926.png"><br>
-
-    1. 「設定」タブから EC2 を選択した上で、「Install Integration」ボタンをクリックする<br>
-        <img width="500" alt="image" src="https://user-images.githubusercontent.com/25688193/172161303-17ddfd6d-a68f-466e-940b-f77d42813bf0.png"><br> 
-
-    1. 作成した EC2 インスタンスに対して、Datadog Agent が通信を行うためのポート `10516` を開放させておく。
-
-    1. Datadog Agent を EC2 インスタンスにインストールする
-
-    1. Datadog　から各種 AWS サービスにアクセスするための IAM を作成する。
-
+-->
 
 
 ## ■ 参考サイト
 - https://codezine.jp/article/detail/11650?p=2
 - https://support.atlassian.com/ja/opsgenie/docs/integrate-opsgenie-with-datadog/
+- https://dev.classmethod.jp/articles/datadog-amazonlinux/
