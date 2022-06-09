@@ -8,6 +8,10 @@ Opsgenie を利用することで、サーバーで発生したアラートを�
 
 ここでは、Opsgenie を使用して EC2 インスタンスに導入している Datadog で検知したアラートを管理・通知する方法を記載する
 
+## ■ ToDo
+
+- [] 有料版の Opsgenie と Datadog で再度やってみる
+
 ## ■ 方法
 
 ### ◎ Opsgenie の設定

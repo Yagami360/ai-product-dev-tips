@@ -440,14 +440,17 @@ AIプロダクト開発のための Tips 集。<br>
 <details>
 <summary>機械学習ワークフロー / 機械学習パイプライン</summary>
 
-- Luigi / gokart
-    - Luigi を使用して複雑な処理を行う API のパイプラインを管理する
-- MLflow
 - 【Apahe】Apahe Airflow
 - 【GCP】CloudComposer
     - [【GCP】CloudComposer の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/61)
     - [【GCP】CloudComposer v1 を使用して簡単なワークフローを構成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/62)
     - 【GCP】CloudComposer v2 を使用して簡単なワークフローを構成する
+- Luigi / gokart
+    - Luigi を使用して複雑な処理を行う API のパイプラインを管理する
+- Kedro
+    - [[In-progress] Kedro を使用して簡単なワークフローを構成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/65)
+- MLflow
+- 【AWS】Amazon SageMaker
 - 【GCP】Kubeflow
     - [【Kubeflow】Kubeflow の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/1)
     - [[In-progress]【Kubeflow】GKE クラスタに Kubeflow を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/2)
