@@ -448,7 +448,7 @@ AIプロダクト開発のための Tips 集。<br>
 - Luigi / gokart
     - Luigi を使用して複雑な処理を行う API のパイプラインを管理する
 - Kedro
-    - [[In-progress] Kedro を使用して簡単なワークフローを構成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/65)
+    - [Kedro を使用して簡単なワークフローを構成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/65)
 - MLflow
 - 【AWS】Amazon SageMaker
 - 【GCP】Kubeflow
@@ -466,10 +466,11 @@ AIプロダクト開発のための Tips 集。<br>
 <summary>インフラのコード化 / Infrastructure as Code</summary>
 
 - Terraform
-    - [【Terraform】Terraform の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/10)
-    - [【Terraform】Terraform を利用して AWS インスタンスを自動的に構築する。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/11)
-    - 【Terraform】Terraform を利用して GCP インスタンスを自動的に構築する。
-    - 【Terraform】Terraform を利用して機械学習環境の GCP インスタンスを自動的に構築する。
+    - [Terraform の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/10)
+    - [Terraform を利用して AWS インスタンスを自動的に構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/11)
+    - Terraform を利用して GCP インスタンスを自動的に構築する。
+    - Terraform を利用して機械学習環境の GCP インスタンスを自動的に構築する。
+    - Terraform と GitHub Actions を使用して AWS インスタンスの CI/CD を行う
 - 【GCP】DeploymentManager
     - 【GCP】DeploymentManager の基礎事項
 

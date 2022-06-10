@@ -1,4 +1,4 @@
-# 【Terraform】Terraform の基礎事項
+# Terraform を利用して AWS インスタンスを自動的に構築する
 
 ## ■ 手順
 
@@ -43,6 +43,8 @@
     - Default output format : "text","json","table" のどれかを指定
 
     > 上記コマンドで作成された認証情報は、`${HOME}/.aws/credentials` ファイル内に保管される。
+
+    > AWS の認証情報を設定していないと、後述の `terraform plan` or `terraform apply` コマンド使用時、`Error: error configuring Terraform AWS Provider: no valid credential sources for Terraform AWS Provider found.` のようなエラーメッセージがでて、`.tf` ファイルに記述した AWS リソースを認証できなくなる
 
 1. IAM ユーザーを追加する<br>
     GUI を 用いて作成する場合は、「[IAM ダッシュボード](https://console.aws.amazon.com/iam/home?#/home)」のページから作成できる。<br>

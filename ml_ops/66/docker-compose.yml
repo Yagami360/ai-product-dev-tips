@@ -1,0 +1,22 @@
+version: '3'
+services:
+  terraform-service:
+    container_name: terraform-container
+    image: terraform-image
+    build:
+      context: "."
+      dockerfile: Dockerfile
+    volumes:
+      - ${PWD}/terraform:/terraform
+      - ${HOME}/.ssh/:/.ssh
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+#      AWS_ACCESS_KEY_ID: xxx
+#      AWS_SECRET_ACCESS_KEY: xxx
+#      AWS_DEFAULT_REGION: us-west-2
+    env_file:
+      - aws_key.env
+#    command: "echo 'AWS_ACCESS_KEY_ID : ${AWS_ACCESS_KEY_ID}' && echo 'AWS_SECRET_ACCESS_KEY : ${AWS_SECRET_ACCESS_KEY}'"
