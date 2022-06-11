@@ -183,12 +183,24 @@
 
         - SSH 鍵の設定<br>
             接続元マシンの ssh 公開鍵のパスを設定する。<br>
-            ```python
+            ```sh
+            # 変数定義
+            variable ssh_public_key {}
+
+            # ssh-key 登録
             resource "aws_key_pair" "terraform_key_pair" {
                 key_name   = "id_rsa"
-                public_key = file("/Users/sakai/.ssh/id_rsa.pub")
+            #    public_key = file("/.ssh/id_rsa.pub")  # GitHub Action 実行時の terraform 環境には *.pub ファイルが存在しないのでエラーになる
+                public_key = var.ssh_public_key     # *.tfvars で定義した値を参照
             }
             ```
+
+            > `public_key = file("/.ssh/id_rsa.pub")` で ssh 公開鍵の値を設定すると、GitHub Action 実行時の terraform 環境には `*.pub` ファイルが存在しないのでエラーになる。そのため、別途 `*.tfvars` ファイルに ssh 公開鍵の値を設定した変数を定義し、これを `var.ssh_public_key` の形式で参照するようにしている
+
+            - `main.tfvars`
+                ```python
+                ssh_public_key = "ssh-rsa xxxxx"
+                ```
 
         - EC2 インスタンスの設定<br>
             上記設定したサブネットやセキュリティーグループと関連付けを行った EC2 インスタンスを設定する。<br>
@@ -208,10 +220,139 @@
             }
             ```
 
+1. GitHub レポジトリに secrets を登録する。<br>
+    github レポジトリの [setting -> secrets -> Actions](https://github.com/Yagami360/terraform-github-actions-aws-cicd-exercises/settings/secrets/actions) から、必要な secrets を登録する。
+    ここで設定した secrets の値は、後述の GitHub Actions の Workflow ファイルにて、`secrets.xxx` の形式で参照できるようになる。
+
+    > 一般的に、認証情報や秘密鍵などの秘匿値を Workflow で扱いたいときは、リポジトリの秘匿情報（Settings > Secrets > Actions secrets）で秘匿値を記録し、それを Workflow で参照するようにする
+
+    今回は、`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` の secret を登録しておく
+
+    > `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` の値は、`cat ${HOME}/.aws/credentials` で確認できる
+
+    > 後述の workflow ファイルでは、`secrets.GITHUB_TOKEN` も参照しているが、`GITHUB_TOKEN` 荷関しては、ここで設定する必要はない？
+
+    <img width="700" alt="image" src="https://user-images.githubusercontent.com/25688193/173190216-1484c5f9-777d-43f4-9be1-555cc468d27c.png">
+
 1. GitHub Actions の Workflow ファイルを作成する<br>
     Workflow ファイル（yaml 形式）をリポジトリ内の `.github/workflows/` ディレクトリ上に作成する
 
     ```yml
+    # ワークフローの名前
+    name: terrafform workflow for aws
+    #------------------------------------------------------
+    # ワークフローをトリガーするイベントを定義
+    #------------------------------------------------------
+    on:
+      # 新しいコードが main ブランチに push された時にトリガー
+      push:
+        branches:
+          - main
+        # 変更がトリガーとなるファイル
+        paths:
+          - '.github/workflows/*'  
+          - 'terraform/*.tf'
+      # main ブランチに PR された時にトリガー
+      pull_request:
+        branches:
+          - main
+        paths:
+          - '.github/workflows/*'
+          - 'terraform/*.tf'
+    #------------------------------------------------------
+    # GitHub レポジトリへの権限設定
+    #------------------------------------------------------
+    permissions:
+      contents: "read"
+      id-token: "write"
+      issues: "write"
+      pull-requests: "write"      # Pull Request へのコメントを可能にする
+    #------------------------------------------------------
+    # job（ワークフローの中で実行される処理のひとまとまり）を定義
+    #------------------------------------------------------
+    jobs:
+      terraform-aws-job:                    # job ID
+        name: terraform job for aws         # job 名
+          runs-on: ubuntu-latest              # ジョブを実行するマシン
+          #-----------------------------
+          # GitHub Actions の build matrix 機能を使用して、同一ジョブを複数ディレクトリに対して並列実行
+          # これにより、異なる AWS リソース（ec2, iamなど）の tf ファイルに対しての terraform 処理を並列に実行できるようになる
+          #-----------------------------    
+          strategy:
+          matrix:
+            dir:
+              - terraform/aws/ec2           # AWS の EC2 インスタンスの tf ファイルを格納
+              - terraform/aws/iam           # AWS の IAM の tf ファイルを格納
+              - terraform/aws/eks           # AWS の EKS クラスターの tf ファイルを格納
+          #-----------------------------
+          # 環境変数の設定
+          #-----------------------------
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}     # GitHub レポジトリへのアクセストークンを設定し、GitHub レポジトリへのコメントが可能にする / secrets は、github レポジトリの project の setting > secrets から登録する
+            AWS_REGION: "us-west-2"
+            TERRAFORM_DIR: ${{ matrix.dir }}              # tf ファイルの格納ディレクトリ
+          #-----------------------------
+          # ジョブの中で実行される一連のタスク
+          #-----------------------------
+          steps:
+            #-----------------------------
+            # ブランチを切る
+            #-----------------------------
+            - uses: actions/checkout@v2       # use タグで Actions（一連の定義済み処理）を指定 / actions/checkout@v2 : actions/v2 という GitHub リポジトリにあるアクションの v2 ブランチのコードを使用し、指定したリポジトリからソースコードを git checkout する
+            #-----------------------------
+            # tf ファイルの diff があるか確認
+            #-----------------------------
+            - name: Check diff for .tf files
+              id: diff
+              uses: technote-space/get-diff-action@v4.0.2
+              with:
+              PATTERNS: |
+                ${{ env.TERRAFORM_DIR }}/*.tf
+            #-----------------------------
+            # IAM ユーザーの 認証情報を設定
+            #-----------------------------
+            - name: Configure aws credentials
+              if: steps.diff.outputs.diff == 'true'
+              uses: aws-actions/configure-aws-credentials@v1            # configure-aws-credentials を使うことで、AWSのアクセスキーをハードコードすることなく権限を入手できる
+              with:
+                aws-region: ${{ env.AWS_REGION }}        
+                aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}           # github レポジトリの [setting -> secrets -> Actions] で設定した AWS_ACCESS_KEY_ID を設定
+                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}   # github レポジトリの [setting -> secrets -> Actions] で設定した AWS_SECRET_ACCESS_KEY を設定
+            #-----------------------------
+            # terraform のインストール
+            #-----------------------------
+            - name: install terraform
+              if: steps.diff.outputs.diff == 'true'
+              uses: hashicorp/setup-terraform@v1
+              with:
+                terraform_version: 1.0.9
+            #-----------------------------
+            # terraform init
+            #-----------------------------
+            - name: terraform init
+              if: steps.diff.outputs.diff == 'true'
+              run: terraform -chdir="${TERRAFORM_DIR}" init
+            #-----------------------------
+            # terraform plan
+            #-----------------------------
+            # terraform plan
+            - name: terraform plan
+              if: steps.diff.outputs.diff == 'true'
+              run: terraform -chdir="${TERRAFORM_DIR}" plan -out workspace.plan
+            # PR 時に terraform plan 実行
+            - name: post plan
+              if: always() && steps.diff.outputs.diff == 'true' && github.event_name == 'pull_request'
+              uses: robburger/terraform-pr-commenter@v1
+              with:
+                commenter_type: plan
+                commenter_input: ${{ format('{0}{1}', steps.plan.outputs.stdout, steps.plan.outputs.stderr) }}
+                commenter_exitcode: ${{ steps.plan.outputs.exitcode }}
+            #-----------------------------
+            # terraform apply
+            #-----------------------------
+            - name: terraform apply
+              if: steps.diff.outputs.diff == 'true' && github.event_name == 'push'
+              run: terraform -chdir="${TERRAFORM_DIR}" apply workspace.plan
     ```
 
     ポイントは、以下の通り
@@ -228,10 +369,10 @@
         - `strategy.matrix` タグを設定することで、GitHub Actions の build matrix 機能を使用して、同一ジョブを複数ディレクトリに対して並列実行する。これにより、異なる AWS リソース（ec2, iamなど）の tf ファイルに対しての terraform 処理を並列に実行できるようになる
 
     - 環境変数の設定<br>
-        - 環境変数 `GITHUB_TOKEN` に GitHub レポジトリへのアクセストークンを設定する。これにより、GitHub レポジトリへのコメント投稿可能な権限が付与される
+        - 環境変数 `GITHUB_TOKEN` に、`secrets.GITHUB_TOKEN` を設定する。これにより、GitHub レポジトリへのコメント投稿可能な権限が付与される
 
     - tf ファイルの diff があるか確認<br>
-        - action `technote-space/get-diff-action@v4.0.2` を use して、tf ファイルの差分があったかと確認する。
+        - action `technote-space/get-diff-action@v4.0.2` を use して、tf ファイルの差分があったかを確認する。
 
         - tf ファイルの差分があったかは、`if: steps.diff.outputs.diff` で確認可能なので、公団の処理は、tf ファイルの差分があるときのみ実行するようにする
 
@@ -240,9 +381,9 @@
 
             > IAM ユーザーの認証情報を設定していないと、後述の `terraform plan` or `terraform apply` コマンド使用時、`Error: error configuring Terraform AWS Provider: no valid credential sources for Terraform AWS Provider found.` のようなエラーメッセージがでて、`.tf` ファイルに記述した AWS リソースを認証できなくなる
 
-        - action（定義済み処理）`aws-actions/configure-aws-credentials@v1` を使うことで、AWSのアクセスキーをハードコードすることなく、IAM ユーザーの認証情報を設定できる
+        - 環境変数 `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` の値は、github レポジトリの [setting -> secrets -> Actions](https://github.com/Yagami360/terraform-github-actions-aws-cicd-exercises/settings/secrets/actions) で設定した `secrets.AWS_ACCESS_KEY_ID`, `secrets.AWS_ACCESS_KEY_ID` を設定する
 
-        - xxx
+        - action（定義済み処理）`aws-actions/configure-aws-credentials@v1` を使うことで、AWSのアクセスキーをハードコードすることなく、IAM ユーザーの認証情報を設定できる
 
     - terraform のインストール<br>
         - `if: steps.diff.outputs.diff` を設定することで、step id `diff` の step 実行時結果が true で tf ファイルの差分がある時だけ、インストール処理を実行するようにしている。
