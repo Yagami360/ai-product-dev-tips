@@ -468,9 +468,9 @@ AIプロダクト開発のための Tips 集。<br>
 - Terraform
     - [Terraform の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/10)
     - [Terraform を利用して AWS インスタンスを自動的に構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/11)
+    - [Terraform を利用して AWS インスタンスを自動的に構築する（docker 使用時）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/67)
     - Terraform を利用して GCP インスタンスを自動的に構築する。
     - Terraform を利用して機械学習環境の GCP インスタンスを自動的に構築する。
-    - Terraform と GitHub Actions を使用して AWS インスタンスの CI/CD を行う
 - 【GCP】DeploymentManager
     - 【GCP】DeploymentManager の基礎事項
 
@@ -483,6 +483,7 @@ AIプロダクト開発のための Tips 集。<br>
 - GitHub Actions
     - [GitHub Actions を用いた CI/CD](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/5)
     - GitHub Actions を用いて機械学習の推論APIの CI/CD を行う
+    - [[In-progress] GitHub Actions と Terraform を使用して EC2 インスタンスの CI/CD を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/66)
 - 【GCP】Cloud Build
     - [【GCP】Cloud Build を用いてローカルPC 上で CI/CD を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/12)
     - 【GCP】Cloud Build を用いて GCE 上で CI/CD を行う

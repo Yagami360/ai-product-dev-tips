@@ -14,7 +14,7 @@ services:
       TZ: "Asia/Tokyo"
       LC_ALL: C.UTF-8
       LANG: C.UTF-8
-#      AWS_ACCESS_KEY_ID: xxx
+#      AWS_ACCESS_KEY_ID: xxx           
 #      AWS_SECRET_ACCESS_KEY: xxx
 #      AWS_DEFAULT_REGION: us-west-2
     env_file:

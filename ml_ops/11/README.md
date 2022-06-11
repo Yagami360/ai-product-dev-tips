@@ -327,6 +327,20 @@
     Enter a value: yes
     ```
 
+    > `terraform apply` を実行すると、tf ファイルに基づいて、各種インフラが作成されるが、そのインフラ情報が、以下のような `*.tfstate` ファイル（json形式）に自動的に保存され（場所は、tf ファイルと同じディレクトリ内）、次回の `terraform apply` 実行時等で前回のインフラ状態との差分をみる際に利用される。（tfstate ファイルの直接編集は非推奨）
+
+    > ```json
+    > {
+    >   "version": 4,
+    >   "terraform_version": "0.14.4",
+    >   "serial": 99,
+    >   "lineage": "b3db0982-ad72-b91e-cc7a-d58ff80308c7",
+    >   "outputs": {},
+    >   "resources": []
+    > }
+    
+    > そのため、tfstate ファイルをローカルに置いたままでは複数人で terraform を実行できなくなってしまう。この問題を解決するためには、tfstate ファイルを GCS or Amazon S3 などのクラウドデータレイク上に保管する方法もあるが、今回のケースではローカルに保存する
+
 1. terraform が作成したオブジェクトの内容を確認
     ```sh
     $ terraform show

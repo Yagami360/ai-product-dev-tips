@@ -1,11 +1,85 @@
-# GitHub Actions と Terraform を使用して EC2 インスタンスの CI/CD を行う
-
-- 対象レポジトリ
-    - https://github.com/Yagami360/terraform-github-actions-aws-cicd-exercises
+# Terraform を利用して AWS インスタンスを自動的に構築する（docker 使用時）
 
 ## ■ 方法
 
-1. EC2 インスタンス用の Terraform のテンプレートファイル（*.tf形式）を作成する。<br>
+1. `aws configure` コマンドで AWS 認証情報を設定する。<br>
+    ```sh
+    $ aws configure
+    ```
+    ```sh
+    # プロファイル名を別に設定する場合
+    $ aws configure --profile ${プロファイル名}
+    ```
+    - AWS Access Key ID : [AWS の IAM](https://console.aws.amazon.com/iam/home?#/security_credentials) ページの「セキュリティ認証情報」→「アクセスキー (アクセスキー ID とシークレットアクセスキー)」から取得した "アクセスキーID"
+    - AWS Secret Access Key : [AWS の IAM](https://console.aws.amazon.com/iam/home?#/security_credentials) ページの「セキュリティ認証情報」→「アクセスキー (アクセスキー ID とシークレットアクセスキー)」から取得した "シークレットアクセスキー"
+    - Default region name : EC2インスタンスのリージョン（us-west-2 など）
+    - Default output format : "text","json","table" のどれかを指定
+
+    > 上記コマンドで作成された認証情報は、`${HOME}/.aws/credentials` ファイル内に保管される。
+
+1. terraform 用の Dockerfile を作成する
+    ```dockerfile
+    FROM alpine:3.10
+
+    ARG terraform_version="0.12.5"
+
+    # Install terraform etc
+    RUN apk update --no-cache \
+        && apk add --no-cache \
+            wget \
+            unzip \
+            curl \
+        && wget https://releases.hashicorp.com/terraform/${terraform_version}/terraform_${terraform_version}_linux_amd64.zip \
+        && unzip ./terraform_${terraform_version}_linux_amd64.zip -d /usr/local/bin/ \
+        && rm -rf ./terraform_${terraform_version}_linux_amd64.zip
+
+    WORKDIR /.ssh    
+    WORKDIR /terraform
+    ```
+
+1. terraform 用の docker-compose を作成する
+    ```yaml
+    version: '3'
+    services:
+      terraform-service:
+        container_name: terraform-container
+        image: terraform-image
+        build:
+          context: "."
+          dockerfile: Dockerfile
+        volumes:
+          - ${PWD}/terraform:/terraform
+          - ${HOME}/.ssh/:/.ssh
+        tty: true
+        environment:
+          TZ: "Asia/Tokyo"
+          LC_ALL: C.UTF-8
+          LANG: C.UTF-8
+    #      AWS_ACCESS_KEY_ID: xxx           
+    #      AWS_SECRET_ACCESS_KEY: xxx
+    #      AWS_DEFAULT_REGION: us-west-2
+        env_file:
+        - aws_key.env
+    ```
+
+    ポイントは、以下の通り
+
+    - terraform では、環境変数 `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` に、IAM ユーザーの適切な認証情報の値を設定することで、terraform に対して AWS の認証情報を設定できる。
+
+        > 環境変数 `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` を設定していないと、後述の `terraform plan` or `terraform apply` コマンド使用時、`Error: error configuring Terraform AWS Provider: no valid credential sources for Terraform AWS Provider found.` のようなエラーメッセージがでて、`.tf` ファイルに記述した AWS リソースを認証できなくなる
+
+    - 但し、`docker-compose.yml` にこれら環境変数の値を直接設定すると、キー情報が GitHub 上に公開されてしまうので、`aws_key.env` に、これら環境変数 `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` の値を定義し、`aws_key.env` を gitignore するようにしている
+
+        - `aws_key.env` の中身
+            ```sh
+            AWS_ACCESS_KEY_ID=xxxxxxxxxxxx
+            AWS_SECRET_ACCESS_KEY=xxxxxxxxx
+            AWS_DEFAULT_REGION=us-west-2
+            ```
+
+    - 設定すべき `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` の値は、`cat ${HOME}/.aws/credentials` で確認できる
+
+1. Terraform のテンプレートファイル（*.tf形式）を作成する。<br>
     Terraform のテンプレートファイルは、１つのテンプレートファイルに全ての定義を記述してもよいし、異なるリソースを別々のテンプレートファイルに記載してもよい。<br>
 
     1. ssh 接続を考慮しない場合（最も簡単な例）<br>
@@ -208,76 +282,77 @@
             }
             ```
 
-1. GitHub Actions の Workflow ファイルを作成する<br>
-    Workflow ファイル（yaml 形式）をリポジトリ内の `.github/workflows/` ディレクトリ上に作成する
-
-    ```yml
+1. terraform コンテナを起動する<br>
+    ```sh
+    docker-compose -f docker-compose.yml stop
+    docker-compose -f docker-compose.yml up -d
     ```
 
-    ポイントは、以下の通り
+1. terraform init を実行する<br>
+    terraform init を実行し、terraform を初期化する。
+    ```sh
+    docker exec -it terraform-container /bin/sh -c "terraform init"
+    ```
 
-    - ワークフローをトリガーするイベントを定義<br>
-        PR -> merge で CI/CD を行えるように、`on.push`, `on.pull_request` タグでのトリガーを定義している
+1. terraform plan を実行する<br>
+    terraform plan を実行し、作成したテンプレートファイルの定義内容を確認する。
+    ```sh
+    docker exec -it ${CONTAINER_NAME} /bin/sh -c "terraform plan"
+    ```
 
-    - GitHub レポジトリへの権限設定<br>
-        `permissions` タグで、GitHub レポジトリへの権限設定を行う。今回は PR 経由での CI/CD トリガーを行うので、`pull-requests: "write"` を追加している
+1. terraform apply を実行する<br>
+    terraform apply を実行し、定義を適用してインスタンスを作成する
+    ```sh
+    docker exec -it ${CONTAINER_NAME} /bin/sh -c "terraform apply"
+    ```
 
-    - GitHub Actions の build matrix 機能を使用<br>
-        - terraform を使用したリソース管理としては、`tf` ファイルを リソース毎に細かく定義するのがベターな設計であるが、細かく分けすぎると個々の tf ファイルに対して、terraform コマンドを順次直列実行することになり、処理に時間がかかってしまう問題がある。
+    以下の画面が出力されるので `yes` を入力する
+    ```
+    Terraform will perform the actions described above.
+    Only 'yes' will be accepted to approve.
 
-        - `strategy.matrix` タグを設定することで、GitHub Actions の build matrix 機能を使用して、同一ジョブを複数ディレクトリに対して並列実行する。これにより、異なる AWS リソース（ec2, iamなど）の tf ファイルに対しての terraform 処理を並列に実行できるようになる
+    Enter a value: yes
+    ```
+    
+    > `terraform apply` を実行すると、tf ファイルに基づいて、各種インフラが作成されるが、そのインフラ情報が、以下のような `*.tfstate` ファイル（json形式）に自動的に保存され（場所は、tf ファイルと同じディレクトリ内）、次回の `terraform apply` 実行時等で前回のインフラ状態との差分をみる際に利用される。（tfstate ファイルの直接編集は非推奨）
 
-    - 環境変数の設定<br>
-        - 環境変数 `GITHUB_TOKEN` に GitHub レポジトリへのアクセストークンを設定する。これにより、GitHub レポジトリへのコメント投稿可能な権限が付与される
+    > ```json
+    > {
+    >   "version": 4,
+    >   "terraform_version": "0.14.4",
+    >   "serial": 99,
+    >   "lineage": "b3db0982-ad72-b91e-cc7a-d58ff80308c7",
+    >   "outputs": {},
+    >   "resources": []
+    > }
+    
+    > そのため、tfstate ファイルをローカルに置いたままでは複数人で terraform を実行できなくなってしまう。この問題を解決するためには、tfstate ファイルを GCS or Amazon S3 などのクラウドデータレイク上に保管する方法もあるが、今回のケースではローカルに保存する
 
-    - tf ファイルの diff があるか確認<br>
-        - action `technote-space/get-diff-action@v4.0.2` を use して、tf ファイルの差分があったかと確認する。
+1. terraform show を実行する<br>
+    terraform show を実行し、terraform が作成したオブジェクトの内容を確認
+    ```sh
+    docker exec -it ${CONTAINER_NAME} /bin/sh -c "terraform apply"
+    ```
 
-        - tf ファイルの差分があったかは、`if: steps.diff.outputs.diff` で確認可能なので、公団の処理は、tf ファイルの差分があるときのみ実行するようにする
-
-    - AWS の IAM ユーザーの認証情報を設定<br>
-        - 各種 terraform コマンド実行前に、IAM ユーザーの認証情報を設定する必要がある。具体的には、環境変数 `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` に、IAM ユーザーの適切な認証情報の値を設定することで、terraform に対して AWS の認証情報を設定する必要がある<br>
-
-            > IAM ユーザーの認証情報を設定していないと、後述の `terraform plan` or `terraform apply` コマンド使用時、`Error: error configuring Terraform AWS Provider: no valid credential sources for Terraform AWS Provider found.` のようなエラーメッセージがでて、`.tf` ファイルに記述した AWS リソースを認証できなくなる
-
-        - action（定義済み処理）`aws-actions/configure-aws-credentials@v1` を使うことで、AWSのアクセスキーをハードコードすることなく、IAM ユーザーの認証情報を設定できる
-
-        - xxx
-
-    - terraform のインストール<br>
-        - `if: steps.diff.outputs.diff` を設定することで、step id `diff` の step 実行時結果が true で tf ファイルの差分がある時だけ、インストール処理を実行するようにしている。
-        
-    - terraform init<br>
-        - `if: steps.diff.outputs.diff` を設定することで、step id `diff` の step 実行時結果が true で tf ファイルの差分がある時だけ、インストール処理を実行するようにしている。
-
-    - terraform plan<br>
-        - xxx
-
-    - terraform apply<br>
-        - xxx
-
-1. EC2 インスタンスの CI/CD を行う<br>
-
-    - git push で行う場合<br>
-        Workflow ファイルで定義したトリガーイベントが `main` ブランチへの git push であれば、Workflow ファイルか tf ファイルをレポジトリの `main` ブランチに git push した時点で、ワークフローが自動的に実行され EC2 インスタンスへの CI/CD が行われる。
+1. [EC2 コンソール](https://us-west-2.console.aws.amazon.com/ec2/v2/home?region=us-west-2#Instances:) や [VPC コンソール](https://us-west-2.console.aws.amazon.com/vpc/home?region=us-west-2#vpcs:) をブラウザで開き、正しいインスタンスや VPC などが作成されていることを確認する。
+    - MacOS の場合
         ```sh
-        git add .
-        git commit -m "cicd for ec2"
-        git push origin main
+        open https://${AWS_REGION}.console.aws.amazon.com/ec2/v2/home?region=${AWS_REGION}#Instances:
+        open https://${AWS_REGION}.console.aws.amazon.com/vpc/home?region=${AWS_REGION}#vpcs:
         ```
 
-    - PR -> merge で行う場合<br>
-        Workflow ファイルで定義したトリガーイベントが、pull_request (PR) であれば、Workflow ファイルか tf ファイルを修正後、[GitHub レポジトリ上で PR](https://github.com/Yagami360/terraform-github-actions-aws-cicd-exercises/pulls) を出して、main ブランチに merge した時点で、ワークフローが自動的に実行され EC2 インスタンスへの CI/CD が行われる。
+1. 作成したインスタンスに ssh 接続する
+    ```sh
+    $ ssh ubuntu@${IP_ADRESS}
+    ```
 
-        > 一般的に CI/CD を行うトリガーは、main ブランチへの `git push` ではなく、こちらの PR を出して main ブランチへの merge が行われるタイミングにすることが推奨されている
+    terraform で作成したインスタンスの IP アドレスは、以下のコマンドで確認可能
+    ```sh
+    $ terraform show | grep public_ip
+    ```
 
-1. GitHub リポジトリの Actions タブから、実行されたワークフローのログを確認する
-
-1. ワークフローステータスのバッジ（badge）を表示したい場合は、各ワークフローの「Create status badge」ボタンをクリックして画像リンクを取得して、`README.md` などに貼り付ける。
-
-1. xxx
-
-## ■ 参考サイト
-
-- https://kiririmode.hatenablog.jp/entry/20211219/1639901955
-- https://zenn.dev/rinchsan/articles/de981e561eb36ebfab70
+1. terraform destroy で定義したリソースを全て削除する<br>
+    terraform で作成した全リソース（今の場合は EC2インスタンス）を削除したい場合は、以下のコマンドを実行
+    ```sh
+    docker exec -it ${CONTAINER_NAME} /bin/sh -c "terraform destroy"
+    ```
