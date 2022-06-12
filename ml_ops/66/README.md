@@ -305,14 +305,18 @@
         # 変更がトリガーとなるファイル
         paths:
           - '.github/workflows/*'  
-          - 'terraform/*.tf'
+          - 'terraform/ec2/*.tf'
+          - 'terraform/iam/*.tf'
+          - 'terraform/eks/*.tf'
       # main ブランチに PR された時にトリガー
       pull_request:
         branches:
           - main
         paths:
           - '.github/workflows/*'
-          - 'terraform/*.tf'
+          - 'terraform/ec2/*.tf'
+          - 'terraform/iam/*.tf'
+          - 'terraform/eks/*.tf'
     #------------------------------------------------------
     # GitHub レポジトリへの権限設定
     #------------------------------------------------------
@@ -393,7 +397,7 @@
             - name: terraform plan
               if: steps.diff.outputs.diff == 'true'
               run: terraform -chdir="${TERRAFORM_DIR}" plan -out workspace.plan
-            # PR 時に terraform plan 実行
+            # PR 時に terraform plan の内容を投稿
             - name: post plan
               if: always() && steps.diff.outputs.diff == 'true' && github.event_name == 'pull_request'
               uses: robburger/terraform-pr-commenter@v1
