@@ -183,23 +183,77 @@
 
         - SSH 鍵の設定<br>
             接続元マシンの ssh 公開鍵のパスを設定する。<br>
-            ```sh
-            # 変数定義
-            variable ssh_public_key {}
+            方法としては以下の方法がありえるが、今回は４つ目の AWS Systems Manager のパラメーターストアを使用する方法を採用する
 
-            # ssh-key 登録
-            resource "aws_key_pair" "terraform_key_pair" {
-                key_name   = "id_rsa"
-            #    public_key = file("/.ssh/id_rsa.pub")  # GitHub Action 実行時の terraform 環境には *.pub ファイルが存在しないのでエラーになる
-                public_key = var.ssh_public_key     # *.tfvars で定義した値を参照
-            }
-            ```
+            1. 【NG】ローカル環境にある ssh 公開鍵の値をそのまま設定<br>
+                ```sh
+                # ssh-key 登録
+                resource "aws_key_pair" "terraform_key_pair" {
+                    key_name   = "id_rsa"
+                    public_key = file("/.ssh/id_rsa.pub")  # GitHub Action 実行時の terraform 環境には *.pub ファイルが存在しないのでエラーになる
+                }
+                ```
 
-            > `public_key = file("/.ssh/id_rsa.pub")` で ssh 公開鍵の値を設定すると、GitHub Action 実行時の terraform 環境には `*.pub` ファイルが存在しないのでエラーになる。そのため、別途 `*.tfvars` ファイルに ssh 公開鍵の値を設定した変数を定義し、これを `var.ssh_public_key` の形式で参照するようにしている
+                > `public_key = file("/.ssh/id_rsa.pub")` で ssh 公開鍵の値を設定すると、GitHub Action 実行時の terraform 環境には `*.pub` ファイルが存在しないのでエラーになる。
+            
 
-            - `main.tfvars`
+            1. 【NG】`terraform.tfvars` に ssh 公開鍵を書き込み<br>
+                別途 `terraform.tfvars` ファイル（ファイル名は `terraform.tfvars` である必要があることに注意）に ssh 公開鍵の値を設定した変数を定義し、これを `var.ssh_public_key` の形式で参照するようにする
+
                 ```python
+                # terraform.tfvars
                 ssh_public_key = "ssh-rsa xxxxx"
+                ```
+
+                ```sh
+                # 変数定義
+                variable ssh_public_key {}
+
+                # ssh-key 登録
+                resource "aws_key_pair" "terraform_key_pair" {
+                    key_name   = "id_rsa"
+                    public_key = var.ssh_public_key     # *.tfvars で定義した値を参照
+                }
+                ```
+
+                > `terraform.tfvars` を GitHub レポジトリに公開しないと workflow の `terraform` コマンド実行時に `terraform.tfvars` ファイルを参照できなくなるが、公開すると SSH 公開鍵が流出してしまうので NG
+
+            1. secret と `terraform` コマンドの `-var` オプションを使用<br>
+                secret に SSH 公開鍵 `SSH_PUBLIC_KEY` を登録した上で、`terraform` コマンドの `-var` オプションを使用して、`terraform plan -var 'ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}'` などの形式で SSH 公開鍵を指定する。
+
+                ```sh
+                # 変数定義
+                variable ssh_public_key {}
+
+                # ssh-key 登録
+                resource "aws_key_pair" "terraform_key_pair" {
+                    key_name   = "id_rsa"
+                    public_key = var.ssh_public_key     # secrets の SSH_PUBLIC_KEY で定義した値を参照
+                }
+                ```                
+                > EC2 インスタンスの tf ファイルのみの構成の場合は、これでもいいが、他のリソースの tf ファイルがあるときに、変数 `ssh_public_key` が未定義なので、その tf ファイルに対して `terraform plan -var 'ssh_public_key=${{ secrets.SSH_PUBLIC_KEY }}'` を実行すると、エラーが発生してしまう問題がある
+
+            1. AWS Systems Manager のパラメーターストアを使用する<br>
+                [AWS Systems Manager のパラメーターストア](https://us-west-2.console.aws.amazon.com/systems-manager/parameters/?region=us-west-2&tab=Table) に ssh 公開鍵を以下のコマンドで登録し、このパラメーターストアの値を参照するようにする
+                ```sh
+                aws ssm put-parameter \
+                    --name "ssh_public_key" \
+                    --value "`cat ${HOME}/.ssh/id_rsa.pub`" \
+                    --type String
+                ```
+
+                ```sh
+                # AWS Systems Manager のパラメーターストア
+                data "aws_ssm_parameter" "ssh_public_key" {
+                    name            = "ssh_public_key"
+                    with_decryption = true
+                }
+
+                # ssh-key 登録
+                resource "aws_key_pair" "terraform_key_pair" {
+                    key_name   = "id_rsa"
+                    public_key = data.aws_ssm_parameter.ssh_public_key.value # パラメーターストアの値を参照
+                }
                 ```
 
         - EC2 インスタンスの設定<br>
