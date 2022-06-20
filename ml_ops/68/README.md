@@ -387,7 +387,6 @@
 
         - workload identiry を使用することで、xxx
 
-
 1. GKE クラスター用の Terraform のテンプレートファイル（*.tf形式）を作成する。<br>
     ```python
     #-------------------------------
@@ -515,355 +514,363 @@
 
     - xxx
 
-1. GitHub Actions の Workflow ファイルを作成する<br>
+1. GitHub レポジトリに secrets を登録する。<br>
+    github レポジトリの [setting -> secrets -> Actions](https://github.com/Yagami360/terraform-github-actions-argocd-gke-cicd-exercises/settings/secrets/actions) から、必要な secrets を登録する。
+    
+    ここで設定した secrets の値は、後述の GitHub Actions の Workflow ファイルにて、`secrets.xxx` の形式で参照できるようになる。
 
-    1. workload identity を使用する場合<br>
-        ```yaml
-		# ワークフローの名前
-		name: terrafform workflow for gke
-		#------------------------------------------------------
-		# ワークフローをトリガーするイベントを定義
-		#------------------------------------------------------
-		on:
-		  # 新しいコードが main ブランチに push された時にトリガー
-		  push:
-			branches:
-			  - main
-			# 変更がトリガーとなるファイル
-			paths:
-			  - '.github/workflows/terrafform-gke-workflow.yml'  
-			  - 'api/app.py'
-			  - 'api/Dockerfile'
-			  - 'terraform/gcp/gke/*.tf'
-			  - 'k8s/*.yml'
-			  - 'k8s/*.yaml'
-			# main ブランチに PR された時にトリガー
-			pull_request:
-			  branches:
-				- main
-			  paths:
-				- '.github/workflows/terrafform-gke-workflow.yml'  
-				- 'api/app.py'
-				- 'api/Dockerfile'
-				- 'terraform/gcp/gke/*.tf'
-				- 'k8s/*.yml'
-				- 'k8s/*.yaml'
-		#------------------------------------------------------
-		# GitHub レポジトリへの権限設定
-		#------------------------------------------------------
-		permissions:
-		  contents: "read"
-		  id-token: "write"
-		  issues: "write"
-		  pull-requests: "write"                # Pull Request へのコメントを可能にする
-		#------------------------------------------------------
-		# job（ワークフローの中で実行される処理のひとまとまり）を定義
-		#------------------------------------------------------
-		jobs:
-		  terraform-gke-job:                    # job ID
-			name: terraform job for gke         # job 名
-			runs-on: ubuntu-latest              # ジョブを実行するマシン
-			#-----------------------------
-			# 環境変数の設定
-			#-----------------------------
-			env:
-			  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}     # GitHub レポジトリへのアクセストークンを設定し、GitHub レポジトリへのコメントが可能にする / secrets は、github レポジトリの project の setting > secrets から登録する
-			  PROJECT_ID: my-project2-303004
-			  API_IMAGE_NAME: fast-api-image-gke
-			  CLUSTER_NAME: fast-api-terraform-cluster
-			  REGION: us-central1
-			  ZONE: us-central1-b
-			#-----------------------------
-			# ジョブの中で実行される一連のタスク
-			#-----------------------------
-			steps:
-			  #-----------------------------
-			  # ブランチを切る
-			  #-----------------------------
-			  - uses: actions/checkout@v3       # use タグで Actions（一連の定義済み処理）を指定 / actions/checkout@v2 : actions/v2 という GitHub リポジトリにあるアクションの v2 ブランチのコードを使用し、指定したリポジトリからソースコードを git checkout する
-			  #-----------------------------
-			  #  diff があるか確認
-			  #-----------------------------
-			  - name: Check diff for *.workflow files
-			    id: diff_workflow
-				uses: technote-space/get-diff-action@v4.0.2
-				with:
-				  PATTERNS: |
-					'.github/workflows/terrafform-gke-workflow.yml'
-			  - name: Check diff for api
-				id: diff_api
-				uses: technote-space/get-diff-action@v4.0.2
-				with:
-				  PATTERNS: |
-					app/app.py
-					app/Dockerfile
-			  - name: Check diff for *.tf files
-				id: diff_tf
-				uses: technote-space/get-diff-action@v4.0.2
-				with:
-				  PATTERNS: |
-				    terraform/gcp/gke/*.tf
-			  - name: Check diff for k8s files
-				id: diff_k8s
-				uses: technote-space/get-diff-action@v4.0.2
-				with:
-				  PATTERNS: |
-					k8s/*.yml
-					k8s/*.yaml
-			  #-----------------------------
-			  # gclould のインストール
-			  #-----------------------------
-			  - name: "install gcloud"
-				uses: google-github-actions/setup-gcloud@v0.2.0
-				with:
-				  project_id: ${{ env.PROJECT_ID }}
-				  service_account_key: ${{ secrets.GCP_SA_KEY }}
-				  export_default_credentials: true
-			  - name: gcloud auth
-				run: gcloud auth configure-docker
-			  - name: gcloud config list
-				run: gcloud config list
-			  #-----------------------------
-			  # docker image 作成 & GCR に push
-			  #-----------------------------
-			  - name: 'docker pull from gcr for api'
-				if: steps.diff_api.outputs.diff
-				run: "bash -c 'docker pull gcr.io/${PROJECT_ID}/${API_IMAGE_NAME}:latest || exit 0'"
-			  - name: 'docker build for api'
-				if: steps.diff_api.outputs.diff
-				run: 'docker build -t gcr.io/${PROJECT_ID}/${API_IMAGE_NAME}:latest --cache-from gcr.io/${PROJECT_ID}/${API_IMAGE_NAME}:latest -f api/Dockerfile .'
-			  - name: 'docker push to gcr for api'
-				if: steps.diff_api.outputs.diff
-				run: 'docker push gcr.io/${PROJECT_ID}/${API_IMAGE_NAME}:latest'
-			  #-----------------------------
-			  # terraform のインストール
-			  #-----------------------------
-			  - name: install terraform
-				if: steps.diff_tf.outputs.diff
-				uses: hashicorp/setup-terraform@v1
-				with:
-				  terraform_version: 1.2.3
-			  #-----------------------------
-			  # GKE クラスターとノードプール作成
-			  #-----------------------------
-			  # terraform init
-			  - name: terraform init for gke
-				if: steps.diff_tf.outputs.diff
-				run: terraform -chdir="terraform/gcp/gke" init
-			  # terraform plan
-			  - name: terraform plan for gke
-				if: steps.diff_tf.outputs.diff
-				id: plan
-				run: terraform -chdir="terraform/gcp/gke" plan -out workspace.plan
-			  # PR に terraform plan の内容を投稿
-			  - name: post PR terraform plan for gke
-				if: always() && steps.diff_tf.outputs.diff && github.event_name == 'pull_request'
-				uses: robburger/terraform-pr-commenter@v1
-				with:
-				  commenter_type: plan
-				  commenter_input: ${{ format('{0}{1}', steps.plan.outputs.stdout, steps.plan.outputs.stderr) }}
-				  commenter_exitcode: ${{ steps.plan.outputs.exitcode }}
-			  # terraform apply
-			  - name: terraform apply for gke
-				if: steps.diff_tf.outputs.diff && github.event_name == 'push'
-				run: terraform -chdir="terraform/gcp/gke" apply workspace.plan
-			  #-----------------------------
-			  # 各種 k8s リソースを GKE にデプロイ
-			  #-----------------------------
-			  # kubectl コマンドのインストール
-			  - name: install kubectl
-				if: steps.diff_k8s.outputs.diff
-				uses: azure/setup-kubectl@v1
-			  # 作成したクラスタに切り替える
-			  - name: get-credentials for gke clusters
-				if: steps.diff_k8s.outputs.diff
-				run: gcloud container clusters get-credentials ${CLUSTER_NAME} --project ${PROJECT_ID} --region ${ZONE}
-			  # API の k8s リソースのデプロイ（k8s リソースの CD は ArgoCD で行うのでコメントアウト）
-			  #- name: deploy k8s resources for api
-			  #if: steps.diff_k8s.outputs.diff
-			  #run: kubectl apply -f k8s/fast_api.yml
-			  # ArgoCD の k8s リソースのデプロイ
-			  - name: deploy k8s resources for argocd
-				if: steps.diff_k8s.outputs.diff
-				run: kubectl create namespace argocd || kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-        ```
+    workload identity を使用しない場合は、GitHub Action 用サービスアカウントの json キー `GCP_SA_KEY` の secret を登録しておく必要がある<br>
+    `GCP_SA_KEY` の値は、`cat .key/${SERVICE_ACCOUNT_NAME}.json | base64` で取得できる
+
+1. GitHub Actions の Workflow ファイルを作成する<br>
 
     1. workload identity を使用しない場合<br>
         ```yaml
-		# ワークフローの名前
-		name: terrafform workflow for gke with workload identity
-		#------------------------------------------------------
-		# ワークフローをトリガーするイベントを定義
-		#------------------------------------------------------
-		on:
-		  # 新しいコードが main ブランチに push された時にトリガー
-		  push:
-			branches:
-			  - main
-			# 変更がトリガーとなるファイル
-			paths:
-			  - '.github/workflows/terrafform-gke-workflow_wi.yml'  
-			  - 'api/app.py'
-			  - 'api/Dockerfile'
-			  - 'terraform/gcp/gke/*.tf'
-		  # main ブランチに PR された時にトリガー
-		  pull_request:
-			branches:
-			  - main
-			paths:
-			  - '.github/workflows/terrafform-gke-workflow_wi.yml'  
-			  - 'api/app.py'
-			  - 'api/Dockerfile'
-			  - 'terraform/gcp/gke/*.tf'
-		#------------------------------------------------------
-		# GitHub レポジトリへの権限設定
-		#------------------------------------------------------
-		permissions:
-		  contents: "read"
-		  id-token: "write"
-		  issues: "write"
-		  pull-requests: "write"                # Pull Request へのコメントを可能にする
-		#------------------------------------------------------
-		# job（ワークフローの中で実行される処理のひとまとまり）を定義
-		#------------------------------------------------------
-		jobs:
-		  terraform-gke-job:                                          # job ID
-			name: terraform job for gke with workload identity        # job 名
-			runs-on: ubuntu-latest                                    # ジョブを実行するマシン
-			#-----------------------------
-			# 環境変数の設定
-			#-----------------------------
-			env:
-			  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}     # GitHub レポジトリへのアクセストークンを設定し、GitHub レポジトリへのコメントが可能にする / secrets は、github レポジトリの project の setting > secrets から登録する
-			  PROJECT_ID: my-project2-303004
-			  SERVICE_ACCOUNT: github_actions_sa-2@my-project2-303004.iam.gserviceaccount.com                                                       # GitHub Actions 用のサービスアカウント
-			  WORKLOAD_IDENTITY_PROVIDER: "projects/85607256401/locations/global/workloadIdentityPools/github-actions-pool-2/providers/github-actions-provider-2"  # GitHub Actions 用のサービスアカウントと接続する Workload Identity プロバイダーの名前
-			  API_IMAGE_NAME: fast-api-image-gke
-			  CLUSTER_NAME: fast-api-terraform-cluster
-			  REGION: us-central1
-			  ZONE: us-central1-b
-			#-----------------------------
-			# ジョブの中で実行される一連のタスク
-			#-----------------------------
-			steps:
-			  #-----------------------------
-			  # ブランチを切る
-			  #-----------------------------
-			  - uses: actions/checkout@v3       # use タグで Actions（一連の定義済み処理）を指定 / actions/checkout@v2 : actions/v2 という GitHub リポジトリにあるアクションの v2 ブランチのコードを使用し、指定したリポジトリからソースコードを git checkout する
-			  #-----------------------------
-			  #  diff があるか確認
-			  #-----------------------------
-			  - name: Check diff for *.workflow files
-				id: diff_workflow
-				uses: technote-space/get-diff-action@v4.0.2
-				with:
-				  PATTERNS: |
-				    .github/workflows/terrafform-gke-workflow_wi.yml
-			  - name: Check diff for api
-				id: diff_api
-				uses: technote-space/get-diff-action@v4.0.2
-				with:
-				  PATTERNS: |
-					app/app.py
-					app/Dockerfile
-			  - name: Check diff for gke *.tf
-				id: diff_tf
-				uses: technote-space/get-diff-action@v4.0.2
-				with:
-				  PATTERNS: |
-					terraform/gcp/gke/*.tf
-			  #-----------------------------
-			  # GCP の認証処理
-			  #-----------------------------
-			  # Workload Identity を使用した認証
-			  - name: "authenticate to gcp"
-				uses: "google-github-actions/auth@v0.4.0"
-				with:
-				  workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
-				  service_account: ${{ env.SERVICE_ACCOUNT }}
-				  create_credentials_file: "true"
-				  activate_credentials_file: "true"
-			  - name: gcloud config list
-				run: gcloud config list
-			  #-----------------------------
-			  # gclould のインストール
-			  #-----------------------------
-			  - name: "install gcloud"
-				uses: google-github-actions/setup-gcloud@v0.2.0
-				with:
-				  project_id: ${{ env.PROJECT_ID }}
-				  workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
-				  service_account: ${{ env.SERVICE_ACCOUNT }}
-				  create_credentials_file: 'true'
-			  - name: gcloud config list
-				run: gcloud config list
-			  - name: gcloud auth
-				run: gcloud auth configure-docker
-			  - name: gcloud config list
-				run: gcloud config list
-			  #-----------------------------
-			  # docker image 作成 & GCR に push
-			  #-----------------------------
-			  - name: 'docker pull from gcr for api'
-				if: steps.diff_api.outputs.diff
-				run: "bash -c 'docker pull gcr.io/${PROJECT_ID}/${API_IMAGE_NAME}:latest || exit 0'"
-			  - name: 'docker build for api'
-				if: steps.diff_api.outputs.diff
-				run: 'docker build -t gcr.io/${PROJECT_ID}/${API_IMAGE_NAME}:latest --cache-from gcr.io/${PROJECT_ID}/${API_IMAGE_NAME}:latest -f api/Dockerfile .'
-			  - name: 'docker push to gcr for api'
-				if: steps.diff_api.outputs.diff
-				run: 'docker push gcr.io/${PROJECT_ID}/${API_IMAGE_NAME}:latest'
-			  #-----------------------------
-			  # terraform のインストール
-			  #-----------------------------
-			  - name: install terraform
-				if: steps.diff_tf.outputs.diff
-				uses: hashicorp/setup-terraform@v1
-				with:
-				  terraform_version: 1.2.3
-			  #-----------------------------
-			  # GKE クラスターとノードプール作成
-			  #-----------------------------
-			  # terraform init
-			  - name: terraform init
-				if: steps.diff_tf.outputs.diff
-				run: terraform -chdir="terraform/gcp/gke" init
-			  # terraform plan
-			  - name: terraform plan
-				if: steps.diff_tf.outputs.diff
-				id: plan
-				run: terraform -chdir="terraform/gcp/gke" plan -out workspace.plan
-			  # PR に terraform plan の内容を投稿
-			  - name: post PR terraform plan
-				if: always() && steps.diff_tf.outputs.diff && github.event_name == 'pull_request'
-				uses: robburger/terraform-pr-commenter@v1
-				with:
-				  commenter_type: plan
-				  commenter_input: ${{ format('{0}{1}', steps.plan.outputs.stdout, steps.plan.outputs.stderr) }}
-				  commenter_exitcode: ${{ steps.plan.outputs.exitcode }}
-			  # terraform apply
-			  - name: terraform apply
-				if: steps.diff_tf.outputs.diff && github.event_name == 'push'
-				run: terraform -chdir="terraform/gcp/gke" apply workspace.plan
-			  #-----------------------------
-			  # 各種 k8s リソースを GKE にデプロイ
-			  #-----------------------------
-			  # kubectl コマンドのインストール
-			  - name: install kubectl
-				if: steps.diff_k8s.outputs.diff
-				uses: azure/setup-kubectl@v1
-			  # 作成したクラスタに切り替える
-			  - name: get-credentials for gke clusters
-				if: steps.diff_k8s.outputs.diff
-				run: gcloud container clusters get-credentials ${CLUSTER_NAME} --project ${PROJECT_ID} --region ${ZONE}
-			  # API の k8s リソースのデプロイ
-			  - name: deploy k8s resources for api
-				if: steps.diff_k8s.outputs.diff
-				run: kubectl apply -f k8s/fast_api.yml
-			  # ArgoCD の k8s リソースのデプロイ
-			  - name: deploy k8s resources for argocd
-				if: steps.diff_k8s.outputs.diff
-				run: kubectl create namespace argocd || kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+        # ワークフローの名前
+        name: terrafform workflow for gke
+        #------------------------------------------------------
+        # ワークフローをトリガーするイベントを定義
+        #------------------------------------------------------
+        on:
+          # 新しいコードが main ブランチに push された時にトリガー
+          push:
+            branches:
+              - main
+            # 変更がトリガーとなるファイル
+            paths:
+              - '.github/workflows/terrafform-gke-workflow.yml'  
+              - 'api/app.py'
+              - 'api/Dockerfile'
+              - 'terraform/gcp/gke/*.tf'
+              - 'k8s/*.yml'
+              - 'k8s/*.yaml'
+            # main ブランチに PR された時にトリガー
+            pull_request:
+              branches:
+                - main
+              paths:
+                - '.github/workflows/terrafform-gke-workflow.yml'  
+                - 'api/app.py'
+                - 'api/Dockerfile'
+                - 'terraform/gcp/gke/*.tf'
+                - 'k8s/*.yml'
+                - 'k8s/*.yaml'
+        #------------------------------------------------------
+        # GitHub レポジトリへの権限設定
+        #------------------------------------------------------
+        permissions:
+          contents: "read"
+          id-token: "write"
+          issues: "write"
+          pull-requests: "write"                # Pull Request へのコメントを可能にする
+        #------------------------------------------------------
+        # job（ワークフローの中で実行される処理のひとまとまり）を定義
+        #------------------------------------------------------
+        jobs:
+          terraform-gke-job:                    # job ID
+            name: terraform job for gke         # job 名
+            runs-on: ubuntu-latest              # ジョブを実行するマシン
+            #-----------------------------
+            # 環境変数の設定
+            #-----------------------------
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}     # GitHub レポジトリへのアクセストークンを設定し、GitHub レポジトリへのコメントが可能にする / secrets は、github レポジトリの project の setting > secrets から登録する
+              PROJECT_ID: my-project2-303004
+              API_IMAGE_NAME: fast-api-image-gke
+              CLUSTER_NAME: fast-api-terraform-cluster
+              REGION: us-central1
+              ZONE: us-central1-b
+            #-----------------------------
+            # ジョブの中で実行される一連のタスク
+            #-----------------------------
+            steps:
+              #-----------------------------
+              # ブランチを切る
+              #-----------------------------
+              - uses: actions/checkout@v3       # use タグで Actions（一連の定義済み処理）を指定 / actions/checkout@v2 : actions/v2 という GitHub リポジトリにあるアクションの v2 ブランチのコードを使用し、指定したリポジトリからソースコードを git checkout する
+              #-----------------------------
+              #  diff があるか確認
+              #-----------------------------
+              - name: Check diff for *.workflow files
+                id: diff_workflow
+                uses: technote-space/get-diff-action@v4.0.2
+                with:
+                  PATTERNS: |
+                    '.github/workflows/terrafform-gke-workflow.yml'
+              - name: Check diff for api
+                id: diff_api
+                uses: technote-space/get-diff-action@v4.0.2
+                with:
+                  PATTERNS: |
+                    app/app.py
+                    app/Dockerfile
+              - name: Check diff for *.tf files
+                id: diff_tf
+                uses: technote-space/get-diff-action@v4.0.2
+                with:
+                  PATTERNS: |
+                    terraform/gcp/gke/*.tf
+              - name: Check diff for k8s files
+                id: diff_k8s
+                uses: technote-space/get-diff-action@v4.0.2
+                with:
+                  PATTERNS: |
+                    k8s/*.yml
+                    k8s/*.yaml
+              #-----------------------------
+              # gclould のインストール
+              #-----------------------------
+              - name: "install gcloud"
+                uses: google-github-actions/setup-gcloud@v0.2.0
+                with:
+                  project_id: ${{ env.PROJECT_ID }}
+                  service_account_key: ${{ secrets.GCP_SA_KEY }}
+                  export_default_credentials: true
+              - name: gcloud auth
+                run: gcloud auth configure-docker
+              - name: gcloud config list
+                run: gcloud config list
+              #-----------------------------
+              # docker image 作成 & GCR に push
+              #-----------------------------
+              - name: 'docker pull from gcr for api'
+                if: steps.diff_api.outputs.diff
+                run: "bash -c 'docker pull gcr.io/${PROJECT_ID}/${API_IMAGE_NAME}:latest || exit 0'"
+              - name: 'docker build for api'
+                if: steps.diff_api.outputs.diff
+                run: 'docker build -t gcr.io/${PROJECT_ID}/${API_IMAGE_NAME}:latest --cache-from gcr.io/${PROJECT_ID}/${API_IMAGE_NAME}:latest -f api/Dockerfile .'
+              - name: 'docker push to gcr for api'
+                if: steps.diff_api.outputs.diff
+                run: 'docker push gcr.io/${PROJECT_ID}/${API_IMAGE_NAME}:latest'
+              #-----------------------------
+              # terraform のインストール
+              #-----------------------------
+              - name: install terraform
+                if: steps.diff_tf.outputs.diff
+                uses: hashicorp/setup-terraform@v1
+                with:
+                  terraform_version: 1.2.3
+              #-----------------------------
+              # GKE クラスターとノードプール作成
+              #-----------------------------
+              # terraform init
+              - name: terraform init for gke
+                if: steps.diff_tf.outputs.diff
+                run: terraform -chdir="terraform/gcp/gke" init
+              # terraform plan
+              - name: terraform plan for gke
+                if: steps.diff_tf.outputs.diff
+                id: plan
+                run: terraform -chdir="terraform/gcp/gke" plan -out workspace.plan
+              # PR に terraform plan の内容を投稿
+              - name: post PR terraform plan for gke
+                if: always() && steps.diff_tf.outputs.diff && github.event_name == 'pull_request'
+                uses: robburger/terraform-pr-commenter@v1
+                with:
+                  commenter_type: plan
+                  commenter_input: ${{ format('{0}{1}', steps.plan.outputs.stdout, steps.plan.outputs.stderr) }}
+                  commenter_exitcode: ${{ steps.plan.outputs.exitcode }}
+              # terraform apply
+              - name: terraform apply for gke
+                if: steps.diff_tf.outputs.diff && github.event_name == 'push'
+                run: terraform -chdir="terraform/gcp/gke" apply workspace.plan
+              #-----------------------------
+              # 各種 k8s リソースを GKE にデプロイ
+              #-----------------------------
+              # kubectl コマンドのインストール
+              - name: install kubectl
+                if: steps.diff_k8s.outputs.diff
+                uses: azure/setup-kubectl@v1
+              # 作成したクラスタに切り替える
+              - name: get-credentials for gke clusters
+                if: steps.diff_k8s.outputs.diff
+                run: gcloud container clusters get-credentials ${CLUSTER_NAME} --project ${PROJECT_ID} --region ${ZONE}
+              # API の k8s リソースのデプロイ（k8s リソースの CD は ArgoCD で行うのでコメントアウト）
+              #- name: deploy k8s resources for api
+              #if: steps.diff_k8s.outputs.diff
+              #run: kubectl apply -f k8s/fast_api.yml
+              # ArgoCD の k8s リソースのデプロイ
+              - name: deploy k8s resources for argocd
+                if: steps.diff_k8s.outputs.diff
+                run: kubectl create namespace argocd || kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+        ```
+
+    1. workload identity を使用する場合<br>
+        ```yaml
+        # ワークフローの名前
+        name: terrafform workflow for gke with workload identity
+        #------------------------------------------------------
+        # ワークフローをトリガーするイベントを定義
+        #------------------------------------------------------
+        on:
+          # 新しいコードが main ブランチに push された時にトリガー
+          push:
+            branches:
+              - main
+            # 変更がトリガーとなるファイル
+            paths:
+              - '.github/workflows/terrafform-gke-workflow_wi.yml'  
+              - 'api/app.py'
+              - 'api/Dockerfile'
+              - 'terraform/gcp/gke/*.tf'
+          # main ブランチに PR された時にトリガー
+          pull_request:
+            branches:
+              - main
+            paths:
+              - '.github/workflows/terrafform-gke-workflow_wi.yml'  
+              - 'api/app.py'
+              - 'api/Dockerfile'
+              - 'terraform/gcp/gke/*.tf'
+        #------------------------------------------------------
+        # GitHub レポジトリへの権限設定
+        #------------------------------------------------------
+        permissions:
+          contents: "read"
+          id-token: "write"
+          issues: "write"
+          pull-requests: "write"                # Pull Request へのコメントを可能にする
+        #------------------------------------------------------
+        # job（ワークフローの中で実行される処理のひとまとまり）を定義
+        #------------------------------------------------------
+        jobs:
+          terraform-gke-job:                                          # job ID
+            name: terraform job for gke with workload identity        # job 名
+            runs-on: ubuntu-latest                                    # ジョブを実行するマシン
+            #-----------------------------
+            # 環境変数の設定
+            #-----------------------------
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}     # GitHub レポジトリへのアクセストークンを設定し、GitHub レポジトリへのコメントが可能にする / secrets は、github レポジトリの project の setting > secrets から登録する
+              PROJECT_ID: my-project2-303004
+              SERVICE_ACCOUNT: github_actions_sa-2@my-project2-303004.iam.gserviceaccount.com                                                       # GitHub Actions 用のサービスアカウント
+              WORKLOAD_IDENTITY_PROVIDER: "projects/85607256401/locations/global/workloadIdentityPools/github-actions-pool-2/providers/github-actions-provider-2"  # GitHub Actions 用のサービスアカウントと接続する Workload Identity プロバイダーの名前
+              API_IMAGE_NAME: fast-api-image-gke
+              CLUSTER_NAME: fast-api-terraform-cluster
+              REGION: us-central1
+              ZONE: us-central1-b
+            #-----------------------------
+            # ジョブの中で実行される一連のタスク
+            #-----------------------------
+            steps:
+              #-----------------------------
+              # ブランチを切る
+              #-----------------------------
+              - uses: actions/checkout@v3       # use タグで Actions（一連の定義済み処理）を指定 / actions/checkout@v2 : actions/v2 という GitHub リポジトリにあるアクションの v2 ブランチのコードを使用し、指定したリポジトリからソースコードを git checkout する
+              #-----------------------------
+              #  diff があるか確認
+              #-----------------------------
+              - name: Check diff for *.workflow files
+                id: diff_workflow
+                uses: technote-space/get-diff-action@v4.0.2
+                with:
+                  PATTERNS: |
+                    .github/workflows/terrafform-gke-workflow_wi.yml
+              - name: Check diff for api
+                id: diff_api
+                uses: technote-space/get-diff-action@v4.0.2
+                with:
+                  PATTERNS: |
+                    app/app.py
+                    app/Dockerfile
+              - name: Check diff for gke *.tf
+                id: diff_tf
+                uses: technote-space/get-diff-action@v4.0.2
+                with:
+                  PATTERNS: |
+                    terraform/gcp/gke/*.tf
+              #-----------------------------
+              # GCP の認証処理
+              #-----------------------------
+              # Workload Identity を使用した認証
+              - name: "authenticate to gcp"
+                uses: "google-github-actions/auth@v0.4.0"
+                with:
+                  workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+                  service_account: ${{ env.SERVICE_ACCOUNT }}
+                  create_credentials_file: "true"
+                  activate_credentials_file: "true"
+              - name: gcloud config list
+                run: gcloud config list
+              #-----------------------------
+              # gclould のインストール
+              #-----------------------------
+              - name: "install gcloud"
+                uses: google-github-actions/setup-gcloud@v0.2.0
+                with:
+                  project_id: ${{ env.PROJECT_ID }}
+                  workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+                  service_account: ${{ env.SERVICE_ACCOUNT }}
+                  create_credentials_file: 'true'
+              - name: gcloud config list
+                run: gcloud config list
+              - name: gcloud auth
+                run: gcloud auth configure-docker
+              - name: gcloud config list
+                run: gcloud config list
+              #-----------------------------
+              # docker image 作成 & GCR に push
+              #-----------------------------
+              - name: 'docker pull from gcr for api'
+                if: steps.diff_api.outputs.diff
+                run: "bash -c 'docker pull gcr.io/${PROJECT_ID}/${API_IMAGE_NAME}:latest || exit 0'"
+              - name: 'docker build for api'
+                if: steps.diff_api.outputs.diff
+                run: 'docker build -t gcr.io/${PROJECT_ID}/${API_IMAGE_NAME}:latest --cache-from gcr.io/${PROJECT_ID}/${API_IMAGE_NAME}:latest -f api/Dockerfile .'
+              - name: 'docker push to gcr for api'
+                if: steps.diff_api.outputs.diff
+                run: 'docker push gcr.io/${PROJECT_ID}/${API_IMAGE_NAME}:latest'
+              #-----------------------------
+              # terraform のインストール
+              #-----------------------------
+              - name: install terraform
+                if: steps.diff_tf.outputs.diff
+                uses: hashicorp/setup-terraform@v1
+                with:
+                  terraform_version: 1.2.3
+              #-----------------------------
+              # GKE クラスターとノードプール作成
+              #-----------------------------
+              # terraform init
+              - name: terraform init
+                if: steps.diff_tf.outputs.diff
+                run: terraform -chdir="terraform/gcp/gke" init
+              # terraform plan
+              - name: terraform plan
+                if: steps.diff_tf.outputs.diff
+                id: plan
+                run: terraform -chdir="terraform/gcp/gke" plan -out workspace.plan
+              # PR に terraform plan の内容を投稿
+              - name: post PR terraform plan
+                if: always() && steps.diff_tf.outputs.diff && github.event_name == 'pull_request'
+                uses: robburger/terraform-pr-commenter@v1
+                with:
+                  commenter_type: plan
+                  commenter_input: ${{ format('{0}{1}', steps.plan.outputs.stdout, steps.plan.outputs.stderr) }}
+                  commenter_exitcode: ${{ steps.plan.outputs.exitcode }}
+              # terraform apply
+              - name: terraform apply
+                if: steps.diff_tf.outputs.diff && github.event_name == 'push'
+                run: terraform -chdir="terraform/gcp/gke" apply workspace.plan
+              #-----------------------------
+              # 各種 k8s リソースを GKE にデプロイ
+              #-----------------------------
+              # kubectl コマンドのインストール
+              - name: install kubectl
+                if: steps.diff_k8s.outputs.diff
+                uses: azure/setup-kubectl@v1
+              # 作成したクラスタに切り替える
+              - name: get-credentials for gke clusters
+                if: steps.diff_k8s.outputs.diff
+                run: gcloud container clusters get-credentials ${CLUSTER_NAME} --project ${PROJECT_ID} --region ${ZONE}
+              # API の k8s リソースのデプロイ
+              #- name: deploy k8s resources for api
+              #if: steps.diff_k8s.outputs.diff
+              #run: kubectl apply -f k8s/fast_api.yml
+              # ArgoCD の k8s リソースのデプロイ
+              - name: deploy k8s resources for argocd
+                if: steps.diff_k8s.outputs.diff
+                run: kubectl create namespace argocd || kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
         ```
 
     ポイントは、以下の通り
@@ -872,16 +879,32 @@
         定義済み action `google-github-actions/auth` を使用して、GCP の認証処理を行っている。
 
         - GitHub Actions 用のサービスアカウントの json キーを設定する場合<br>
-            xxx
+            先の工程で作成した GitHub Actions 用のサービスアカウントの json キーのレポジトリの secrets に登録したが、これを `service_account_key: ${{ secrets.GCP_SA_KEY }}` の形式で設定することで、GCP の認証を行うことができる。
 
         - GitHub Actions 用のサービスアカウントに Workload Identity 連携を行う場合<br> 
-            xxx
+            Workload Identity を使用することで、GitHub Actions 用のサービスアカウントの json キーを設定することなしに、GCP 認証を行うことができる。
 
-    - docker image の GCR への push
+            具体的には、以下のようにする
 
-    - terraffom コマンドで GKE クラスタ & ノードプール作成
+            - `service_account` : 前述の GitHub Actions 用サービスアカウント作成時に作成した GitHub Actions 用サービスアカウント名 `github_actions_sa-2@my-project2-303004.iam.gserviceaccount.com` を設定する
 
-    - kubectl の設定
+            - `workload_identity_provider` : 前述の GitHub Actions 用サービスアカウント作成時に作成した Workload Identity Provider 名 `projects/85607256401/locations/global/workloadIdentityPools/github-actions-pool-2/providers/github-actions-provider-2` を設定
+
+    - docker image の GCR への push<br>
+        API のコードが変更されたときのみ、API の docker image を再ビルドして、GCR に push するようにする
+
+    - terraffom コマンドで GKE クラスタ & ノードプール作成<br>
+        GKE の `*.tf` ファイルが変更されたときのみ、terraffom コマンドを使用して GKE クラスタとノードプールを作成する
+
+        既に GKE クラスタが作成されている場合は、修正した *.tf ファイルの構成で GKE クラスタ & ノードプールが再度作成される動作になる。
+
+        まだ GKE クラスタが作成されている場合は、修正した *.tf ファイルの構成で GKE クラスタ & ノードプールが新規に作成される動作になる。
+
+    - kubectl の設定<br>
+        xxx
+
+    - ArgoCD の k8s リソースのデプロイ<br>
+        xxx
 
 1. ArgoCD CLI をインストールする<br>
     - MacOS の場合<br>    
@@ -983,10 +1006,6 @@
     ```sh
     argocd app sync ${ARGOCD_APP_NAME}
     ```
-
-    ArgoCD と GitHub レポジトリの同期が成功している場合は、ArgoCD のコンソール画面は、以下のようになる
-
-    xxx
 
 1. Web-API のコード or GKE の `*.tf` ファイル or k8s マニフェストを修正する<br>
     `api/` ディレクトリ以下にある Web-API のコードを修正する。又は、GKE に対しての tf ファイル `terraform/gcp/gke/main.tf` を修正する
