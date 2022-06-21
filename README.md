@@ -301,13 +301,12 @@ AIプロダクト開発のための Tips 集。<br>
 
 - REST API / RESTful API
     - [REST API / RESTful API の基本事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/29)
-    - 【Flask】Flask での非 REST API と REST API
-- Flask
-    - 【Flask】GCP インスタンス + docker + Flask を用いた Web-API の構築
-    - [【Flask】Flask での Web-API を https 化する（自己署名SSL認証を使用する場合）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/20)
-    - 【Flask】Flask での Web-API を https 化（SSL）する（認証局[CA]を使用する場合）
-- Django
-- FastAPI
+- 【Python】Flask
+    - 【Python】GCP インスタンス + docker + Flask を用いた Web-API の構築
+    - [【Python】Flask での Web-API を https 化する（自己署名SSL認証を使用する場合）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/20)
+    - 【Python】Flask での Web-API を https 化（SSL）する（認証局[CA]を使用する場合）
+- 【Python】Django
+- 【Python】FastAPI
     - [FastAPI の基本事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/30)
     - [FastAPI + uvicorn での構成](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/31)
     - [FastAPI + uvicorn + gunicorn での構成（本番環境想定時）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/32)
@@ -325,6 +324,8 @@ AIプロダクト開発のための Tips 集。<br>
     - FastAPI を使用した非同期処理での Web-API の出力結果を GSC に転送する
     - FastAPI を使用した非同期処理での Web-API の出力結果を GoogleDrive に転送する
     - FastAPI を使用した非同期処理での Web-API の出力完了結果を Slack に通知する
+- 【Golang】Gin
+    - [[In-progress] Go 言語で Gin を使用して簡単な REST API を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/69)
 
 - httpx を用いて複数の　Web-API に並列実行でリクエストする
 
