@@ -1,5 +1,6 @@
 #!/bin/sh
 set -eu
+PORT=3000
 
 #-----------------------------
 # OS判定
@@ -56,4 +57,4 @@ fi
 #.main
 
 # コンパイルなしで実行
-go run main.go
+go run main.go --port ${PORT}
