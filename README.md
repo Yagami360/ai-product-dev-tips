@@ -468,12 +468,15 @@ AIプロダクト開発のための Tips 集。<br>
 
 - Terraform
     - [Terraform の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/10)
-    - [Terraform を利用して AWS インスタンスを自動的に構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/11)
-    - [Terraform を利用して AWS インスタンスを自動的に構築する（docker 使用時）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/67)
-    - Terraform を利用して GCP インスタンスを自動的に構築する。
+    - Terraform を利用して Amazon IAM を構築する
+    - [Terraform を利用して AWS インスタンスを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/11)
+    - [Terraform を利用して AWS インスタンスを構築する（docker 使用時）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/67)
+    - [[In-progress] Terraform を利用して Amazon EKS クラスターを構築する（docker 使用時）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/70)
+    - Terraform を利用して GCP インスタンスを構築する。
     - Terraform を利用して機械学習環境の GCP インスタンスを自動的に構築する。
 - 【GCP】DeploymentManager
     - 【GCP】DeploymentManager の基礎事項
+- 【AWS】CloudFormation
 
 </details>
 
