@@ -245,33 +245,35 @@ AIプロダクト開発のための Tips 集。<br>
     - [【Docker】requests モジュールを用いてコンテナ間通信するときの、IP アドレス指定方式（コンテナ名で指定）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/docker_processing/8)
     - 【Docker】Docker コンテナ内から別の Docker コンテナを認識する
 - Kubernetes (k8s)
-- 【GCP】GKE [Google Kubernetes Engine]
-    - [【GCP】Kubernetes (k8s) と GKE [Google Kubernetes Engine] の基本事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/9)
-    - [【GCP】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/10)
-    - [【GCP】GKE を用いた機械学習モデルの推論 API の構築](https://github.com/Yagami360/graphonomy_api-server_gke)
-    - [[In-progress]【GCP】GKE でのオートスケールの基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/31)
-    - [【GCP】Cloud Monitoring でのカスタム指標を k8s の外部メトリックとしてオートスケールする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/50)
-    - 【GCP】Workload Identity を用いた GKE クラスタから GCP リソースへのアクセス
-    - 【GCP】GKE の外部公開サービスの IP アドレスを固定する
-    - 【GCP】Pod 間で通信する
-    - 【GCP】Pod 内のコンテナ間で通信する
-    - 【GCP】Pod でのコンテナの起動順を設定する
-    - 【GCP】Pod 内のコンテナ内から別の Pod を認識する
-    - 【GCP】GKE クラスタをマルチゾーンクラスタにして安定性を向上させる
-    - 【GCP】GKE クラスタをマルチリージョン＆マルチゾーンクラスタにして安定性を向上させる
-    - 【k8s】Istio の基礎事項
-    - [【GCP】GKE で構成した Web API に Istio を使用したサーキットブレーカーを導入する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/27)
-    - [【GCP】Istio の VirtualSevice を使用してリクエストデータのヘッダーに応じて異なる Web-API で推論する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/40)
-    - [[In-progress]【GCP】GoogleマネージドSSL証明書を用いて、GKE 上の Web-API を https 化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/45)
-    - [【GCP】k8s の Job を使用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/51)
-    - 【GCP】k8s の CronJob を使用する
-    - 【GCP】同期 REST API へのリクエストを k8s のジョブで管理する
-    - 【GCP】非同期 REST API へのリクエストを k8s のジョブを管理する
-    - 【GCP】サイドカーで異なるコンテナ間のボリュームを共有する
-    - 【GCP】k8s の PersistentVolume と hostpath を使用してコンテナ間のボリュームを永続的に共有する
-    - [【GCP】GKE 上の Web-API に対して Google Cloud Armor の WAF 機能を使用してクライアントIP単位での RateLimit 制限を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/55)
-- 【AWS】Amazon EKS [Amazon Elastic Kubernetes Service]
-    - [[In-progress]【AWS】Amazon EKS を用いて Web API を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/60)
+    - 【GCP】GKE [Google Kubernetes Engine]
+        - [【GCP】Kubernetes (k8s) と GKE [Google Kubernetes Engine] の基本事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/9)
+        - [【GCP】GKE クラスタのノードで GPU を使用可能にする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/10)
+        - [【GCP】GKE を用いた機械学習モデルの推論 API の構築](https://github.com/Yagami360/graphonomy_api-server_gke)
+        - [[In-progress]【GCP】GKE でのオートスケールの基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/31)
+        - [【GCP】Cloud Monitoring でのカスタム指標を k8s の外部メトリックとしてオートスケールする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/50)
+        - 【GCP】Workload Identity を用いた GKE クラスタから GCP リソースへのアクセス
+        - 【GCP】GKE の外部公開サービスの IP アドレスを固定する
+        - 【GCP】Pod 間で通信する
+        - 【GCP】Pod 内のコンテナ間で通信する
+        - 【GCP】Pod でのコンテナの起動順を設定する
+        - 【GCP】Pod 内のコンテナ内から別の Pod を認識する
+        - 【GCP】GKE クラスタをマルチゾーンクラスタにして安定性を向上させる
+        - 【GCP】GKE クラスタをマルチリージョン＆マルチゾーンクラスタにして安定性を向上させる
+        - 【k8s】Istio の基礎事項
+        - [【GCP】GKE で構成した Web API に Istio を使用したサーキットブレーカーを導入する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/27)
+        - [【GCP】Istio の VirtualSevice を使用してリクエストデータのヘッダーに応じて異なる Web-API で推論する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/40)
+        - [[In-progress]【GCP】GoogleマネージドSSL証明書を用いて、GKE 上の Web-API を https 化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/45)
+        - [【GCP】k8s の Job を使用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/51)
+        - 【GCP】k8s の CronJob を使用する
+        - 【GCP】同期 REST API へのリクエストを k8s のジョブで管理する
+        - 【GCP】非同期 REST API へのリクエストを k8s のジョブを管理する
+        - 【GCP】サイドカーで異なるコンテナ間のボリュームを共有する
+        - 【GCP】k8s の PersistentVolume と hostpath を使用してコンテナ間のボリュームを永続的に共有する
+        - [【GCP】GKE 上の Web-API に対して Google Cloud Armor の WAF 機能を使用してクライアントIP単位での RateLimit 制限を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/55)
+        - [【GCP】 Kustomize を使用して GKE の k8s のリソース管理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/71)
+    - 【AWS】Amazon EKS [Amazon Elastic Kubernetes Service]
+        - [[In-progress]【AWS】Amazon EKS を用いて Web API を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/60)
+
 </details>
 
 <details>

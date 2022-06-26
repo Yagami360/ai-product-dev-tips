@@ -1,0 +1,29 @@
+---
+# Pod
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fast-api-pod
+spec:
+  selector:
+    matchLabels:
+      app: fast-api-pod
+  template:
+    spec:
+      containers:
+      - name: fast-api-container
+        image: gcr.io/my-project2-303004/fast-api-image-gke:latest
+        env:
+          - name: ENVIRONMENT
+            value: "prod"
+          - name: DEBUG
+            value: "False"
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: fast-api-server
+spec:
+  # IPアドレスを開発環境、本番環境で切り分け
+  type: LoadBalancer   # L4 ロードバランサーは使用しない。代わりに L7 ロードバランサーである Ingress を使用する

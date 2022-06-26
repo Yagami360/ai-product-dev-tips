@@ -1,0 +1,54 @@
+---
+# Pod
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fast-api-pod
+  labels:
+    app: fast-api-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fast-api-pod
+  template:
+    metadata:
+      labels:
+        app: fast-api-pod
+    spec:
+      containers:
+      - name: fast-api-container
+        # docker image を開発環境、本番環境で切り分け
+#        image: gcr.io/my-project2-303004/fast-api-image-gke:latest
+#        image: gcr.io/my-project2-303004/fast-api-image-gke-dev:latest
+        ports:
+        - containerPort: 5000
+          name: http-server
+        # 環境変数を開発環境、本番環境で切り分け
+#        env:
+#          - name: ENVIRONMENT
+#            value: "dev"
+#            value: "prod"
+#          - name: DEBUG
+#            value: "True"
+        command: ["/bin/sh","-c"]
+        args: ["gunicorn app:app --bind 0.0.0.0:5000 -k uvicorn.workers.UvicornWorker --workers 1 --threads 1 --backlog 256 --timeout 1000000 --reload"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: "0.1Gi"
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: fast-api-server
+spec:
+  # IPアドレスを開発環境、本番環境で切り分け
+  #type: LoadBalancer   # L4 ロードバランサーは使用しない。代わりに L7 ロードバランサーである Ingress を使用する
+  ports:
+    - port: 5000
+      targetPort: 5000
+      protocol: TCP
+  selector:
+    app: fast-api-pod
