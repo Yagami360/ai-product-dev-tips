@@ -270,7 +270,7 @@ AIプロダクト開発のための Tips 集。<br>
         - 【GCP】サイドカーで異なるコンテナ間のボリュームを共有する
         - 【GCP】k8s の PersistentVolume と hostpath を使用してコンテナ間のボリュームを永続的に共有する
         - [【GCP】GKE 上の Web-API に対して Google Cloud Armor の WAF 機能を使用してクライアントIP単位での RateLimit 制限を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/55)
-        - [【GCP】 Kustomize を使用して GKE の k8s のリソース管理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/71)
+        - [【GCP】 Kustomize を使用して GKE 上の　Web-API の k8s のリソース管理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/71)
     - 【AWS】Amazon EKS [Amazon Elastic Kubernetes Service]
         - [[In-progress]【AWS】Amazon EKS を用いて Web API を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/60)
 
@@ -474,6 +474,7 @@ AIプロダクト開発のための Tips 集。<br>
     - [Terraform を利用して AWS インスタンスを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/11)
     - [Terraform を利用して AWS インスタンスを構築する（docker 使用時）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/67)
     - [[In-progress] Terraform を利用して Amazon EKS クラスターを構築する（docker 使用時）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/70)
+    - Terraform を利用して Amazon EKS クラスターを構築する（定義済み module + docker 使用時）
     - Terraform を利用して GCP インスタンスを構築する。
     - Terraform を利用して機械学習環境の GCP インスタンスを自動的に構築する。
 - 【GCP】DeploymentManager

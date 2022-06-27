@@ -14,3 +14,9 @@
     ポイントは、以下の通り
 
     - `eksctl` コマンドを使用して、EKS クラスターを作成する場合は、VPC などの   
+
+
+## ■ 参考サイト
+
+- https://qiita.com/samskeyti/items/5855f1f2b5262e27af6e
+- https://dev.classmethod.jp/articles/terraform-eks-create/
