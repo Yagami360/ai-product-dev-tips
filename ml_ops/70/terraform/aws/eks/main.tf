@@ -2,21 +2,22 @@
 # プロバイダー設定
 #-------------------------------
 provider "aws" {
-    profile = "Yagami360"
-    region = "us-west-2"
+    profile = "${var.profile}"
+    region = "${var.region}"
 }
 
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.eks.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.eks.token
-}
+#provider "kubernetes" {
+#  host                   = data.aws_eks_cluster.eks.endpoint
+#  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
+#  token                  = data.aws_eks_cluster_auth.eks.token
+#}
 
 #-------------------------------
 # 実行する Terraform 環境情報
 #-------------------------------
 terraform {
-  required_version = "~> 1.0.8"
+  # terraform のバージョン
+  #required_version = "~> 1.2.0"
 
   # バックエンドを S3 にする
   backend "s3" {
@@ -25,16 +26,15 @@ terraform {
   }
 
   # 実行するプロバイダー
-  required_providers {
-    aws       = {
-      source  = "hashicorp/aws"
-      version = "~> 3.71.0"
-    }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "2.5.0"
-    }
-  }
+#  required_providers {
+#    aws       = {
+#      source  = "hashicorp/aws"
+#      version = "~> 3.71.0"
+#    }
+#    kubernetes = {
+#      version = "2.5.0"
+#    }
+#  }
 }
 
 #-------------------------------
@@ -131,11 +131,13 @@ resource "aws_vpc" "terraform_eks_vpc" {
 
 # サブネットワークの設定
 resource "aws_subnet" "terraform_eks_subnet" {
+    count = "${var.num_subnets}"
     vpc_id = "${aws_vpc.terraform_eks_vpc.id}"
+    availability_zone = "${var.zone}"
     cidr_block = "10.0.1.0/24"
-    availability_zone = "us-west-2a"
+    map_public_ip_on_launch = true    # ?
     tags = {
-        Name = "terraform-eks-subnet"
+        Name = "terraform-eks-subnet-${count.index+1}"
     }
 }
 
@@ -160,11 +162,9 @@ resource "aws_route_table" "terraform_eks_route_table" {
 }
 
 resource "aws_route_table_association" "terraform_eks_route_table_association" {
-    subnet_id = "${aws_subnet.terraform_eks_subnet.id}"
+    count          = "${var.num_subnets}"
+    subnet_id      = "${element(aws_subnet.terraform_eks_subnet.*.id, count.index)}"  # aws_subnet の cout が2以上あるケースを想定した参照方法
     route_table_id = "${aws_route_table.terraform_eks_route_table.id}"
-    tags = {
-        Name = "terraform-eks-route-table-association"
-    }
 }
 
 # マスターノード用のセキュリティーグループの設定
@@ -239,7 +239,72 @@ resource "aws_security_group" "terraform_eks_nodes_security_group" {
 #-------------------------------
 # EKS クラスター
 #-------------------------------
+# EKS クラスター
+resource "aws_eks_cluster" "terraform_eks_cluster" {
+  name     = "terraform-eks-cluster"
+  role_arn = "${aws_iam_role.terraform_eks_master_iam_role.arn}"    # master ノードの IAM role を割り当て
+  version  = "${var.cluster_version}"
+
+  # クラスタの VPC 設定
+  vpc_config {
+    security_group_ids = ["${aws_security_group.terraform_eks_master_security_group.id}"]
+    subnet_ids = ["${aws_subnet.terraform_eks_subnet.*.id}"]
+  }
+
+	#
+  depends_on = [
+    "aws_iam_role_policy_attachment.terraform_eks_cluster_iam_policy_attachment",
+    "aws_iam_role_policy_attachment.terraform_eks_service_iam_policy_attachment",
+  ]
+}
+
+# オートスケール設定
+resource "aws_autoscaling_group" "terraform_eks_autoscaling_group" {
+  name                 = "EKS node autoscaling group"
+  desired_capacity     = "2"
+  #launch_configuration = "${aws_launch_configuration.lc.id}"
+  max_size             = "1"
+  min_size             = "4"
+  vpc_zone_identifier = ["${aws_subnet.terraform_eks_subnet.*.id}"]
+
+  tag {
+    key                 = "Name"
+    value               = "eks-asg"
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "kubernetes.io/cluster/${var.cluster_name}"
+    value               = "owned"
+    propagate_at_launch = true
+  }
+}
 
 #-------------------------------
 # ノードプール
 #-------------------------------
+#resource "aws_eks_node_group" "terraform_eks_node_group" {
+#  cluster_name    = aws_eks_cluster.terraform_eks_cluster.name
+#  node_group_name = "terraform-eks-node-group"
+#  node_role_arn   = aws_iam_role.iam_role002.arn
+#  subnet_ids      = [var.subnet-a, var.subnet-c]
+#  ami_type        = "AL2_x86_64"
+#  instance_types  = ["t3.medium"]
+  
+#  remote_access {
+#    ec2_ssh_key  = var.keyname
+#    source_security_group_ids = [var.remote-sg]
+#  }
+ 
+#  scaling_config {
+#    desired_size = 1
+#    max_size     = 1
+#    min_size     = 1
+#  }
+ 
+#  depends_on = [
+#    aws_iam_role_policy_attachment.eks-node-group-node-policy,
+#    aws_iam_role_policy_attachment.eks-node-group-cni-policy,
+#    aws_iam_role_policy_attachment.eks-node-group-ecr-policy,
+#  ]
+#}
