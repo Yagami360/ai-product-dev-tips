@@ -6,12 +6,13 @@ provider "aws" {
     region = "${var.region}"
 }
 
-# EKS クラスターのリソース（resource "aws_eks_cluster"）使用時に必要
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.eks.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.eks.token
-}
+# EKS クラスターのリソース（resource "aws_eks_cluster"）使用時に必要 / EKSクラスター内に aws-auth ConfigMap リソース？を作成する際に使用される
+#provider "kubernetes" {
+#  host                   = aws_eks_cluster.terraform_eks_cluster.endpoint
+#  cluster_ca_certificate = base64decode(aws_eks_cluster.terraform_eks_cluster.certificate_authority[0].data) # EKSクラスタへの認証情報
+#  token                  = aws_eks_cluster_auth.terraform_eks_cluster.token
+#}
+
 
 #-------------------------------
 # 実行する Terraform 環境情報
@@ -45,7 +46,9 @@ terraform {
 resource "aws_iam_role" "terraform_eks_master_iam_role" {
   name = "terraform-eks-master-iam-role"
 
-  assume_role_policy = <<POLICY
+  # AWS での iam policy は json 形式になるので <<EOF ~ EOF（ヒアドキュメント）で定義
+  # ヒアドキュメント : 特殊な記号などを含む文字列リテラルをソースコード（今回の場合は terraform コード）中に記述するための特別な記法
+  assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -58,7 +61,7 @@ resource "aws_iam_role" "terraform_eks_master_iam_role" {
     }
   ]
 }
-POLICY
+EOF
 }
 
 # EKS の master ノード用の IAM role に IAM policy（EKSクラスターのARN）を割り当て 
