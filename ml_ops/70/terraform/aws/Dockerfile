@@ -1,6 +1,7 @@
 FROM alpine:3.10
 
-ARG terraform_version="0.12.5"
+#ARG terraform_version="0.12.5"
+ARG terraform_version="1.2.3"
 
 # Install terraform etc
 RUN apk update --no-cache \

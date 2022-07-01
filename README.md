@@ -272,7 +272,7 @@ AIプロダクト開発のための Tips 集。<br>
         - [【GCP】GKE 上の Web-API に対して Google Cloud Armor の WAF 機能を使用してクライアントIP単位での RateLimit 制限を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/55)
         - [【GCP】 Kustomize を使用して GKE 上の　Web-API の k8s のリソース管理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/71)
     - 【AWS】Amazon EKS [Amazon Elastic Kubernetes Service]
-        - [[In-progress]【AWS】Amazon EKS を用いて Web API を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/60)
+        - [[In-progress]【AWS】`eksctl` コマンドを使用して Amazon EKS 上の Web API を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/60)
 
 </details>
 

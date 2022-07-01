@@ -25,7 +25,7 @@ users:
       args:
         - "token"
         - "-i"
-        - "${var.cluster_name}"
+        - "${local.cluster_name}"
 EOF
 
 	# master と node を紐づけるための？ ConfigMap リソースを定義

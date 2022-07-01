@@ -1,5 +1,6 @@
 #!/bin/sh
 set -eu
+ROOT_DIR=${PWD}
 AWS_PROFILE_NAME=Yagami360
 CONTAINER_NAME="terraform-aws-container"
 
@@ -64,7 +65,7 @@ docker-compose -f docker-compose.yml up -d
 #-----------------------------
 # Amazon S3 パケット作成（tfstate保存用）
 #-----------------------------
-docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd s3 && terraform init"
+docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd s3 && terraform init -upgrade"
 docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd s3 terraform plan"
 docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd s3 && terraform apply -auto-approve"
 docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd s3 && terraform show"
@@ -72,7 +73,21 @@ docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd s3 && terraform show"
 #-----------------------------
 # Amazon EKS クラスター & ノードプール作成
 #-----------------------------
-docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform init"
+docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform init -upgrade"
 docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks terraform plan"
-docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform apply -auto-approve"
+docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform apply -auto-approve -var 'key_name=KEY'"
 docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform show"
+
+#-----------------------------
+# kubeconfig と ConfigMap の反映
+#-----------------------------
+cd ${ROOT_DIR}
+
+# 作成した EKS クラスターの kubeconfig を反映する
+terraform output kubeconfig > ${HOME}/kube/config
+export KUBECONFIG='${HOME}/kube/config'
+
+#
+mkdir -p k8s
+terraform output eks_configmap > k8s/eks_configmap.yml
+kubectl apply -f k8s/eks_configmap.yaml

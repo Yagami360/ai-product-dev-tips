@@ -13,13 +13,12 @@ provider "aws" {
 #  token                  = aws_eks_cluster_auth.terraform_eks_cluster.token
 #}
 
-
 #-------------------------------
 # 実行する Terraform 環境情報
 #-------------------------------
 terraform {
   # terraform のバージョン
-  #required_version = "~> 1.2.0"
+  required_version = "~> 1.2.0"
 
   # バックエンドを S3 にする
   backend "s3" {
@@ -28,15 +27,15 @@ terraform {
   }
 
   # 実行するプロバイダー
-#  required_providers {
-#    aws       = {
-#      source  = "hashicorp/aws"
-#      version = "~> 3.71.0"
-#    }
-#    kubernetes = {
-#      version = "2.5.0"
-#    }
-#  }
+  required_providers {
+    aws       = {
+      source  = "hashicorp/aws"
+      version = "~> 3.71.0"
+    }
+    kubernetes = {
+      version = "2.5.0"
+    }
+  }
 }
 
 #-------------------------------
@@ -126,14 +125,14 @@ resource "aws_iam_instance_profile" "terraform_eks_node_iam_instance_profile" {
 # VPC の設定
 resource "aws_vpc" "terraform_eks_vpc" {
     cidr_block = var.vpc_cidr_block
-    enable_dns_hostnames = true
-    enable_dns_support = true
+    enable_dns_hostnames = true     # ?
+    enable_dns_support = true       # ?
 
     tags = {
       Name = "terraform-eks-vpc"
-      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+      "kubernetes.io/cluster/${local.cluster_name}" = "shared"  # VPC を EKS で使用する場合には必須のタグ
     }
-#    tags = "${merge(map("Name", "terraform-eks-subnet-${count.index+1}"), map("kubernetes.io/cluster/${var.cluster_name}", "owned"))}"
+#    tags = "${merge(map("Name", "terraform-eks-subnet-${count.index+1}"), map("kubernetes.io/cluster/${local.cluster_name}", "owned"))}"
 }
 
 # サブネットワークの設定
@@ -147,9 +146,9 @@ resource "aws_subnet" "terraform_eks_subnet" {
 
     tags = {
       Name = "terraform-eks-subnet-${count.index+1}"
-      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+      "kubernetes.io/cluster/${local.cluster_name}" = "shared"  # VPC を EKS で使用する場合には必須のタグ
     }
-#    tags = "${merge(map("Name", "terraform-eks-subnet-${count.index+1}"), map("kubernetes.io/cluster/${var.cluster_name}", "owned"))}"
+#    tags = "${merge(map("Name", "terraform-eks-subnet-${count.index+1}"), map("kubernetes.io/cluster/${local.cluster_name}", "owned"))}"
 }
 
 # ゲートウェイの設定
@@ -252,9 +251,9 @@ resource "aws_security_group" "terraform_eks_nodes_security_group" {
 #-------------------------------
 # EKS クラスター
 resource "aws_eks_cluster" "terraform_eks_cluster" {
-  name     = "${var.cluster_name}"
+  name     = "${local.cluster_name}"
   role_arn = "${aws_iam_role.terraform_eks_master_iam_role.arn}"    # master ノードの IAM role を割り当て
-  version  = "${var.cluster_version}"
+  version  = "${local.cluster_version}"
 
   # クラスタの VPC 設定
   vpc_config {
@@ -269,54 +268,70 @@ resource "aws_eks_cluster" "terraform_eks_cluster" {
   ]
 }
 
-# オートスケール設定
-#resource "aws_autoscaling_group" "terraform_eks_autoscaling_group" {
-#  name                 = "EKS node autoscaling group"
-#  desired_capacity     = "2"
-#  launch_configuration = "${aws_launch_configuration.lc.id}"   # 必須パラメーター
-#  max_size             = "1"
-#  min_size             = "4"
-#  vpc_zone_identifier = "${aws_subnet.terraform_eks_subnet.*.id}"
-
-#  tag {
-#    key                 = "Name"
-#    value               = "terraform-eks-autoscaling-group"
-#    propagate_at_launch = true
-#  }
-
-  # EKSで使用する場合は､EC2インスタンスには下記のタグが必須
-#  tag {
-#    key                 = "kubernetes.io/cluster/${var.cluster_name}"
-#    value               = "owned"
-#    propagate_at_launch = true
-#  }
-#}
-
 #-------------------------------
 # ノードプール
 #-------------------------------
-#resource "aws_eks_node_group" "terraform_eks_node_group" {
-#  cluster_name    = aws_eks_cluster.terraform_eks_cluster.name
-#  node_group_name = "terraform-eks-node-group"
-#  node_role_arn   = aws_iam_role.iam_role002.arn
-#  subnet_ids      = [var.subnet-a, var.subnet-c]
-#  ami_type        = "AL2_x86_64"
-#  instance_types  = ["t3.medium"]
-  
-#  remote_access {
-#    ec2_ssh_key  = var.keyname
-#    source_security_group_ids = [var.remote-sg]
-#  }
- 
-#  scaling_config {
-#    desired_size = 1
-#    max_size     = 1
-#    min_size     = 1
-#  }
- 
-#  depends_on = [
-#    aws_iam_role_policy_attachment.eks-node-group-node-policy,
-#    aws_iam_role_policy_attachment.eks-node-group-cni-policy,
-#    aws_iam_role_policy_attachment.eks-node-group-ecr-policy,
-#  ]
-#}
+# EKSクラスターの各ノードの AMI イメージ
+data "aws_ami" "terraform_aws_ami" {
+  most_recent = true
+  owners      = ["602401143452"]
+
+  filter {
+    name   = "name"
+    values = ["amazon-eks-node-${aws_eks_cluster.terraform_eks_cluster.version}-v*"]
+  }
+}
+
+# resource "aws_launch_configuration" {...} ブロックの `user_data_base64` で参照
+locals {
+  userdata = <<EOF
+#!/bin/bash
+set -o xtrace
+/etc/eks/bootstrap.sh --apiserver-endpoint "${aws_eks_cluster.terraform_eks_cluster.endpoint}" --b64-cluster-ca "${aws_eks_cluster.terraform_eks_cluster.certificate_authority.0.data}" "${aws_eks_cluster.terraform_eks_cluster.name}"
+EOF
+}
+
+# オートスケーリング・グループ "aws_autoscaling_group" に使用される起動設定
+resource "aws_launch_configuration" "terraform_aws_launch_configuration" {
+  associate_public_ip_address = true
+  iam_instance_profile        = "${aws_iam_instance_profile.terraform_eks_node_iam_instance_profile.id}"
+  image_id                    = "${data.aws_ami.terraform_aws_ami.image_id}"
+  instance_type               = "${var.instance_type}"
+  name_prefix                 = "terraform-aws-launch-configuration"
+  key_name                    = "${var.key_name}"
+
+  root_block_device {
+    volume_type = "gp2"
+    volume_size = "50"
+  }
+
+  security_groups  = ["${aws_security_group.terraform_eks_nodes_security_group.id}"]
+  user_data_base64 = "${base64encode(local.userdata)}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# オートスケール設定
+resource "aws_autoscaling_group" "terraform_eks_autoscaling_group" {
+  name                 = "EKS node autoscaling group"
+  desired_capacity     = "2"
+  launch_configuration = "${aws_launch_configuration.terraform_aws_launch_configuration.id}"   # 必須パラメーター
+  max_size             = "1"
+  min_size             = "4"
+  vpc_zone_identifier = "${aws_subnet.terraform_eks_subnet.*.id}"
+
+  tag {
+    key                 = "Name"
+    value               = "terraform-eks-autoscaling-group"
+    propagate_at_launch = true
+  }
+
+  # EKSで使用する場合は､EC2インスタンスには下記のタグが必須
+  tag {
+    key                 = "kubernetes.io/cluster/${local.cluster_name}"
+    value               = "owned"
+    propagate_at_launch = true
+  }
+}

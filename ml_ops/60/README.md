@@ -1,4 +1,4 @@
-# 【AWS】 Amazon EKS を用いて Web API を構築する
+# 【AWS】 `eksctl` コマンドを使用して Amazon EKS 上の Web API を構築する
 
 Amazon EKS を用いて EKS クラスターを作成する方法には、以下の２種類がある
 
@@ -111,7 +111,7 @@ Amazon EKS を用いて EKS クラスターを作成する方法には、以下�
             --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
         ```
 
-    > IAM の詳細は、「[【AWS】AWS の認証システム](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/58)」を参考
+    > AWS における IAM の仕組みの詳細は、「[【AWS】AWS の認証システム](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/58)」を参考
 -->
 
 1. API のコードを作成する<br>
