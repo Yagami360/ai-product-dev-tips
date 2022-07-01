@@ -14,4 +14,6 @@ RUN apk update --no-cache \
     && rm -rf ./terraform_${terraform_version}_linux_amd64.zip
 
 WORKDIR /.ssh    
+WORKDIR /.kube
+WORKDIR /k8s
 WORKDIR /terraform/aws

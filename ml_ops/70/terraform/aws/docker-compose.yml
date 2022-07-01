@@ -9,6 +9,8 @@ services:
     volumes:
       - ${PWD}/:/terraform/aws
       - ${HOME}/.ssh/:/.ssh
+      - ${HOME}/.kube/config:/.kube/config
+      - ${PWD}/k8s:/k8s
     tty: true
     environment:
       TZ: "Asia/Tokyo"

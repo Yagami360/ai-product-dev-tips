@@ -33,7 +33,7 @@ terraform {
       version = "~> 3.71.0"
     }
     kubernetes = {
-      version = "2.5.0"
+      version = ">= 2.7.1"
     }
   }
 }
@@ -41,7 +41,7 @@ terraform {
 #-------------------------------
 # IAM
 #-------------------------------
-# EKS の master ノード用の IAM role
+# EKS クラスター用の IAM role
 resource "aws_iam_role" "terraform_eks_master_iam_role" {
   name = "terraform-eks-master-iam-role"
 
@@ -63,23 +63,23 @@ resource "aws_iam_role" "terraform_eks_master_iam_role" {
 EOF
 }
 
-# EKS の master ノード用の IAM role に IAM policy（EKSクラスターのARN）を割り当て 
+# EKS クラスター用の IAM role に IAM policy（EKSクラスターのARN）を割り当て 
 resource "aws_iam_role_policy_attachment" "terraform_eks_cluster_iam_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = "${aws_iam_role.terraform_eks_master_iam_role.name}"
 }
 
-# EKS の master ノード用の IAM role に IAM policy（EKSサービズのARN）を割り当て 
+# EKS クラスター用の IAM role に IAM policy（EKSサービズのARN）を割り当て 
 resource "aws_iam_role_policy_attachment" "terraform_eks_service_iam_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
   role       = "${aws_iam_role.terraform_eks_master_iam_role.name}"
 }
 
-# EKS の master ノード以外のノード用の IAM role
+# EKS クラスター内の ノード（EC2インスタンス）用の IAM role
 resource "aws_iam_role" "terraform_eks_node_iam_role" {
   name = "terraform-eks-node-iam-role"
 
-  assume_role_policy = <<POLICY
+  assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -92,30 +92,30 @@ resource "aws_iam_role" "terraform_eks_node_iam_role" {
     }
   ]
 }
-POLICY
+EOF
 }
 
-# EKS の master ノード以外のノード用の IAM role に IAM policy（AmazonEKSWorkerNodePolicyのARN）を割り当て 
+# EKS クラスター内の ノード（EC2インスタンス）用の IAM role に IAM policy（AmazonEKSWorkerNodePolicyのARN）を割り当て 
 resource "aws_iam_role_policy_attachment" "terraform_eks_worker_node_iam_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = "${aws_iam_role.terraform_eks_node_iam_role.name}"
 }
 
-# EKS の master ノード以外のノード用の IAM role に IAM policy（AmazonEKS_CNI_PolicyのARN）を割り当て
+# EKS クラスター内の ノード（EC2インスタンス）用の IAM role に IAM policy（AmazonEKS_CNI_PolicyのARN）を割り当て
 resource "aws_iam_role_policy_attachment" "terraform_eks_cni_iam_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = "${aws_iam_role.terraform_eks_node_iam_role.name}"
 }
 
-# EKS の master ノード以外のノード用の IAM role に IAM policy（AmazonEC2ContainerRegistryReadOnlyのARN）を割り当て
+# EKS クラスター内の ノード（EC2インスタンス）用の IAM role に IAM policy（AmazonEC2ContainerRegistryReadOnlyのARN）を割り当て
 resource "aws_iam_role_policy_attachment" "terraform_eks_ro_iam_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = "${aws_iam_role.terraform_eks_node_iam_role.name}"
 }
 
-# EKS の master ノード以外のノード用のインスタンスプロファイル。IAM ロールを EC2 インスタンスに紐つけるために必要
+# EKS クラスター内の ノード（EC2インスタンス）用のインスタンスプロファイル。IAM ロールを EC2 インスタンスに紐つけるために必要
 resource "aws_iam_instance_profile" "terraform_eks_node_iam_instance_profile" {
-  name = "terraform-eks-node-iam-instance-profile"
+  name = "terraform-eks-node-iam-instance-profile-2"
   role = "${aws_iam_role.terraform_eks_node_iam_role.name}"
 }
 
@@ -139,7 +139,8 @@ resource "aws_vpc" "terraform_eks_vpc" {
 resource "aws_subnet" "terraform_eks_subnet" {
     count = "${var.num_subnets}"                                                    # VPC の中にあるサブネットの数
     vpc_id = "${aws_vpc.terraform_eks_vpc.id}"
-    availability_zone = "${var.zone}"
+    #availability_zone = "${var.zone}"
+    availability_zone       = "${element(data.aws_availability_zones.available.names, count.index % var.num_subnets)}"  # 複数のサブネットが存在する場合は、それぞれ異なる zone に割りあて 
     #cidr_block = "10.0.1.0/24"
     cidr_block              = "${cidrsubnet(var.vpc_cidr_block, 8, count.index)}"   # サブネットが２つ以上ある場合は、両方 cidr_block = "10.0.1.0/24" にすると conflicts するので、cidrsubnet() を使って各サブネットのCIDRがそれぞれ異なるようにする
     map_public_ip_on_launch = true                    # ?
@@ -252,13 +253,13 @@ resource "aws_security_group" "terraform_eks_nodes_security_group" {
 # EKS クラスター
 resource "aws_eks_cluster" "terraform_eks_cluster" {
   name     = "${local.cluster_name}"
-  role_arn = "${aws_iam_role.terraform_eks_master_iam_role.arn}"    # master ノードの IAM role を割り当て
   version  = "${local.cluster_version}"
+  role_arn = "${aws_iam_role.terraform_eks_master_iam_role.arn}"    # master ノードの IAM role を割り当て
 
   # クラスタの VPC 設定
   vpc_config {
-    security_group_ids = ["${aws_security_group.terraform_eks_master_security_group.id}"]
     subnet_ids = "${aws_subnet.terraform_eks_subnet.*.id}"
+    security_group_ids = ["${aws_security_group.terraform_eks_master_security_group.id}"]
   }
 
 	#
@@ -269,7 +270,7 @@ resource "aws_eks_cluster" "terraform_eks_cluster" {
 }
 
 #-------------------------------
-# ノードプール
+# EKSクラスター内のノード（EC2インスタンス）
 #-------------------------------
 # EKSクラスターの各ノードの AMI イメージ
 data "aws_ami" "terraform_aws_ami" {
@@ -313,14 +314,15 @@ resource "aws_launch_configuration" "terraform_aws_launch_configuration" {
   }
 }
 
-# オートスケール設定
+# オートスケール可能なEC2インスタンス
 resource "aws_autoscaling_group" "terraform_eks_autoscaling_group" {
   name                 = "EKS node autoscaling group"
-  desired_capacity     = "2"
   launch_configuration = "${aws_launch_configuration.terraform_aws_launch_configuration.id}"   # 必須パラメーター
-  max_size             = "1"
-  min_size             = "4"
   vpc_zone_identifier = "${aws_subnet.terraform_eks_subnet.*.id}"
+
+  desired_capacity     = "1"
+  min_size             = "1"
+  max_size             = "2"
 
   tag {
     key                 = "Name"
@@ -335,3 +337,29 @@ resource "aws_autoscaling_group" "terraform_eks_autoscaling_group" {
     propagate_at_launch = true
   }
 }
+
+#resource "aws_eks_node_group" "terraform_eks_node_group" {
+#  cluster_name    = aws_eks_cluster.terraform_eks_cluster.name
+#  node_group_name = "terraform-eks-node-group"
+#  node_role_arn   = aws_iam_role.terraform_eks_node_iam_role.arn
+#  subnet_ids      = "${aws_subnet.terraform_eks_subnet.*.id}"
+#  ami_type        = "AL2_x86_64"
+#  instance_types  = "[${var.instance_type}]"
+  
+#  remote_access {
+#    ec2_ssh_key  = var.key_name
+#    source_security_group_ids = ["${aws_security_group.terraform_eks_master_security_group.id}"]
+#  }
+ 
+#  scaling_config {
+#    desired_size = 1
+#    min_size     = 1
+#    max_size     = 2
+#  }
+ 
+#  depends_on = [
+#    aws_iam_role_policy_attachment.terraform_eks_worker_node_iam_policy_attachment,
+#    aws_iam_role_policy_attachment.terraform_eks_cni_iam_policy_attachment,
+#    aws_iam_role_policy_attachment.aws_iam_role_policy_attachment,
+#  ]
+#}

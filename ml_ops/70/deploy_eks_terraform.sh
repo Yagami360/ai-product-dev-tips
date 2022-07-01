@@ -3,6 +3,10 @@ set -eu
 ROOT_DIR=${PWD}
 AWS_PROFILE_NAME=Yagami360
 CONTAINER_NAME="terraform-aws-container"
+SSH_PEM_KEY_NAME="ec2-key"
+
+mkdir -p ${ROOT_DIR}/k8s
+mkdir -p ${HOME}/.kube
 
 #-----------------------------
 # OS判定
@@ -75,7 +79,7 @@ docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd s3 && terraform show"
 #-----------------------------
 docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform init -upgrade"
 docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks terraform plan"
-docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform apply -auto-approve -var 'key_name=KEY'"
+docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform apply -auto-approve -var 'key_name=${SSH_PEM_KEY_NAME}'"
 docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform show"
 
 #-----------------------------
@@ -84,10 +88,8 @@ docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform show"
 cd ${ROOT_DIR}
 
 # 作成した EKS クラスターの kubeconfig を反映する
-terraform output kubeconfig > ${HOME}/kube/config
-export KUBECONFIG='${HOME}/kube/config'
+docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform output kubeconfig > ./kube/config && export KUBECONFIG='./kube/config'"
 
 #
-mkdir -p k8s
-terraform output eks_configmap > k8s/eks_configmap.yml
+docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform output eks_configmap > /k8s/eks_configmap.yml"
 kubectl apply -f k8s/eks_configmap.yaml

@@ -1,10 +1,5 @@
 # Terraform を利用して Amazon EKS クラスターを構築する（docker 使用時）
 
-
-## ■ 未解決事項
-- [ ] tf ファイルで EKS クラスター作成時に `
-Error: error creating EKS Cluster (terraform-eks-cluster): InvalidParameterException: unsupported Kubernetes version` のエラーがでる問題の解決
-
 ## ■ 方法
 
 1. `aws configure` コマンドで AWS 認証情報を設定する。<br>
@@ -45,8 +40,7 @@ Error: error creating EKS Cluster (terraform-eks-cluster): InvalidParameterExcep
 
 	ポイントは、以下の通り
 
-	- terraform のバージョンが古いと、tf ファイルで EKS クラスター作成時に `
-Error: error creating EKS Cluster (terraform-eks-cluster): InvalidParameterException: unsupported Kubernetes version` のエラーがでるので、比較的新しいバージョン `1.2.3` をインストールするようにしている
+	- terraform のバージョンが古いと、バージョン不整合エラーがでたので、比較的新しいバージョン `1.2.3` をインストールするようにしている
 
 1. terraform 用の docker-compose を作成する
 	```yaml
@@ -133,6 +127,9 @@ Error: error creating EKS Cluster (terraform-eks-cluster): InvalidParameterExcep
 						source  = "hashicorp/aws"
 						version = "~> 3.71.0"
 					}
+			    kubernetes = {
+    			  version = ">= 2.7.1"
+		    	}
 				}
 			}
 
@@ -187,8 +184,7 @@ Error: error creating EKS Cluster (terraform-eks-cluster): InvalidParameterExcep
 		```
 
 1. EKS クラスターの作成<br>
-
-	<img width="934" alt="image" src="https://user-images.githubusercontent.com/25688193/176822196-6be41790-6805-4e1f-b8f8-706f14248b3d.png">
+	<img width="924" alt="image" src="https://user-images.githubusercontent.com/25688193/176890411-f64b491d-684d-49ac-9212-c93eaa045480.png">
 
 	> VPC [Virtual Private Cloud] : AWS専用の仮想ネットワーク。インターネットを利用する際、ルーターやゲートウェイなどのネットワーク機器が必要となるが、VPCはそれらの機器を仮想的に用意し、ネットワーク環境を構築できるようにしている。
 
@@ -221,8 +217,8 @@ Error: error creating EKS Cluster (terraform-eks-cluster): InvalidParameterExcep
 		- IAM の作成<br>
 			EKS クラスターやノードプール用の IAM role や IAM policy を作成する必要がある<br>
 
-			- EKS クラスターの master ノード用？の IAM の作成
-				- `resource "aws_iam_role"` ブロックを定義して、EKS クラスターの master ノード？にアクセス出来るための IAM role を作成する<br>				
+			- EKS クラスター用の IAM の作成
+				- `resource "aws_iam_role"` ブロックを定義して、EKS クラスターにアクセス出来るための IAM role を作成する<br>				
 
 					> `resource "aws_iam_role"` で作成されるリソースは、`aws iam create-role` コマンドで作成されるリソースと同様のものになる
 
@@ -235,10 +231,10 @@ Error: error creating EKS Cluster (terraform-eks-cluster): InvalidParameterExcep
 
 					- 具体的に付与する ARN は、`"arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"`, `"arn:aws:iam::aws:policy/AmazonEKSServicePolicy"` の２つになる
 
-			- EKS クラスターのノードプール用？（or 非 master ノード用？）の IAM の作成<br>
-				- `resource "aws_iam_role"` ブロックを定義して、EKS クラスターのノードプール？（or 非 master ノード？）にアクセス出来るための IAM role を作成する<br>
+			- EKS クラスター内の ノード（EC2インスタンス）用の IAM の作成<br>
+				- `resource "aws_iam_role"` ブロックを定義して、EKS クラスター内のノード（EC2インスタンス）にアクセス出来るための IAM role を作成する<br>
 
-				- `resource "aws_iam_role_policy_attachment"` ブロックで、上記作成した IAM role に EKS クラスターのノードプール？（非 master ノード？）にアクセスできるようにするための IAM policy を（ARN形式で）付与する<br>
+				- `resource "aws_iam_role_policy_attachment"` ブロックで、上記作成した IAM role に EKS クラスター内のノード（EC2インスタンス）にアクセスできるようにするための IAM policy を（ARN形式で）付与する<br>
 
 				- `resource "aws_iam_instance_profile"`　ブロックで、IAM ロールを EC2 インスタンスに紐つけるためのインスタンスプロファイル？を作成する
 
@@ -254,7 +250,17 @@ Error: error creating EKS Cluster (terraform-eks-cluster): InvalidParameterExcep
 				`resource "aws_subnet"` ブロックを使用して、上記作成した VPC ネットワークの中にサブネットを構築する。
 				今回は `count=2` なので、VPC の中に２つのサブネットを構築している
 
-				- サブネットが１つの場合は、`cidr_block` には、`10.0.1.0/24` の固定値を設定すればいいが、今回は２つ以上のサブネットが存在するので、両方 `cidr_block = "10.0.1.0/24"` にするとアドレスが conflicts してしまう。そのため `cidrsubnet()` を使って各サブネットの CIDR がそれぞれ異なるようにする
+				- サブネットが１つの場合は、`cidr_block` には、`10.0.1.0/24` などの固定値を設定すればいいが、今回は２つ以上のサブネットが存在するので、両方 `cidr_block = "10.0.1.0/24"` にするとアドレスが conflicts してしまう。そのため `cidrsubnet()` を使って各サブネットの CIDR がそれぞれ異なる（今回の場合は `10.0.0.0/24` と `10.0.1.0/24`）ようにする
+
+				- 複数のサブネットが存在する場合に、`availability_zone` に、単一の zone を割り当てると `Error: error creating EKS Cluster (terraform-eks-cluster): InvalidParameterException: Subnets specified must be in at least two different AZs` のエラーがでるので、`availability_zone = "${element(data.aws_availability_zones.available.names, count.index % var.num_subnets)}"` として、複数 zone を割り当てている（今回の場合は `us-west-2a` と `us-west-2b` になる）
+
+					ここで、`data.aws_availability_zones` は `data "aws_availability_zones" "available" {}` で定義された Data Source。
+
+					>  Data Source : `data {...}` ブロックで定義されるリソースで、Terraform 外部で定義されたデータを取得して、tf ファイル内で利用することができる。
+
+					> 特に `data "aws_availability_zones" {...}` を使用すると、プロバイダ `provider "aws"` で設定されたリージョン `region` 内の AWS アカウントでアクセス可能な AWS Availability Zones のリストにアクセスすることが可能になる
+				
+					また、`element(リスト,要素番号)` で、リストの要素を取得している
 
 				- EKS クラスターのサブネットとして使用するためには、`tags` に `"kubernetes.io/cluster/${var.cluster_name}" = "shared"` を追加する必要があることに注意
 
@@ -262,16 +268,19 @@ Error: error creating EKS Cluster (terraform-eks-cluster): InvalidParameterExcep
 				`resource "aws_internet_gateway"` ブロックを使用して、インターネット ↔ VPC 間のゲートウェイを設定する。
 
 			- ルーティングテーブルの作成<br>
-
+				xxx
 
 			- セキュリティーグループの作成<br>
+				xxx
 
 		- EKS クラスターの作成<br>
 			`resource "aws_eks_cluster"` ブロックで、EKS クラスターを作成する
 
+			- `version` には k8s バージョンを指定すればよいが、`version = "1.10"` だと `Error: error creating EKS Cluster (terraform-eks-cluster): InvalidParameterException: unsupported Kubernetes version` のエラーが出たので、`version = "1.20"` にしている
+
 			- `vpc_config` の `subnet_ids` に上記作成したサブネットを指定する必要がある。今回は２つ以上のサブネットが存在するので、`aws_subnet.terraform_eks_subnet.*` のように `*` で複数リソースを指定している。この際に、`subnet_ids = ["${aws_subnet.terraform_eks_subnet.*.id}"]` のように `[...]` で囲むとエラーになることに注意
 
-			- kubeconfig は、どのクラスターにどのユーザーとして接続するのかの接続設定した k8s マニフェストファイルであり、`eksctl` コマンド等で EKS クラスターを構築した場合は `${HOME}/.kube/config` に自動的に書き込まれるファイルであるが、terraform を使用して EKS クラスターを構築する場合は、このディレクトリにジオ書き込まれれない？ので、以下の手順で、EKS クラスターでこの kubeconfig を参照するようにしている。
+			- kubeconfig は、どのクラスターにどのユーザーとして接続するのかの接続設定した k8s マニフェストファイルであり、`eksctl` コマンド等で EKS クラスターを構築した場合は `${HOME}/.kube/config` に自動的に書き込まれるファイルであるが、terraform を使用して EKS クラスターを構築する場合は、このディレクトリに自動的に書き込まれれないので、以下の手順で、EKS クラスターでこの kubeconfig を参照するようにしている。
 			
 				1. `outputs.tf` 内の `locals {...}` ブロックで kubeconfig の local 変数 `local.kubeconfig` を定義。
 					> この際に、yml 形式の k8s マニフェストで定義する必要があるので、`<<EOF ~ EOF`（ヒアドキュメント）を使用して定義している
@@ -280,7 +289,7 @@ Error: error creating EKS Cluster (terraform-eks-cluster): InvalidParameterExcep
 			
 			- 同様にして、k8s の ConfigMap リソースのローカル変数 `local.eks_configmap` も定義している。これは master と node を紐づけるため必要？
 
-		- ノードプールの作成<br>
+		- EKS クラスター内のノード（EC2 インスタンス）の作成<br>
 			xxx
 
 	1. terraform コンテナを起動する<br>
@@ -335,3 +344,4 @@ Error: error creating EKS Cluster (terraform-eks-cluster): InvalidParameterExcep
 
 - https://qiita.com/samskeyti/items/5855f1f2b5262e27af6e
 - https://dev.classmethod.jp/articles/terraform-eks-create/
+- https://open-groove.net/aws-eks/terraform-mac-eks-cluster/

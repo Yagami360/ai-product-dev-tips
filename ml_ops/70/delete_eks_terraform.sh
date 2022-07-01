@@ -62,15 +62,15 @@ docker-compose -f docker-compose.yml stop
 docker-compose -f docker-compose.yml up -d
 
 #-----------------------------
-# Amazon S3 パケット作成（tfstate保存用）
-#-----------------------------
-docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd s3 && terraform init"
-docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd s3 terraform plan -destroy"
-docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd s3 && terraform destroy"
-
-#-----------------------------
 # Amazon EKS クラスター & ノードプール作成
 #-----------------------------
-docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform init"
+docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform init -upgrade"
 docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks terraform plan -destroy"
 docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform destroy"
+
+#-----------------------------
+# Amazon S3 パケット作成（tfstate保存用）
+#-----------------------------
+#docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd s3 && terraform init -upgrade"
+#docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd s3 terraform plan -destroy"
+#docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd s3 && terraform destroy"
