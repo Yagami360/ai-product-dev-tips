@@ -9,10 +9,10 @@ services:
     volumes:
       - ${PWD}/api:/api
     ports:
-      - "3000:3000"
+      - "5001:5001"
     tty: true
     environment:
       TZ: "Asia/Tokyo"
       LC_ALL: C.UTF-8
       LANG: C.UTF-8
-    command: go run main.go --host 0.0.0.0 --port 3000
+    command: go run api.go --host 0.0.0.0 --port 5001

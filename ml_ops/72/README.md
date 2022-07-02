@@ -1,4 +1,4 @@
-# 【Go】 Go 言語の標準ライブラリ net/http を使用して簡単な REST API を作成する
+# net/http を使用して簡単な REST API を作成する
 
 ## ■ 方法
 
@@ -48,8 +48,8 @@
         command: bash -c "go run main.go --host 0.0.0.0 --port 3000"
     ```
 
-1. `net/http` を使用した Go lang での REAT API のコードを作成する<br>
-  <img width="800" alt="image" src="https://user-images.githubusercontent.com/25688193/176985744-1df0919a-8f99-4cd2-b97d-668d6ceacab8.png">
+1. `net/http` を使用した Go lang での REST API のコードを作成する<br>
+    <img width="800" alt="image" src="https://user-images.githubusercontent.com/25688193/176985744-1df0919a-8f99-4cd2-b97d-668d6ceacab8.png">
 
     > - `http.Server`<br>
     >   xxx
@@ -71,34 +71,94 @@
     > - `http.HandlerFunc()`<br>
     >    リクエスト受付時のイベントハンドラを定義するときに、そのイベントハンドラが持つべき型を定義したインターフェイス
 
-  ```go
-  ```
+    ```go
+		package main
 
-  - `net/http` を使用した、実際のリクエスト＆レスポンス手順は、以下の通り
-  
-    1. リクエスト受付時のハンドラー（今回の場合は `health()` ）を定義する。このハンドラーの引数は `func health(w http.ResponseWriter, _ *http.Request)` のように interface `http.HandlerFunc` に従ったインターフェイス仕様になっている
+		import "fmt"
+    import "encoding/json"
+		import "flag"                       // コマンドライン引数
+		import "net/http"					//
 
-    1. `http.NewServeMux()` で、`http.ServeMux` オブジェクトを作成する
+		func main() {
+				fmt.Printf("start main()")
 
-    1. `http.ServeMux` オブジェクトの `Handle()` メソッドで、前述で定義したリクエスト時のコールバック関数（ハンドラー）`health` を設定する。この際ハンドラー `health` を interface `http.HandlerFunc` 型に変換したものを設定する。
+				//-------------------------
+				// コマンドライン引数
+				//-------------------------
+				host := flag.String("host", "0.0.0.0", "")
+				port := flag.String("port", "5001", "")
+
+				//-------------------------
+				// net/http を使用した API
+				//-------------------------
+				// `http.ServeMux` オブジェクトを作成する
+				mux := http.NewServeMux()
+
+				// http:${IP_ADDRES}:${PORT} のエンドポイントにリクエスト時のコールバック関数（ハンドラー）を設定
+        mux.Handle("/health", http.HandlerFunc(health))
+
+				// http.ListenAndServe で API 起動
+				http.ListenAndServe((*host) + ":" + (*port), mux)
+		}
+
+    // http:${IP_ADDRES}:${PORT}/health アクセス時のハンドラー
+    func health(w http.ResponseWriter, _ *http.Request) {
+        //w.WriteHeader(http.StatusOK)
+        w.Header().Set("Content-Type", "application/json")
     
-        そして、`Handle()` メソッドにより、インターフェイス `http.Handler` 型のオブジェクトが作成され、HTTP リクエストを受けて HTTP レスポンスを返す処理が記述されたメソッドである `ServeHTTP()` メソッドが、`http.Server` に渡されてレスポンス処理が行われる動作になる 
+      // json 形式でのレスポンスの内容を構造体で定義
+      // `json:"status"` で json 出力時のキー名を指定できる
+      type Responce struct {
+        Status int `json:"status"`
+        Health string `json:"health"`
+      }	
 
-    1. `http.ListenAndServe()` を使用して、API を起動する
+      // 初期化
+      responce := Responce{http.StatusOK, "ok"}
 
+      // json.Marshal() で json 形式に変換
+      responce_json, _ := json.Marshal(responce)
 
-1. API を起動する
+      // 
+      w.Write(responce_json)
+    }
+    ```
+
+    - `net/http` を使用した、実際のリクエスト＆レスポンス手順は、以下の通り
+  
+      1. リクエスト受付時のハンドラー（今回の場合は `health()` ）を定義する。このハンドラーの引数は `func health(w http.ResponseWriter, _ *http.Request)` のように interface `http.HandlerFunc` に従ったインターフェイス仕様になっている
+
+      1. `http.NewServeMux()` で、`http.ServeMux` オブジェクトを作成する
+
+      1. `http.ServeMux` オブジェクトの `Handle()` メソッドで、前述で定義したリクエスト時のコールバック関数（ハンドラー）`health` を設定する。この際ハンドラー `health` を interface `http.HandlerFunc` 型に変換したものを設定する。<br>
+          そして、`Handle()` メソッドにより、インターフェイス `http.Handler` 型のオブジェクトが作成され、HTTP リクエストを受けて HTTP レスポンスを返す処理が記述されたメソッドである `ServeHTTP()` メソッドが、`http.Server` に渡されてレスポンス処理が行われる動作になる 
+
+      1. `http.ListenAndServe()` を使用して、Web サーバーを起動する
+
+1. API サーバーを起動する
     ```sh
     docker-compose -f docker-compose.yml stop
     docker-compose -f docker-compose.yml up -d
     ```
 
-1. 起動した API サーバーにアクセスする
-    ```sh
-    curl http://localhost:${PORT}/health
-    ```
+1. 起動した API サーバーに GET リクエストする
+
+    - `curl` コマンドを使用する場合
+      ```sh
+      curl http://localhost:${PORT}/health
+      ```
+
+    - Go lang でのリクエストスクリプトを使用する場合<br>
+
+      1. `net/http` や `net/url` を GET リクエストのスクリプトを作成する
+
+      1. xxx
+          ```sh
+          ```
 
 ## ■ 参考サイト
 
 - https://journal.lampetty.net/entry/understanding-http-handler-in-go
 - https://future-architect.github.io/articles/20210714a/
+- https://leben.mobi/go/server_and_handler/practice/web/
+- https://konboi.hatenablog.com/entry/2014/09/23/172756
