@@ -88,8 +88,8 @@ docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform show"
 cd ${ROOT_DIR}
 
 # 作成した EKS クラスターの kubeconfig を反映する
-docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform output kubeconfig > ./kube/config && export KUBECONFIG='./kube/config'"
+#docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform output kubeconfig > /.kube/config && export KUBECONFIG='/.kube/config'"
 
 #
-docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform output eks_configmap > /k8s/eks_configmap.yml"
-kubectl apply -f k8s/eks_configmap.yaml
+#docker exec -it ${CONTAINER_NAME} /bin/sh -c "cd eks && terraform output eks_configmap > /k8s/eks_configmap.yml"
+#kubectl apply -f k8s/eks_configmap.yaml

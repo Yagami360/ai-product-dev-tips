@@ -326,8 +326,11 @@ AIプロダクト開発のための Tips 集。<br>
     - FastAPI を使用した非同期処理での Web-API の出力結果を GSC に転送する
     - FastAPI を使用した非同期処理での Web-API の出力結果を GoogleDrive に転送する
     - FastAPI を使用した非同期処理での Web-API の出力完了結果を Slack に通知する
+- 【Golang】net/http
+    - [[In-progress] Go 言語の標準ライブラリ net/http を使用して簡単な REST API を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/72)
 - 【Golang】Gin
     - [Go 言語で Gin を使用して簡単な REST API を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/69)
+- 【Golang】Echo
 
 - httpx を用いて複数の　Web-API に並列実行でリクエストする
 

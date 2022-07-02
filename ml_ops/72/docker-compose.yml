@@ -1,0 +1,18 @@
+version: '3'
+services:
+  go-gin-api-server:
+    container_name: go-api-container
+    image: go-api-image
+    build:
+      context: "api/"
+      dockerfile: Dockerfile
+    volumes:
+      - ${PWD}/api:/api
+    ports:
+      - "3000:3000"
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    command: go run main.go --host 0.0.0.0 --port 3000
