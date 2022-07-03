@@ -9,5 +9,4 @@ sleep 1
 
 # health check 
 curl http://localhost:${PORT}/health
-
 #open http://localhost:${PORT}
