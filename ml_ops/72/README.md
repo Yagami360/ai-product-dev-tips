@@ -1,4 +1,4 @@
-# net/http を使用して簡単な REST API を作成する
+# net/http を使用して GET リクエストに対しての簡単な REST API を作成する
 
 ## ■ 方法
 

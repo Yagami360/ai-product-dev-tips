@@ -327,7 +327,8 @@ AIプロダクト開発のための Tips 集。<br>
     - FastAPI を使用した非同期処理での Web-API の出力結果を GoogleDrive に転送する
     - FastAPI を使用した非同期処理での Web-API の出力完了結果を Slack に通知する
 - 【Golang】net/http（標準ライブラリ）
-    - [net/http を使用して簡単な REST API を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/72)
+    - [net/http を使用して GET リクエストに対しての簡単な REST API を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/72)
+    - net/http を使用して POST リクエストに対しての簡単な REST API を作成する
 - 【Golang】Gin
     - [Go 言語で Gin を使用して簡単な REST API を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/69)
 - 【Golang】Echo
@@ -440,6 +441,15 @@ AIプロダクト開発のための Tips 集。<br>
 <summary>ジョブ管理</summary>
 
 - Slurm
+
+</details>
+
+<details>
+<summary>バッチ処理</summary>
+
+- 【AWS】AWS Batch
+    - [[In-progress]【AWS】 AWS Batch を使用して簡単なバッチ処理を行う（AWS CLI 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/73)
+    - 【AWS】 AWS Batch を使用して簡単なバッチ処理を行う（terraform 使用）
 
 </details>
 
