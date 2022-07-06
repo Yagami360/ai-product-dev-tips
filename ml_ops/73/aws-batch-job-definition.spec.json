@@ -1,0 +1,7 @@
+{
+  "image": "735015535886.dkr.ecr.us-west-2.amazonaws.com/predict-server-image:latest",
+  "command": ["gunicorn", "app:app", "--bind", "0.0.0.0:5001", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "--reload", "Ref::Input", "Ref::Output"],
+  "vcpus": 1,
+  "memory": 500,
+  "jobRoleArn": "arn:aws:iam::735015535886:role/AmazonECSTaskS3FullAccess"
+}

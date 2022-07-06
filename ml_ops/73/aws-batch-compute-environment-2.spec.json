@@ -1,0 +1,16 @@
+{
+    "computeEnvironmentName": "aws-batch-compute-environment-2",
+    "type": "MANAGED",
+    "state": "ENABLED",
+    "computeResources": {
+        "type": "EC2",
+        "minvCpus": 0,
+        "maxvCpus": 4,
+        "desiredvCpus": 0,
+        "instanceTypes": ["optimal"],
+        "subnets": ["subnet-fd3dd885", "subnet-d2292f99", "subnet-b1f601ec", "subnet-6fa0cf44"],
+        "securityGroupIds": ["sg-9c562fd9"],
+        "instanceRole": "arn:aws:iam::735015535886:instance-profile/ecsInstanceRole"
+    },
+    "serviceRole": "arn:aws:iam::735015535886:role/aws-service-role/batch.amazonaws.com/AWSServiceRoleForBatch"
+}
