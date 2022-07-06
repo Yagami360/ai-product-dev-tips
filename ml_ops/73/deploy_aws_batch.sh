@@ -5,7 +5,7 @@ AWS_PROFILE=Yagami360
 REGION="us-west-2"
 ZONE="us-west-2a"
 
-IMAGE_NAME=predict-server-image
+IMAGE_NAME=job-image
 ECR_REPOSITORY_NAME=${IMAGE_NAME}
 ENABLE_BUILD=0
 #ENABLE_BUILD=1
@@ -98,9 +98,9 @@ sh delete_aws_batch.sh
 #=============================
 if [ ! ${ENABLE_BUILD} = 0 ] ; then
     # Docker image を作成する
-    cd api/predict-server
+    cd job
     docker build ./ -t ${IMAGE_NAME}
-    cd ../..
+    cd ..
 
     # ECR リポジトリを作成する
     if [ "$( aws ecr batch-get-repository-scanning-configuration --repository-names ${ECR_REPOSITORY_NAME} --query scanningConfigurations[*].repositoryName | grep "${ECR_REPOSITORY_NAME}")" ] ; then
@@ -170,7 +170,7 @@ echo "JOB_QUEUE_ARN : ${JOB_QUEUE_ARN}"
 cat << EOF > ${JOB_DEFINITION_NAME}.spec.json
 {
   "image": "${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:latest",
-  "command": ["gunicorn", "app:app", "--bind", "0.0.0.0:5001", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "--reload", "Ref::Input", "Ref::Output"],
+  "command": ["python", "job.py", "--ok_or_ng", "Ref::ok_or_ng"],
   "vcpus": 1,
   "memory": 500,
   "jobRoleArn": "arn:aws:iam::${AWS_ACCOUNT_ID}:role/AmazonECSTaskS3FullAccess"
@@ -182,7 +182,7 @@ aws batch register-job-definition \
   --job-definition-name ${JOB_DEFINITION_NAME} \
   --type container \
   --container-properties file://${JOB_DEFINITION_NAME}.spec.json \
-  --parameters Input="",Output="" > ${JOB_DEFINITION_NAME}.log
+  --parameters ok_or_ng="ok" > ${JOB_DEFINITION_NAME}.log
 
 # ジョブ定義の ARN を取得
 JOB_DEFINITION_ARN=$(jq -r '.jobDefinitionArn' ${JOB_DEFINITION_NAME}.log)
@@ -194,5 +194,5 @@ echo "JOB_DEFINITION_ARN : ${JOB_DEFINITION_ARN}"
 aws batch submit-job \
   --job-name "${JOB_NAME}" \
   --job-queue "${JOB_QUEUE_ARN}" \
-  --job-definition "${JOB_DEFINITION_ARN}"
-  --parameters Input="",Output=""
+  --job-definition "${JOB_DEFINITION_ARN}" \
+  --parameters ok_or_ng="ok" > ${JOB_NAME}.log

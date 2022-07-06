@@ -5,7 +5,7 @@ AWS_PROFILE=Yagami360
 REGION="us-west-2"
 ZONE="us-west-2a"
 
-ECR_REPOSITORY_NAME=predict-server-image
+ECR_REPOSITORY_NAME=job-image
 COMPUTE_ENV_NAME="aws-batch-compute-environment-2"
 JOB_QUEUE_NAME="aws-batch-job-queue"
 JOB_DEFINITION_NAME="aws-batch-job-definition"
@@ -84,26 +84,28 @@ echo "jq version : `jq --version`"
 #fi
 
 # ジョブ定義
-if [ $( aws batch describe-job-definitions --job-definition-name ${JOB_DEFINITION_NAME} --query jobDefinitions[*].jobDefinitionName | grep ${JOB_DEFINITION_NAME} ) ] ; then
-  aws batch deregister-job-definition --job-definition ${JOB_DEFINITION_NAME}
-  #for arn in $( aws batch describe-job-definitions --job-definition-name ${JOB_DEFINITION_NAME} --query jobDefinitions[*].jobDefinitionArn --output text )
-  #do
-  #  aws batch deregister-job-definition --job-definition $arn
-  #done
-  sleep 5
-fi
+#if [ $( aws batch describe-job-definitions --job-definition-name ${JOB_DEFINITION_NAME} --query jobDefinitions[*].jobDefinitionName | grep ${JOB_DEFINITION_NAME} ) ] ; then
+#  aws batch deregister-job-definition --job-definition ${JOB_DEFINITION_NAME}
+#  sleep 5
+#fi
+
+for JOB_ARN in $( aws batch describe-job-definitions --job-definition-name ${JOB_DEFINITION_NAME} --query jobDefinitions[*].jobDefinitionArn --output text )
+do
+  aws batch deregister-job-definition --job-definition ${JOB_ARN}
+done
+sleep 1
 
 # ジョブキュー
 if [ $( aws batch describe-job-queues --job-queue ${JOB_QUEUE_NAME} --query jobQueues[*].jobQueueName | grep ${JOB_QUEUE_NAME} ) ] ; then
   aws batch update-job-queue --job-queue ${JOB_QUEUE_NAME} --state DISABLED
   sleep 5
   aws batch delete-job-queue --job-queue ${JOB_QUEUE_NAME}
-  sleep 10
+  sleep 45
 fi
 
 # コンピューティング環境
 if [ $( aws batch describe-compute-environments --compute-environments ${COMPUTE_ENV_NAME} --query computeEnvironments[*].computeEnvironmentName | grep ${COMPUTE_ENV_NAME} ) ] ; then
   aws batch update-compute-environment --compute-environment ${COMPUTE_ENV_NAME} --state "DISABLED"
-  sleep 5
+  sleep 15
   aws batch delete-compute-environment --compute-environment ${COMPUTE_ENV_NAME}
 fi

@@ -1,4 +1,4 @@
-# 【AWS】 AWS Batch を使用して簡単なバッチ処理を行う（AWS CLI 使用）
+# 【AWS】 AWS Batch を使用して EC2 インスタンス上で簡単なバッチ処理を行う（AWS CLI 使用）
 
 AWS Bacth は、フルマネージド型のバッチ処理実行サービスであり、以下のような特徴がある
 
@@ -152,7 +152,7 @@ AWS Batch では、以下のようなコンポーネントから構成される
     cat << EOF > ${JOB_DEFINITION_NAME}.spec.json
     {
       "image": "${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:latest",
-      "command": ["gunicorn", "app:app", "--bind", "0.0.0.0:5001", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "--reload", "Ref::Input", "Ref::Output"],
+      "command": ["python", "job.py", "--ok_or_ng", "Ref::ok_or_ng"],
       "vcpus": 1,
       "memory": 500,
       "jobRoleArn": "arn:aws:iam::${AWS_ACCOUNT_ID}:role/AmazonECSTaskS3FullAccess"
@@ -164,7 +164,7 @@ AWS Batch では、以下のようなコンポーネントから構成される
       --job-definition-name ${JOB_DEFINITION_NAME} \
       --type container \
       --container-properties file://${JOB_DEFINITION_NAME}.spec.json \
-      --parameters "" > ${JOB_DEFINITION_NAME}.log
+      --parameters ok_or_ng="ok" > ${JOB_DEFINITION_NAME}.log
 
     # ジョブ定義の ARN を取得
     JOB_DEFINITION_ARN=$(jq -r '.jobDefinitionArn' ${JOB_DEFINITION_NAME}.log)
@@ -179,7 +179,14 @@ AWS Batch では、以下のようなコンポーネントから構成される
     - `--parameters` : ジョブ実行時のパラメータ（変数）<br>
         変数は、ジョブ定義を記述した json ファイルにおける、ジョブのコンテナプロパティの `command` フィールドで、`"Ref::**"` の形式で使用することができる
 
-1. ジョブの送信
+1. ジョブの送信<br>
+    ```sh
+    aws batch submit-job \
+      --job-name "${JOB_NAME}" \
+      --job-queue "${JOB_QUEUE_ARN}" \
+      --job-definition "${JOB_DEFINITION_ARN}" \
+      --parameters ok_or_ng="ok"
+    ```
 
 ## ■ 参照サイト
 
