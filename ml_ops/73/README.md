@@ -75,7 +75,7 @@ AWS Batch では、以下のようなコンポーネントから構成される
     ```
 
 1. AWS Batch 用の IAM role を作成する<br>
-    AWS Batch 用の IAM role を作成する。これらの IAM role は、後述のコンピューティング環境を作成する場合に、設定する
+    AWS Batch 用の IAM role を作成する。これらの IAM role は、後述のコンピューティング環境を作成する際に使用する
 
     - `AWSBatchServiceRole`（ARN 名 : `arn:aws:iam::${AWS_ACCOUNTID}:role/AWSBatchServiceRole`）<br>
         AWS BatchがECSやEC2などのリソースを操作するためのロールでAWS Batch 自体に付与する<br>
@@ -100,7 +100,7 @@ AWS Batch では、以下のようなコンポーネントから構成される
         fi
         ```
 
-        - `AmazonEC2ContainerServiceforEC2Role` policy
+        - `AWSBatchServiceRole` policy
             ```json
             {
               "Version": "2008-10-17",
