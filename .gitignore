@@ -22,3 +22,4 @@ __pycache__
 _tmp/
 old/
 _old/
+.old/

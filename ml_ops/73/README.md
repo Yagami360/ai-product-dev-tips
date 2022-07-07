@@ -4,7 +4,7 @@ AWS Bacth は、フルマネージド型のバッチ処理実行サービスで�
 
 > バッチ処理 : 予め定義しておいた処理（ジョブ）を定期実行する仕組み
 
-- ECR に docker image を push して、Amazon ECS 上のコンテナを動かす形でジョブを実行する
+- ECR に docker image を push して、Amazon ECS 内の EC2 インスタンス上で動作するコンテナを動かす形でジョブを実行する
 
 - Amazon ECS 上で動作するので、オートスケールも可能
 
@@ -75,13 +75,88 @@ AWS Batch では、以下のようなコンポーネントから構成される
     ```
 
 1. AWS Batch 用の IAM role を作成する<br>
+    AWS Batch 用の IAM role を作成する。これらの IAM role は、後述のコンピューティング環境を作成する場合に、設定する
 
-1. EC2 インスタンスを作成する<br>
-    新たに作成した EC2 インスタンスで AWS Bacth を実行する場合は、EC2 インスタンスを新規作成する
-    1. VPC を作成
-    1. サブネットを作成
-    1. セキュリティーグループを作成
-    1. EC2 インスタンスを作成
+    - `AWSBatchServiceRole`（ARN 名 : `arn:aws:iam::${AWS_ACCOUNTID}:role/AWSBatchServiceRole`）<br>
+        AWS BatchがECSやEC2などのリソースを操作するためのロールでAWS Batch 自体に付与する<br>
+        IAM policy `AWSBatchServiceRole`（ARN 名 : `arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole`）が付与されている
+
+        ```sh
+        IAM_ROLE_NAME_1="AWSBatchServiceRole"
+        IAM_POLICY_FILE_PATH_1="aws-batch-service-iam-policy.json"
+        
+        if [ ! `aws iam list-roles --query 'Roles[].RoleName' | grep ${IAM_ROLE_NAME_1}` ] ; then
+            # IAM ロールを作成する
+            aws iam create-role \
+                --role-name ${IAM_ROLE_NAME_1} \
+                --assume-role-policy-document "file://${IAM_POLICY_FILE_PATH_1}"
+
+            sleep 10
+
+            # 作成した IAM ロールに IAM ポリシーを付与する
+            aws iam attach-role-policy \
+                --role-name ${IAM_ROLE_NAME_1} \
+                --policy-arn arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
+        fi
+        ```
+
+        - `AmazonEC2ContainerServiceforEC2Role` policy
+            ```json
+            {
+              "Version": "2008-10-17",
+              "Statement": [
+                {
+                  "Sid": "",
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": "batch.amazonaws.com"
+                  },
+                  "Action": "sts:AssumeRole"
+                }
+              ]
+            }
+            ```
+
+    - `ecsInstanceRole`（ARN 名 : `arn:aws:iam::${AWS_ACCOUNTID}:role/ecsInstanceRole`）<br>
+        AWS Batch を実行すると、バックグラウンドで自動的に ECS クラスターが作成され、EC2 インスタンスが起動するが、その EC2 インスタンスに対して ECS を認識させるために付与する IAM role。
+        IAM policy `AmazonEC2ContainerServiceforEC2Role`（ARN名：`arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role`）が付与されている
+
+        ```sh
+        IAM_ROLE_NAME_2="ecsInstanceRole"
+        IAM_POLICY_FILE_PATH_2="aws-batch-ec2-iam-policy.json"
+        
+        # ecsInstanceRole
+        if [ ! `aws iam list-roles --query 'Roles[].RoleName' | grep ${IAM_ROLE_NAME_2}` ] ; then
+            # IAM ロールを作成する
+            aws iam create-role \
+                --role-name ${IAM_ROLE_NAME_2} \
+                --assume-role-policy-document "file://${IAM_POLICY_FILE_PATH_2}"
+
+            sleep 10
+
+            # 作成した IAM ロールに IAM ポリシーを付与する
+            aws iam attach-role-policy \
+                --role-name ${IAM_ROLE_NAME_2} \
+                --policy-arn arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+        fi
+        ```
+
+        - `AmazonEC2ContainerServiceforEC2Role` policy
+            ```json
+            {
+                "Version": "2008-10-17",
+                "Statement": [
+                    {
+                        "Sid": "",
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": "ec2.amazonaws.com"
+                        },
+                        "Action": "sts:AssumeRole"
+                    }
+                ]
+            }
+            ```
 
 1. コンピューティング環境（起動する EC2 インスタンス環境）を作成する<br>
     ```sh
@@ -101,7 +176,7 @@ AWS Batch では、以下のようなコンポーネントから構成される
             "securityGroupIds": ["${SECURITY_GROUP_ID}"],
             "instanceRole": "arn:aws:iam::${AWS_ACCOUNTID}:instance-profile/ecsInstanceRole"
         },
-        "serviceRole": "arn:aws:iam::${AWS_ACCOUNT_ID}:role/aws-service-role/batch.amazonaws.com/AWSServiceRoleForBatch"
+        "serviceRole": "arn:aws:iam::${AWS_ACCOUNT_ID}:role/AWSBatchServiceRole"
     }
     EOF
 
@@ -124,14 +199,17 @@ AWS Batch では、以下のようなコンポーネントから構成される
     - `computeResources.securityGroupIds` : セキュリティーグループID<br>
       今回のケースでは、デフォルトで存在している VPC に紐付けれれたセキュリティーグループID `SECURITY_GROUP_ID="sg-9c562fd9""` を指定しているが、新たに VPC & セキュリティーグループを作成した場合は、そのセキュリティーグループの ID を指定すればよい     
 
-    - `"serviceRole"` : <br>
-      `arn:aws:iam::${AWS_ACCOUNT_ID}:role/service-role/AWSBatchServiceRole` の IAM role は存在しなかったので、存在している IAM role `arn:aws:iam::${AWS_ACCOUNT_ID}:role/aws-service-role/batch.amazonaws.com/AWSServiceRoleForBatch` に設定した。
+    - `"computeResources.instanceRole"` : 上記 IAM の作成で作成した `ecsInstanceRole` の IAM role の ARN を設定する
+
+    - `"serviceRole"` : 上記 IAM の作成で作成した `AWSServiceRoleForBatch` の IAM role の ARN を設定する<br>
 
     - `--cli-input-json` : コンピューティング環境を定義した json ファイル
 
     > `cat << EOF` で、ヒアドキュメント使って json データを指定している
 
     > 作成したコンピューティング環境を削除する際に、コンピューティング環境に関連づけられて IAM role が存在せず、`INVALID - CLIENT_ERROR ...` のメッセージが出ている場合、上記作成したコンピューティング環境を削除できなくなるのことに注意
+
+    > コンピューティング環境を作成することで、AWS Batch が自動的に ECS クラスターを作成し、そのクラスター上で EC2 インスタンスが起動する動作になる
 
 1. ジョブキューの作成<br>
     ```sh
@@ -187,6 +265,8 @@ AWS Batch では、以下のようなコンポーネントから構成される
       --job-definition "${JOB_DEFINITION_ARN}" \
       --parameters ok_or_ng="ok"
     ```
+    
+    > AWS Batch を実行すると、ECS クラスターが自動的に作成され、ジョブを実行するための EC2 インスタンスも自動的に作成される。そのため、明示的に EC2 インスタンスを作成する必要がないことに注意
 
 ## ■ 参照サイト
 

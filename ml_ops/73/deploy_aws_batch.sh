@@ -10,13 +10,13 @@ ECR_REPOSITORY_NAME=${IMAGE_NAME}
 ENABLE_BUILD=0
 #ENABLE_BUILD=1
 
-COMPUTE_ENV_NAME="aws-batch-compute-environment-2"
 SUBNET_ID_1="subnet-fd3dd885"
 SUBNET_ID_2="subnet-d2292f99"
 SUBNET_ID_3="subnet-b1f601ec"
 SUBNET_ID_4="subnet-6fa0cf44"
 SECURITY_GROUP_ID="sg-9c562fd9"
 
+COMPUTE_ENV_NAME="aws-batch-compute-environment-2"
 JOB_QUEUE_NAME="aws-batch-job-queue"
 JOB_DEFINITION_NAME="aws-batch-job-definition"
 JOB_NAME="aws-batch-job"
@@ -122,6 +122,11 @@ if [ ! ${ENABLE_BUILD} = 0 ] ; then
 fi
 
 #=============================
+# IAM の作成
+#=============================
+sh make_iam.sh
+
+#=============================
 # AWS Batch リソース作成
 #=============================
 #-----------------------------
@@ -141,9 +146,9 @@ cat << EOF > ${COMPUTE_ENV_NAME}.spec.json
         "instanceTypes": ["optimal"],
         "subnets": ["${SUBNET_ID_1}", "${SUBNET_ID_2}", "${SUBNET_ID_3}", "${SUBNET_ID_4}"],
         "securityGroupIds": ["${SECURITY_GROUP_ID}"],
-        "instanceRole": "arn:aws:iam::${AWS_ACCOUNTID}:instance-profile/ecsInstanceRole"
+        "instanceRole": "arn:aws:iam::${AWS_ACCOUNT_ID}:instance-profile/ecsInstanceRole"
     },
-    "serviceRole": "arn:aws:iam::${AWS_ACCOUNT_ID}:role/aws-service-role/batch.amazonaws.com/AWSServiceRoleForBatch"
+    "serviceRole": "arn:aws:iam::${AWS_ACCOUNT_ID}:role/AWSBatchServiceRole"
 }
 EOF
 

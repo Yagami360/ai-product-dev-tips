@@ -12,5 +12,5 @@
         "securityGroupIds": ["sg-9c562fd9"],
         "instanceRole": "arn:aws:iam::735015535886:instance-profile/ecsInstanceRole"
     },
-    "serviceRole": "arn:aws:iam::735015535886:role/aws-service-role/batch.amazonaws.com/AWSServiceRoleForBatch"
+    "serviceRole": "arn:aws:iam::735015535886:role/AWSBatchServiceRole"
 }

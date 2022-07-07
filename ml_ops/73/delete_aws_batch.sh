@@ -106,6 +106,6 @@ fi
 # コンピューティング環境
 if [ $( aws batch describe-compute-environments --compute-environments ${COMPUTE_ENV_NAME} --query computeEnvironments[*].computeEnvironmentName | grep ${COMPUTE_ENV_NAME} ) ] ; then
   aws batch update-compute-environment --compute-environment ${COMPUTE_ENV_NAME} --state "DISABLED"
-  sleep 15
+  sleep 30
   aws batch delete-compute-environment --compute-environment ${COMPUTE_ENV_NAME}
 fi
