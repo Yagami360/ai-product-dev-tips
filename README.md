@@ -438,15 +438,9 @@ AIプロダクト開発のための Tips 集。<br>
 </details>
 
 <details>
-<summary>ジョブ管理</summary>
+<summary>ジョブ管理 / バッチ処理</summary>
 
 - Slurm
-
-</details>
-
-<details>
-<summary>バッチ処理</summary>
-
 - 【AWS】AWS Batch
     - [[In-progress]【AWS】 AWS Batch を使用して EC2 インスタンス上で簡単なバッチ処理を行う（AWS CLI 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/73)
     - 【AWS】 AWS Batch を使用して EC2 インスタンス上で簡単なバッチ処理を行う（terraform 使用）
