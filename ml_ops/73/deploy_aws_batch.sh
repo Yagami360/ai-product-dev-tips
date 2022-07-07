@@ -7,8 +7,8 @@ ZONE="us-west-2a"
 
 IMAGE_NAME=job-image
 ECR_REPOSITORY_NAME=${IMAGE_NAME}
-ENABLE_BUILD=0
-#ENABLE_BUILD=1
+#ENABLE_BUILD=0
+ENABLE_BUILD=1
 
 SUBNET_ID_1="subnet-fd3dd885"
 SUBNET_ID_2="subnet-d2292f99"
@@ -177,8 +177,7 @@ cat << EOF > ${JOB_DEFINITION_NAME}.spec.json
   "image": "${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:latest",
   "command": ["python", "job.py", "--ok_or_ng", "Ref::ok_or_ng"],
   "vcpus": 1,
-  "memory": 500,
-  "jobRoleArn": "arn:aws:iam::${AWS_ACCOUNT_ID}:role/AmazonECSTaskS3FullAccess"
+  "memory": 500
 }
 EOF
 

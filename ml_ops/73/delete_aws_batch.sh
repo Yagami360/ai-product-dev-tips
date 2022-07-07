@@ -84,11 +84,6 @@ echo "jq version : `jq --version`"
 #fi
 
 # ジョブ定義
-#if [ $( aws batch describe-job-definitions --job-definition-name ${JOB_DEFINITION_NAME} --query jobDefinitions[*].jobDefinitionName | grep ${JOB_DEFINITION_NAME} ) ] ; then
-#  aws batch deregister-job-definition --job-definition ${JOB_DEFINITION_NAME}
-#  sleep 5
-#fi
-
 for JOB_ARN in $( aws batch describe-job-definitions --job-definition-name ${JOB_DEFINITION_NAME} --query jobDefinitions[*].jobDefinitionArn --output text )
 do
   aws batch deregister-job-definition --job-definition ${JOB_ARN}
