@@ -373,6 +373,8 @@ AIプロダクト開発のための Tips 集。<br>
     - [【GCP】Google Cloud SQL の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/56)
     - [【GCP】Google Cloud SQL を使用して SQL インスタンス上の MySQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/57)
     - 【GCP】Google Cloud SQL を使用して MySQL に Web-API のログデータを書き込む（FastAPI + uvicorn + gunicorn + MySQL + docker + docker-compose での構成）
+- 【AWS】Amazon DynamoDB
+    - 【AWS】Amazon DynamoDB を使用してデータベースの CRUD 処理を行う（AWS CLI 使用）
 
 </details>
 
@@ -387,6 +389,8 @@ AIプロダクト開発のための Tips 集。<br>
     - [【GCP】Cloud Scheduler と Google Pub/Sub を用いて、サーバーを一定の時間間隔で起動・停止する。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/4)
     - [[In-progress] docker + Flask での Web-API を Cloud Pub/Sub を利用して非同期実行する（PULL方式）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/20)
     - 機械学習モデルの推論 API を Cloud Pub/Sub を利用して非同期実行する（PULL方式）
+- 【AWS】Amazon SQS
+    - [【AWS】Amazon SQS を使用して標準キューの簡単なキューイングを行う（AWS CLI 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/74)
 - Redis
     - Redis の基礎事項
     - [Redis を Python スクリプトで使用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/22)
