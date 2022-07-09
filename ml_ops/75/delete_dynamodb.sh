@@ -4,7 +4,7 @@ AWS_ACCOUNT_ID=735015535886
 AWS_PROFILE=Yagami360
 REGION="us-west-2"
 
-QUEUE_NAME="sample-queue"
+TABLE_NAME="sample-table"
 
 #=============================
 # OS判定
@@ -57,3 +57,7 @@ export AWS_DEFAULT_REGION=${REGION}
 #=============================
 # Amazon DynamoDB 
 #=============================
+if [ $( aws dynamodb list-tables --query TableNames[*] --output text | grep ${TABLE_NAME} ) ] ; then
+	aws dynamodb delete-table --table-name ${TABLE_NAME}
+	sleep 5
+fi

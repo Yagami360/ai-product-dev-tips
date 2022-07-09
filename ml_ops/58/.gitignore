@@ -1,3 +1,4 @@
 *.zip
 !*.json
 response.json
+lambda-function-cli.json

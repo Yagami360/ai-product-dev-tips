@@ -357,24 +357,32 @@ AIプロダクト開発のための Tips 集。<br>
 <details>
 <summary>データ基盤 / データ分析基盤</summary>
 
-- MySQL
-    - [【MySQL】SQLAlchemy を使用して Python スクリプトから MySQL に接続する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/34)
-    - [【MySQL】SQLAlchemy を使用して Python スクリプトから MySQL に接続する（docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/35)
-    - [【MySQL】MySQL に Web-API のログデータを書き込む（FastAPI + uvicorn + gunicorn + MySQL + SQLAlchemy + docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/36)
-    - 【MySQL】MySQL に書き込んだ Web-API のログデータを監視する（FastAPI + uvicorn + gunicorn + MySQL + SQLAlchemy + docker + docker-compose での構成）
-    - [[In-progress]【MySQL】MySQL に保存したジョブデータをバッチ単位で処理する Web-API（FastAPI + uvicorn + gunicorn + MySQL + SQLAlchemy + docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/37)
-- PostgreSQL
-- 【GCP】BigQuery
-    - [【GCP】BigQuery の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/6)
-    - [【GCP】BigQuery を使用したデータ処理（GUI使用時）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/7)
-    - [【GCP】BigQuery を使用したデータ処理（CLI使用時）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/8)
-    - 【GCP】BigQuery を使用したデータ処理（Python 用 BigQuery Storage API ライブラリ使用時）
-- 【GCP】Google Cloud SQL
-    - [【GCP】Google Cloud SQL の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/56)
-    - [【GCP】Google Cloud SQL を使用して SQL インスタンス上の MySQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/57)
-    - 【GCP】Google Cloud SQL を使用して MySQL に Web-API のログデータを書き込む（FastAPI + uvicorn + gunicorn + MySQL + docker + docker-compose での構成）
-- 【AWS】Amazon DynamoDB
-    - 【AWS】Amazon DynamoDB を使用してデータベースの CRUD 処理を行う（AWS CLI 使用）
+- 非構造化データ
+    - 【GCP】GCS [Google Cloud Storage]
+    - 【AWS】Amazon S3
+- 非構造化データ（キャッシュ）
+    - 【AWS】Amazon ElastiCache
+        - 【AWS】Amazon ElastiCache を使用してメモリのキャッシングを行う（AWS CLI 使用）
+- 構造化データ（SQL）
+    - MySQL
+        - [【MySQL】SQLAlchemy を使用して Python スクリプトから MySQL に接続する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/34)
+        - [【MySQL】SQLAlchemy を使用して Python スクリプトから MySQL に接続する（docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/35)
+        - [【MySQL】MySQL に Web-API のログデータを書き込む（FastAPI + uvicorn + gunicorn + MySQL + SQLAlchemy + docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/36)
+        - 【MySQL】MySQL に書き込んだ Web-API のログデータを監視する（FastAPI + uvicorn + gunicorn + MySQL + SQLAlchemy + docker + docker-compose での構成）
+        - [[In-progress]【MySQL】MySQL に保存したジョブデータをバッチ単位で処理する Web-API（FastAPI + uvicorn + gunicorn + MySQL + SQLAlchemy + docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/37)
+    - PostgreSQL
+    - 【GCP】BigQuery
+        - [【GCP】BigQuery の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/6)
+        - [【GCP】BigQuery を使用したデータ処理（GUI使用時）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/7)
+        - [【GCP】BigQuery を使用したデータ処理（CLI使用時）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/8)
+        - 【GCP】BigQuery を使用したデータ処理（Python 用 BigQuery Storage API ライブラリ使用時）
+    - 【GCP】Google Cloud SQL
+        - [【GCP】Google Cloud SQL の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/56)
+        - [【GCP】Google Cloud SQL を使用して SQL インスタンス上の MySQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/57)
+        - 【GCP】Google Cloud SQL を使用して MySQL に Web-API のログデータを書き込む（FastAPI + uvicorn + gunicorn + MySQL + docker + docker-compose での構成）
+- 構造化データ（NoSQL）
+    - 【AWS】Amazon DynamoDB
+        - [【AWS】Amazon DynamoDB を使用して NoSQL データベースの CRUD 処理を行う（AWS CLI 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/75)
 
 </details>
 
@@ -382,6 +390,13 @@ AIプロダクト開発のための Tips 集。<br>
 <summary>メッセージングサービス・キューサービス</summary>
 
 - [メッセージングサービス・キューサービスの基本事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/17)
+- Redis
+    - Redis の基礎事項
+    - [Redis を Python スクリプトで使用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/22)
+    - [docker + Redis + Python での Redis の構成](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/23)
+    - docker + Flask での Web-API を Redis を利用して非同期実行する
+    - [推論結果を Redis にキャッシュし、同じ入力データでの Web-API の推論処理を高速化する（FastAPI + uvicorn + gunicorn + redis + docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/39)
+    - [入力データや前処理データを Redis にキャッシュし、同じ入力データでの Web-API の推論処理を高速化する（FastAPI + uvicorn + gunicorn + redis + docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/44)
 - 【GCP】Google Cloud Pub/Sub
     - [【GCP】Google Cloud Pub/Sub の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/18)
     - [【GCP】Google Cloud Pub/Sub を Python スクリプト上で利用する（PULL 方式）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/19)
@@ -391,13 +406,6 @@ AIプロダクト開発のための Tips 集。<br>
     - 機械学習モデルの推論 API を Cloud Pub/Sub を利用して非同期実行する（PULL方式）
 - 【AWS】Amazon SQS
     - [【AWS】Amazon SQS を使用して標準キューの簡単なキューイングを行う（AWS CLI 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/74)
-- Redis
-    - Redis の基礎事項
-    - [Redis を Python スクリプトで使用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/22)
-    - [docker + Redis + Python での Redis の構成](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/23)
-    - docker + Flask での Web-API を Redis を利用して非同期実行する
-    - [推論結果を Redis にキャッシュし、同じ入力データでの Web-API の推論処理を高速化する（FastAPI + uvicorn + gunicorn + redis + docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/39)
-    - [入力データや前処理データを Redis にキャッシュし、同じ入力データでの Web-API の推論処理を高速化する（FastAPI + uvicorn + gunicorn + redis + docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/44)
 
 </details>
 

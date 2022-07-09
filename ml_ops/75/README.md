@@ -1,4 +1,4 @@
-# Amazon DynamoDB を使用してデータベースの CRUD 処理を行う（AWS CLI 使用）
+# Amazon DynamoDB を使用して NoSQL データベースの CRUD 処理を行う（AWS CLI 使用）
 
 Amazon DynamoDBは、AWS が提供するフルマネージド型の NoSQL データベースで、以下のような特徴を持つ
 
@@ -43,8 +43,77 @@ Amazon DynamoDBは、AWS が提供するフルマネージド型の NoSQL デー
 
 1. テーブルを作成する<br>
     ```sh
+    aws dynamodb create-table --table-name ${TABLE_NAME} \
+        --attribute-definitions \
+            AttributeName=id,AttributeType=N \
+            AttributeName=name,AttributeType=S \
+        --key-schema \
+            AttributeName=id,KeyType=HASH \
+            AttributeName=created_at,KeyType=RANGE \
+        --provisioned-throughput \
+            ReadCapacityUnits=10,WriteCapacityUnits=10 \
+        --table-class STANDARD
     ```
+
+    - `--attribute-definitions` : テーブルの要素名と型を `AttributeName=id,AttributeType=S` のような形式で指定
+        - `AttributeType` : データの型
+            - `S` : 文字列型
+            - `N` : 数値型
+            - `B` : バイナリー型
+
+    - ` --key-schema` : テーブルの要素名の key を `AttributeName=xxx,KeyType=HASH` のような形式で指定
+        - `KeyType` : キーの種類
+            - `HASH` : パーティションキー
+            - `RANGE` : ソートキー
+
+        > パーティションキーのみの場合、`KeyType` が `HASH` である要素を1つだけ指定する必要がある。複合キー (パーティションキーとソートキー) の場合は、最初の要素の `KeyType` は `HASH` で、 2 番目の要素の `KeyType` は `RANGE` で指定する必要がある。
+
+    - `--provisioned-throughput` : データベースのスループット（単位時間あたりに処理できるデータ量）
+
+    - `--table-class` : 
+        - `STANDARD` : 
+        - `STANDARD_INFREQUENT_ACCESS` :
+
+    > 作成したデータベースのテーブルは、「[Amazon DynamoDB コンソール画面](https://us-west-2.console.aws.amazon.com/dynamodbv2/home?region=us-west-2#tables)」から確認できる
+
+1. 作成したデータベースの CRUD 処理を行う<br>
+
+    - テーブル一覧の確認<br>
+        ```sh
+        aws dynamodb list-tables
+        ```
+
+    - テーブル詳細の確認<br>
+        ```sh
+        aws dynamodb describe-table --table-name ${TABLE_NAME}
+        ```
+
+    - データベースのテーブルを更新<br>
+        ```sh
+        aws dynamodb update-table --table-name ${TABLE_NAME} \
+	        --provisioned-throughput '{"ReadCapacityUnits": 5, "WriteCapacityUnits": 5}'
+        ```
+
+    - データベースのテーブルにアイテム（項目）追加<br>
+        ```sh
+        aws dynamodb put-item --table-name ${TABLE_NAME} \
+        	--item '{ "id": { "N": "1" }, "name": { "S": "yagami" } }'
+        ```
+
+        > 追加したアイテムは「[[DynamoDB] -> [項目] のコンソール画面](https://us-west-2.console.aws.amazon.com/dynamodbv2/home?region=us-west-2#item-explorer?initialTagKey=)」から確認できる
+
+    - データベースのテーブルの item 取得<br>
+        ```sh
+        aws dynamodb get-item --table-name ${TABLE_NAME} \
+	        --key '{ "id": { "N": "1" }, "name": { "S": "yagami" } }'
+        ```
+
+    - データベースを削除する<br>
+        ```sh
+        aws dynamodb delete-table --table-name ${TABLE_NAME}
+        ```
 
 ## ■ 参考サイト
 - https://www.fenet.jp/aws/column/tool/722/
 - https://www.wakuwakubank.com/posts/675-aws-cli-dynamodb/
+- https://docs.aws.amazon.com/cli/latest/reference/dynamodb/create-table.html

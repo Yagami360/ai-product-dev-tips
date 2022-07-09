@@ -76,8 +76,36 @@ sh delete_dynamodb.sh
 #=============================
 # Amazon DynamoDB リソース作成
 #=============================
-# テーブルを作成する
-aws dynamodb create-table
-    --table-name ${TABLE_NAME} \
-    --attribute-definitions '[{ "AttributeName": "name", "AttributeType": "N"}, { "AttributeName": "created_at", "AttributeType": "S" }]' \
-    --key-schema '[{ "AttributeName": "name", "KeyType": "HASH" }, { "AttributeName": "created_at", "KeyType": "RANGE" }]' \
+mkdir -p log
+
+# テーブルを作成する（コマンド実行後、コンソール出力画面で待機状態になるので ``> log/${TABLE_NAME}.json`` でコンソール出力を外部出力する）
+aws dynamodb create-table --table-name ${TABLE_NAME} \
+    --attribute-definitions \
+    	AttributeName=id,AttributeType=N \
+	  	AttributeName=name,AttributeType=S \
+    --key-schema \
+        AttributeName=id,KeyType=HASH \
+        AttributeName=name,KeyType=RANGE \
+    --provisioned-throughput \
+        ReadCapacityUnits=10,WriteCapacityUnits=10 \
+    --table-class STANDARD > log/${TABLE_NAME}.json
+
+sleep 5
+
+# テーブル一覧を確認
+aws dynamodb list-tables
+
+# テーブル詳細を確認
+#aws dynamodb describe-table --table-name ${TABLE_NAME}
+
+# データベースのテーブルを更新する
+aws dynamodb update-table --table-name ${TABLE_NAME} \
+	--provisioned-throughput '{"ReadCapacityUnits": 5, "WriteCapacityUnits": 5}' > log/${TABLE_NAME}.json
+
+# テーブルにアイテムを追加する
+aws dynamodb put-item --table-name ${TABLE_NAME} \
+	--item '{ "id": { "N": "1" }, "name": { "S": "yagami" } }'
+
+# テーブルのアイテムを取得する
+aws dynamodb get-item --table-name ${TABLE_NAME} \
+	--key '{ "id": { "N": "1" }, "name": { "S": "yagami" } }'
