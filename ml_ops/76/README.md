@@ -19,6 +19,17 @@ Amazon ElastiCache では、サードパーティーのキャッシング・キ�
 
 今回は Redis をエンジンとして使用する
 
+Amazon ElastiCache には、以下のようなコンポーネントが存在する
+
+- キャッシュクラスター<br>
+    1 つ以上のキャッシュノード（Redis が動作するEC2インスタンス）の集合。
+
+- サブネットグループ<br>
+    VPC 環境で実行しているクラスターに対して指定できるサブネットの集合
+
+- パラメータグループ<br>
+    ElastiCache 上にデプロイされた Redis の設定(=パラメータ) をAWS上で管理するリソース
+
 ## ■ 方法
 
 1. AWS CLI をインストールする<br>
@@ -36,7 +47,41 @@ Amazon ElastiCache では、サードパーティーのキャッシング・キ�
         sudo ./aws/install
         ```
 
-1. クラスターを配置するための VPC を作成する<br>
+1. Amazon ElastiCache 用の IAM role を作成する<br>
+    IAM policy `AmazonElastiCacheFullAccess`（ARN名 : `arn:aws:iam::aws:policy/AmazonElastiCacheFullAccess`）をもつ IAM role を作成する
+
+    ```sh
+    if [ ! `aws iam list-roles --query 'Roles[].RoleName' | grep ${IAM_ROLE_NAME}` ] ; then
+        # IAM ロールを作成する
+        aws iam create-role \
+            --role-name ${IAM_ROLE_NAME} \
+            --assume-role-policy-document "file://${IAM_POLICY_FILE_PATH}"
+
+        # 作成した IAM ロールに IAM ポリシーを付与する
+        aws iam attach-role-policy \
+            --role-name ${IAM_ROLE_NAME} \
+            --policy-arn arn:aws:iam::aws:policy/AmazonElastiCacheFullAccess
+    fi
+    ```
+
+    - 一般的な ElastiCache システム管理者タスクの実行を許可する policy 定義
+        ```json
+        {
+            "Version": "2012-10-17",
+            "Statement":[
+                {
+                    "Sid": "ECAllowSpecific",
+                    "Effect":"Allow",
+                    "Action":[
+                        "elasticache:*"
+                    ],
+                    "Resource":"*"
+                }
+            ]
+        }
+        ```
+
+1. キャッシュクラスターを配置するための VPC を作成する<br>
     ```sh
     # VPC を作成
     aws ec2 create-vpc --cidr-block ${VPC_CIDR_BLOCK}
@@ -65,12 +110,40 @@ Amazon ElastiCache では、サードパーティーのキャッシング・キ�
     aws ec2 create-tags --resources ${SUBNET_ID} --tags Key=Name,Value=${SUBNET_NAME}
     ```
 
-1. Amazon ElastiCache のクラスターを作成する
+1. サブネットグループを作成する<br>
+    上記作成した VPC 環境で実行させるキャッシュクラスターに対して指定できるサブネットの集合であるサブネットグループを作成する
+
     ```sh
+    aws elasticache create-cache-subnet-group \
+        --cache-subnet-group-name ${SUBNET_GROUP_NAME} \
+        --cache-subnet-group-description "subnet group" \
+        --subnet-ids ${SUBNET_ID}
     ```
 
-1. xxx
+1. 【オプション】パラメータグループを作成する<br>
+    ElastiCache 上にデプロイされた Redis の設定(=パラメータ) を AWS 上で管理するリソースであるパラメータグループを作成する
+    ```sh
+    aws elasticache create-cache-parameter-group \
+        --cache-parameter-group-name ${PARAMETER_GROUP_NAME}  \
+        --cache-parameter-group-family  redis4.0 \
+        --description "parameter group for redis4.0"
+    ```
+
+1. キャッシュクラスターを作成する
+    ```sh
+    aws elasticache create-cache-cluster \
+        --cache-cluster-id ${CLUSTER_NAME} \
+        --cache-parameter-group ${SUBNET_GROUP_NAME} \
+    	--cache-parameter-group-name ${PARAMETER_GROUP_NAME} \
+        --engine redis \
+        --engine-version 3.2.4 \
+        --cache-node-type cache.t2.micro \
+        --num-cache-nodes 1
+    ```
+
+    > `--cache-parameter-group-name` を省略した場合は、デフォルトパラメータグループが使用される
 
 ## ■ 参考サイト
 
+- https://docs.aws.amazon.com/ja_jp/AmazonElastiCache/latest/red-ug/GettingStarted.html
 - https://siguniang.wordpress.com/2014/09/27/create-elasticache-redis-multi-az-read-replica/

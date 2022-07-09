@@ -4,6 +4,8 @@ AWS_ACCOUNT_ID=735015535886
 AWS_PROFILE=Yagami360
 REGION="us-west-2"
 
+IAM_ROLE_NAME="elasticache-iam--role"
+
 VPC_CIDR_BLOCK="10.10.0.0/16"
 SUBNET_CIDR_BLOCK="10.10.0.0/24"
 
@@ -84,4 +86,10 @@ if [ ${VPC_ID} ] ; then
 	aws ec2 delete-vpc --vpc-id ${VPC_ID}
 	echo "deleted vpc id=${VPC_ID}"
 	sleep 10
+fi
+
+# IAM role
+if [ $( aws iam list-roles --query 'Roles[*].RoleName' | grep ${IAM_ROLE_NAME} ) ] ; then
+    aws iam detach-role-policy --role-name ${IAM_ROLE_NAME} --policy-arn arn:aws:iam::aws:policy/AmazonElastiCacheFullAccess
+    aws iam delete-role --role-name ${IAM_ROLE_NAME}
 fi
