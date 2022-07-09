@@ -1,13 +1,17 @@
 #!/bin/sh
-set -eu
+#set -eu
 AWS_ACCOUNT_ID=735015535886
 AWS_PROFILE=Yagami360
 REGION="us-west-2"
 
-IAM_ROLE_NAME="elasticache-iam--role"
+IAM_ROLE_NAME="elasticache-iam-role"
 
 VPC_CIDR_BLOCK="10.10.0.0/16"
 SUBNET_CIDR_BLOCK="10.10.0.0/24"
+
+SUBNET_GROUP_NAME="elasticache-subnet-group"
+PARAMETER_GROUP_NAME="elasticache-redis-parameter-group"
+CLUSTER_NAME="elasticache-redis-cluster"
 
 #=============================
 # OS判定
@@ -73,6 +77,27 @@ export AWS_DEFAULT_REGION=${REGION}
 #=============================
 # リソース削除
 #=============================
+mkdir -p log
+
+# キャッシュクラスター
+if [ $( aws elasticache describe-cache-clusters --query CacheClusters[*].CacheClusterId --output text | grep ${CLUSTER_NAME} ) ] ; then
+	aws elasticache delete-cache-cluster --cache-cluster-id ${CLUSTER_NAME} > log/${CLUSTER_NAME}.json
+	echo "deleted cache-cluster=${CLUSTER_NAME}"
+	sleep 180
+fi
+
+# サブネットグループ
+if [ $( aws elasticache describe-cache-subnet-groups --query CacheSubnetGroups[*].CacheSubnetGroupName | grep ${SUBNET_GROUP_NAME} ) ] ; then
+	aws elasticache delete-cache-subnet-group --cache-subnet-group-name ${SUBNET_GROUP_NAME}
+	echo "deleted cache-subnet-group=${SUBNET_GROUP_NAME}"
+fi
+
+# パラメータグループ
+if [ $( aws elasticache describe-cache-parameter-groups --query CacheParameterGroups[*].CacheParameterGroupName | grep ${PARAMETER_GROUP_NAME} ) ] ; then
+	aws elasticache delete-cache-parameter-group --cache-parameter-group-name ${PARAMETER_GROUP_NAME}
+	echo "deleted cache-parameter-group=${PARAMETER_GROUP_NAME}"
+fi
+
 # サブネット
 SUBNET_ID=$( aws ec2 describe-subnets --filter "Name=cidr-block,Values=${SUBNET_CIDR_BLOCK}" --query Subnets[*].SubnetId --output text | grep "subnet-" )
 if [ ${SUBNET_ID} ] ; then

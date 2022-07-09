@@ -136,7 +136,7 @@ Amazon ElastiCache には、以下のようなコンポーネントが存在す�
         --cache-parameter-group ${SUBNET_GROUP_NAME} \
     	--cache-parameter-group-name ${PARAMETER_GROUP_NAME} \
         --engine redis \
-        --engine-version 3.2.4 \
+        --engine-version 4.0.10 \
         --cache-node-type cache.t2.micro \
         --num-cache-nodes 1
     ```
