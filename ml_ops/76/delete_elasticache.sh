@@ -8,6 +8,7 @@ IAM_ROLE_NAME="elasticache-iam-role"
 
 VPC_CIDR_BLOCK="10.10.0.0/16"
 SUBNET_CIDR_BLOCK="10.10.0.0/24"
+SECURITY_GROUP_NAME="elasticache-security-group"
 
 SUBNET_GROUP_NAME="elasticache-subnet-group"
 PARAMETER_GROUP_NAME="elasticache-redis-parameter-group"
@@ -97,6 +98,14 @@ if [ $( aws elasticache describe-cache-parameter-groups --query CacheParameterGr
 	aws elasticache delete-cache-parameter-group --cache-parameter-group-name ${PARAMETER_GROUP_NAME}
 	echo "deleted cache-parameter-group=${PARAMETER_GROUP_NAME}"
 fi
+
+# セキュリティーグループ
+#VPC_ID=$( aws ec2 describe-vpcs --filter "Name=cidr-block,Values=${VPC_CIDR_BLOCK}" --query Vpcs[*].VpcId --output text | grep "vpc-" )
+#SECURITY_GROUP_ID=$( aws ec2 describe-security-groups --filter "Name=vpc-id,Values=${VPC_ID}" --query SecurityGroups[0].GroupId --output text | grep sg- )
+#if [ ${SECURITY_GROUP_ID} ] ; then
+#	aws ec2 delete-security-group --group-id ${SECURITY_GROUP_ID}
+#	echo "deleted security-group id=${SECURITY_GROUP_ID}"
+#fi
 
 # サブネット
 SUBNET_ID=$( aws ec2 describe-subnets --filter "Name=cidr-block,Values=${SUBNET_CIDR_BLOCK}" --query Subnets[*].SubnetId --output text | grep "subnet-" )

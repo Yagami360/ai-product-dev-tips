@@ -12,6 +12,7 @@ VPC_CIDR_BLOCK="10.10.0.0/16"
 VPC_NAME="elasticache-vpc"
 SUBNET_CIDR_BLOCK="10.10.0.0/24"
 SUBNET_NAME="elasticache-subnet"
+SECURITY_GROUP_NAME="elasticache-security-group"
 
 SUBNET_GROUP_NAME="elasticache-subnet-group"
 PARAMETER_GROUP_NAME="elasticache-redis-parameter-group"
@@ -136,6 +137,28 @@ echo "created subnet id=${SUBNET_ID}"
 aws ec2 create-tags --resources ${SUBNET_ID} --tags Key=Name,Value=${SUBNET_NAME}
 
 #-----------------------------
+# セキュリティーグループの作成
+#-----------------------------
+# セキュリティーグループの作成
+#aws ec2 create-security-group \
+#	--group-name ${SECURITY_GROUP_NAME} \
+#	--description "security group for connecting elasticache cluster from ec2 instance" \
+#	--vpc-id ${VPC_ID}
+
+# セキュリティグループIDを取得
+SECURITY_GROUP_ID=$( aws ec2 describe-security-groups --filter "Name=vpc-id,Values=${VPC_ID}" --query SecurityGroups[0].GroupId --output text | grep sg- )
+echo "created security-group id=${SECURITY_GROUP_ID}"
+
+# セキュリティグループのインバウンドルールを設定
+aws ec2 authorize-security-group-ingress \
+	--group-id ${SECURITY_GROUP_ID} \
+    --protocol tcp \
+	--port 6379 \
+	--cidr 0.0.0.0/0
+
+aws ec2 create-tags --resources ${SECURITY_GROUP_ID} --tags Key=Name,Value=${SECURITY_GROUP_NAME}
+
+#-----------------------------
 # サブネットグループを作成する
 #-----------------------------
 aws elasticache create-cache-subnet-group \
@@ -162,3 +185,5 @@ aws elasticache create-cache-cluster \
 	--engine-version 4.0.10 \
 	--cache-node-type cache.t2.micro \
 	--num-cache-nodes 1 > log/${CLUSTER_NAME}.json
+
+#	--security-group-ids ${SECURITY_GROUP_ID} \

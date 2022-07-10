@@ -110,6 +110,26 @@ Amazon ElastiCache には、以下のようなコンポーネントが存在す�
     aws ec2 create-tags --resources ${SUBNET_ID} --tags Key=Name,Value=${SUBNET_NAME}
     ```
 
+1. クラスターに接続するためのセキュリティーグループを設定する<br>
+    VPC 作成時に自動的に作成されるセキュリティーグループに、インバウンドルールを追加して、キャッシュクラスターに EC2 インスタンス経由で接続できるようにする
+    ```sh
+    # セキュリティグループIDを取得
+    SECURITY_GROUP_ID=$( aws ec2 describe-security-groups --filter "Name=vpc-id,Values=${VPC_ID}" --query SecurityGroups[0].GroupId --output text | grep sg- )
+    echo "created security-group id=${SECURITY_GROUP_ID}"
+
+    # セキュリティグループのインバウンドルールを設定
+    aws ec2 authorize-security-group-ingress \
+        --group-id ${SECURITY_GROUP_ID} \
+        --protocol tcp \
+        --port 6379 \
+        --cidr 0.0.0.0/0
+
+    #　セキュリティーグループに名前をつける
+    aws ec2 create-tags --resources ${SECURITY_GROUP_ID} --tags Key=Name,Value=${SECURITY_GROUP_NAME}
+    ```
+
+    > キャッシュクラスターのデフォルトのポートは `6379` なので、`6379` を開放するインバウンドルールを作成する
+
 1. サブネットグループを作成する<br>
     上記作成した VPC 環境で実行させるキャッシュクラスターに対して指定できるサブネットの集合であるサブネットグループを作成する
 
@@ -120,6 +140,8 @@ Amazon ElastiCache には、以下のようなコンポーネントが存在す�
         --subnet-ids ${SUBNET_ID}
     ```
 
+    > 作成したサブネットグループは、「[[Amazon ElastiCache] -> [サブネットグループ] のコンソール画面](https://us-west-2.console.aws.amazon.com/elasticache/home?region=us-west-2#/subnet-groups)」から確認できる
+
 1. 【オプション】パラメータグループを作成する<br>
     ElastiCache 上にデプロイされた Redis の設定(=パラメータ) を AWS 上で管理するリソースであるパラメータグループを作成する
     ```sh
@@ -128,6 +150,8 @@ Amazon ElastiCache には、以下のようなコンポーネントが存在す�
         --cache-parameter-group-family  redis4.0 \
         --description "parameter group for redis4.0"
     ```
+
+    > 作成したパラメータグループは、「[[Amazon ElastiCache] -> [パラメータグループ] のコンソール画面](https://us-west-2.console.aws.amazon.com/elasticache/home?region=us-west-2#/parameter-groups)」から確認できる
 
 1. キャッシュクラスターを作成する
     ```sh
@@ -142,6 +166,49 @@ Amazon ElastiCache には、以下のようなコンポーネントが存在す�
     ```
 
     > `--cache-parameter-group-name` を省略した場合は、デフォルトパラメータグループが使用される
+
+    > 作成したパラメータグループは、「[[Amazon ElastiCache] -> [Redis クラスター] のコンソール画面](https://us-west-2.console.aws.amazon.com/elasticache/home?region=us-west-2#/redis)」から確認できる
+
+1. キャッシュクラスターに接続するための EC2 インスタンスを作成する<br>
+    キャッシュクラスターと同じ VPC 内に、キャッシュクラスターに接続するための EC2 インスタンスを作成する
+    ```sh
+    # サブネット内の EC2 インスタンスにパブリックIPアドレスを自動的に割り当て
+    aws ec2 modify-subnet-attribute \
+        --subnet-id ${SUBNET_ID} \
+        --map-public-ip-on-launch
+
+    # EC2 インスタンスの作成
+    aws ec2 run-instances \
+        --image-id ${IMAGE_ID} \
+        --instance-type ${INSTANCE_TYPE} \
+        --count 1 \
+        --key-name ${SSH_KEY_NAME} \
+        --security-group-ids ${SECURITY_GROUP_ID} \
+        --subnet-id ${SUBNET_ID}
+
+    # インスタンスIDを取得
+    INSTANCE_ID=`aws ec2 describe-instances --filter "Name=subnet-id,Values=${SUBNET_ID}" --query Reservations[*].Instances[*].InstanceId | grep i- | sed 's/ //g' | sed 's/"//g'`
+    echo "created ec2-instance id=${INSTANCE_ID}"
+
+    # インスタンスの名前を設定
+    aws ec2 create-tags --resources ${INSTANCE_ID} --tags Key=Name,Value=${INSTANCE_NAME}
+    ```
+
+
+1. EC2 インスタンスから キャッシュクラスターの Redis に接続する
+    1. キャッシュクラスターに接続可能な EC2 インスタンスに接続する
+        ```sh
+        ssh 
+        ```
+
+    1. EC2 インスタンスに redis-cli をインストールする
+        ```sh
+        ```
+
+    1. EC2 インスタンスから キャッシュクラスターの Redis に接続する
+        ```sh
+        redis-cli -h ${CLUSTER_ENDPOINT_URL} cluster-endpoint -c -p ${PORT} number
+        ```
 
 ## ■ 参考サイト
 
