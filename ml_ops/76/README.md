@@ -23,6 +23,8 @@ Amazon ElastiCache には、以下のようなコンポーネントが存在す�
 
 <img width="605" alt="image" src="https://user-images.githubusercontent.com/25688193/178270926-51a45a2c-a1e0-45cb-8dd8-87218956efc6.png">
 
+<img width="690" alt="image" src="https://user-images.githubusercontent.com/25688193/178502456-bb742698-fb54-421a-9d30-9a1413c3492b.png">
+
 - キャッシュクラスター<br>
     １つ以上のキャッシュノード（Redis が動作するサーバー）の集合。
 
@@ -32,6 +34,33 @@ Amazon ElastiCache には、以下のようなコンポーネントが存在す�
 - パラメータグループ<br>
     ElastiCache 上にデプロイされた Redis の設定(=パラメータ) をAWS上で管理するリソース
 
+- プライマリノード<br>
+    xxx
+
+- レプリカノード<br>
+    xxx
+
+- ノードグループ（シャード）<br>
+    xxx
+
+- レプリケーショングループ<br>
+    xxx
+
+- クラスターモード<br>
+    クラスターモードが無効な場合は単一のシャード（ノードグループ）構成となり、プライマリノードは全体で一つのみになる。<br>
+    クラスターモードが有効な場合は最大 500 個までシャード（ノードグループ）を増やすことができ、それぞれのシャード（ノードグループ）にプライマリノードが存在する。
+
+    本項で記載する方法では、クラスターモードが無効の場合の構成になる
+
+- エンドポイント<br>
+    - Configuration Endpoint（設定エンドポイント）<br>
+        クラスターモードが有効の場合のみ割り当てられるエンドポイントで、シャーディング（ノードグループ）構成全体に対してのエンドポイント。シャーディング（ノードグループ）構成全体に対する読み込み、書き込み操作を行うために使う
+
+    - PrimaryEndpoint（プライマリエンドポイント）<br>
+        クラスターモードが無効の場合のみ割り当てられるエンドポイントで、シャード（ノードグループ）のプライマリーノードに対してのエンドポイント。シャード（ノードグループ）に対する書き込み操作を行うために使う
+
+    - ReaderEndpoint（リーダーエンドポイント）<br>
+        クラスターモードが無効の場合のみ割り当てられるエンドポイントで、シャード（ノードグループ）のレプリカノード群に対してのエンドポイント。シャード（ノードグループ）に対する読み込み操作を行うために使う
 
 ## ■ 方法
 
@@ -121,7 +150,14 @@ Amazon ElastiCache には、以下のようなコンポーネントが存在す�
         SECURITY_GROUP_ID=$( aws ec2 describe-security-groups --filter "Name=vpc-id,Values=${VPC_ID}" --query SecurityGroups[0].GroupId --output text | grep sg- )
         echo "created security-group id=${SECURITY_GROUP_ID}"
 
-        # セキュリティグループのインバウンドルールを設定
+        # セキュリティグループのインバウンドルールを設定（SSH接続）
+        aws ec2 authorize-security-group-ingress \
+            --group-id ${SECURITY_GROUP_ID} \
+            --protocol tcp \
+            --port 22 \
+            --cidr 0.0.0.0/0
+
+        # セキュリティグループのインバウンドルールを設定（キャッシュクラスターへの接続）
         aws ec2 authorize-security-group-ingress \
             --group-id ${SECURITY_GROUP_ID} \
             --protocol tcp \
@@ -132,7 +168,9 @@ Amazon ElastiCache には、以下のようなコンポーネントが存在す�
         aws ec2 create-tags --resources ${SECURITY_GROUP_ID} --tags Key=Name,Value=${CACHE_SECURITY_GROUP_NAME}
         ```
 
-        > キャッシュクラスターのデフォルトのポートは `6379` なので、`6379` を開放するインバウンドルールを作成する
+        > キャッシュクラスターのデフォルトのポートは `6379` なので、`6379` ポートを開放するインバウンドルールを作成する
+
+        > EC2インスタンスでも使用するセキュリティーグループなので、ssh 接続で使用する `22` ポートを開放するインバウンドルールも作成する
 
     1. サブネットグループを作成する<br>
         上記作成した VPC 環境で実行させるキャッシュクラスターに対して指定できるサブネットの集合であるサブネットグループを作成する
@@ -171,7 +209,37 @@ Amazon ElastiCache には、以下のようなコンポーネントが存在す�
 
         > `--cache-parameter-group-name` を省略した場合は、デフォルトパラメータグループが使用される
 
-        > 作成したパラメータグループは、「[[Amazon ElastiCache] -> [Redis クラスター] のコンソール画面](https://us-west-2.console.aws.amazon.com/elasticache/home?region=us-west-2#/redis)」から確認できる
+        > 作成したキャッシュクラスターは、「[[Amazon ElastiCache] -> [Redis クラスター] のコンソール画面](https://us-west-2.console.aws.amazon.com/elasticache/home?region=us-west-2#/redis)」から確認できる
+
+        > `aws elasticache create-cache-cluster` コマンドで作成したキャッシュクラスターは、クラスターモードが無効になることに注意
+
+    1. キャッシュクラスターにセキュリティーグループを適用する<br>
+        「[[Amazon ElastiCache] -> [Redis クラスター] のコンソール画面](https://us-west-2.console.aws.amazon.com/elasticache/home?region=us-west-2#/redis)」から、作成したキャッシュクラスターを選択し、「変更」->「セキュリティー」から変更できる。
+
+    1. レプリケーショングループを作成する<br>
+        クラスター内にレプリカノードを配置するためのレプリケーショングループを作成する
+        ```sh
+        aws elasticache create-replication-group \
+            --replication-group-id ${CACHE_REPLICA_GROUP_NAME} \
+            --primary-cluster-id ${CACHE_CLUSTER_NAME} \
+            --replication-group-description 'test replication group'
+        ```
+
+        > レプリケーショングループを作成することで、キャッシュクラスターの PrimaryEndpoint（URL:`${CACHE_REPLICA_GROUP_NAME}.a5lv69.ng.0001.usw2.cache.amazonaws.com:6379` のような形式） と ReaderEndpoint（URL : `${CACHE_REPLICA_GROUP_NAME}-ro.a5lv69.ng.0001.usw2.cache.amazonaws.com:6379` のような形式）が割り当て、キャッシュクラスター内の Redis にアクセス可能になる
+
+    1. レプリカノードを作成する<br>
+        上記作成したレプリケーショングループ内にレプリカノードを追加する
+        ```sh
+        aws elasticache create-cache-cluster \
+            --cache-cluster-id ${CACHE_REPLICA_CLUSTER_NAME} \
+            --replication-group-id ${CACHE_REPLICA_GROUP_NAME} \
+            --preferred-availability-zone ${ZONE}
+        ```
+
+        >  キャッシュクラスター作成時にも使用したコマンド `aws elasticache create-cache-cluster` を使用していることに注意。（但し、今回は `--replication-group-id` オプションを指定している）
+
+    <img width="700" alt="image" src="https://user-images.githubusercontent.com/25688193/178510260-b01c0ce4-9750-4c35-a6c7-dc4fcf4e6200.png">
+
 
 1. EC2 インスタンスの作成<br>
     キャッシュクラスターと同じ VPC 内に、キャッシュクラスターに接続するための EC2 インスタンスを作成する
@@ -267,8 +335,10 @@ Amazon ElastiCache には、以下のようなコンポーネントが存在す�
         ```
 
     1. EC2 インスタンスに redis-cli をインストールする<br>
-        ```sh
-        ```
+        - Ubuntu の場合
+            ```sh
+            sudo apt update
+            ```
 
     1. EC2 インスタンスから キャッシュクラスターの Redis に接続する<br>
         ```sh
@@ -279,3 +349,4 @@ Amazon ElastiCache には、以下のようなコンポーネントが存在す�
 
 - https://docs.aws.amazon.com/ja_jp/AmazonElastiCache/latest/red-ug/GettingStarted.html
 - https://siguniang.wordpress.com/2014/09/27/create-elasticache-redis-multi-az-read-replica/
+- https://qiita.com/charon/items/53790d8826e32561535d
