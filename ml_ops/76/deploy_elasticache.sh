@@ -195,7 +195,20 @@ aws elasticache create-cache-cluster \
 	--cache-node-type cache.t2.micro \
 	--num-cache-nodes 1 > log/${CACHE_CLUSTER_NAME}.json
 
-#	--security-group-ids ${SECURITY_GROUP_ID} \
+# クラスター生成完了待ち
+for i in `seq 300`
+do
+	CLUSTER_STATUS=$( aws elasticache describe-cache-clusters --query CacheClusters[0].CacheClusterStatus --output text )
+	if [ ${CLUSTER_STATUS} = "creating" ] ; then
+		echo "creating ${CACHE_CLUSTER_NAME} ..."
+		sleep 5
+	elif [ ${CLUSTER_STATUS} = "available" ] ; then
+		break
+	else
+		echo "${CACHE_CLUSTER_NAME} status=${CLUSTER_STATUS}"
+		sleep 5
+	fi
+done
 
 #-----------------------------
 # レプリケーショングループを作成する
@@ -203,7 +216,23 @@ aws elasticache create-cache-cluster \
 aws elasticache create-replication-group \
 	--replication-group-id ${CACHE_REPLICA_GROUP_NAME} \
 	--primary-cluster-id ${CACHE_CLUSTER_NAME} \
-	--replication-group-description 'my replication group'
+	--security-group-ids ${SECURITY_GROUP_ID} \
+	--replication-group-description 'my replication group' > log/${CACHE_REPLICA_GROUP_NAME}.json
+
+# 作成完了待ち
+for i in `seq 300`
+do
+	REPLICA_GROUP_STATUS=$( aws elasticache describe-replication-groups --query ReplicationGroups[0].Status --output text )
+	if [ ${REPLICA_GROUP_STATUS} = "creating" ] ; then
+		echo "creating ${CACHE_REPLICA_GROUP_NAME} ..."
+		sleep 5
+	elif [ ${REPLICA_GROUP_STATUS} = "available" ] ; then
+		break
+	else
+		echo "${CACHE_REPLICA_GROUP_NAME} status=${REPLICA_GROUP_STATUS}"
+		sleep 5
+	fi
+done
 
 #-----------------------------
 # レプリカノードを追加する
@@ -212,3 +241,18 @@ aws elasticache create-cache-cluster \
 	--cache-cluster-id ${CACHE_REPLICA_CLUSTER_NAME} \
 	--replication-group-id ${CACHE_REPLICA_GROUP_NAME} \
 	--preferred-availability-zone ${ZONE} > log/${CACHE_REPLICA_CLUSTER_NAME}.json
+
+# クラスター生成完了待ち
+for i in `seq 300`
+do
+	CLUSTER_STATUS=$( aws elasticache describe-cache-clusters --query CacheClusters[1].CacheClusterStatus --output text )
+	if [ ${CLUSTER_STATUS} = "creating" ] ; then
+		echo "creating ${CACHE_REPLICA_CLUSTER_NAME} ..."
+		sleep 5
+	elif [ ${CLUSTER_STATUS} = "available" ] ; then
+		break
+	else
+		echo "${CACHE_CLUSTER_NAME} status=${CLUSTER_STATUS}"
+		sleep 5
+	fi
+done

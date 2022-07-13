@@ -13,25 +13,24 @@ CACHE_SUBNET_CIDR_BLOCK="10.0.0.0/24"
 CACHE_SUBNET_GROUP_NAME="elasticache-subnet-group"
 CACHE_PARAMETER_GROUP_NAME="elasticache-redis-parameter-group"
 CACHE_CLUSTER_NAME="elasticache-redis-cluster"
-#CACHE_REPLICA_GROUP_NAME="elasticache-replica-group"
-CACHE_REPLICA_GROUP_NAME="elasticache-cluster-replica-group"
+CACHE_REPLICA_GROUP_NAME="elasticache-replica-group"
 CACHE_REPLICA_CLUSTER_NAME="elasticache-replica-cluster"
 
 #=============================
 # OS判定
 #=============================
 if [ "$(uname)" = 'Darwin' ]; then
-  OS='Mac'
-  echo "Your platform is MacOS."  
+	OS='Mac'
+	echo "Your platform is MacOS."  
 elif [ "$(expr substr $(uname -s) 1 5)" = 'Linux' ]; then
-  OS='Linux'
-  echo "Your platform is Linux."  
+	OS='Linux'
+	echo "Your platform is Linux."  
 elif [ "$(expr substr $(uname -s) 1 10)" = 'MINGW32_NT' ]; then                                                                                           
-  OS='Cygwin'
-  echo "Your platform is Cygwin."  
+	OS='Cygwin'
+	echo "Your platform is Cygwin."  
 else
-  echo "Your platform ($(uname -a)) is not supported."
-  exit 1
+	echo "Your platform ($(uname -a)) is not supported."
+	exit 1
 fi
 
 #=============================
@@ -83,24 +82,58 @@ export AWS_DEFAULT_REGION=${REGION}
 #=============================
 mkdir -p log
 
+# レプリケーショングループ
+if [ $( aws elasticache describe-replication-groups --query ReplicationGroups[0].ReplicationGroupId --output text | grep ${CACHE_REPLICA_GROUP_NAME} ) ] ; then
+  	aws elasticache delete-replication-group --replication-group-id ${CACHE_REPLICA_GROUP_NAME}
+
+	for i in `seq 300`
+	do
+		REPLICA_GROUP_STATUS=$( aws elasticache describe-replication-groups --query ReplicationGroups[0].Status --output text )
+		if [ ${REPLICA_GROUP_STATUS} = "deleting" ] ; then
+			echo "deleting ${CACHE_REPLICA_GROUP_NAME} ..."
+			sleep 5
+	else
+			break
+		fi
+	done
+	echo "deleted replica-group=${CACHE_REPLICA_GROUP_NAME}"
+fi
+
 # キャッシュクラスター
 if [ $( aws elasticache describe-cache-clusters --query CacheClusters[0].CacheClusterId --output text | grep ${CACHE_CLUSTER_NAME} ) ] ; then
 	aws elasticache delete-cache-cluster --cache-cluster-id ${CACHE_CLUSTER_NAME} > log/${CACHE_CLUSTER_NAME}.json
-	echo "deleted cache-cluster=${CACHE_CLUSTER_NAME}"
-	#sleep 180
+	sleep 5
+
+	# クラスター削除完了待ち
+	for i in `seq 300`
+	do
+		CLUSTER_STATUS=$( aws elasticache describe-cache-clusters --query CacheClusters[0].CacheClusterStatus --output text )
+		if [ ${CLUSTER_STATUS} = "deleting" ] ; then
+			echo "deleting ${CACHE_CLUSTER_NAME} ..."
+			sleep 5
+		else
+			break
+		fi
+	done
+	echo "deleted ${CACHE_CLUSTER_NAME}"
 fi
 
 # レプリカノード（レプリカクラスター）
-if [ $( aws elasticache describe-cache-clusters --query CacheClusters[1].CacheClusterId --output text | grep ${CACHE_REPLICA_CLUSTER_NAME} ) ] ; then
+if [ $( aws elasticache describe-cache-clusters --query CacheClusters[*].CacheClusterId --output text | grep ${CACHE_REPLICA_CLUSTER_NAME} ) ] ; then
 	aws elasticache delete-cache-cluster --cache-cluster-id ${CACHE_REPLICA_CLUSTER_NAME} > log/${CACHE_REPLICA_CLUSTER_NAME}.json
-	echo "deleted replica-cluster=${CACHE_REPLICA_CLUSTER_NAME}"
-	#sleep 180
-fi
+	sleep 5
 
-# レプリケーショングループ
-if [ $( aws elasticache describe-replication-groups --query ReplicationGroups[0].ReplicationGroupId --output text | grep ${CACHE_REPLICA_GROUP_NAME} ) ] ; then
-  aws elasticache delete-replication-group --replication-group-id ${CACHE_REPLICA_GROUP_NAME}
-	echo "deleted replica-group=${CACHE_REPLICA_GROUP_NAME}"
+	for i in `seq 300`
+	do
+		CLUSTER_STATUS=$( aws elasticache describe-cache-clusters --query CacheClusters[*].CacheClusterStatus --output text )
+		if [ ${CLUSTER_STATUS} = "deleting" ] ; then
+			echo "deleting ${CACHE_REPLICA_CLUSTER_NAME} ..."
+			sleep 5
+		else
+			break
+		fi
+	done
+	echo "deleted ${CACHE_REPLICA_CLUSTER_NAME}"
 fi
 
 # サブネットグループ

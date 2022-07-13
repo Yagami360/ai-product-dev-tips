@@ -19,9 +19,9 @@ Amazon ElastiCache では、サードパーティーのキャッシング・キ�
 
 今回は Redis をエンジンとして使用する
 
-Amazon ElastiCache には、以下のようなコンポーネントが存在する
+Amazon ElastiCache には、以下のようなコンポーネントが存在する。Amazon ElastiCache と同じ VPC 内の EC2 インスタンスからしかクラスター内の redis に接続できないことに注意
 
-<img width="605" alt="image" src="https://user-images.githubusercontent.com/25688193/178270926-51a45a2c-a1e0-45cb-8dd8-87218956efc6.png">
+<img width="843" alt="image" src="https://user-images.githubusercontent.com/25688193/178675544-4e59606b-c5a3-4407-8102-1b355add7e7a.png">
 
 <img width="690" alt="image" src="https://user-images.githubusercontent.com/25688193/178502456-bb742698-fb54-421a-9d30-9a1413c3492b.png">
 
@@ -61,6 +61,11 @@ Amazon ElastiCache には、以下のようなコンポーネントが存在す�
 
     - ReaderEndpoint（リーダーエンドポイント）<br>
         クラスターモードが無効の場合のみ割り当てられるエンドポイントで、シャード（ノードグループ）のレプリカノード群に対してのエンドポイント。シャード（ノードグループ）に対する読み込み操作を行うために使う
+
+
+## ■ ToDo
+
+- [ ] EC2 インスタンスから、クラスターのエンドポイントに redis-cli コマンドでアクセスしても、redis に接続できない問題の解決
 
 ## ■ 方法
 
@@ -242,7 +247,7 @@ Amazon ElastiCache には、以下のようなコンポーネントが存在す�
 
 
 1. EC2 インスタンスの作成<br>
-    キャッシュクラスターと同じ VPC 内に、キャッシュクラスターに接続するための EC2 インスタンスを作成する
+    Amazon ElastiCache と同じ VPC 内の EC2 インスタンスからしかクラスター内の redis に接続できないので、キャッシュクラスターと同じ VPC 内に、キャッシュクラスターに接続するための EC2 インスタンスを作成する
 
     1. EC2 インスタンス用の VPC を作成する<br>
         VPC に関しては、前述のキャッシュクラスター用の VPC と同じものを使用する
@@ -338,12 +343,42 @@ Amazon ElastiCache には、以下のようなコンポーネントが存在す�
         - Ubuntu の場合
             ```sh
             sudo apt update
+            sudo apt install redis-server
             ```
 
     1. EC2 インスタンスから キャッシュクラスターの Redis に接続する<br>
         ```sh
-        redis-cli -h ${CLUSTER_ENDPOINT_URL} cluster-endpoint -c -p ${PORT} number
+        redis-cli -h ${ENDPOINT_URL} -p "6379"
         ```
+        - `${ENDPOINT_URL}` : キャッシュクラスター（厳密にはノードグループ）のエンドポイントの URL
+            - PrimaryEndpoint の場合 : `${CACHE_REPLICA_GROUP_NAME}.a5lv69.ng.0001.usw2.cache.amazonaws.com` のような形式
+            - ReaderEndpoint の場合 : `${CACHE_REPLICA_GROUP_NAME}-ro.a5lv69.ng.0001.usw2.cache.amazonaws.com` のような形式
+
+<!--
+1. ローカルPCからキャッシュクラスターの Redis に接続する場合<br>
+
+    1. ローカルPCに redis-cli をインストールする<br>
+        - Mac の場合<br>
+            ```sh
+            brew install redis
+            ```
+
+        - Ubuntu の場合<br>
+            ```sh
+            sudo apt update
+            sudo apt install redis-server
+            ```
+
+    1. EC2 インスタンスから キャッシュクラスターの Redis に接続する<br>
+        ```sh
+        redis-cli -h ${ENDPOINT_URL} -p "6379"
+        ```
+
+        - `${ENDPOINT_URL}` : キャッシュクラスター（厳密にはノードグループ）のエンドポイントの URL
+            - PrimaryEndpoint の場合 : `${CACHE_REPLICA_GROUP_NAME}.a5lv69.ng.0001.usw2.cache.amazonaws.com:6379` のような形式
+            - ReaderEndpoint の場合 : `${CACHE_REPLICA_GROUP_NAME}-ro.a5lv69.ng.0001.usw2.cache.amazonaws.com:6379` のような形式
+
+-->
 
 ## ■ 参考サイト
 

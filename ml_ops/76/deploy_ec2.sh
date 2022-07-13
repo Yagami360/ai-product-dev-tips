@@ -95,6 +95,10 @@ mkdir -p log
 #-----------------------------
 # キャッシュクラスターと同じ VPC を使用するのでパス
 
+# 作成した VPC の VPC ID 取得
+VPC_ID=$( aws ec2 describe-vpcs --filter "Name=cidr-block,Values=${VPC_CIDR_BLOCK}" --query Vpcs[*].VpcId --output text | grep "vpc-" )
+echo "created vpc id=${VPC_ID}"
+
 #-----------------------------
 # サブネットを作成する
 #-----------------------------
@@ -151,6 +155,8 @@ aws ec2 associate-route-table \
 # セキュリティーグループの作成
 #-----------------------------
 # キャッシュクラスターと同じセキュリティーグループを使用するのでパス
+SECURITY_GROUP_ID=$( aws ec2 describe-security-groups --filter "Name=vpc-id,Values=${VPC_ID}" --query SecurityGroups[0].GroupId --output text | grep sg- )
+echo "created security-group id=${SECURITY_GROUP_ID}"
 
 #-----------------------------
 # SSH 鍵の登録

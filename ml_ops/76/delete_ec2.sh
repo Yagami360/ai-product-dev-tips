@@ -85,7 +85,18 @@ EC2_INSTANCE_ID=$( aws ec2 describe-instances --filter "Name=subnet-id,Values=${
 # EC2 インスタンスの削除
 if [ ${EC2_INSTANCE_ID} ] ; then
 	aws ec2 terminate-instances --instance-ids "${EC2_INSTANCE_ID}"
-	echo "deleted ec2-instances id=${EC2_INSTANCE_ID}"
+
+#	for i in `seq 300`
+#	do
+#		EC2_STATUS=$( aws ec2 describe-instances --query Reservations[*].Instances[*].State.Name --output text )
+#		if [ ${EC2_STATUS} = "deleting" ] ; then
+#			echo "deleting ${EC2_INSTANCE_ID} ..."
+#			sleep 5
+#	  else
+#			break
+#		fi
+#	done
+#	echo "deleted ec2-instances id=${EC2_INSTANCE_ID}"
 fi
 
 # 非メインのルートテーブルを削除（メインルートテーブルは VPC 削除時に削除される）
