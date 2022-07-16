@@ -377,11 +377,18 @@ AIプロダクト開発のための Tips 集。<br>
         - [【GCP】BigQuery を使用したデータ処理（GUI使用時）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/7)
         - [【GCP】BigQuery を使用したデータ処理（CLI使用時）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/8)
         - 【GCP】BigQuery を使用したデータ処理（Python 用 BigQuery Storage API ライブラリ使用時）
+    - 【AWS】Amazon Aurora
+        - xxx
 - 構造化データ（NoSQL）
     - 【AWS】Amazon DynamoDB
         - [【AWS】Amazon DynamoDB を使用して NoSQL データベースの CRUD 処理を行う（AWS CLI 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/75)
+- NAS [Network Attached Storage] / NFS [Network File System]
+    - 【AWS】Amazon EFS
+        - [【AWS】Amazon EFS を使用して EC2 インスタンスに共有ストレージ（NAS）を追加する（AWS CLI 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/77)
 
 </details>
+
+
 
 <details>
 <summary>メッセージングサービス・キューサービス・キャッシュサービス</summary>
