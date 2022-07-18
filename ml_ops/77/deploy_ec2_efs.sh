@@ -171,7 +171,7 @@ echo "created security-group id=${EC2_SECURITY_GROUP_ID}"
 aws ec2 authorize-security-group-ingress \
 	--group-id ${EC2_SECURITY_GROUP_ID} \
 	--protocol tcp \
-  	--port 22 \
+  --port 22 \
 	--cidr 0.0.0.0/0
 	
 aws ec2 create-tags --resources ${EC2_SECURITY_GROUP_ID} --tags Key=Name,Value=${EC2_SECURITY_GROUP_NAME}
