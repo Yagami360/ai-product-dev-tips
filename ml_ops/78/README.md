@@ -14,6 +14,18 @@ Amazon Aurora は、以下のような特徴がある
 >    Aurora は RDS の中の１つのオプション機能になっている。
 >    RDS と Aurora の相違点としては、xxx
 
+Amazon Aurora は、以下のようなコンポーネントから構成される
+
+<img width="825" alt="image" src="https://user-images.githubusercontent.com/25688193/179916035-0593d248-2293-426b-b817-0f181aebbbaa.png">
+
+- クラスター<br>
+    xxx
+
+- マスターインスタンス（プライマリインスタンス）<br>
+    xxx
+
+- リードレプリカ（レプリカインスタンス）<br>
+    xxx
 
 ## ■ 方法
 
@@ -131,17 +143,19 @@ Amazon Aurora は、以下のような特徴がある
 
     > 作成したクラスターは、「[[Amazon RDS] -> [データベース] コンソール画面](https://us-west-2.console.aws.amazon.com/rds/home?region=us-west-2#databases:)」から確認できる
 
-1. プライマリインスタンスを作成する<br>
+1. マスターインスタンス（プライマリインスタンス）を作成する<br>
+    クラスターの中に MySQL をエンジンとするマスターインスタンス（実体はEC2インスタンス）を作成する
+
     ```sh
     aws rds create-db-instance \
         --db-cluster-identifier ${AURORA_CLUSTER_NAME} \
-        --db-instance-identifier ${PRIMARY_INSTANCE_NAME} \
+        --db-instance-identifier ${MASTER_INSTANCE_NAME} \
         --db-instance-class db.r5.xlarge \
         --db-parameter-group-name sample-instance-parameter \
         --availability-zone ${ZONE_1} \
         --engine aurora-mysql \
         --monitoring-interval 60 \
-        --monitoring-role-arn arn:aws:iam::${AWS_ID}:role/rds-monitoring-role \
+        --monitoring-role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/rds-monitoring-role \
         --no-publicly-accessible \
         --auto-minor-version-upgrade \
         --storage-encrypted \
@@ -151,17 +165,17 @@ Amazon Aurora は、以下のような特徴がある
         --performance-insights-retention-period 7
     ```
 
-1. レプリカインスタンスを作成する<br>
+1. リードレプリカ（レプリカインスタンス）を作成する<br>
     ```sh
     aws rds create-db-instance \
         --db-cluster-identifier ${AURORA_CLUSTER_NAME} \
-        --db-instance-identifier sample-primary \
+        --db-instance-identifier ${REPLICA_INSTANCE_NAME} \
         --db-instance-class db.r5.xlarge \
         --db-parameter-group-name sample-instance-parameter \
-        --availability-zone ap-northeast-1c \
+        --availability-zone ${ZONE_2} \
         --engine aurora-mysql \
         --monitoring-interval 60 \
-        --monitoring-role-arn arn:aws:iam::${AWS_ID}:role/rds-monitoring-role \
+        --monitoring-role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/rds-monitoring-role \
         --no-publicly-accessible \
         --auto-minor-version-upgrade \
         --storage-encrypted \

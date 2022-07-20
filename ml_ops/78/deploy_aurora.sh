@@ -16,6 +16,8 @@ SECURITY_GROUP_NAME="aurora-security-group"
 
 DB_SUBNET_GROUP_NAME="aurora-db-subnet-group"
 AURORA_CLUSTER_NAME="aurora-cluster"
+MASTER_INSTANCE_NAME="aurora-master-instance"
+REPLICA_INSTANCE_NAME="aurora-replica-instance"
 
 #=============================
 # OS判定
@@ -178,5 +180,20 @@ aws rds create-db-cluster \
 #    --database-name aurora-mysql-database
 
 #-----------------------------
-# プライマリインスタンス
+# マスターインスタンス
 #-----------------------------
+aws rds create-db-instance \
+    --db-cluster-identifier ${AURORA_CLUSTER_NAME} \
+    --db-instance-identifier ${MASTER_INSTANCE_NAME} \
+    --db-subnet-group-name ${DB_SUBNET_GROUP_NAME} \
+    --db-instance-class db.t2.micro \
+    --availability-zone ${ZONE_1} \
+    --engine aurora-mysql \
+    --monitoring-interval 60 \
+    --monitoring-role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/rds-monitoring-role \
+    --no-publicly-accessible \
+    --auto-minor-version-upgrade \
+    --enable-performance-insights
+
+#    --no-publicly-accessible \
+#    --db-parameter-group-name sample-instance-parameter \
