@@ -56,7 +56,12 @@ Amazon Aurora は、以下のようなコンポーネントから構成される
 
     # VPC に名前をつける
     aws ec2 create-tags --resources ${VPC_ID} --tags Key=Name,Value=${VPC_NAME}
+
+    # DNS ホスト名を有効化
+    aws ec2 modify-vpc-attribute --vpc-id ${VPC_ID} --enable-dns-hostnames
     ```
+
+    > Amazon Aurora を外部利用（VPC外部から利用）する際には、DNS ホスト名を有効にする必要があるので、`aws ec2 modify-vpc-attribute` コマンドで DNS ホスト名を有効化している
 
 1. サブネットを作成する<br>
     Aurora の各種インスタンスを配置するためのサブネットを作成する
@@ -95,6 +100,67 @@ Amazon Aurora は、以下のようなコンポーネントから構成される
     ```
 
     > 後述の DB サブネットグループでは、少なくとも２つのサブネットが必要なので、２つのサブネットを作成する
+
+1. インターネットゲートウェイを作成する<br>
+    外部から VPC 内の Amzon Aurora にアクセスするためのインターネットゲートウェイを作成する
+    ```sh
+    # インターネットゲートウェイの作成＆インターネットゲートウェイID取得
+    INTERNET_GATEWAY_ID=$( aws ec2 create-internet-gateway | jq -r '.InternetGateway.InternetGatewayId' )
+    echo "created internet-gateway id=${INTERNET_GATEWAY_ID}"
+
+    # インターネットゲートウェイの名前を設定
+    aws ec2 create-tags --resources ${INTERNET_GATEWAY_ID} --tags Key=Name,Value=${INTERNET_GATEWAY_NAME}
+
+    # 作成したインターネットゲートウェイに VPC を紐付けする
+    aws ec2 attach-internet-gateway \
+        --internet-gateway-id ${INTERNET_GATEWAY_ID} \
+        --vpc-id ${VPC_ID}
+    ```
+
+1. ルートテーブルを作成する<br>
+    ```sh
+    #-----------------------------
+    # ルートテーブル１を作成する
+    #-----------------------------
+    # ルートテーブルの作成＆ルートテーブルID取得
+    ROUTE_TABLE_ID_1=$( aws ec2 create-route-table --vpc-id ${VPC_ID} | jq -r '.RouteTable.RouteTableId' )
+    echo "created route-table id=${ROUTE_TABLE_ID_1}"
+
+    # ルートテーブルの名前を設定
+    aws ec2 create-tags --resources ${ROUTE_TABLE_ID_1} --tags Key=Name,Value=${ROUTE_TABLE_NAME_1}
+
+    # ルート（ルートテーブルの各要素でインターネットネットゲートウェイとの紐付け情報）を作成
+    aws ec2 create-route \
+        --route-table-id ${ROUTE_TABLE_ID_1} \
+        --destination-cidr-block 0.0.0.0/0 \
+        --gateway-id ${INTERNET_GATEWAY_ID}
+
+    # ルートをサブネットに紐付け
+    aws ec2 associate-route-table \
+        --route-table-id ${ROUTE_TABLE_ID_1} \
+        --subnet-id ${SUBNET_ID_1}
+
+    #-----------------------------
+    # ルートテーブル２を作成する
+    #-----------------------------
+    # ルートテーブルの作成＆ルートテーブルID取得
+    ROUTE_TABLE_ID_2=$( aws ec2 create-route-table --vpc-id ${VPC_ID} | jq -r '.RouteTable.RouteTableId' )
+    echo "created route-table id=${ROUTE_TABLE_ID_2}"
+
+    # ルートテーブルの名前を設定
+    aws ec2 create-tags --resources ${ROUTE_TABLE_ID_2} --tags Key=Name,Value=${ROUTE_TABLE_NAME_2}
+
+    # ルート（ルートテーブルの各要素でインターネットネットゲートウェイとの紐付け情報）を作成
+    aws ec2 create-route \
+        --route-table-id ${ROUTE_TABLE_ID_2} \
+        --destination-cidr-block 0.0.0.0/0 \
+        --gateway-id ${INTERNET_GATEWAY_ID}
+
+    # ルートをサブネットに紐付け
+    aws ec2 associate-route-table \
+        --route-table-id ${ROUTE_TABLE_ID_2} \
+        --subnet-id ${SUBNET_ID_2}
+    ```
 
 1. セキュリティーグループを作成する<br>
     Aurora の各種インスタンスへアクセス可能にするためのセキュリティーグループを作成する
@@ -150,42 +216,33 @@ Amazon Aurora は、以下のようなコンポーネントから構成される
     aws rds create-db-instance \
         --db-cluster-identifier ${AURORA_CLUSTER_NAME} \
         --db-instance-identifier ${MASTER_INSTANCE_NAME} \
-        --db-instance-class db.r5.xlarge \
-        --db-parameter-group-name sample-instance-parameter \
+        --db-subnet-group-name ${DB_SUBNET_GROUP_NAME} \
+        --db-instance-class ${DB_INSTANCE_TYPE} \
         --availability-zone ${ZONE_1} \
         --engine aurora-mysql \
-        --monitoring-interval 60 \
-        --monitoring-role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/rds-monitoring-role \
-        --no-publicly-accessible \
-        --auto-minor-version-upgrade \
-        --storage-encrypted \
-        --preferred-maintenance-window mon:13:14-mon:13:44 \
-        --enable-performance-insights \
-        --performance-insights-kms-key-id xxxx \
-        --performance-insights-retention-period 7
+        --engine-version 8.0 \
+        --publicly-accessible
     ```
+    - `--db-instance-class` : `db.t2.micro` など
+    - xxx
 
 1. リードレプリカ（レプリカインスタンス）を作成する<br>
     ```sh
     aws rds create-db-instance \
         --db-cluster-identifier ${AURORA_CLUSTER_NAME} \
         --db-instance-identifier ${REPLICA_INSTANCE_NAME} \
-        --db-instance-class db.r5.xlarge \
-        --db-parameter-group-name sample-instance-parameter \
+        --db-subnet-group-name ${DB_SUBNET_GROUP_NAME} \
+        --db-instance-class ${DB_INSTANCE_TYPE} \
         --availability-zone ${ZONE_2} \
         --engine aurora-mysql \
-        --monitoring-interval 60 \
-        --monitoring-role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/rds-monitoring-role \
-        --no-publicly-accessible \
-        --auto-minor-version-upgrade \
-        --storage-encrypted \
-        --preferred-maintenance-window mon:13:14-mon:13:44 \
-        --enable-performance-insights \
-        --performance-insights-kms-key-id xxxx \
-        --performance-insights-retention-period 7
+        --engine-version 8.0 \
+        --publicly-accessible
     ```
+
+1. xxx
 
 ## ■ 参考サイト
 
 - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.CreateInstance.html
 - https://dev.classmethod.jp/articles/developers-io-2019-in-osaka-aurora-or-rds/
+- https://zenn.dev/nekoniki/articles/5da3016346b4b0

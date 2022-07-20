@@ -12,12 +12,16 @@ SUBNET_CIDR_BLOCK_1="10.0.0.0/24"
 SUBNET_NAME_1="aurora-subnet-1"
 SUBNET_CIDR_BLOCK_2="10.0.1.0/24"
 SUBNET_NAME_2="aurora-subnet-2"
+INTERNET_GATEWAY_NAME="aurora-internet-gateway"
+ROUTE_TABLE_NAME_1="aurora-route-table-1"
+ROUTE_TABLE_NAME_2="aurora-route-table-2"
 SECURITY_GROUP_NAME="aurora-security-group"
 
 DB_SUBNET_GROUP_NAME="aurora-db-subnet-group"
 AURORA_CLUSTER_NAME="aurora-cluster"
 MASTER_INSTANCE_NAME="aurora-master-instance"
 REPLICA_INSTANCE_NAME="aurora-replica-instance"
+DB_INSTANCE_TYPE="db.t2.micro"
 
 #=============================
 # OS判定
@@ -105,7 +109,7 @@ echo "created vpc id=${VPC_ID}"
 aws ec2 create-tags --resources ${VPC_ID} --tags Key=Name,Value=${VPC_NAME}
 
 # DNS ホスト名を有効化
-#aws ec2 modify-vpc-attribute --vpc-id ${VPC_ID} --enable-dns-hostnames
+aws ec2 modify-vpc-attribute --vpc-id ${VPC_ID} --enable-dns-hostnames
 
 #-----------------------------
 # サブネット１を作成する
@@ -138,6 +142,63 @@ echo "created ec2 subnet id=${SUBNET_ID_2}"
 
 # サブネットに名前をつける
 aws ec2 create-tags --resources ${SUBNET_ID_2} --tags Key=Name,Value=${SUBNET_NAME_2}
+
+#-----------------------------
+# インターネットゲートウェイの作成
+#-----------------------------
+# インターネットゲートウェイの作成＆インターネットゲートウェイID取得
+INTERNET_GATEWAY_ID=$( aws ec2 create-internet-gateway | jq -r '.InternetGateway.InternetGatewayId' )
+echo "created internet-gateway id=${INTERNET_GATEWAY_ID}"
+
+# インターネットゲートウェイの名前を設定
+aws ec2 create-tags --resources ${INTERNET_GATEWAY_ID} --tags Key=Name,Value=${INTERNET_GATEWAY_NAME}
+
+# 作成したインターネットゲートウェイに VPC を紐付けする
+aws ec2 attach-internet-gateway \
+    --internet-gateway-id ${INTERNET_GATEWAY_ID} \
+    --vpc-id ${VPC_ID}
+    
+#-----------------------------
+# ルートテーブル１を作成する
+#-----------------------------
+# ルートテーブルの作成＆ルートテーブルID取得
+ROUTE_TABLE_ID_1=$( aws ec2 create-route-table --vpc-id ${VPC_ID} | jq -r '.RouteTable.RouteTableId' )
+echo "created route-table id=${ROUTE_TABLE_ID_1}"
+
+# ルートテーブルの名前を設定
+aws ec2 create-tags --resources ${ROUTE_TABLE_ID_1} --tags Key=Name,Value=${ROUTE_TABLE_NAME_1}
+
+# ルート（ルートテーブルの各要素でインターネットネットゲートウェイとの紐付け情報）を作成
+aws ec2 create-route \
+    --route-table-id ${ROUTE_TABLE_ID_1} \
+    --destination-cidr-block 0.0.0.0/0 \
+    --gateway-id ${INTERNET_GATEWAY_ID}
+
+# ルートをサブネットに紐付け
+aws ec2 associate-route-table \
+    --route-table-id ${ROUTE_TABLE_ID_1} \
+    --subnet-id ${SUBNET_ID_1}
+
+#-----------------------------
+# ルートテーブル２を作成する
+#-----------------------------
+# ルートテーブルの作成＆ルートテーブルID取得
+ROUTE_TABLE_ID_2=$( aws ec2 create-route-table --vpc-id ${VPC_ID} | jq -r '.RouteTable.RouteTableId' )
+echo "created route-table id=${ROUTE_TABLE_ID_2}"
+
+# ルートテーブルの名前を設定
+aws ec2 create-tags --resources ${ROUTE_TABLE_ID_2} --tags Key=Name,Value=${ROUTE_TABLE_NAME_2}
+
+# ルート（ルートテーブルの各要素でインターネットネットゲートウェイとの紐付け情報）を作成
+aws ec2 create-route \
+    --route-table-id ${ROUTE_TABLE_ID_2} \
+    --destination-cidr-block 0.0.0.0/0 \
+    --gateway-id ${INTERNET_GATEWAY_ID}
+
+# ルートをサブネットに紐付け
+aws ec2 associate-route-table \
+    --route-table-id ${ROUTE_TABLE_ID_2} \
+    --subnet-id ${SUBNET_ID_2}
 
 #-----------------------------
 # セキュリティーグループの作成
@@ -186,14 +247,16 @@ aws rds create-db-instance \
     --db-cluster-identifier ${AURORA_CLUSTER_NAME} \
     --db-instance-identifier ${MASTER_INSTANCE_NAME} \
     --db-subnet-group-name ${DB_SUBNET_GROUP_NAME} \
-    --db-instance-class db.t2.micro \
+    --db-instance-class ${DB_INSTANCE_TYPE} \
     --availability-zone ${ZONE_1} \
     --engine aurora-mysql \
-    --monitoring-interval 60 \
-    --monitoring-role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/rds-monitoring-role \
-    --no-publicly-accessible \
-    --auto-minor-version-upgrade \
-    --enable-performance-insights
+    --engine-version 8.0 \
+    --publicly-accessible
+
+#    --monitoring-interval 60 \
+#    --monitoring-role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/rds-monitoring-role \
+#    --auto-minor-version-upgrade \
+#    --enable-performance-insights
 
 #    --no-publicly-accessible \
 #    --db-parameter-group-name sample-instance-parameter \
