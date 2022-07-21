@@ -21,7 +21,7 @@ DB_SUBNET_GROUP_NAME="aurora-db-subnet-group"
 AURORA_CLUSTER_NAME="aurora-cluster"
 MASTER_INSTANCE_NAME="aurora-master-instance"
 REPLICA_INSTANCE_NAME="aurora-replica-instance"
-DB_INSTANCE_TYPE="db.t2.micro"
+DB_INSTANCE_TYPE="db.r5.large"
 
 #=============================
 # OS判定
@@ -72,6 +72,18 @@ if [ $? -ne 0 ] ; then
     fi
 fi
 echo "jq version : `jq --version`"
+
+#=============================
+# mysql コマンドのインストール
+#=============================
+mysql --version &> /dev/null
+if [ $? -ne 0 ] ; then
+    if [ ${OS} = "Mac" ] ; then
+		brew info mysql
+    elif [ ${OS} = "Linux" ] ; then
+    fi
+fi
+echo "mysql version : `mysql --version`"
 
 #=============================
 # AWS デフォルト値の設定
@@ -237,9 +249,6 @@ aws rds create-db-cluster \
     --vpc-security-group-ids ${SECURITY_GROUP_ID} \
     --availability-zones ${ZONE_1} > log/${AURORA_CLUSTER_NAME}.json
 
-#    --port 3306 \
-#    --database-name aurora-mysql-database
-
 #-----------------------------
 # マスターインスタンス
 #-----------------------------
@@ -251,12 +260,31 @@ aws rds create-db-instance \
     --availability-zone ${ZONE_1} \
     --engine aurora-mysql \
     --engine-version 8.0 \
-    --publicly-accessible
+    --publicly-accessible > log/${MASTER_INSTANCE_NAME}.json
 
-#    --monitoring-interval 60 \
-#    --monitoring-role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/rds-monitoring-role \
-#    --auto-minor-version-upgrade \
-#    --enable-performance-insights
+#-----------------------------
+# リードレプリカ
+#-----------------------------
+aws rds create-db-instance \
+    --db-cluster-identifier ${AURORA_CLUSTER_NAME} \
+    --db-instance-identifier ${REPLICA_INSTANCE_NAME} \
+    --db-subnet-group-name ${DB_SUBNET_GROUP_NAME} \
+    --db-instance-class ${DB_INSTANCE_TYPE} \
+    --availability-zone ${ZONE_2} \
+    --engine aurora-mysql \
+    --engine-version 8.0 \
+    --publicly-accessible > log/${REPLICA_INSTANCE_NAME}.json
 
-#    --no-publicly-accessible \
-#    --db-parameter-group-name sample-instance-parameter \
+#-----------------------------
+# クラスター上の MySQL への接続
+#-----------------------------
+# クラスター用エンドポイント（書き込み用エンドポイント）を取得
+WRITER_ENDPOINT_URL=$( aws rds describe-db-clusters --query DBClusters[*].Endpoint --output text )
+echo "WRITER_ENDPOINT_URL : ${WRITER_ENDPOINT_URL}"
+
+# インスタンス用エンドポイント（読み込み用エンドポイント）を取得
+READER_ENDPOINT_URL=$( aws rds describe-db-clusters --query DBClusters[*].ReaderEndpoint --output text )
+echo "READER_ENDPOINT_URL : ${READER_ENDPOINT_URL}"
+
+# mysql コマンドで エンドポイントにアクセスする
+mysql -u admin -p -h ${ENDPOINT_URL}

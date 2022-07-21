@@ -16,16 +16,16 @@ Amazon Aurora は、以下のような特徴がある
 
 Amazon Aurora は、以下のようなコンポーネントから構成される
 
-<img width="825" alt="image" src="https://user-images.githubusercontent.com/25688193/179916035-0593d248-2293-426b-b817-0f181aebbbaa.png">
+<img width="816" alt="image" src="https://user-images.githubusercontent.com/25688193/180126186-7474d966-1e62-48e4-aebd-4dc387370f46.png">
 
 - クラスター<br>
     xxx
 
 - マスターインスタンス（プライマリインスタンス）<br>
-    xxx
+    書き込み＆読み込みを行う DB インスタンス
 
 - リードレプリカ（レプリカインスタンス）<br>
-    xxx
+    読み込み専用の DB インスタンス
 
 ## ■ 方法
 
@@ -42,6 +42,16 @@ Amazon Aurora は、以下のようなコンポーネントから構成される
         curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
         unzip awscliv2.zip
         sudo ./aws/install
+        ```
+
+1. MySQL の CLI コマンドをインストールする
+    - MacOS の場合
+        ```sh
+        brew info mysql
+        ```
+
+    - Ubuntu の場合
+        ```sh
         ```
 
 1. VPC を作成する<br>
@@ -207,10 +217,10 @@ Amazon Aurora は、以下のようなコンポーネントから構成される
         --availability-zones ${ZONE_1}
     ```
 
-    > 作成したクラスターは、「[[Amazon RDS] -> [データベース] コンソール画面](https://us-west-2.console.aws.amazon.com/rds/home?region=us-west-2#databases:)」から確認できる
+    > `aws rds create-db-cluster` コマンド実行後の出力コンソールの `Endpoint` に、クラスター内の DB インスタンスにアクセスするためのエンドポイントの URL が出力される
 
 1. マスターインスタンス（プライマリインスタンス）を作成する<br>
-    クラスターの中に MySQL をエンジンとするマスターインスタンス（実体はEC2インスタンス）を作成する
+    クラスターの中に MySQL をエンジンとするマスターインスタンスを作成する。マスターインスタンスは、MySQL データベースへの書き込みと読み込みを行う
 
     ```sh
     aws rds create-db-instance \
@@ -223,10 +233,12 @@ Amazon Aurora は、以下のようなコンポーネントから構成される
         --engine-version 8.0 \
         --publicly-accessible
     ```
-    - `--db-instance-class` : `db.t2.micro` など
+    - `--db-instance-class` : `db.r5.large` など
     - xxx
 
 1. リードレプリカ（レプリカインスタンス）を作成する<br>
+    クラスターの中に MySQL をエンジンとするリードレプリカを作成する。リードレプリカは、MySQL データベースへの読み込みのみを行う
+
     ```sh
     aws rds create-db-instance \
         --db-cluster-identifier ${AURORA_CLUSTER_NAME} \
@@ -239,8 +251,56 @@ Amazon Aurora は、以下のようなコンポーネントから構成される
         --publicly-accessible
     ```
 
-1. xxx
+    > 作成したクラスターと DB インスタンスは、「[[Amazon RDS] -> [データベース] コンソール画面](https://us-west-2.console.aws.amazon.com/rds/home?region=us-west-2#databases:)」から確認できる<br>
+    > <img width="800" alt="image" src="https://user-images.githubusercontent.com/25688193/180122641-0a25aa12-bf7f-4637-94e9-2ea5889f3a0c.png">
 
+1. MySQL データベースにアクセスするためのエンドポイントを取得する<br>
+    ```sh
+    # クラスターエンドポイント（書き込み＆読み込み用エンドポイント）を取得
+    ENDPOINT_URL=$( aws rds describe-db-clusters --query DBClusters[*].Endpoint --output text )
+    echo "ENDPOINT_URL : ${ENDPOINT_URL}"
+
+    # 読み込みエンドポイントを取得
+    READER_ENDPOINT_URL=$( aws rds describe-db-clusters --query DBClusters[*].ReaderEndpoint --output text )
+    echo "READER_ENDPOINT_URL : ${READER_ENDPOINT_URL}"
+    ```
+
+1. mysql コマンドで エンドポイントにアクセスする<br>
+    ```sh
+    mysql -u admin -p -h ${ENDPOINT_URL}
+    ```
+    
+    上記コマンド実行後にパスワード入力を求められるので、`aws rds create-db-cluster` コマンド実行時の `--master-user-password` で指定した値（今回の場合は `12345678`）を入力する
+    
+1. クラスター上の MySQL データベースの CRUD 処理を行う<br>
+    クラスター上の MySQL 接続後に SQL 構文を使用して、MySQL データベースの CRUD 処理を行う
+
+    1. MySQL データベースを作成する
+        ```sql
+        CREATE DATABASE sample_database;
+        ```
+    1. データベースにデータを追加する
+        ```sql
+        USE sample_database;
+        CREATE TABLE entries (name VARCHAR(255), gender VARCHAR(255), entryID INT NOT NULL AUTO_INCREMENT, PRIMARY KEY(entryID));
+            INSERT INTO entries (name, gender) values ("Yagami", "male");
+            INSERT INTO entries (name, gender) values ("Yagoo", "male");
+        ```
+    1. 作成したデータベースを取得する
+        ```sql
+        SELECT * FROM entries;
+        ```
+        ```sql
+        mysql> SELECT * FROM entries;
+        +--------+--------+---------+
+        | name   | gender | entryID |
+        +--------+--------+---------+
+        | Yagami | male   |       1 |
+        | Yagoo  | male   |       2 |
+        +--------+--------+---------+
+        2 rows in set (1.71 sec)
+        ```
+        
 ## ■ 参考サイト
 
 - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.CreateInstance.html
