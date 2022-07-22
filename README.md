@@ -516,6 +516,7 @@ AIプロダクト開発のための Tips 集。<br>
     - [[In-progress] GitHub Actions と Terraform を使用して EC2 インスタンスの CI/CD を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/66)
     - [GitHub Actions, Terraform, ArgoCD を使用して GKE 上の Web-API の CI/CD を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/68)
 - CircleCI
+    - [[In-progress] CircleCI と Terraform を使用して EC2 インスタンスの CI/CD を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/79)
 - 【GCP】Cloud Build
     - [【GCP】Cloud Build を用いてローカルPC 上で CI/CD を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/12)
     - 【GCP】Cloud Build を用いて GCE 上で CI/CD を行う
