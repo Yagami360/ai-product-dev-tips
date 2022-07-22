@@ -293,7 +293,7 @@
 
 1. CircleCI コンソール画面から CI/CD の動作確認する<br>
     `terraform plan` 実行後、手動承認待ちで一時停止するので、`terraform plan` の変更内容が問題なければ、「Approve」ボタンをクリックする<br>
-    <img width="750" alt="image" src="https://user-images.githubusercontent.com/25688193/180383193-60326f72-77e9-4b4d-9f7e-5640ff645a43.png">
+    <img width="500" alt="image" src="https://user-images.githubusercontent.com/25688193/180383193-60326f72-77e9-4b4d-9f7e-5640ff645a43.png">
 
 
 ## ■ 参考サイト
