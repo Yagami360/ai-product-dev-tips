@@ -368,8 +368,8 @@ AIプロダクト開発のための Tips 集。<br>
         - 【MySQL】MySQL に書き込んだ Web-API のログデータを監視する（FastAPI + uvicorn + gunicorn + MySQL + SQLAlchemy + docker + docker-compose での構成）
         - [[In-progress]【MySQL】MySQL に保存したジョブデータをバッチ単位で処理する Web-API（FastAPI + uvicorn + gunicorn + MySQL + SQLAlchemy + docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/37)
     - PostgreSQL
-        - [[In-progress] PostgreSQL CLI を使用して PostgreSQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/80)
-        - PostgreSQL CLI を使用して PostgreSQL データベースの CRUD 処理を行う（docker 使用）
+        - [PostgreSQL CLI を使用して PostgreSQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/80)
+        - [PostgreSQL CLI を使用して PostgreSQL データベースの CRUD 処理を行う（docker 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/81)
     - 【GCP】Google Cloud SQL
         - [【GCP】Google Cloud SQL の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/56)
         - [【GCP】Google Cloud SQL を使用して SQL インスタンス上の MySQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/57)

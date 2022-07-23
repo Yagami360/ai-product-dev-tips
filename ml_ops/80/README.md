@@ -55,16 +55,25 @@
 -->
 
 1. データベースを作成する<br>
-    PostgreSQL サーバー外で、以下のコマンドを実行する
-    ```sh
-    createdb ${DATABESE_NAME} owner=postgres
-    ```
-    ```sh
-    # 例
-    createdb test_db owner=postgres
-    ```
+    - PostgreSQL サーバー内で実行する場合<br>
+        PostgreSQL サーバーに接続後、以下のコマンドを実行する
+        ```sh
+        CREATE DATABASE ${DATABESE_NAME};
+        ```
+        ```sh
+        # 例
+        CREATE DATABASE test_db;
+        ```
 
-    > PostgreSQL サーバー内ではなく、サーバー外から実行するコマンドであることに注意
+    - PostgreSQL サーバー外で実行する場合
+        PostgreSQL サーバー外で、以下のコマンドを実行する
+        ```sh
+        createdb ${DATABESE_NAME} owner=postgres
+        ```
+        ```sh
+        # 例
+        createdb test_db owner=postgres
+        ```
 
 1. データベースの一覧確認する<br>
     PostgreSQL サーバー内で以下のコマンドを実行する
@@ -84,22 +93,42 @@
     ```
 
 1. 作成したデータベースに接続する<br>
-    PostgreSQL サーバー外で、以下のコマンドを実行する
-    ```sh
-    psql ${DATABESE_NAME} -U ${USER_NAME}
-    ```
-    ```sh
-    # 例
-    psql test_db -U postgres
-    ```
 
-    > PostgreSQL サーバー内ではなく、サーバー外から実行するコマンドであることに注意
+    - PostgreSQL サーバー内で実行する場合<br>
+        PostgreSQL サーバーに接続後、以下のコマンドを実行する
+        ```sh
+        \c ${DATABESE_NAME}
+        ```
+        ```sh
+        # 例
+        \c test_db
+        ```
+
+    - PostgreSQL サーバー外で実行する場合
+        PostgreSQL サーバー外で、以下のコマンドを実行する
+        ```sh
+        psql ${DATABESE_NAME} -U ${USER_NAME}
+        ```
+        ```sh
+        # 例
+        psql test_db -U postgres
+        ```
+
 
 1. 作成したデータベース内にテーブルを追加する<br>
     PostgreSQL サーバー内で、以下のコマンドを実行する
-    ```sh
+    ```sql
+    CREATE TABLE ${TABLE_NAME} (
+        ${COL_NAME1} VARCHAR(8),
+        ${COL_NAME2} VARCHAR(8)
+    );
+    ```
+    ```sql
     # 例
-    CREATE TABLE account(id varchar(8), name varchar(8));
+    CREATE TABLE account(
+        id VARCHAR(8),
+        name VARCHAR(8)
+    );
     ```
 
 1. データベースを確認する<br>
@@ -115,7 +144,7 @@
     (1 row)
     ```
 
-1. PostgreSQL サーバーから終了する<br>
+1. PostgreSQL サーバーから exit する<br>
     PostgreSQL サーバー内で以下のコマンドを実行する
     ```sh
     \q

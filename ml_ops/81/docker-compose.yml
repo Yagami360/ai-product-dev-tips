@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  postgresql-server:
+    image: postgres:14
+    container_name: postgresql-container
+    ports:
+      - 5432:5432
+    volumes:
+      - ${PWD}/postgresql/db:/var/lib/postgresql/data/
+      - ${PWD}/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf
+    environment:
+      - POSTGRES_PASSWORD=1234    # sudo ユーザのパスワード
+      - POSTGRES_USER=postgres    # sudo ユーザのユーザ名（デフォルト : postgres）
+    command: -c 'config_file=/etc/postgresql/postgresql.conf'
