@@ -2,18 +2,6 @@
 
 ## ■ 方法
 
-1. PostgreSQL CLI (postgresql-client) をインストールする<br>
-    - MacOS の場合<br>
-        ```sh
-        brew update
-        brew install postgresql
-        ```
-
-    - Ubutnu の場合<br>
-        ```sh
-        sudo apt install -y postgresql-client
-        ```
-
 1. PostgreSQL サーバーの `docker-compose.yml` を作成する<br>
     ```yml
     version: '3'
