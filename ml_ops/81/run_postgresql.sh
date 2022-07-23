@@ -44,5 +44,4 @@ docker-compose -f docker-compose.yml up -d
 sleep 5
 
 # PostgreSQL サーバーに接続する
-docker exec -it postgresql-container /bin/bash
-#docker exec -it postgresql-container /bin/bash -c "psql -h localhost -U postgres"
+docker exec -it postgresql-container /bin/bash -c "psql -h localhost -U postgres"
