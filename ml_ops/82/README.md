@@ -156,7 +156,9 @@ Amazon API Gateway は、「API 作成・公開・保守・モニタリング・
             --action lambda:InvokeFunctionUrl
         ```
 
-    1. Lambda 関数を呼び出す<br>
+    1. 【オプション】Lambda 関数を呼び出す<br>
+        Lambda 関数単体での動作のため、Lmabda 関数を直接呼び出す
+
         `aws lambda invoke` コマンドを使用すれば、作成した Lambda 関数を呼び出すことができる。或いは、関数 URL を生成した場合は、関数 URL を `curl` コマンドで叩くことでも Lambda 関数を呼び出すこともできる
 
         - 同期呼び出しする場合<br>
@@ -187,6 +189,91 @@ Amazon API Gateway は、「API 作成・公開・保守・モニタリング・
 
             > クエリパラメータなどは、 `curl https://xxx.lambda-url.${REGION}.on.aws/?param1=hoge` のような形式で渡せば良い
 
+
+1. API Gateway を使用して REST API を作成する<br>
+    ```sh
+    # REST API 作成 & REST_API_ID 取得
+    REST_API_ID=$( aws apigateway create-rest-api --name ${REST_API_NAME} | jq -r '.id' )
+    echo "REST_API_ID : ${REST_API_ID}"
+    ```
+
+    > 作成した API は、「[API Gateway コンソール画面](https://us-west-2.console.aws.amazon.com/apigateway/main/apis?region=us-west-2)」から確認できる
+
+1. REST API にリソース（エンドポイント）を追加する<br>
+    REST API 作成直後は、ルートエンドポイント( `"http://${HOST}:${PORT}/"` ) しか存在しないので、ルートエンドポイント以下に独自のエンドポイント（今回のケースでは `"http://${HOST}:${PORT}/hellow"` ）を追加する
+
+    ```sh
+    # ルートエンドポイント "http:${HOST}:${PORT}/ のリソース ID 取得
+    REST_API_ROOT_ID=$( aws apigateway get-resources --rest-api-id ${REST_API_ID} --query items[*].id --output text )
+    echo "REST_API_ROOT_ID : ${REST_API_ROOT_ID}"
+
+    # ルートエンドポイント以下に別のエンドポイントを追加
+    REST_API_ENDPOINT_ID=$( aws apigateway create-resource --rest-api-id ${REST_API_ID} --parent-id ${REST_API_ROOT_ID} --path-part "hello" | jq -r '.id' )
+    echo "REST_API_ENDPOINT_ID : ${REST_API_ENDPOINT_ID}"    
+
+    # 全エンドポイント確認
+    aws apigateway get-resources --rest-api-id ${REST_API_ID}
+    ```
+
+1. 作成した REST API に GET リクエストを追加する<br>
+    1. メソッドリクエスト（クライアントから API Gateway <REST API> へのリクエスト）を追加する<br>
+        作成した REST API に対して、Method Request（クライアントから API Gateway <REST API> へのリクエスト）を追加する
+        ```sh
+        aws apigateway put-method \
+            --rest-api-id ${REST_API_ID} \
+            --resource-id ${REST_API_ENDPOINT_ID} \
+            --http-method GET \
+            --authorization-type NONE \
+            --no-api-key-required \
+            --request-parameters {}
+        ```
+
+        > 追加したエンドポイントは、GET リクエストに対してのエンドポイントなので、`--http-method GET` にする
+
+        > 認証なしでリクエストできるようにするため `--authorization-type None` としている
+
+    1. 統合リクエスト（API Gateway <REST API> から Lambda へのリクエスト）を追加する<br>
+        ```sh
+        aws apigateway put-integration \
+            --rest-api-id ${REST_API_ID} \
+            --resource-id ${REST_API_ENDPOINT_ID} \
+            --http-method GET \
+            --integration-http-method POST \
+            --type AWS \
+            --uri "arn:aws:apigateway:${REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${REGION}:${AWS_ACCOUNT_ID}:function:${LAMBDA_FUNCTION_NAME}/invocations"
+        ```
+
+        > インテグレーション先が AWS のサービスのため、`--type AWS` とする。
+
+        > 追加したエンドポイントは、GET リクエストに対してのエンドポイントなので、`--http-method GET` にする
+
+        > API Gateway から Lambda 関数へは POST でリクエストするので、`--integration-http-method POST` にする
+
+    1. 統合レスポンス（Lambda から API Gateway へのレスポンス）を追加する<br>
+        ```sh
+        aws apigateway put-method-response \
+            --rest-api-id ${REST_API_ID} \
+            --resource-id ${REST_API_ENDPOINT_ID} \
+            --http-method POST \
+            --status-code 200 \
+            --response-models '{"application/json": "Empty"}'
+        ```
+
+        > レスポンスなので、`--http-method POST` とする
+
+    1. メソッドレスポンス（API Gateway からクライアントへのレスポンス）を追加する<br>
+        ```sh
+        aws apigateway put-integration-response \
+            --rest-api-id ${REST_API_ID} \
+            --resource-id ${REST_API_ENDPOINT_ID} \
+            --http-method POST \
+            --status-code 200 \
+            --response-templates '{"application/json": ""}'
+        ```
+
+        > レスポンスなので、`--http-method POST` とする
+
+1. xxx
 
 ## ■ 参考サイト
 

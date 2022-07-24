@@ -1,11 +1,14 @@
 #!/bin/sh
 set -eu
-AWS_ACCOUNT_ID=735015535886
+#AWS_ACCOUNT_ID=735015535886
+AWS_ACCOUNT_ID=241325567245
 AWS_PROFILE=Yagami360
 REGION="us-west-2"
 
 LAMBDA_IAM_ROLE_NAME="lambda-iam-role"
 LAMBDA_FUNCTION_NAME="lambda-function"
+
+REST_API_NAME="rest-api"
 
 #=============================
 # OS判定
@@ -87,4 +90,10 @@ fi
 # Lambda 関数
 if [ $( aws lambda list-functions --query 'Functions[*].FunctionName' --output text | grep ${LAMBDA_FUNCTION_NAME} ) ] ; then
     aws lambda delete-function --function-name ${LAMBDA_FUNCTION_NAME}
+fi
+
+# REST API
+if [ $( aws apigateway get-rest-apis --query items[*].name | grep ${REST_API_NAME} ) ] ; then
+    REST_API_ID=$( aws apigateway get-rest-apis --query items[*].id --output text )
+    aws apigateway delete-rest-api --rest-api-id ${REST_API_ID}
 fi

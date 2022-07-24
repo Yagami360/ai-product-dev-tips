@@ -1,12 +1,15 @@
 #!/bin/sh
 set -eu
-AWS_ACCOUNT_ID=735015535886
+#AWS_ACCOUNT_ID=735015535886
+AWS_ACCOUNT_ID=241325567245
 AWS_PROFILE=Yagami360
 REGION="us-west-2"
 
 LAMBDA_IAM_ROLE_NAME="lambda-iam-role"
 LAMBDA_IAM_POLICY_FILE_PATH="lambda-iam-policy.json"
 LAMBDA_FUNCTION_NAME="lambda-function"
+
+REST_API_NAME="rest-api"
 
 #=============================
 # OS判定
@@ -113,8 +116,6 @@ aws lambda create-function \
     --handler "lambda_function.lambda_handler" \
     --role arn:aws:iam::${AWS_ACCOUNT_ID}:role/${LAMBDA_IAM_ROLE_NAME} > log/${LAMBDA_FUNCTION_NAME}.json
 
-arn:aws:iam::735015535886:role/lambda-iam-role
-
 sleep 10
 
 # 関数 URL のエンドポイント作成
@@ -152,3 +153,62 @@ aws lambda invoke \
 LAMBDA_FUNCTION_URL=`aws lambda get-function-url-config --function-name ${LAMBDA_FUNCTION_NAME} --query FunctionUrl --output text`
 echo "LAMBDA_FUNCTION_URL : ${LAMBDA_FUNCTION_URL}"
 curl ${LAMBDA_FUNCTION_URL}
+
+#-----------------------------
+# API Gateway を使用して REST API を作成する
+#-----------------------------
+# REST API 作成 & REST_API_ID 取得
+REST_API_ID=$( aws apigateway create-rest-api --name ${REST_API_NAME} | jq -r '.id' )
+echo "REST_API_ID : ${REST_API_ID}"
+
+#-----------------------------
+# REST API にリソース（エンドポイント）を追加する
+#-----------------------------
+# ルートエンドポイント "http:${HOST}:${PORT}/ のリソース ID 取得
+REST_API_ROOT_ID=$( aws apigateway get-resources --rest-api-id ${REST_API_ID} --query items[*].id --output text )
+echo "REST_API_ROOT_ID : ${REST_API_ROOT_ID}"
+
+# ルートエンドポイント以下に別のエンドポイントを追加
+REST_API_ENDPOINT_ID=$( aws apigateway create-resource --rest-api-id ${REST_API_ID} --parent-id ${REST_API_ROOT_ID} --path-part "hello" | jq -r '.id' )
+echo "REST_API_ENDPOINT_ID : ${REST_API_ENDPOINT_ID}"    
+
+# 全エンドポイント確認
+aws apigateway get-resources --rest-api-id ${REST_API_ID}
+
+#-----------------------------
+# 作成した REST API に GET リクエストを追加する
+#-----------------------------
+# メソッドリクエスト（クライアントから API Gateway <REST API> へのリクエスト）を追加する
+aws apigateway put-method \
+    --rest-api-id ${REST_API_ID} \
+    --resource-id ${REST_API_ENDPOINT_ID} \
+    --http-method GET \
+    --authorization-type NONE \
+    --no-api-key-required \
+    --request-parameters {}
+    
+# 統合リクエスト（API Gateway <REST API> から Lambda へのリクエスト）を追加する
+aws apigateway put-integration \
+    --rest-api-id ${REST_API_ID} \
+    --resource-id ${REST_API_ENDPOINT_ID} \
+    --http-method GET \
+    --integration-http-method POST \
+    --type AWS \
+    --uri "arn:aws:apigateway:${REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${REGION}:${AWS_ACCOUNT_ID}:function:${LAMBDA_FUNCTION_NAME}/invocations"
+
+# 統合レスポンス（Lambda から API Gateway へのレスポンス）を追加する
+aws apigateway put-method-response \
+    --rest-api-id ${REST_API_ID} \
+    --resource-id ${REST_API_ENDPOINT_ID} \
+    --http-method POST \
+    --status-code 200 \
+    --response-models '{"application/json": "Empty"}'
+
+# メソッドレスポンス（API Gateway からクライアントへのレスポンス）を追加する
+aws apigateway put-integration-response \
+    --rest-api-id ${REST_API_ID} \
+    --resource-id ${REST_API_ENDPOINT_ID} \
+    --http-method POST \
+    --status-code 200 \
+    --response-templates '{"application/json": ""}'
+
