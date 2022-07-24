@@ -338,6 +338,15 @@ AIプロダクト開発のための Tips 集。<br>
 </details>
 
 <details>
+<summary>API Gateway</summary>
+
+- 【AWS】Amazon API Gateway
+    - 【AWS】Amazon API Gateway を使用して Lambda 関数での REST API を構築する（Amazon CLI 使用）
+    - 【AWS】Amazon API Gateway を使用して EC2 インスタンス上の REST API を構築する（Amazon CLI 使用）
+
+</details>
+
+<details>
 <summary>サーバレス / FaaS [Function as a Service]</summary>
 
 - 【GCP】Cloud Functions

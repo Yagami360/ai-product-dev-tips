@@ -16,7 +16,7 @@
 *.pyc
 *.dat
 *.bz2
-
+*.zip 
 .vscode
 __pycache__
 _tmp/
