@@ -125,7 +125,7 @@ aws lambda create-function-url-config \
 
 #    --cors 'AllowCredentials=false,AllowMethods=GET,AllowOrigins=*'
 
-# Lambda 関数に関数URLにアクセスできるようにするためのリソースポリシーを追加する
+# Lambda 関数に、関数 URL から呼び出せるようにするためのパーミッションを追加する
 aws lambda add-permission \
     --function-name ${LAMBDA_FUNCTION_NAME} \
     --function-url-auth-type NONE \
@@ -200,7 +200,7 @@ aws apigateway put-integration \
 aws apigateway put-method-response \
     --rest-api-id ${REST_API_ID} \
     --resource-id ${REST_API_ENDPOINT_ID} \
-    --http-method POST \
+    --http-method GET \
     --status-code 200 \
     --response-models '{"application/json": "Empty"}'
 
@@ -208,7 +208,26 @@ aws apigateway put-method-response \
 aws apigateway put-integration-response \
     --rest-api-id ${REST_API_ID} \
     --resource-id ${REST_API_ENDPOINT_ID} \
-    --http-method POST \
+    --http-method GET \
     --status-code 200 \
     --response-templates '{"application/json": ""}'
 
+#-----------------------------
+# Lambda 関数に、API Gateway が Lambda 関数を呼び出せるようにするためのパーミッションを追加する。
+#-----------------------------
+aws lambda add-permission \
+    --function-name ${LAMBDA_FUNCTION_NAME} \
+    --statement-id apigateway-get \
+    --principal apigateway.amazonaws.com \
+    --action lambda:InvokeFunction \
+    --source-arn "arn:aws:execute-api:${REGION}:${AWS_ACCOUNT_ID}:${REST_API_ID}/*/GET/hello"
+
+#-----------------------------
+# API Gateway に GET リクエストを行う
+#-----------------------------
+aws apigateway test-invoke-method \
+    --rest-api-id ${REST_API_ID} \
+    --resource-id ${REST_API_ENDPOINT_ID} \
+    --http-method GET \
+    --path-with-query-string ''
+    

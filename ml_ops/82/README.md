@@ -145,7 +145,7 @@ Amazon API Gateway は、「API 作成・公開・保守・モニタリング・
         - `--cors` : CORS 設定
             - 設定例 : `'AllowCredentials=false,AllowMethods=GET,AllowOrigins=*'` : GET メソッドでの全アクセス許可
 
-    1. Lambda 関数にリソースポリシーを追加する<br>
+    1. Lambda 関数に、関数 URL から呼び出せるようにするためのパーミッションを追加する<br>
         `--auth-type=NONE` で作成した Lambda 関数に対して、関数URLにアクセスできるようにするためのリソースポリシーを追加する
         ```sh
         aws lambda add-permission \
@@ -254,28 +254,77 @@ Amazon API Gateway は、「API 作成・公開・保守・モニタリング・
         aws apigateway put-method-response \
             --rest-api-id ${REST_API_ID} \
             --resource-id ${REST_API_ENDPOINT_ID} \
-            --http-method POST \
+            --http-method GET \
             --status-code 200 \
             --response-models '{"application/json": "Empty"}'
         ```
 
-        > レスポンスなので、`--http-method POST` とする
+        > 追加したエンドポイントは、GET リクエストに対してのエンドポイントなので、`--http-method GET` にする
+
+        > json 形式でレスポンスするので、`--response-models` には、`'{"application/json": xxx}'` を設定する。ここで `"Empty"` は、`aws apigateway get-models` コマンドで得られるモデルの名前？になっている
+        > ```sh
+        > aws apigateway get-models --rest-api-id ${REST_API_ID}
+        > ```
+        > ```sh
+        > {
+        >     "items": [
+        >         {
+        >             "id": "6itxt5",
+        >             "name": "Empty",
+        >             "description": "This is a default empty schema model",
+        >             "schema": "{\n  \"$schema\": \"http://json-schema.org/draft-04/schema#\",\n  \"title\" : \"Empty Schema\",\n  \"type\" : \"object\"\n}",
+        >             "contentType": "application/json"
+        >         },
+        >         {
+        >             "id": "nzb00o",
+        >             "name": "Error",
+        >             "description": "This is a default error schema model",
+        >             "schema": "{\n  \"$schema\" : \"http://json-schema.org/draft-04/schema#\",\n  \"title\" : \"Error Schema\",\n  \"type\" : \"object\",\n  \"properties\" : {\n    \"message\" : { \"type\" : \"string\" }\n  }\n}",
+        >             "contentType": "application/json"
+        >         }
+        >     ]
+        > }
+        > ```
 
     1. メソッドレスポンス（API Gateway からクライアントへのレスポンス）を追加する<br>
         ```sh
         aws apigateway put-integration-response \
             --rest-api-id ${REST_API_ID} \
             --resource-id ${REST_API_ENDPOINT_ID} \
-            --http-method POST \
+            --http-method GET \
             --status-code 200 \
             --response-templates '{"application/json": ""}'
         ```
 
-        > レスポンスなので、`--http-method POST` とする
+        > 追加したエンドポイントは、GET リクエストに対してのエンドポイントなので、`--http-method GET` にする
 
-1. xxx
+
+    作成した API gateway のエンドポイント、及び各種リソースは、「[[API Gateway] -> [API] -> [API名] ->[エンドポイント名] -> [GET] のコンソール画面](https://us-west-2.console.aws.amazon.com/apigateway/main/apis?region=us-west-2)」から確認できる
+
+    <img width="1000" alt="image" src="https://user-images.githubusercontent.com/25688193/180932984-0db13991-1cfd-4180-a80e-5d27b9978d7c.png">
+
+
+1. Lambda 関数に、API Gateway が Lambda 関数を呼び出せるようにするためのパーミッションを追加する。<br>
+    ```sh
+    aws lambda add-permission \
+        --function-name ${FUNCTION_NAME} \
+        --statement-id apigateway-get \
+        --principal apigateway.amazonaws.com \
+        --action lambda:InvokeFunction \
+        --source-arn "arn:aws:execute-api:${REGION}:${AWS_ACCOUNT_ID}:${REST_API_ID}/*/GET/hello"
+    ```        
+
+1. API Gateway に GET リクエストを行う
+    ```sh
+    aws apigateway test-invoke-method \
+        --rest-api-id ${REST_API_ID} \
+        --resource-id ${REST_API_ENDPOINT_ID} \
+        --http-method GET \
+        --path-with-query-string ''
+    ```
 
 ## ■ 参考サイト
 
-- https://dev.classmethod.jp/articles/what-does-amazon-api-gateway-do/
 - https://dev.classmethod.jp/articles/getting-started-with-api-gateway-lambda-integration/
+- https://dev.classmethod.jp/articles/getting-start-api-gateway/
+- https://dev.classmethod.jp/articles/what-does-amazon-api-gateway-do/

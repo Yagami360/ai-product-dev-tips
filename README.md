@@ -341,7 +341,7 @@ AIプロダクト開発のための Tips 集。<br>
 <summary>API Gateway</summary>
 
 - 【AWS】Amazon API Gateway
-    - [[In-progress]【AWS】Amazon API Gateway を使用して Lambda 関数での REST API を構築する（Amazon CLI 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/82)
+    - [【AWS】Amazon API Gateway を使用して Lambda 関数での REST API を構築する（Amazon CLI 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/82)
     - 【AWS】Amazon API Gateway を使用して EC2 インスタンス上の REST API を構築する（Amazon CLI 使用）
 
 </details>
