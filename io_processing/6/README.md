@@ -2,6 +2,9 @@
 
 ## ■ 方法
 
+1. PyPI にアカウント登録する<br>
+    xxx
+
 1. 以下の構造のプロジェクトを作成する
     ```sh
     + ${プロジェクト名（CLI名など）} 
@@ -77,8 +80,6 @@
 
 1. パッケージをインストールする<br>
     ```sh
-    cd sample-cli
-    pip install dist/sample-cli-0.0.1.tar.gz
     ```
 
 1. 作成した Python CLI を実行する<br>
@@ -89,5 +90,4 @@
 
 ## ■ 参考サイト
 
-- https://www.karakaram.com/how-to-create-python-cli-package/
-- https://zenn.dev/d_forest/articles/b8358c56725e51da43d9
+- https://qiita.com/kinpira/items/0a4e7c78fc5dd28bd695

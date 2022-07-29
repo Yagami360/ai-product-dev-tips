@@ -11,7 +11,8 @@ AIプロダクト開発のための Tips 集。<br>
 - [【Python】フォルダ内のファイル一覧を取得する。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/io_processing/1)
 - [【Python】２つのフォルダのファイル数＆ファイル名の差分を確認する。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/io_processing/3)
 - [【シェルスクリプト】ランダムに１００個のファイルをサンプリングする。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/io_processing/4)
-- 【Python】独自の Python CLI コマンドを作成する
+- [【Python】独自の Python CLI コマンドを作成する（ローカル環境にあるファイルでインストールする場合）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/io_processing/5)
+- 【Python】独自の Python CLI コマンドを作成する（PyPI に公開したファイルでインストールする場合）
 
 </details>
 

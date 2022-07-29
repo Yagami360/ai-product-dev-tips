@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
-
 from setuptools import setup, find_packages
 
-with open('requirements.txt') as requirements_file:
-    install_requirements = requirements_file.read().splitlines()
+#with open('requirements.txt') as requirements_file:
+#    install_requirements = requirements_file.read().splitlines()
 
 setup(
-    name='samplecli',
+    name='sample-cli',
     version='0.0.1',
     description="sample package",
     author="yagami360",
@@ -15,7 +14,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            "command_name=module.main:main"
+            "sample-cli=module.main:main"
         ]
     }    
 )

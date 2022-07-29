@@ -21,3 +21,13 @@ fi
 #=============================
 # Python CLI 実行
 #=============================
+cd sample-cli
+
+# 配布用パッケージを作成する
+python setup.py sdist
+
+# ローカルにあるファイルを pip でインストール
+pip install dist/sample-cli-0.0.1.tar.gz
+
+# CLI 実行
+sample-cli --debug
