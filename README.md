@@ -19,7 +19,8 @@ AIプロダクト開発のための Tips 集。<br>
 <details>
 <summary>開発環境</summary>
 
-- git
+- git<br>
+    - [git flow をしてブランチ管理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/others_processing/1)
 - conda
     - [【シェルスクリプト】シェルスクリプト内で conda 環境を切り替える。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/conda_processing/1)
     - [【シェルスクリプト】conda 環境の自動的に作成する。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/conda_processing/2)
