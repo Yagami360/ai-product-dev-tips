@@ -5,9 +5,9 @@ from sqlalchemy import pool
 
 from alembic import context
 
-import os, sys
-sys.path.append(os.path.join(os.getcwd(), '..'))
-from settings import Base
+#import os, sys
+#sys.path.append(os.path.join(os.getcwd(), '../db'))
+from db.setting import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

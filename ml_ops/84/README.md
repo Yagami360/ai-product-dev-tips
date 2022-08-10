@@ -71,6 +71,11 @@ alembic は、Python の SQLAlchemy を使用しているときに DB の管理�
     ```
     > alembic をインストールすれば、SQLAlchemy もインストールされることに注意
 
+    環境によっては、psycopg2 のインストールも必要な模様
+    ```sh
+    pip install psycopg2
+    ```
+
 1. alembic のプロジェクトを作成する<br>
     ```sh
     alembic init ${PROJECT_NAME}
@@ -167,7 +172,7 @@ alembic は、Python の SQLAlchemy を使用しているときに DB の管理�
 
     ポイントは、以下の通り
 
-    1. データベースエンジンを作成する<br>
+    - データベースエンジンを作成する<br>
         ```python
         # engine 作成
         engine = create_engine(
@@ -177,7 +182,7 @@ alembic は、Python の SQLAlchemy を使用しているときに DB の管理�
         )
         ```
 
-    1. モデルクラスの基底クラスを作成する<br>
+    - モデルクラスの基底クラスを作成する<br>
         ```python
         # Base クラス（独自に定義するテーブルデータに対応するモデルクラスの基底クラス）を作成
         Base = declarative_base()
@@ -186,7 +191,7 @@ alembic は、Python の SQLAlchemy を使用しているときに DB の管理�
         Base.query = session.query_property()
         ```
 
-    1. モデルクラスを作成する<br>
+    - モデルクラスを作成する<br>
         ```python
         class UserData(Base):
             """
@@ -200,7 +205,7 @@ alembic は、Python の SQLAlchemy を使用しているときに DB の管理�
 
         > 後述のマイグレーションファイル生成を行う `alembic revision` コマンドで、このモデルクラスに応じたマイグレーションファイルが作成される
 
-    1. Session を作成する<br>
+    - Session を作成する<br>
         ```python
         # Session クラス作成
         Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -208,6 +213,21 @@ alembic は、Python の SQLAlchemy を使用しているときに DB の管理�
         # sessionmaker インスタンスを内包した scoped_session インスタンスを生成
         # sessionmaker との違いは、Session() を何回実行しても同一の Session が返されるという点
         session = scoped_session(Session)
+        ```
+
+    - 以下のようなスクリプトを実行することで、PosgreSQL データベースにテーブルデータを追加し、CRUD処理することができるが、今回は DB マイグレーションを行いたいだけなので、このような処理は行わないようにする
+        ```sh
+        # テーブルデータをデータベースに作成する
+        Base.metadata.create_all(bind=engine)
+
+        # テーブルデータへの INSERT 処理
+        user_data = UserData(id=0, name="Tom", age=28)
+        session.add(user_data)  
+        session.commit()
+
+        # SELECT 処理
+        user_data = session.query(UserData).first()      # userテーブルの最初のレコードをクラスで返す
+        users_data = session.query(UserData).all()       # userテーブルの全レコードをクラスが入った配列で返す
         ```
 
 1. alembic が生成した `env.py` を修正する<br>
@@ -221,7 +241,7 @@ alembic は、Python の SQLAlchemy を使用しているときに DB の管理�
     from sqlalchemy import pool
 
     from alembic import context
-    from settings import Base
+    from db.setting import Base     # 修正箇所
 
     # this is the Alembic Config object, which provides
     # access to the values within the .ini file in use.
@@ -243,7 +263,6 @@ alembic は、Python の SQLAlchemy を使用しているときに DB の管理�
     # can be acquired:
     # my_important_option = config.get_main_option("my_important_option")
     # ... etc.
-
 
     def run_migrations_offline():
         """Run migrations in 'offline' mode.
@@ -307,18 +326,56 @@ alembic は、Python の SQLAlchemy を使用しているときに DB の管理�
     - `config.get_main_option()` で `alembic.ini` から `sqlalchemy.url` の値を取得し、`context.configure()` の `url` 引数に渡している
 
 
-1. SQLAlchemy モデルクラスの内容を元に migration ファイルを作成する<br>
+1. SQLAlchemy モデルクラスの内容を元に migration スクリプトファイルを作成する<br>
     ```sh
     alembic revision --autogenerate -m ${MIGRATION_FILE_NAME}
     ```
     - `--autogenerate` : SQLAlchemyのモデル（`models.py` で定義している `Model` クラス）の内容を元にマイグレーションファイルを自動生成
 
-    > migration ファイル : データベースを生成する際の設計図みたいなもの。マイグレーションファイルを実行することにより、その内容に基づいたデータテーブルが生成される
+    上記コマンドを実行することで、`${PROJECT_NAME}/versions` ディレクトリ以下に、以下のような migration スクリプトファイルが自動生成される
 
-1. マイグレーションファイルの内容をデータベースに反映する<br>
+    - `${PROJECT_NAME}/versions/9e1d86897047_create_table.py`<br>
+        ```python
+        """create_table
+        Revision ID: 9e1d86897047
+        Revises: 
+        Create Date: 2022-08-10 22:42:13.509055
+        """
+        from alembic import op
+        import sqlalchemy as sa
+
+
+        # revision identifiers, used by Alembic.
+        revision = '9e1d86897047'
+        down_revision = None
+        branch_labels = None
+        depends_on = None
+
+
+        def upgrade():
+            # ### commands auto generated by Alembic - please adjust! ###
+            op.create_table('userdata',
+            sa.Column('id', sa.Integer(), nullable=False),
+            sa.Column('name', sa.String(length=200), nullable=True),
+            sa.Column('age', sa.Integer(), nullable=True),
+            sa.PrimaryKeyConstraint('id')
+            )
+            # ### end Alembic commands ###
+
+
+        def downgrade():
+            # ### commands auto generated by Alembic - please adjust! ###
+            op.drop_table('userdata')
+            # ### end Alembic commands ###
+
+        ```
+
+1. マイグレーションスクリプトを元に DB マイグレーションを行う（PostgreSQL データベースに反映する）<br>
     ```sh
     alembic upgrade head
     ```
+
+    上記コマンドを実行することで、先に作成した `${PROJECT_NAME}/versions/` ディレクトリ以下にある migration スクリプトファイルが実行され DB マイグレーションが行われる
 
 1. 確認マイグレーション操作を行う<br>
 
@@ -337,8 +394,6 @@ alembic は、Python の SQLAlchemy を使用しているときに DB の管理�
         alembic downgrade ${VERSION}
         ```
 
-<!--
-
 1. PostgreSQL サーバーに接続する<br>
     PostgreSQL サーバーの docker コンテナに接続した上で、`psql`　コマンドで（docker コンテナ内の）PostgreSQL サーバーに接続する
     ```sh
@@ -347,22 +402,24 @@ alembic は、Python の SQLAlchemy を使用しているときに DB の管理�
 
     > コンテナ内通信で PostgreSQL サーバーに接続するので、ホスト名は `localhost` にしている
 
-1. PostgreSQL データベースの CRUD 処理を行う<br>
-
-    1. データベースを作成する<br>
-        PostgreSQL サーバーに接続後、以下のコマンドを実行する
-        ```sh
-        CREATE DATABASE ${DATABESE_NAME};
-        ```
-        ```sh
-        # 例
-        CREATE DATABASE test_db;
-        ```
+1. PostgreSQL データベースのマイグレーションが行われているか確認する<br>
 
     1. データベースの一覧確認する<br>
         PostgreSQL サーバー内で以下のコマンドを実行する
         ```sh
         \l
+        ```
+        ```sh
+                                        List of databases
+            Name     |  Owner   | Encoding |  Collate   |   Ctype    |   Access privileges   
+        -------------+----------+----------+------------+------------+-----------------------
+        postgres    | postgres | UTF8     | en_US.utf8 | en_US.utf8 | 
+        postgres_db | postgres | UTF8     | en_US.utf8 | en_US.utf8 | 
+        template0   | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+                    |          |          |            |            | postgres=CTc/postgres
+        template1   | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+                    |          |          |            |            | postgres=CTc/postgres
+        (4 rows)
         ```
 
     1. 作成したデータベースに接続する<br>
@@ -372,23 +429,7 @@ alembic は、Python の SQLAlchemy を使用しているときに DB の管理�
         ```
         ```sh
         # 例
-        \c test_db
-        ```
-
-    1. 作成したデータベース内にテーブルを追加する<br>
-        PostgreSQL サーバー内で、以下のコマンドを実行する
-        ```sql
-        CREATE TABLE ${TABLE_NAME} (
-            ${COL_NAME1} VARCHAR(8),
-            ${COL_NAME2} VARCHAR(8)
-        );
-        ```
-        ```sql
-        # 例
-        CREATE TABLE account(
-            id VARCHAR(8),
-            name VARCHAR(8)
-        );
+        \c postgres_db
         ```
 
     1. データベースを確認する<br>
@@ -396,13 +437,43 @@ alembic は、Python の SQLAlchemy を使用しているときに DB の管理�
         ```sh
         \d
         ```
+        ```sh
+                    List of relations
+        Schema |      Name       |   Type   |  Owner   
+        --------+-----------------+----------+----------
+        public | alembic_version | table    | postgres
+        public | userdata        | table    | postgres
+        public | userdata_id_seq | sequence | postgres
+        (3 rows)
+        ```
+
+    1. テーブル構造を確認する<br>
+        PostgreSQL サーバー内で以下のコマンドを実行する
+        ```sh
+        \d ${TABLE_NAME}
+        ```
+        ```sh
+        # 例
+        \d userdata
+        ```
+        ```sh
+                                            Table "public.userdata"
+        Column |          Type          | Collation | Nullable |               Default                
+        --------+------------------------+-----------+----------+--------------------------------------
+        id     | integer                |           | not null | nextval('userdata_id_seq'::regclass)
+        name   | character varying(200) |           |          | 
+        age    | integer                |           |          | 
+        Indexes:
+            "userdata_pkey" PRIMARY KEY, btree (id)
+        ```
+
+        > `models.py` のモデルクラス `UserData(Base)` で定義したテーブルデータの内容が、正常に DB マイグレーションできている
 
     1. PostgreSQL サーバーから exit する<br>
         PostgreSQL サーバー内で以下のコマンドを実行する
         ```sh
         \q
         ```
--->
 
 ## ■ 参照サイト
 

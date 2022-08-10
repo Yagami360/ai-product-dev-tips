@@ -1,6 +1,6 @@
 # coding=utf-8
 from sqlalchemy import Column, Integer, String, Float, DateTime
-from setting import engine, session, Base
+from .setting import engine, session, Base
 
 class UserData(Base):
     """

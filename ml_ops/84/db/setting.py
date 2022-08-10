@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 
-from config import MySQLConfig
+from .config import MySQLConfig
 
 # engine 作成
 engine = create_engine(

@@ -383,7 +383,7 @@ AIプロダクト開発のための Tips 集。<br>
     - PostgreSQL
         - [PostgreSQL CLI を使用して PostgreSQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/80)
         - [PostgreSQL CLI を使用して PostgreSQL データベースの CRUD 処理を行う（docker 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/81)
-        - [[In-progress] alembic を使用して PostgreSQL データベースの DB マイグレーションを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/84)
+        - [alembic を使用して PostgreSQL データベースの DB マイグレーションを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/84)
     - 【GCP】Google Cloud SQL
         - [【GCP】Google Cloud SQL の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/56)
         - [【GCP】Google Cloud SQL を使用して SQL インスタンス上の MySQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/57)

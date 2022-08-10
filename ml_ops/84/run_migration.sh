@@ -21,6 +21,7 @@ sleep 5
 #=============================
 # alembic をインストールする
 pip install alembic
+pip install psycopg2
 
 # alembic プロジェクトを作成する
 if [ -e ${PROJECT_NAME} ] ; then
@@ -30,8 +31,14 @@ fi
 
 # make sqlalchemy scripts and edit env.py
 
-# モデルクラスの内容を元にマイグレーションファイルを作成する
+# モデルクラスの内容を元にマイグレーションスクリプトファイルを作成する
 alembic revision --autogenerate -m ${MIGRATION_FILE_NAME}
 
-# マイグレーションファイルの内容をデータベースに反映する
+# マイグレーションスクリプトを元に DB マイグレーションを行う（PostgreSQL データベースに反映する）
 alembic upgrade head
+
+#=============================
+# PostgreSQL
+#=============================
+# PostgreSQL サーバーに接続する
+docker exec -it postgresql-container /bin/bash -c "psql -h localhost -U postgres"
