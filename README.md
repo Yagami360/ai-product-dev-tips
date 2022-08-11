@@ -364,6 +364,8 @@ AIプロダクト開発のための Tips 集。<br>
     - 【GCP】Cloud Run を用いた機械学習モデルの推論 API の構築
 - 【AWS】AWS Lambda
     - [【AWS】AWS Lambda を使用してサーバレス Web-API を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/58)
+- 【AWS】AWS Step Functions
+    - [[In-progress]【AWS】AWS Step Functions を使用して複数の AWS Lambda を順次実行する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/85)
 
 </details>
 
@@ -405,7 +407,7 @@ AIプロダクト開発のための Tips 集。<br>
 </details>
 
 <details>
-<summary>メッセージングサービス・キューサービス・キャッシュサービス</summary>
+<summary>メッセージングサービス / キューサービス / キャッシュサービス</summary>
 
 - [メッセージングサービス・キューサービスの基本事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/17)
 - Redis
