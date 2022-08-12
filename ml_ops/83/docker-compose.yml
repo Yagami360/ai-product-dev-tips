@@ -1,13 +1,12 @@
 version: "3"
 
 services:
-  elixir-api-server:
+  elixir-phoenix-api-server:
     build:
       context: "."
       dockerfile: Dockerfile
     ports:
-      - 5001:5001
+      - 4000:4000
     volumes:
       - ${PWD}:/api
-    # 
     command: mix phx.server

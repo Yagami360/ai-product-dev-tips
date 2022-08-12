@@ -54,12 +54,15 @@ echo "aws version : `aws --version`"
 # AWS デフォルト値の設定
 #=============================
 # プロファイル作成 
-#aws configure --profile ${AWS_PROFILE}
+if [ ! $( aws configure list-profiles | grep ${AWS_PROFILE} ) ] ; then
+    aws configure --profile ${AWS_PROFILE}
+fi
 
 # AWS CLI を設定する環境変数
 export AWS_ACCOUNTID=${AWS_ACCOUNT_ID}
 export AWS_PROFILE=${AWS_PROFILE}
 export AWS_DEFAULT_REGION=${AWS_REGION}
+
 cat ~/.aws/config
 cat ~/.aws/credentials
 

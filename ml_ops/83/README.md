@@ -2,9 +2,30 @@
 
 ## ■ 方法
 
-1. Dockerfile を作成する
+1. Dockerfile を作成する<br>
     ```Dockerfile
+    FROM elixir:1.13.1-slim
+
+    RUN apt-get update && apt-get install -y \
+        inotify-tools \
+        git \
+        npm \
+        && apt-get clean \
+        && rm -rf /var/lib/apt/lists/*
+
+    # phoenix 関連のライブラリ更新
+    RUN mix local.hex --force
+    RUN mix local.rebar --force
+    RUN mix archive.install hex phx_new --force
+
+    WORKDIR /api
     ```
+
+    ポイントは、以下の通り
+
+    - phoenix では、アセットファイルのコンパイルに node.js 製ツールを使用するので、`apt-get install npm` で node.js もインストールしている
+
+    - `mix do local.hex --force, mix local.rebar --force, archive.install hex phx_new --force` の部分で、phoenix をインストールしている
 
 1. docker-compose.yml を作成する
     ```yml
@@ -12,32 +33,8 @@
 
     ポイントは、以下の通り
 
-    - `mix`　コマンドは、コンパイル＆テスト＆特定のコマンド実行などを複合的に行うコマンドで、以下のようなコマンドがある
-        - `mix new ${PROJECT_NAME}` : プロジェクトを作成する
-        - `mix compile` : プロジェクトのコンパイルを行う
-        - `mix test` : プロジェクトのテストを実行
-        - `mix run` : プロジェクト内の特定のコマンドを実行
-        - `mix do コマンド１, コマンド２` : カンマで区切られたコマンドを順次実行する（コマンド１を実行したあとコマンド２を実行するといった具合）
-
-        > ここでいうプロジェクトとは、`mix.exs` という名前のファイルに配置されたモジュール
-
     - `mix phx.server` で、Web フレームワークである Phoenix のサーバーを起動している（`mix run` と同じようなもの）<br>
         この `mix phx.server` を実行する際には、他の mix コマンドと同様に `mix.exs` でプロジェクトが作成されている必要がある
-
-1. `mix.exs` ファイルを作成する<br>
-    Elixir の Mix におけるプロジェクトとは、`mix.exs` という名前のファイルに配置されたモジュールで `Mix.Project` を使用して定義する。<br>
-    ```ex
-    defmodule MyApp.MixProject do
-        use Mix.Project
-
-        def project do
-            [
-                app: :my_app,
-                version: "1.0.0"
-            ]
-        end
-    end
-    ```
 
 1. `api/router.ex` に API のコード（ルーター）を作成する<br>
     ```ex
@@ -46,4 +43,3 @@
 ## ■ 参考サイト
 
 - https://qiita.com/akameco/items/1920e351328b1cc0ace3
-- https://qiita.com/nishiuchikazuma/items/be911dd1d202c1227d19

@@ -50,9 +50,10 @@ echo "aws cli version : `aws --version`"
 # 認証情報を設定する。
 #-----------------------------
 # プロファイルを設定
-#aws configure
-aws configure --profile ${AWS_PROFILE_NAME}
-aws configure set region ${AWS_REGION}
+if [ ! $( aws configure list-profiles | grep ${AWS_PROFILE_NAME} ) ] ; then
+    aws configure --profile ${AWS_PROFILE_NAME}
+fi
+aws configure
 
 # デフォルトユーザーを設定
 export AWS_DEFAULT_PROFILE=${AWS_PROFILE_NAME}
