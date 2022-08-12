@@ -337,7 +337,7 @@ AIプロダクト開発のための Tips 集。<br>
     - [Go 言語で Gin を使用して簡単な REST API を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/69)
 - 【Golang】Echo
 - 【Elixir】Phoenix
-    - [[In-progress] Elixir 言語で Phoenix を使用して簡単な REST API を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/86)
+    - [Elixir 言語で Phoenix を使用して簡単な REST API を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/86)
     - [[In-progress] Elixir 言語で Phoenix を使用して簡単な REST API を作成する（docker 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/83)
 
 </details>

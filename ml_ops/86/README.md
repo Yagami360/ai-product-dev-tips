@@ -156,16 +156,11 @@
                 use ElixirPhoenixApiWeb, :controller
 
                 def health(conn, _params) do
-                    conn
-                    |> Plug.Conn.send_resp(
-                    200,
-                    Jason.encode!(%{
-                        error: "ok"
-                    })
-                    )    
+                    json conn, Map.put(%{}, "health", "ok")
                 end
             end
             ```
+            - `json conn, Map.put(...)` で json 形式のレスポンスデータを設定している
 
     - 各種ルート定義は、以下のコマンドで確認することもできる
         ```sh
