@@ -203,3 +203,4 @@
 - https://qiita.com/nako_9h_sleep/items/9d80f6cadfe341581df6
 - https://qiita.com/akameco/items/1920e351328b1cc0ace3
 - https://www.tech-note.info/entry/phoenix-4-routing-1
+- https://qiita.com/mserizawa/items/03d3579457aa7c2bf2e5

@@ -548,6 +548,17 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
+
+<details>
+<summary>コスト削減</summary>
+
+- AWS
+    - [Spotinst Elastigroup を使用して AWS の Spot インスタンスを低価格＆高安定で運用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/87)
+    - Spotinst Ocean を使用して AWS の EKS クラスターを低価格＆高安定で運用する
+    - Spotinst Ocean を使用して AWS の EKS クラスターを低価格＆高安定で運用する（terraform 使用）
+
+</details>
+
 ## ■ アプリ開発・フロントエンド
 
 <details>
