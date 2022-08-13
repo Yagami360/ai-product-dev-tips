@@ -233,6 +233,15 @@ AIプロダクト開発のための Tips 集。<br>
 </details>
 
 <details>
+<summary>仮想サーバー</summary>
+
+- 【AWS】EC2 インスタンス
+    - [Spotinst Elastigroup を使用して AWS の Spot インスタンスを低価格＆高安定で運用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/87)
+- 【GCP】VM インスタンス
+
+</details>
+
+<details>
 <summary>コンテナ基盤</summary>
 
 - <a id="Docker"></a>Docker
@@ -274,8 +283,11 @@ AIプロダクト開発のための Tips 集。<br>
         - 【GCP】k8s の PersistentVolume と hostpath を使用してコンテナ間のボリュームを永続的に共有する
         - [【GCP】GKE 上の Web-API に対して Google Cloud Armor の WAF 機能を使用してクライアントIP単位での RateLimit 制限を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/55)
         - [【GCP】 Kustomize を使用して GKE 上の　Web-API の k8s のリソース管理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/71)
+        - 【GCP】GKE で Spot インスタンスを使用しコスト削減を行う
     - 【AWS】Amazon EKS [Amazon Elastic Kubernetes Service]
         - [[In-progress]【AWS】`eksctl` コマンドを使用して Amazon EKS 上の Web API を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/60)
+        - 【AWS】Spotinst Ocean を使用して AWS の EKS クラスターを低価格＆高安定で運用する
+        - 【AWS】Spotinst Ocean を使用して AWS の EKS クラスターを低価格＆高安定で運用する（terraform 使用）
 
 </details>
 
@@ -545,17 +557,6 @@ AIプロダクト開発のための Tips 集。<br>
     - [【GCP】Cloud Build を用いて GKE（GPU動作）上で CI/CD を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/16)
 - ArgoCD
     - [ArgoCD を使用して Web-API を Kubernetes（Amazon EKS）上に継続的にデプロイ（CD）する](https://github.com/Yagami360/argocd-exercises)
-
-</details>
-
-
-<details>
-<summary>コスト削減</summary>
-
-- AWS
-    - [Spotinst Elastigroup を使用して AWS の Spot インスタンスを低価格＆高安定で運用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/87)
-    - Spotinst Ocean を使用して AWS の EKS クラスターを低価格＆高安定で運用する
-    - Spotinst Ocean を使用して AWS の EKS クラスターを低価格＆高安定で運用する（terraform 使用）
 
 </details>
 
