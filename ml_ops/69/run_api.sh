@@ -1,5 +1,8 @@
 #!/bin/sh
 set -eu
+GO_BUILD=0
+#GO_BUILD=1
+
 PORT=3000
 
 #-----------------------------
@@ -50,11 +53,13 @@ fi
 #-----------------------------
 # スクリプトの実行
 #-----------------------------
-# コンパイルして実行
-#go build main.go
+if [ ${GO_BUILD} = 0 ] ; then
+  # コンパイルなしで実行
+  go run main.go --port ${PORT}
+else
+  # コンパイルして実行
+  go build main.go
 
-# コンパイルされたファイルを実行
-#.main
-
-# コンパイルなしで実行
-go run main.go --port ${PORT}
+  # コンパイルされたファイルを実行
+  ./main
+fi

@@ -97,7 +97,7 @@
         go build main.go --port ${PORT}
 
         # コンパイルされたファイルを実行
-        .main
+        ./main
         ```
 
     - コンパイルありで実行する場合
