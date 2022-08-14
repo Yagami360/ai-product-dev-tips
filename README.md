@@ -286,7 +286,7 @@ AIプロダクト開発のための Tips 集。<br>
         - 【GCP】GKE で Spot インスタンスを使用しコスト削減を行う
     - 【AWS】Amazon EKS [Amazon Elastic Kubernetes Service]
         - [[In-progress]【AWS】`eksctl` コマンドを使用して Amazon EKS 上の Web API を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/60)
-        - 【AWS】Spotinst Ocean を使用して AWS の EKS クラスターを低価格＆高安定で運用する
+        - [【AWS】Spotinst Ocean を使用して AWS の EKS クラスターを低価格＆高安定で運用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/88)
         - 【AWS】Spotinst Ocean を使用して AWS の EKS クラスターを低価格＆高安定で運用する（terraform 使用）
 
 </details>
