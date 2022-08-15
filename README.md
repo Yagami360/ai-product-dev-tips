@@ -300,18 +300,26 @@ AIプロダクト開発のための Tips 集。<br>
 </details>
 
 <details>
-<summary>Web サーバー / WSGI サーバー</summary>
+<summary>Web サーバー / WSGI サーバー / ロードバランサー / API Gateway</summary>
 
-- nginx
-    - [【nginx】nginx の基本事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/22)
-    - [【nginx】nginx での Webサーバーを https 化する（自己署名SSL認証書を使用する場合）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/23)
-    - [【nginx】nginx をリバースプロキシとして利用する。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/24)
-    - [【nginx】リバースプロキシとしての nginx をロードバランサーとして利用する。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/25)
-    - [【nginx】docker + nginx + Flask を用いた Web-API の構築](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/26)
-- WSGI/ uWSGI
-    - [【uWSGI】WSGI / uWSGI の基本事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/27)
-    - [【uWSGI】docker + nginx + uWSGI + Flask を用いた Web-API の構築](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/28)
-- Gunicorn
+- Web サーバー / WSGI サーバー
+    - nginx
+        - [【nginx】nginx の基本事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/22)
+        - [【nginx】nginx での Webサーバーを https 化する（自己署名SSL認証書を使用する場合）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/23)
+        - [【nginx】nginx をリバースプロキシとして利用する。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/24)
+        - [【nginx】リバースプロキシとしての nginx をロードバランサーとして利用する。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/25)
+        - [【nginx】docker + nginx + Flask を用いた Web-API の構築](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/26)
+    - WSGI/ uWSGI
+        - [【uWSGI】WSGI / uWSGI の基本事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/27)
+        - [【uWSGI】docker + nginx + uWSGI + Flask を用いた Web-API の構築](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/28)
+    - Gunicorn
+- ロードバランサー
+    - [[In-progress]【AWS】ALB [Application Load Balancer] を使用して複数の EC2 インスタンスに対しての HTTP 接続の L7 ロードバランシングを行う（AWS CLI 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/89)
+- API Gateway
+    - 【AWS】Amazon API Gateway
+        - [【AWS】Amazon API Gateway を使用して Lambda 関数での REST API を構築する（Amazon CLI 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/82)
+        - 【AWS】Amazon API Gateway を使用して EC2 インスタンス上の REST API を構築する（Amazon CLI 使用）
+
 </details>
 
 <details>
@@ -352,15 +360,6 @@ AIプロダクト開発のための Tips 集。<br>
 - 【Elixir】Phoenix
     - [Elixir 言語で Phoenix を使用して簡単な REST API を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/86)
     - [[In-progress] Elixir 言語で Phoenix を使用して簡単な REST API を作成する（docker 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/83)
-
-</details>
-
-<details>
-<summary>API Gateway</summary>
-
-- 【AWS】Amazon API Gateway
-    - [【AWS】Amazon API Gateway を使用して Lambda 関数での REST API を構築する（Amazon CLI 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/82)
-    - 【AWS】Amazon API Gateway を使用して EC2 インスタンス上の REST API を構築する（Amazon CLI 使用）
 
 </details>
 

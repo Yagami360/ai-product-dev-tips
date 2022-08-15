@@ -53,6 +53,7 @@ echo "aws version : `aws --version`"
 if [ ! $( aws configure list-profiles | grep ${AWS_PROFILE} ) ] ; then
     aws configure --profile ${AWS_PROFILE}
 fi
+aws configure list
 
 # AWS CLI を設定する環境変数
 export AWS_ACCOUNTID=${AWS_ACCOUNT_ID}
