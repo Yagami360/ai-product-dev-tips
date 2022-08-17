@@ -4,7 +4,7 @@ AWS_ACCOUNT_ID=735015535886
 AWS_PROFILE=Yagami360
 AWS_REGION=us-west-2
 
-CLUSTER_NAME="eks-ambassador-cluster"
+CLUSTER_NAME="eks-alb-cluster"
 CLUSTER_NODE_TYPE="t2.medium"
 MIN_NODES=1
 MAX_NODES=2
@@ -14,6 +14,7 @@ ECR_REPOSITORY_NAME=${IMAGE_NAME}
 #ENABLE_BUILD=0
 ENABLE_BUILD=1
 
+mkdir -p logs
 #-----------------------------
 # OS判定
 #-----------------------------
@@ -113,6 +114,20 @@ fi
 echo "kubectl version : `kubectl version`"
 
 #-----------------------------
+# jq コマンドのインストール
+#-----------------------------
+jq --version &> /dev/null
+if [ $? -ne 0 ] ; then
+    if [ ${OS} = "Mac" ] ; then
+		brew install jq
+    elif [ ${OS} = "Linux" ] ; then
+		sudo apt -y update
+		sudo apt -y install jq
+    fi
+fi
+echo "jq version : `jq --version`"
+
+#-----------------------------
 # Amazon ECR に Docker image を push する
 #-----------------------------
 if [ ! ${ENABLE_BUILD} = 0 ] ; then
@@ -155,19 +170,53 @@ if [ ! "$( aws eks list-clusters --query clusters | grep "${CLUSTER_NAME}")" ] ;
 #        --fargate
 fi
 
-#-----------------------------
-# Ambassador
-#-----------------------------
-# Ambassador の k8s リソースをデプロイする
-kubectl apply -f https://getambassador.io/yaml/ambassador/ambassador-rbac.yaml
+#-----------------------------------------------
+# AWS Load Balancer Controller 用 IAM を作成する
+#-----------------------------------------------
+# AWS Load Balancer Controller 用の IAM policy を定義した json ファイルをダウンロードする
+curl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.2/docs/install/iam_policy.json
 
-sleep 30
+# AWS Load Balancer Controller 用の IAM polciy を作成する
+aws iam create-policy \
+    --policy-name AWSLoadBalancerControllerIAMPolicy \
+    --policy-document file://iam_policy.json
 
-kubectl get pods
-kubectl get service
+# load-balancer-role-trust-policy.json の Statement[0].Condition.StringEquals の部分を書き換え
+OIDC=$( aws eks describe-cluster --name ${CLUSTER_NAME} --query "cluster.identity.oidc.issuer" --output text )
+echo "OIDC : ${OIDC}"
+#cat load-balancer-role-trust-policy.json | jq '.Statement[0].Condition.StringEquals[0]="${OIDC}"'
+
+# AWS Load Balancer Controller 用の IAM role を作成する
+aws iam create-role \
+    --role-name AmazonEKSLoadBalancerControllerRole \
+    --assume-role-policy-document file://"load-balancer-role-trust-policy.json" > logs/AmazonEKSLoadBalancerControllerRole.json
+
+# IAM ロールに、必要な Amazon EKS 管理の IAM ポリシーをアタッチする
+aws iam attach-role-policy \
+    --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy \
+    --role-name AmazonEKSLoadBalancerControllerRole
+
+# k8s サービスアカウント用のマニフェストファイルをデプロイする
+kubectl apply -f aws-load-balancer-controller-service-account.yaml
+
+#-----------------------------
+# AWS Load Balancer Controller をインストールする
+#-----------------------------
+# cert-manager をインストールする
+kubectl apply \
+    --validate=false \
+    -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
+
+# Load Balancer Controller のマニフェストをダウンロード
+curl -Lo v2_4_2_full.yaml https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.2/v2_4_2_full.yaml
+
+# ダウンロードしたマニフェストを修正
+sed -i.bak -e 's|your-cluster-name|${CLUSTER_NAME}|' ./v2_4_2_full.yaml
 
 #-----------------------------
 # API の各種 k8s リソースを作成する
 #-----------------------------
 kubectl apply -f k8s/predict.yml
 
+kubectl get pods
+kubectl get service

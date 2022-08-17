@@ -7,7 +7,7 @@ AWS_REGION=us-west-2
 IMAGE_NAME=predict-server-image-eks
 ECR_REPOSITORY_NAME=${IMAGE_NAME}
 
-CLUSTER_NAME="eks-ambassador-cluster"
+CLUSTER_NAME="eks-alb-cluster"
 
 #-----------------------------
 # AWS CLI のインストール

@@ -314,7 +314,10 @@ AIプロダクト開発のための Tips 集。<br>
         - [【uWSGI】docker + nginx + uWSGI + Flask を用いた Web-API の構築](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/28)
     - Gunicorn
 - ロードバランサー
-    - [[In-progress]【AWS】ALB [Application Load Balancer] を使用して複数の EC2 インスタンスに対しての HTTP 接続の L7 ロードバランシングを行う（AWS CLI 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/89)
+    - 【AWS】ALB [Application Load Balancer]
+        - [[In-progress]【AWS】ALB [Application Load Balancer] を使用して複数の EC2 インスタンスに対しての HTTP 接続の L7 ロードバランシングを行う（AWS CLI 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/89)
+    - 【AWS】AWS Load Balancer Controller / AWS ALB Ingress Controller
+        - [[In-progress]【AWS】AWS Load Balancer Controller（旧 AWS ALB Ingress Controller）を使用して EKS 上の Web-API に ALB での L7 ロードバランシングを行う（AWS CLI 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/91)
 - API Gateway
     - 【AWS】Amazon API Gateway
         - [【AWS】Amazon API Gateway を使用して Lambda 関数での REST API を構築する（Amazon CLI 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/82)

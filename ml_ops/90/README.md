@@ -12,6 +12,10 @@ Ambassador は、k8s で構成したマイクロサービス型 REST API 向け�
 
 - Istio と連携してサービスメッシュ化が可能
 
+## ■ ToDo
+
+- [ ] `predict.yml` に ambassador の annotations を追加して、うまくデプロイできるようにする
+
 ## ■ 方法
 
 1. AWS CLI をインストールする<br>
