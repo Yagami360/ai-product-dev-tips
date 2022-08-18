@@ -59,3 +59,14 @@ fi
 if [ "$( aws eks list-clusters --query clusters | grep "${CLUSTER_NAME}")" ] ; then
     eksctl delete cluster --name ${CLUSTER_NAME} --region ${AWS_REGION} --wait
 fi
+
+# IAM role
+if [ $( aws iam list-roles --query 'Roles[*].RoleName' | grep AmazonEKSLoadBalancerControllerRole ) ] ; then
+    aws iam detach-role-policy --role-name AmazonEKSLoadBalancerControllerRole --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy
+    aws iam delete-role --role-name AmazonEKSLoadBalancerControllerRole
+fi
+
+# IAM policy
+if [ $( aws iam list-policies --query 'Policies[*].PolicyName' | grep AWSLoadBalancerControllerIAMPolicy ) ] ; then
+    aws iam delete-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy
+fi

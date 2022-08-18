@@ -10,6 +10,14 @@ AWS Load Balancer Controller を使用することで、k8s の ingress を作�
 
 > AWS Load Balancer Controller は、昔 AWS ALB Ingress Controller という名前だった
 
+## ■ ToDo
+- [ ] Web-API の Ingress リソースをデプロイ時に以下のエラーが発生しデプロイできないので、ALB も作成されない問題の解決
+    ```sh
+    Error from server (InternalError): error when creating "k8s/predict.yml": Internal error occurred: failed calling webhook "vingress.elbv2.k8s.aws": failed to call webhook: Post "https://aws-load-balancer-webhook-service.kube-system.svc:443/validate-networking-v1-ingress?timeout=10s": dial tcp 10.100.156.84:443: connect: connection refused
+    ```
+
+- [ ] ALB 作成後、EKS 上の Web-API へのリクエストがうまくロードバランシングされることを確認する方法を追加する
+
 ## ■ 方法
 
 1. AWS CLI をインストールする<br>
@@ -189,7 +197,9 @@ AWS Load Balancer Controller を使用することで、k8s の ingress を作�
             eks.amazonaws.com/role-arn: arn:aws:iam::${AWS_ACCOUNT_ID}:role/AmazonEKSLoadBalancerControllerRole
         ```
 
-        > k8s の ServiceAccount リソース : k8s 内で管理されているアカウントで、Pod と紐づけることで Pod から各種 KubernetesAPIを操作できるようになる
+        > - k8s の ServiceAccount リソース<br>
+        > k8s 内で管理されているアカウントで、Pod と紐づけることで Pod から各種 KubernetesAPI を操作できるようになる。<br>
+        > 特に EKS の場合で話を限定すると、Pod に適切な IAM ポリシーを付与した IAM ロールを割り当てることで、Pod 内から各種 AWS サービスにアクセスできるようになる？
 
 1. k8s サービスアカウント用のマニフェストファイルをデプロイする<br>
     ```sh
@@ -197,28 +207,198 @@ AWS Load Balancer Controller を使用することで、k8s の ingress を作�
     ```
 
 1. AWS Load Balancer Controller をインストールする
-    1. cert-manager をインストールする
+    1. cert-manager をインストールする（cert-manager の k8s マニフェストをデプロイする）<br>
+        cert-manager は、kubernetes クラスタ上で SSL/TLS 証明書（https通信のための認証）の取得・更新・利用を簡単に行えるツール（実体は Issuer, Certificate, Ingress などの k8s リソース郡）であるが、以下のコマンドで cert-manager を k8s クラスターにデプロイする。
+        
+        > 参考サイト : https://zenn.dev/masaaania/articles/e54119948bbaa2
+
         ```sh
         kubectl apply \
             --validate=false \
             -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
         ```
 
-    1. Load Balancer Controller をインストール
+        上記コマンド実行後、以下のような cert-manager 関連の k8s リソースがデプロイされる
+
+        - Pod
+            ```sh
+            NAMESPACE      NAME                                       READY   STATUS    RESTARTS           AGE
+            cert-manager   cert-manager-594bcb5484-dxqlg              1/1     Running   0                  3m2s
+            cert-manager   cert-manager-cainjector-544bcd9bfc-hp5vj   1/1     Running   0                  3m2s
+            cert-manager   cert-manager-webhook-5999fd64fb-v9vld      1/1     Running   0                  3m2s            
+            ```
+
+        - Service
+            ```sh
+            NAMESPACE      NAME                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                  AGE
+            cert-manager   cert-manager           ClusterIP   10.101.249.108   <none>        9402/TCP                 2m1s
+            cert-manager   cert-manager-webhook   ClusterIP   10.102.12.224    <none>        443/TCP                  2m1s
+            ```
+
+        - ConfigMap
+            ```sh
+            NAMESPACE         NAME                                      DATA   AGE
+            cert-manager      kube-root-ca.crt                          1      3m50s
+            ```
+
+        - Secret
+            ```sh
+            NAMESPACE      NAME                      TYPE     DATA   AGE
+            cert-manager   cert-manager-webhook-ca   Opaque   3      3m39s            
+            ```
+
+    1. Load Balancer Controller のマニフェストをダウンロードする
         ```sh
         # Load Balancer Controller のマニフェストをダウンロード
         curl -Lo v2_4_2_full.yaml https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.2/v2_4_2_full.yaml
+        ```
 
+    1. ダウンロードしたマニフェストを修正する
+        ```sh
         # ダウンロードしたマニフェストを修正する
         sed -i.bak -e 's|your-cluster-name|${CLUSTER_NAME}|' ./v2_4_2_full.yaml
         ```
+        > `${CLUSTER_NAME}` の部分は、（`eks-alb-cluster` など）に変更すること
 
-    1. xxx
+        更に、`v2_4_2_full.yaml` の 以下の ServiceAccount の部分を削除する
+        ```sh
+        apiVersion: v1
+        kind: ServiceAccount
+        metadata:
+            labels:
+                app.kubernetes.io/component: controller
+                app.kubernetes.io/name: aws-load-balancer-controller
+            name: aws-load-balancer-controller
+            namespace: kube-system
+        ---
+        ```
+
+        > 先にデプロイした `aws-load-balancer-controller-service-account.yaml` で、Load Balancer Controller 用のサービスアカウントをデプロイしているので、`v2_4_2_full.yaml` のサービスアカウントは削除する
+
+    1. Load Balancer Controller をデプロイする
+        ```sh
+        kubectl apply -f v2_4_2_full.yaml
+        ```
+
+        上記コマンド実行後、以下のような k8s リソースが追加される。
+        
+        `aws-load-balancer-controller` という名前の Deployment (Pod) が、ALB を自動的に作成する pod であるが、この時点では Web-API のマニフェストの Ingress をデプロイしてないので、まだ ALB は作成されないことに注意
+
+        - Deployment
+            ```sh
+            NAMESPACE      NAME                           READY   UP-TO-DATE   AVAILABLE   AGE
+            kube-system    aws-load-balancer-controller   0/1     0            0           3m15s
+            ```
+
+        - Service
+            ```sh
+            NAMESPACE      NAME                                TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                  AGE
+            kube-system    aws-load-balancer-webhook-service   ClusterIP   10.100.156.84    <none>        443/TCP                  49s
+            ```
+
+        - Secret
+            ```sh
+            NAMESPACE      NAME                            TYPE                DATA   AGE
+            kube-system    aws-load-balancer-webhook-tls   kubernetes.io/tls   3      2m1s
+            ```
+
+1. WEb-API の k8s マニフェストを作成する
+    ```sh
+    ---
+    # Pod
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+    name: predict-pod
+    labels:
+        app: predict-pod
+    spec:
+    replicas: 1
+    selector:
+        matchLabels:
+        app: predict-pod
+    template:
+        metadata:
+        labels:
+            app: predict-pod
+        spec:
+        containers:
+        - name: predict-container
+            image: 735015535886.dkr.ecr.us-west-2.amazonaws.com/predict-server-image-eks:latest
+            command: ["/bin/sh","-c"]
+            args: ["gunicorn app:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:5001 --workers 1 --threads 1 --backlog 256 --reload"]
+    ---
+    # Service
+    apiVersion: v1
+    kind: Service
+    metadata:
+    name: predict-server
+    #  annotations:
+    #    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
+    #    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    #    service.beta.kubernetes.io/aws-load-balancer-eip-allocations: eipalloc-022b9722973f6a222
+    spec:
+    type: NodePort
+    #  type: LoadBalancer
+    #  loadBalancerIP: 44.225.109.227   # IP アドレス固定
+    ports:
+        - port: 5001
+        targetPort: 5001
+        protocol: TCP
+    selector:
+        app: predict-pod
+    ---
+    # Ingress
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+    name: predict-ingress
+    annotations:
+        kubernetes.io/ingress.class: alb
+        alb.ingress.kubernetes.io/scheme: internet-facing
+        alb.ingress.kubernetes.io/tags: Environment=dev,Team=test
+    spec:
+    rules:
+    - http:
+        paths:
+        - path: /
+            pathType: Prefix
+            backend:
+            service:
+                name: predict-server
+                port:
+                number: 5001
+    ```
+
+    ポイントは、以下の通り
+
+    - Ingress を作成するので、NodePort の Service を作成する
+
+    - Kubernetes v1.22 では `apiVersion: networking.k8s.io/v1beta1` での Ingress など様々なベータ API が削除されていることに注意
+
+    - xxx
+
+1. Web-API の k8s マニフェストをプロイする<br>
+    ```sh
+    kubectl apply -f k8s/predict.yml
+    ```
+
+    上記 k8s マニフェストに含まれる Ingress がデプロイされた時点で、`aws-load-balancer-controller` という名前の Deployment (Pod) が、ALB を自動的に作成する
+
+1. ALB が作成されていることを確認する
+    「[AWS ロードバランサーのコンソール画面](https://us-west-2.console.aws.amazon.com/ec2/v2/home?region=us-west-2#LoadBalancers:sort=loadBalancerName)」 から、ALB が作成されていることを確認する
+
+
+    > [ToDo] `aws-load-balancer-controller` という名前の Deployment (Pod) をデプロイしたが、ALB が作成されていないので、うまく作成されるようにする
+
+1. EKS 上の Web-API にリクエストし、うまくロードバランシングされていることを確認する<br>
+    xxx
 
 ## ■ 参考サイト
 
 - AWS Load Balancer Controller
     - https://docs.aws.amazon.com/ja_jp/eks/latest/userguide/aws-load-balancer-controller.html
+    - https://qiita.com/mksamba/items/c0e41a2a63e62a50aea3
 
 - ALB Ingress Controller（古い方）
     - https://atmarkit.itmedia.co.jp/ait/articles/2003/24/news008.html

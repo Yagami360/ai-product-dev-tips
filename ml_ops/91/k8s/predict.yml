@@ -32,8 +32,8 @@ metadata:
 #    service.beta.kubernetes.io/aws-load-balancer-type: nlb
 #    service.beta.kubernetes.io/aws-load-balancer-eip-allocations: eipalloc-022b9722973f6a222
 spec:
-#  type: NodePort
-  type: LoadBalancer
+  type: NodePort
+#  type: LoadBalancer
 #  loadBalancerIP: 44.225.109.227   # IP アドレス固定
   ports:
     - port: 5001
@@ -41,3 +41,24 @@ spec:
       protocol: TCP
   selector:
     app: predict-pod
+---
+# Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: predict-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/tags: Environment=dev,Team=test
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: predict-server
+            port:
+              number: 5001

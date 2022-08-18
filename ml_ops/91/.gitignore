@@ -1,3 +1,4 @@
 *.log
+*.bak
 out_images
 _old

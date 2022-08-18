@@ -11,10 +11,12 @@ MAX_NODES=2
 
 IMAGE_NAME=predict-server-image-eks
 ECR_REPOSITORY_NAME=${IMAGE_NAME}
-#ENABLE_BUILD=0
-ENABLE_BUILD=1
+ENABLE_BUILD=0
+#ENABLE_BUILD=1
 
 mkdir -p logs
+sh delete_eks_alb.sh
+
 #-----------------------------
 # OS判定
 #-----------------------------
@@ -137,12 +139,6 @@ if [ ! ${ENABLE_BUILD} = 0 ] ; then
     cd ../..
 
     # ECR リポジトリを作成する
-    if [ "$( aws ecr batch-get-repository-scanning-configuration --repository-names ${ECR_REPOSITORY_NAME} --query scanningConfigurations[*].repositoryName | grep "${ECR_REPOSITORY_NAME}")" ] ; then
-        if [ "$( aws ecr list-images --repository-name ${ECR_REPOSITORY_NAME} --query imageIds[*].imageTag | grep "latest")" ] ; then
-            aws ecr batch-delete-image --repository-name ${ECR_REPOSITORY_NAME} --image-ids imageTag=latest
-        fi
-        aws ecr delete-repository --repository-name ${ECR_REPOSITORY_NAME}
-    fi
     aws ecr create-repository --repository-name ${ECR_REPOSITORY_NAME} --image-scanning-configuration scanOnPush=true
 
     # ECR にログインする
@@ -158,10 +154,6 @@ fi
 #-----------------------------
 # クラスタを作成
 #-----------------------------
-if [ "$( aws eks list-clusters --query clusters | grep "${CLUSTER_NAME}")" ] ; then
-    eksctl delete cluster --name ${CLUSTER_NAME} --region ${AWS_REGION} --wait
-fi
-
 if [ ! "$( aws eks list-clusters --query clusters | grep "${CLUSTER_NAME}")" ] ; then
     eksctl create cluster --name ${CLUSTER_NAME} \
         --node-type ${CLUSTER_NODE_TYPE} \
@@ -185,7 +177,7 @@ aws iam create-policy \
 OIDC=$( aws eks describe-cluster --name ${CLUSTER_NAME} --query "cluster.identity.oidc.issuer" --output text )
 echo "OIDC : ${OIDC}"
 #cat load-balancer-role-trust-policy.json | jq '.Statement[0].Condition.StringEquals[0]="${OIDC}"'
-
+#
 # AWS Load Balancer Controller 用の IAM role を作成する
 aws iam create-role \
     --role-name AmazonEKSLoadBalancerControllerRole \
@@ -197,26 +189,35 @@ aws iam attach-role-policy \
     --role-name AmazonEKSLoadBalancerControllerRole
 
 # k8s サービスアカウント用のマニフェストファイルをデプロイする
-kubectl apply -f aws-load-balancer-controller-service-account.yaml
+kubectl apply -f k8s/aws-load-balancer-controller-service-account.yaml
 
 #-----------------------------
-# AWS Load Balancer Controller をインストールする
+# AWS Load Balancer Controller をデプロイする
 #-----------------------------
-# cert-manager をインストールする
+# cert-manager をインストールする（cert-manager の k8s マニフェストをデプロイする）
 kubectl apply \
     --validate=false \
     -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
 
 # Load Balancer Controller のマニフェストをダウンロード
 curl -Lo v2_4_2_full.yaml https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/v2.4.2/v2_4_2_full.yaml
+mv v2_4_2_full.yaml k8s/v2_4_2_full.yaml
 
 # ダウンロードしたマニフェストを修正
-sed -i.bak -e 's|your-cluster-name|${CLUSTER_NAME}|' ./v2_4_2_full.yaml
+#sed -i.bak -e 's|your-cluster-name|${CLUSTER_NAME}|' k8s/v2_4_2_full.yaml
+sed -i.bak -e 's|your-cluster-name|eks-alb-cluster|' k8s/v2_4_2_full.yaml
+
+# Load Balancer Controller をデプロイする
+kubectl apply -f k8s/v2_4_2_full.yaml
 
 #-----------------------------
 # API の各種 k8s リソースを作成する
 #-----------------------------
 kubectl apply -f k8s/predict.yml
 
-kubectl get pods
-kubectl get service
+kubectl get pods --all-namespaces
+kubectl get deployment --all-namespaces
+kubectl get service --all-namespaces
+kubectl get ingress --all-namespaces
+kubectl get configmap --all-namespaces
+kubectl get secret --all-namespaces
