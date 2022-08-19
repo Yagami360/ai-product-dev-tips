@@ -157,7 +157,7 @@ spec:
         app.kubernetes.io/managed-by: getambassador.io
       annotations:
         consul.hashicorp.com/connect-inject: 'false'
-        sidecar.istio.io/inject: 'false'
+        sidecar.istio.io/inject: 'false'    # # Istio の Envoy（プロキシサーバー）サイドカーの挿入を行うかフラグ
     spec:
       terminationGracePeriodSeconds: 0
       securityContext:

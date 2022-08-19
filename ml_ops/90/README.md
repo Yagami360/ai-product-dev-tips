@@ -8,9 +8,12 @@ Ambassador は、k8s で構成したマイクロサービス型 REST API 向け�
 
 - 細かなルーティング制御、正規表現ベースのルーティング、ホストルーティングなどが可能
 
-- ルーティングとスケーリングを Envoy と Kubernetes に依存しているので、展開と操作が簡単
+- スケーリングとルーティングを Kubernetes と Istio の Envoy（プロキシサーバー） に依存しているので、展開と操作が簡単
 
 - Istio と連携してサービスメッシュ化が可能
+
+> - Envoy<br>
+>    Envoy は、Istio に機能の１つで、Istio サイドカーコンテナ（＝同じ Pod 内のコンテナとディスクを共有するコンテナ）として動作するプロキシサーバーである。この Envoy（プロキシサーバー）を k8s クラスタに導入することで、k8s クラスタ内部と外部の通信を制御することができる
 
 ## ■ ToDo
 
@@ -194,7 +197,7 @@ Ambassador は、k8s で構成したマイクロサービス型 REST API 向け�
 			template:
 				metadata:
 					annotations:
-						sidecar.istio.io/inject: "false"
+						sidecar.istio.io/inject: "false"	# Istio の Envoy（プロキシサーバー）サイドカーの挿入を行うかフラグ
 					labels:
 						service: ambassador
 				spec:

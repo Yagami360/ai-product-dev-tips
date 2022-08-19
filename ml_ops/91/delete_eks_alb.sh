@@ -68,5 +68,5 @@ fi
 
 # IAM policy
 if [ $( aws iam list-policies --query 'Policies[*].PolicyName' | grep AWSLoadBalancerControllerIAMPolicy ) ] ; then
-    aws iam delete-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy
+    aws iam delete-policy --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy
 fi
