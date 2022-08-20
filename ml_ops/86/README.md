@@ -67,10 +67,13 @@
 
     - `${PROJECT_NAME}/mix.exs`<br>
         Elixir の Mix におけるプロジェクトとは、`mix.exs` という名前のファイルに配置されたモジュールで `Mix.Project` を使用して定義する。<br>
+				プロジェクトにインストールするライブラリは、このモジュールの `defp xxx do ... end` の部分に記載する<br>
+
         ```ex
         defmodule ElixirPhoenixApi.MixProject do
             use Mix.Project
 
+						# プロジェクトにインストールするライブラリを記載
             def project do
                 [
                     app: :elixir_phoenix_api,
@@ -109,75 +112,149 @@
         ```
 
 1. `${PROJECT_NAME}/lib/elixir_phoenix_api_web/router.ex` の API のコード（ルーター）を修正する<br>
-    ```ex
-    ```
 
-    ポイントは、以下の通り
+	```ex
+	defmodule ElixirPhoenixApiWeb.Router do
+		# ルーティングするためのマクロ定義
+		use ElixirPhoenixApiWeb, :router
 
-    - `use ElixirPhoenixApiWeb, :router` 部分では、`use` 構文を使用して、ルーティングするためのマクロ `ElixirPhoenixApiWeb` を定義している？
+		# ブラウザアクセス時の共通処理を定義した pipeline
+		pipeline :browser do
+			plug :accepts, ["html"]
+			plug :fetch_session
+			plug :fetch_live_flash
+			plug :put_root_layout, {ElixirPhoenixApiWeb.LayoutView, :root}
+			plug :protect_from_forgery
+			plug :put_secure_browser_headers
+		end
 
-        > `:router` の部分は、アトムと呼ばれる、定数名が自身の値を表わしている定数である。アトムは、`:${アトム名}` という形式で定義する
+		# ルートアクセス時（http:${IP_ADDRESS}:${PORT}/）以外のエンドポイントアクセス時の共通処理を定義した pipeline
+		pipeline :api do
+			plug :accepts, ["json"]
+		end
 
-    - `pipelines :${PIPELINE_NAME} do ... end` の部分では、各種エンドポイント呼び出し時の共通処理を定義している。定義した pipeline は、各種エンドポイント定義内 `scope "/xxx", ElixirPhoenixApiWeb do ... end` にて、`pipe_through :${PIPELINE_NAME}` のようにしてすべて実行される
-        > `pipe_through` 構文は、`pipelines` 内で定義した `plug` 関数をすべて実行する構文
+		# ブラウザアクセス時のエンドポイント定義
+		scope "/", ElixirPhoenixApiWeb do
+			# ブラウザアクセス時の共通処理を定義した pipeline 内の plug 関数を全て実行
+			pipe_through :browser
 
-    - `get "/", PageController, :index` のように、`get/post ${エンドポイントアドレス}, ${コントローラー名}, ${アトム名}` の形式で GET method や POST method を定義する。<br>
+			# GET method を定義
+			get "/", PageController, :index
+		end
 
-        - ここで参照している各種コントローラーは、`lib/elixir_phoenix_api_web/controllers` ディレクトリ以下のコードで定義している。
-            ```sh
-            defmodule ElixirPhoenixApiWeb.PageController do
-                use ElixirPhoenixApiWeb, :controller
+		# /api アクセス時のエンドポイント定義
+		scope "/api", ElixirPhoenixApiWeb do
+			# ルートアクセス時（http:${IP_ADDRESS}:${PORT}/）以外のエンドポイントアクセス時の共通処理を定義した pipeline 内の plug 関数を全て実行
+			pipe_through :api
 
-                def index(conn, _params) do
-                    render(conn, "index.html")
-                end
-            end        
-            ```
+			# GET method
+			get "/health", HealthController, :health
+		end
 
-            > `:index` も、この `PageController` 内で定義されたメソッド名になっている
+		# Enables LiveDashboard only for development
+		#
+		# If you want to use the LiveDashboard in production, you should put
+		# it behind authentication and allow only admins to access it.
+		# If your application does not have an admins-only section yet,
+		# you can use Plug.BasicAuth to set up some basic authentication
+		# as long as you are also using SSL (which you should anyway).
+		if Mix.env() in [:dev, :test] do
+			import Phoenix.LiveDashboard.Router
 
-    - 今回は、`api/health` のエンドポイントアクセス時の処理を追加するために、以下のコードを追加している
+			scope "/" do
+				pipe_through :browser
 
-        - `router.ex`<br>
-            ```ex
-            # /api アクセス時のエンドポイント定義
-            scope "/api", ElixirPhoenixApiWeb do
-                # ルートアクセス時（http:${IP_ADDRESS}:${PORT}/）以外のエンドポイントアクセス時の共通処理を定義した pipeline 内の plug 関数を全て実行
-                pipe_through :api
+				live_dashboard "/dashboard", metrics: ElixirPhoenixApiWeb.Telemetry
+			end
+		end
 
-                # GET method
-                get "/health", HealthController, :health
-            end
-            ```
+		# Enables the Swoosh mailbox preview in development.
+		#
+		# Note that preview only shows emails that were sent by the same
+		# node running the Phoenix server.
+		if Mix.env() == :dev do
+			scope "/dev" do
+				pipe_through :browser
 
-        - `controllers/health_controller.ex`<br>
-            ```ex
-            defmodule ElixirPhoenixApiWeb.HealthController do
-                use ElixirPhoenixApiWeb, :controller
+				forward "/mailbox", Plug.Swoosh.MailboxPreview
+			end
+		end
+	end
+	```
 
-                def health(conn, _params) do
-                    json conn, Map.put(%{}, "health", "ok")
-                end
-            end
-            ```
-            - `json conn, Map.put(...)` で json 形式のレスポンスデータを設定している
+	ポイントは、以下の通り
 
-    - 各種ルート定義は、以下のコマンドで確認することもできる
-        ```sh
-        mix phx.routes
-        ```
-        ```sh
-        Generated elixir_phoenix_api app
-                page_path  GET  /                                      ElixirPhoenixApiWeb.PageController :index
-                health_path  GET  /api/health                            ElixirPhoenixApiWeb.HealthController :health
-        live_dashboard_path  GET  /dashboard                             Phoenix.LiveDashboard.PageLive :home
-        live_dashboard_path  GET  /dashboard/:page                       Phoenix.LiveDashboard.PageLive :page
-        live_dashboard_path  GET  /dashboard/:node/:page                 Phoenix.LiveDashboard.PageLive :page
-                            *    /dev/mailbox                           Plug.Swoosh.MailboxPreview []
-                websocket  WS   /live/websocket                        Phoenix.LiveView.Socket
-                longpoll  GET  /live/longpoll                         Phoenix.LiveView.Socket
-                longpoll  POST  /live/longpoll                         Phoenix.LiveView.Socket
-        ```
+	- `use ElixirPhoenixApiWeb, :router` 部分では、`use` 構文を使用して、ルーティングするためのマクロ `ElixirPhoenixApiWeb` （の `router`）を再定義している
+
+  	> `use` 構文は、他のモジュールを利用して現在のモジュールの定義を変更することができる Elixler 構文
+
+		> `:router` の部分は、アトムと呼ばれる、定数名が自身の値を表わしている定数である。アトムは、`:${アトム名}` という形式で定義する
+
+	- `pipelines :${PIPELINE_NAME} do ... end` の部分では、各種エンドポイント呼び出し時の共通処理を定義している。定義した pipeline は、各種エンドポイント定義内 `scope "/xxx", ElixirPhoenixApiWeb do ... end` にて、`pipe_through :${PIPELINE_NAME}` のようにしてすべて実行される
+			
+		> `pipe_through` 構文は、`pipelines` 内で定義した `plug` 関数をすべて実行する構文
+
+	- `get "/", PageController, :index` のように、`get/post ${エンドポイントアドレス}, ${コントローラー名}, ${アトム名}` の形式で GET method や POST method を定義する。<br>
+
+		- ここで参照している各種コントローラーは、`lib/elixir_phoenix_api_web/controllers` ディレクトリ以下のコードで定義している。
+			```sh
+			defmodule ElixirPhoenixApiWeb.PageController do
+				use ElixirPhoenixApiWeb, :controller
+
+				def index(conn, _params) do
+					render(conn, "index.html")
+				end
+			end        
+			```
+
+			ポイントは、以下の通り
+
+			- `:index` も、この `PageController` 内で定義されたメソッド名になっている
+
+			- エンドポイントアクセス時の処理内容を定義した `index` の最初のパラメーターは常に `conn` で、ホスト・パス要素・ポート・クエリ文字列などのリクエストに関する情報を保持した構造体になっている。詳細は、[https://hexdocs.pm/plug/Plug.Conn.html](https://hexdocs.pm/plug/Plug.Conn.html)
+
+	- 今回は、`api/health` のエンドポイントアクセス時の処理を追加するために、以下のコードを追加している
+
+		- `router.ex`<br>
+			```ex
+			# /api アクセス時のエンドポイント定義
+			scope "/api", ElixirPhoenixApiWeb do
+				# ルートアクセス時（http:${IP_ADDRESS}:${PORT}/）以外のエンドポイントアクセス時の共通処理を定義した pipeline 内の plug 関数を全て実行
+				pipe_through :api
+
+				# GET method
+				get "/health", HealthController, :health
+			end
+			```
+
+		- `controllers/health_controller.ex`<br>
+			```ex
+			defmodule ElixirPhoenixApiWeb.HealthController do
+				use ElixirPhoenixApiWeb, :controller
+
+				def health(conn, _params) do
+					json conn, Map.put(%{}, "health", "ok")
+				end
+			end
+			```
+			- `json conn, Map.put(...)` で json 形式のレスポンスデータを設定している
+
+	- 各種ルート定義は、以下のコマンドで確認することもできる
+		```sh
+		mix phx.routes
+		```
+		```sh
+		Generated elixir_phoenix_api app
+						page_path  GET  /                                      ElixirPhoenixApiWeb.PageController :index
+						health_path  GET  /api/health                            ElixirPhoenixApiWeb.HealthController :health
+		live_dashboard_path  GET  /dashboard                             Phoenix.LiveDashboard.PageLive :home
+		live_dashboard_path  GET  /dashboard/:page                       Phoenix.LiveDashboard.PageLive :page
+		live_dashboard_path  GET  /dashboard/:node/:page                 Phoenix.LiveDashboard.PageLive :page
+												*    /dev/mailbox                           Plug.Swoosh.MailboxPreview []
+						websocket  WS   /live/websocket                        Phoenix.LiveView.Socket
+						longpoll  GET  /live/longpoll                         Phoenix.LiveView.Socket
+						longpoll  POST  /live/longpoll                         Phoenix.LiveView.Socket
+		```
 
 1. Phoenix サーバーを起動する<br>
     ```sh

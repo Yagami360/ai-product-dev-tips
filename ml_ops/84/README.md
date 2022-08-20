@@ -4,7 +4,7 @@ alembic は、Python の SQLAlchemy を使用しているときに DB の管理�
 
 ここでは、alembic を使用して PostgreSQL　データベースの DB マイグレーションを行う方法を記載する
 
-> - DB マイグレーション [DB migration]
+> - DB マイグレーション [DB migration]<br>
 >     DB に保存されているデータを保持したまま、テーブルの作成やカラムの変更などを行う事。
 
 
