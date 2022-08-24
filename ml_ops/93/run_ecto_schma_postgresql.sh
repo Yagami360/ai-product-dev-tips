@@ -2,8 +2,6 @@
 set -eu
 PROJECT_NAME="elixir_ecto_postgresql"
 ECTO_REPO_NAME="ElixirEctoPostgresql"
-MIGRATION_NAME="create_person_migration"
-TABLE_NAME="postgresql_table"
 
 #=============================
 # OS判定
@@ -99,18 +97,5 @@ cd ${PROJECT_NAME}
 # config.exs を修正する
 :
 
-# マイグレーションファイルを作成する
-mix ecto.gen.migration ${MIGRATION_NAME}
-
-# マイグレーションファイルを修正する
-:
-
-# マイグレーションを実行し、PostgreSQL データベース内にテーブルを作成する
-mix ecto.gen.migration
-#mix ecto.gen.migration ${TABLE_NAME}
-
-# PostgreSQL データベースを作成する
-mix ecto.create
-
-# PosgreSQL サーバーにログイン
-#docker exec -it postgresql-container /bin/bash -c "psql -h localhost -U postgres"
+# Elixirアプリケーションを実行する
+iex -S mix

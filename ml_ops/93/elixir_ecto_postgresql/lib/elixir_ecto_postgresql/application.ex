@@ -7,12 +7,10 @@ defmodule ElixirEctoPostgresql.Application do
 
   @impl true
   def start(_type, _args) do
-    #import Supervisor.Spec
     children = [
       # Starts a worker by calling: ElixirEctoPostgresql.Worker.start_link(arg)
       # {ElixirEctoPostgresql.Worker, arg}
       ElixirEctoPostgresql.Repo,
-      #supervisor(ElixirEctoPostgresql.Repo, [])
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -21,3 +19,4 @@ defmodule ElixirEctoPostgresql.Application do
     Supervisor.start_link(children, opts)
   end
 end
+

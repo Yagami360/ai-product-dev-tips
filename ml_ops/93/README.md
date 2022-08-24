@@ -1,4 +1,4 @@
-# Elixer 言語において Ecto の Ecto.Repo を使用して PostgreSQL データベースの CRUD 処理を行う
+# Elixer 言語において Ecto の Ecto.Schema で定義したテーブルデータを PosgreSQL データベースに反映する
 
 Ecto は、Elixer における各種データベース（PostgreSQL や MySQL など。デフォルトは PostgreSQL）の操作を共通のインターフェイスで操作可能なラッパーライブラリである。
 
@@ -9,7 +9,7 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
   Ecto では Repository (Repo) を通してデータベースの CRUD 処理を行う。
 
 - Ecto.Schema<br>
-  DB テーブルを Elixir の構造体に map するために使わわれる
+  Ecto におけるテーブルデータは、Schema と呼ばれる構造体（テーブル）で定義するが、この Schema（構造体/テーブル）の内容を PosgreSQL DB に反映したりする際に使用される。
 
 - Ecto.Changeset<br>
   外部データである parameters をもとにデータベースに変更を加える時に用いられる変更部分（params）を表すデータ構造
@@ -17,42 +17,7 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
 - Ecto.Query<br>
   データベースへの問い合わせは、まず Query を構築してから、次に Ecto.Repo に Query を渡してデータベースへの問い合わせを実行する、というステップを踏む
 
-ここでは、Ecto の Ecto.Repo を使用して、PostgreSQL データベースの CRUD 処理を行う方法を記載する
-
-## ■ ToDo
-
-- [ ] `mix ecto.create` コマンドでデータベース作成時に、以下のエラーが発生する問題の解決
-
-  - `config.exx` で `hostname: "localhost"` とした場合
-    ```sh
-    14:26:55.034 [error] GenServer #PID<0.246.0> terminating
-    ** (Postgrex.Error) FATAL 28000 (invalid_authorization_specification): no pg_hba.conf entry for host "192.168.96.1", user "postgres", database "postgres", no encryption
-        (db_connection 1.1.3) lib/db_connection/connection.ex:163: DBConnection.Connection.connect/2
-        (connection 1.0.4) lib/connection.ex:622: Connection.enter_connect/5
-        (stdlib 4.0.1) proc_lib.erl:240: :proc_lib.init_p_do_apply/3
-    Last message: nil
-    State: Postgrex.Protocol
-    ** (Mix) The database for ElixirEctoPostgresql.Repo couldn't be created: FATAL 28000 (invalid_authorization_specification): no pg_hba.conf entry for host "192.168.96.1", user "postgres", database "postgres", no encryption
-    ```
-
-  - `config.exx` で `hostname: "192.168.96.1"` とした場合
-    ```sh
-      14:15:07.202 [error] Task #PID<0.202.0> started from #PID<0.94.0> terminating
-      ** (stop) exited in: :gen_server.call(#PID<0.203.0>, {:checkout, #Reference<0.94150901.694157317.156184>, true, 15000}, 5000)
-          ** (EXIT) time out
-          (db_connection 1.1.3) lib/db_connection/connection.ex:54: DBConnection.Connection.checkout/2
-          (db_connection 1.1.3) lib/db_connection.ex:928: DBConnection.checkout/2
-          (db_connection 1.1.3) lib/db_connection.ex:750: DBConnection.run/3
-          (db_connection 1.1.3) lib/db_connection.ex:1141: DBConnection.run_meter/3
-          (db_connection 1.1.3) lib/db_connection.ex:592: DBConnection.prepare_execute/4
-          (ecto 2.2.12) lib/ecto/adapters/postgres/connection.ex:86: Ecto.Adapters.Postgres.Connection.execute/4
-          (ecto 2.2.12) lib/ecto/adapters/postgres.ex:235: anonymous fn/2 in Ecto.Adapters.Postgres.run_query/2
-          (elixir 1.13.4) lib/task/supervised.ex:89: Task.Supervised.invoke_mfa/2
-      Function: #Function<5.77777652/0 in Ecto.Adapters.Postgres.run_query/2>
-          Args: []
-      ** (Mix) The database for ElixirEctoPostgresql.Repo couldn't be created: exited in: :gen_server.call(#PID<0.203.0>, {:checkout, #Reference<0.94150901.694157317.156184>, true, 15000}, 5000)
-          ** (EXIT) time out
-    ```
+ここでは、Ecto の Ecto.Schema を使用して、テーブルデータ（Schema）を PosgreSQL データベースに反映する方法を記載する
 
 ## ■ 方法
 
@@ -310,46 +275,6 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
       ** (Mix) The database for ElixirEctoPostgresql.Repo couldn't be created: FATAL 28000 (invalid_authorization_specification): no pg_hba.conf entry for host "192.168.96.1", user "postgres", database "postgres", no encryption
       ```
 
-1. マイグレーションファイルを作成する<br>
-    以下のコマンドを実行することで、`priv/repo/migrations` ディレクトリ以下に、マイグレーションファイルが作成される
-    ```sh
-    mix ecto.gen.migration ${MIGRATION_NAME}
-    ```
-
-    > DB マイグレーション [DB migration] : DB に保存されているデータを保持したまま、テーブルの作成やカラムの変更などを行う事。
-
-    > マイグレーションファイル : DB マイグレーションの処理内容を定義したスクリプトファイル
-
-    - `priv/repo/migrations/xxxxxx_${MIGRATION_NAME}.exs`
-        ```ex
-        defmodule ElixirEctoPostgresql.Repo.Migrations.CreatePersonMigration do
-          use Ecto.Migration
-
-          def change do
-
-          end
-        end
-        ```
-
-        - `def change` にマイグレーション処理を定義する
-
-1. マイグレーションファイルを修正する<br>
-    上記で作成されたマイグレーションファイル `priv/repo/migrations/xxxxxx_${MIGRATION_NAME}.exs` を修正する
-    ```sh
-    defmodule elixir_ecto_postgresql.Repo.Migrations.CreatePersonMigration do
-      use Ecto.Migration
-
-      def change do
-        create table(:person_schema) do
-          add :name, :string
-          add :age, :integer
-        end
-      end
-    end
-    ```
-
-    - `person_schema` は、Ecto.Schema で定義する
-
 1. Schema を定義したスクリプトを作成する<br>
     Schema を定義した `lib/${PROJECT_NAME}/person_schema.ex` を作成する
     ```ex
@@ -371,36 +296,36 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
 
     - `schema "person_schema" do ... end` の部分で、PosgreSQL DB に反映するためのテーブル定義を行っている
 
-1. PostgreSQL データベースを作成する<br>
+1. Elixir shell を起動する
     ```sh
-    mix ecto.create
+    cd ${PROJECT_NAME}
+    iex -S mix
     ```
 
-    - [Todo] 上記コマンド実行時に以下のエラーがでてデータベースが作成できないので、これを解決する
-
-      ```sh
-      14:15:07.202 [error] Task #PID<0.202.0> started from #PID<0.94.0> terminating
-      ** (stop) exited in: :gen_server.call(#PID<0.203.0>, {:checkout, #Reference<0.94150901.694157317.156184>, true, 15000}, 5000)
-          ** (EXIT) time out
-          (db_connection 1.1.3) lib/db_connection/connection.ex:54: DBConnection.Connection.checkout/2
-          (db_connection 1.1.3) lib/db_connection.ex:928: DBConnection.checkout/2
-          (db_connection 1.1.3) lib/db_connection.ex:750: DBConnection.run/3
-          (db_connection 1.1.3) lib/db_connection.ex:1141: DBConnection.run_meter/3
-          (db_connection 1.1.3) lib/db_connection.ex:592: DBConnection.prepare_execute/4
-          (ecto 2.2.12) lib/ecto/adapters/postgres/connection.ex:86: Ecto.Adapters.Postgres.Connection.execute/4
-          (ecto 2.2.12) lib/ecto/adapters/postgres.ex:235: anonymous fn/2 in Ecto.Adapters.Postgres.run_query/2
-          (elixir 1.13.4) lib/task/supervised.ex:89: Task.Supervised.invoke_mfa/2
-      Function: #Function<5.77777652/0 in Ecto.Adapters.Postgres.run_query/2>
-          Args: []
-      ** (Mix) The database for ElixirEctoPostgresql.Repo couldn't be created: exited in: :gen_server.call(#PID<0.203.0>, {:checkout, #Reference<0.94150901.694157317.156184>, true, 15000}, 5000)
-          ** (EXIT) time out
-      ```
-
-1. マイグレーションを実行し、PostgreSQL データベース内にテーブルを作成する
-    マイグレーションファイルに、テーブルデータを作成する `create table` を定義しているので、マイグレーションを実行することにより、PostgreSQL データベースにテーブルデータを作成することができる
+1. 作成した Schema を PosgreSQL DB に反映する。
+    Elixir shell 内にて、以下の Elixer スクリプトを実行する
     ```sh
-    mix ecto.migrate
+    # Schema オブジェクト作成
+    person = %ElixirEctoPostgresql.PersonSchema{name: "Yagami", age: 28}
+
+    # PosgreSQL に schema を insert
+    ElixirEctoPostgresql.Repo.insert(person)
     ```
+    
+    - [ToDo] PosgreSQL に schema を insert する際に、以下のエラーが発生するので、これを解決する
+        ```sh
+        iex(2)> ElixirEctoPostgresql.Repo.insert(person)
+        ** (exit) exited in: :gen_server.call(#PID<0.259.0>, {:checkout, #Reference<0.1370322324.3002335239.60269>, true, 15000}, 5000)
+            ** (EXIT) time out
+            (db_connection 1.1.3) lib/db_connection/poolboy.ex:112: DBConnection.Poolboy.checkout/3
+            (db_connection 1.1.3) lib/db_connection.ex:928: DBConnection.checkout/2
+            (db_connection 1.1.3) lib/db_connection.ex:750: DBConnection.run/3
+            (db_connection 1.1.3) lib/db_connection.ex:592: DBConnection.prepare_execute/4
+            (ecto 2.2.12) lib/ecto/adapters/postgres/connection.ex:86: Ecto.Adapters.Postgres.Connection.execute/4
+            (ecto 2.2.12) lib/ecto/adapters/sql.ex:256: Ecto.Adapters.SQL.sql_call/6
+            (ecto 2.2.12) lib/ecto/adapters/sql.ex:542: Ecto.Adapters.SQL.struct/8
+            (ecto 2.2.12) lib/ecto/repo/schema.ex:547: Ecto.Repo.Schema.apply/4
+        ```
 
 1. PosgreSQL サーバーにログインしてデータベースとテーブルが作成されていることを確認する
     ```sh
