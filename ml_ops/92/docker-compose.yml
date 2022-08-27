@@ -9,8 +9,9 @@ services:
     volumes:
       - ${PWD}/postgresql/db:/var/lib/postgresql/data/
       - ${PWD}/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf
-      - ${PWD}/postgresql/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+#      - ${PWD}/postgresql/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
     environment:
       - POSTGRES_PASSWORD=1234    # sudo ユーザのパスワード
       - POSTGRES_USER=postgres    # sudo ユーザのユーザ名（デフォルト : postgres）
+      - POSTGRES_DB=elixir_ecto_postgresql_db   # PosgreSQL DB 名（省略すると USER 名と同じもの）
     command: -c 'config_file=/etc/postgresql/postgresql.conf'

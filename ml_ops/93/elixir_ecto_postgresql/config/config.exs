@@ -6,8 +6,7 @@ config :elixir_ecto_postgresql, ElixirEctoPostgresql.Repo,
 #  database: "postgres",
   username: "postgres",
   password: "1234",
-#  hostname: "localhost",
-  hostname: "192.168.96.1",
+  hostname: "localhost",
   port: "5432"
 
 config :elixir_ecto_postgresql, ecto_repos: [ElixirEctoPostgresql.Repo]

@@ -22,37 +22,35 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
 ## ■ ToDo
 
 - [ ] `mix ecto.create` コマンドでデータベース作成時に、以下のエラーが発生する問題の解決
+  ```sh
+  21:59:55.967 [error] GenServer #PID<0.203.0> terminating
+  ** (RuntimeError) Connect raised a FunctionClauseError error. The exception details are hidden, as
+  they may contain sensitive data such as database credentials.
 
-  - `config.exx` で `hostname: "localhost"` とした場合
-    ```sh
-    14:26:55.034 [error] GenServer #PID<0.246.0> terminating
-    ** (Postgrex.Error) FATAL 28000 (invalid_authorization_specification): no pg_hba.conf entry for host "192.168.96.1", user "postgres", database "postgres", no encryption
-        (db_connection 1.1.3) lib/db_connection/connection.ex:163: DBConnection.Connection.connect/2
-        (connection 1.0.4) lib/connection.ex:622: Connection.enter_connect/5
-        (stdlib 4.0.1) proc_lib.erl:240: :proc_lib.init_p_do_apply/3
-    Last message: nil
-    State: Postgrex.Protocol
-    ** (Mix) The database for ElixirEctoPostgresql.Repo couldn't be created: FATAL 28000 (invalid_authorization_specification): no pg_hba.conf entry for host "192.168.96.1", user "postgres", database "postgres", no encryption
-    ```
+      (postgrex 0.13.5) lib/postgrex/messages.ex:371: Postgrex.Messages.decode_auth_type/1
+      (postgrex 0.13.5) lib/postgrex/messages.ex:64: Postgrex.Messages.parse/3
+      (postgrex 0.13.5) lib/postgrex/protocol.ex:2004: Postgrex.Protocol.msg_decode/1
+      (postgrex 0.13.5) lib/postgrex/protocol.ex:1978: Postgrex.Protocol.msg_recv/3
+      (postgrex 0.13.5) lib/postgrex/protocol.ex:589: Postgrex.Protocol.auth_recv/3
+      (postgrex 0.13.5) lib/postgrex/protocol.ex:504: Postgrex.Protocol.handshake/2
+      (db_connection 1.1.3) lib/db_connection/connection.ex:135: DBConnection.Connection.connect/2
+      (connection 1.0.4) lib/connection.ex:622: Connection.enter_connect/5
+  Last message: nil
+  State: Postgrex.Protocol
+  ** (Mix) The database for ElixirEctoPostgresql.Repo couldn't be created: an exception was raised:
+      ** (RuntimeError) Connect raised a FunctionClauseError error. The exception details are hidden, as
+  they may contain sensitive data such as database credentials.
 
-  - `config.exx` で `hostname: "192.168.96.1"` とした場合
-    ```sh
-      14:15:07.202 [error] Task #PID<0.202.0> started from #PID<0.94.0> terminating
-      ** (stop) exited in: :gen_server.call(#PID<0.203.0>, {:checkout, #Reference<0.94150901.694157317.156184>, true, 15000}, 5000)
-          ** (EXIT) time out
-          (db_connection 1.1.3) lib/db_connection/connection.ex:54: DBConnection.Connection.checkout/2
-          (db_connection 1.1.3) lib/db_connection.ex:928: DBConnection.checkout/2
-          (db_connection 1.1.3) lib/db_connection.ex:750: DBConnection.run/3
-          (db_connection 1.1.3) lib/db_connection.ex:1141: DBConnection.run_meter/3
-          (db_connection 1.1.3) lib/db_connection.ex:592: DBConnection.prepare_execute/4
-          (ecto 2.2.12) lib/ecto/adapters/postgres/connection.ex:86: Ecto.Adapters.Postgres.Connection.execute/4
-          (ecto 2.2.12) lib/ecto/adapters/postgres.ex:235: anonymous fn/2 in Ecto.Adapters.Postgres.run_query/2
-          (elixir 1.13.4) lib/task/supervised.ex:89: Task.Supervised.invoke_mfa/2
-      Function: #Function<5.77777652/0 in Ecto.Adapters.Postgres.run_query/2>
-          Args: []
-      ** (Mix) The database for ElixirEctoPostgresql.Repo couldn't be created: exited in: :gen_server.call(#PID<0.203.0>, {:checkout, #Reference<0.94150901.694157317.156184>, true, 15000}, 5000)
-          ** (EXIT) time out
-    ```
+          (postgrex 0.13.5) lib/postgrex/messages.ex:371: Postgrex.Messages.decode_auth_type/1
+          (postgrex 0.13.5) lib/postgrex/messages.ex:64: Postgrex.Messages.parse/3
+          (postgrex 0.13.5) lib/postgrex/protocol.ex:2004: Postgrex.Protocol.msg_decode/1
+          (postgrex 0.13.5) lib/postgrex/protocol.ex:1978: Postgrex.Protocol.msg_recv/3
+          (postgrex 0.13.5) lib/postgrex/protocol.ex:589: Postgrex.Protocol.auth_recv/3
+          (postgrex 0.13.5) lib/postgrex/protocol.ex:504: Postgrex.Protocol.handshake/2
+          (db_connection 1.1.3) lib/db_connection/connection.ex:135: DBConnection.Connection.connect/2
+          (connection 1.0.4) lib/connection.ex:622: Connection.enter_connect/5
+  ```
+
 
 ## ■ 方法
 
@@ -108,6 +106,8 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
 
     1. PostgreSQL サーバーを起動する<br>
         ```sh
+        rm -rf postgresql/db
+        mkdir -p postgresql/db
         docker-compose -f docker-compose.yml stop
         docker-compose -f docker-compose.yml up -d
         ```
@@ -273,8 +273,7 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
       database: "elixir_ecto_postgresql_repo",
       username: "postgres",
       password: "1234",
-      #hostname: "localhost"
-      hostname: "192.168.96.1"
+      hostname: "localhost"
 
     config :elixir_ecto_postgresql, ecto_repos: [ElixirEctoPostgresql.Repo]
     ```
@@ -298,18 +297,42 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
       >     config :elixir_ecto_postgresql, ecto_repos: [...]
       > ```
 
-    - `hostname: "localhost"` に設定すると、後述の DB 作成時に以下のエラーが発生したので、`hostname: "192.168.96.1"` に設定した
+1. PostgreSQL データベースを作成する<br>
+    ```sh
+    mix ecto.create
+    ```
+
+    - [Todo] 上記コマンド実行時に以下のエラーがでてデータベースが作成できないので、これを解決する
+
       ```sh
-      14:00:06.437 [error] GenServer #PID<0.246.0> terminating
-      ** (Postgrex.Error) FATAL 28000 (invalid_authorization_specification): no pg_hba.conf entry for host "192.168.96.1", user "postgres", database "postgres", no encryption
-          (db_connection 1.1.3) lib/db_connection/connection.ex:163: DBConnection.Connection.connect/2
+      21:59:55.967 [error] GenServer #PID<0.203.0> terminating
+      ** (RuntimeError) Connect raised a FunctionClauseError error. The exception details are hidden, as
+      they may contain sensitive data such as database credentials.
+
+          (postgrex 0.13.5) lib/postgrex/messages.ex:371: Postgrex.Messages.decode_auth_type/1
+          (postgrex 0.13.5) lib/postgrex/messages.ex:64: Postgrex.Messages.parse/3
+          (postgrex 0.13.5) lib/postgrex/protocol.ex:2004: Postgrex.Protocol.msg_decode/1
+          (postgrex 0.13.5) lib/postgrex/protocol.ex:1978: Postgrex.Protocol.msg_recv/3
+          (postgrex 0.13.5) lib/postgrex/protocol.ex:589: Postgrex.Protocol.auth_recv/3
+          (postgrex 0.13.5) lib/postgrex/protocol.ex:504: Postgrex.Protocol.handshake/2
+          (db_connection 1.1.3) lib/db_connection/connection.ex:135: DBConnection.Connection.connect/2
           (connection 1.0.4) lib/connection.ex:622: Connection.enter_connect/5
-          (stdlib 4.0.1) proc_lib.erl:240: :proc_lib.init_p_do_apply/3
       Last message: nil
       State: Postgrex.Protocol
-      ** (Mix) The database for ElixirEctoPostgresql.Repo couldn't be created: FATAL 28000 (invalid_authorization_specification): no pg_hba.conf entry for host "192.168.96.1", user "postgres", database "postgres", no encryption
-      ```
+      ** (Mix) The database for ElixirEctoPostgresql.Repo couldn't be created: an exception was raised:
+          ** (RuntimeError) Connect raised a FunctionClauseError error. The exception details are hidden, as
+      they may contain sensitive data such as database credentials.
 
+              (postgrex 0.13.5) lib/postgrex/messages.ex:371: Postgrex.Messages.decode_auth_type/1
+              (postgrex 0.13.5) lib/postgrex/messages.ex:64: Postgrex.Messages.parse/3
+              (postgrex 0.13.5) lib/postgrex/protocol.ex:2004: Postgrex.Protocol.msg_decode/1
+              (postgrex 0.13.5) lib/postgrex/protocol.ex:1978: Postgrex.Protocol.msg_recv/3
+              (postgrex 0.13.5) lib/postgrex/protocol.ex:589: Postgrex.Protocol.auth_recv/3
+              (postgrex 0.13.5) lib/postgrex/protocol.ex:504: Postgrex.Protocol.handshake/2
+              (db_connection 1.1.3) lib/db_connection/connection.ex:135: DBConnection.Connection.connect/2
+              (connection 1.0.4) lib/connection.ex:622: Connection.enter_connect/5
+      ```
+      
 1. マイグレーションファイルを作成する<br>
     以下のコマンドを実行することで、`priv/repo/migrations` ディレクトリ以下に、マイグレーションファイルが作成される
     ```sh
@@ -348,53 +371,7 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
     end
     ```
 
-    - `person_schema` は、Ecto.Schema で定義する
-
-1. Schema を定義したスクリプトを作成する<br>
-    Schema を定義した `lib/${PROJECT_NAME}/person_schema.ex` を作成する
-    ```ex
-    defmodule ElixirEctoPostgresql.PersonSchema do
-      # `use Ecto.Schema` で、Ecto.Schema を再定義することで、独自の Schema 定義を行っている
-      use Ecto.Schema
-
-      # PosgreSQL DB に反映するためのテーブル定義
-      schema "person_schema" do
-        field :name, :string
-        field :age, :integer
-      end
-    end
-    ```
-
-    ポイントは、以下の通り
-
-    - `use Ecto.Schema` で、Ecto.Schema を再定義することで、独自の Schema 定義を行っている
-
-    - `schema "person_schema" do ... end` の部分で、PosgreSQL DB に反映するためのテーブル定義を行っている
-
-1. PostgreSQL データベースを作成する<br>
-    ```sh
-    mix ecto.create
-    ```
-
-    - [Todo] 上記コマンド実行時に以下のエラーがでてデータベースが作成できないので、これを解決する
-
-      ```sh
-      14:15:07.202 [error] Task #PID<0.202.0> started from #PID<0.94.0> terminating
-      ** (stop) exited in: :gen_server.call(#PID<0.203.0>, {:checkout, #Reference<0.94150901.694157317.156184>, true, 15000}, 5000)
-          ** (EXIT) time out
-          (db_connection 1.1.3) lib/db_connection/connection.ex:54: DBConnection.Connection.checkout/2
-          (db_connection 1.1.3) lib/db_connection.ex:928: DBConnection.checkout/2
-          (db_connection 1.1.3) lib/db_connection.ex:750: DBConnection.run/3
-          (db_connection 1.1.3) lib/db_connection.ex:1141: DBConnection.run_meter/3
-          (db_connection 1.1.3) lib/db_connection.ex:592: DBConnection.prepare_execute/4
-          (ecto 2.2.12) lib/ecto/adapters/postgres/connection.ex:86: Ecto.Adapters.Postgres.Connection.execute/4
-          (ecto 2.2.12) lib/ecto/adapters/postgres.ex:235: anonymous fn/2 in Ecto.Adapters.Postgres.run_query/2
-          (elixir 1.13.4) lib/task/supervised.ex:89: Task.Supervised.invoke_mfa/2
-      Function: #Function<5.77777652/0 in Ecto.Adapters.Postgres.run_query/2>
-          Args: []
-      ** (Mix) The database for ElixirEctoPostgresql.Repo couldn't be created: exited in: :gen_server.call(#PID<0.203.0>, {:checkout, #Reference<0.94150901.694157317.156184>, true, 15000}, 5000)
-          ** (EXIT) time out
-      ```
+    - `person_table` の部分は、テーブル名
 
 1. マイグレーションを実行し、PostgreSQL データベース内にテーブルを作成する
     マイグレーションファイルに、テーブルデータを作成する `create table` を定義しているので、マイグレーションを実行することにより、PostgreSQL データベースにテーブルデータを作成することができる

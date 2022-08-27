@@ -404,8 +404,10 @@ AIプロダクト開発のための Tips 集。<br>
         - [PostgreSQL CLI を使用して PostgreSQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/80)
         - [PostgreSQL CLI を使用して PostgreSQL データベースの CRUD 処理を行う（docker 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/81)
         - [alembic を使用して PostgreSQL データベースの DB マイグレーションを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/84)
-        - [[In-progress] Elixer 言語において Ecto の Ecto.Repo を使用して PostgreSQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/92)
-        - [[In-progress] Elixer 言語において Ecto の Ecto.Schema で定義したテーブルデータの内容を PostgreSQL データベースに反映する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/93)
+        - [[In-progress] Elixir 言語において Ecto の Ecto.Repo を使用して PostgreSQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/92)
+        - [[In-progress] Elixir 言語において Ecto の Ecto.Schema で定義したテーブルデータの内容を PostgreSQL データベースのテーブルに追加する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/93)
+        - [Elixir 言語において Phoenix 版 Ecto の Ecto.Repo を使用して PostgreSQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/94)
+        - [Elixir 言語において Phoenix 版 Ecto の Ecto.Schema で定義したテーブルデータの内容を PostgreSQL データベースのテーブルに追加する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/95)
     - 【GCP】Google Cloud SQL
         - [【GCP】Google Cloud SQL の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/56)
         - [【GCP】Google Cloud SQL を使用して SQL インスタンス上の MySQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/57)

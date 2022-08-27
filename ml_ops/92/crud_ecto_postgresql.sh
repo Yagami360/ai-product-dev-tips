@@ -25,7 +25,8 @@ fi
 #=============================
 # PostgreSQL
 #=============================
-mkdir -p postgresql
+mkdir -p postgresql/db
+rm -rf postgresql/db
 
 # PostgreSQL サーバー起動
 docker-compose -f docker-compose.yml stop
@@ -99,6 +100,9 @@ cd ${PROJECT_NAME}
 # config.exs を修正する
 :
 
+# PostgreSQL データベースを作成する
+mix ecto.create
+
 # マイグレーションファイルを作成する
 mix ecto.gen.migration ${MIGRATION_NAME}
 
@@ -106,11 +110,7 @@ mix ecto.gen.migration ${MIGRATION_NAME}
 :
 
 # マイグレーションを実行し、PostgreSQL データベース内にテーブルを作成する
-mix ecto.gen.migration
-#mix ecto.gen.migration ${TABLE_NAME}
-
-# PostgreSQL データベースを作成する
-mix ecto.create
+mix ecto.migrate
 
 # PosgreSQL サーバーにログイン
 #docker exec -it postgresql-container /bin/bash -c "psql -h localhost -U postgres"

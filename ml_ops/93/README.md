@@ -1,6 +1,6 @@
-# Elixer 言語において Ecto の Ecto.Schema で定義したテーブルデータを PosgreSQL データベースに反映する
+# Elixir 言語において Ecto の Ecto.Schema で定義したテーブルデータを PosgreSQL データベースに反映する
 
-Ecto は、Elixer における各種データベース（PostgreSQL や MySQL など。デフォルトは PostgreSQL）の操作を共通のインターフェイスで操作可能なラッパーライブラリである。
+Ecto は、Elixir における各種データベース（PostgreSQL や MySQL など。デフォルトは PostgreSQL）の操作を共通のインターフェイスで操作可能なラッパーライブラリである。
 
 Ecto は大きくわけて以下の4つの構成要素から構成される。
 
@@ -37,6 +37,7 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
             environment:
               - POSTGRES_PASSWORD=1234    # sudo ユーザのパスワード
               - POSTGRES_USER=postgres    # sudo ユーザのユーザ名（デフォルト : postgres）
+              - POSTGRES_DB=elixir_ecto_postgresql_db   # PosgreSQL DB 名（省略すると USER 名と同じもの）
             command: -c 'config_file=/etc/postgresql/postgresql.conf'
         ```
 
@@ -73,9 +74,15 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
 
     1. PostgreSQL サーバーを起動する<br>
         ```sh
+        rm -rf postgresql/db
+        mkdir -p postgresql/db
+
+        # PostgreSQL サーバーを起動する
         docker-compose -f docker-compose.yml stop
         docker-compose -f docker-compose.yml up -d
         ```
+
+        > PosgreSQL サーバーのデータベースディレクトリ `/var/lib/postgresql/data/` とローカルディレクトリ `postgresql/db` ディレクトリを共有しているので、PostgreSQL サーバー起動前にこのローカルディレクトリを削除しないと、PosgreSQL 内に新たなデータベースを作成できなくなることに注意
 
 1. Elixir をインストールする<br>
     - MacOS の場合<br>
@@ -138,8 +145,10 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
     `mix.exe` の `defp deps` に部分を以下のように修正する
     ```sh
     defp deps do
-      [{:ecto, "~> 2.0"},
-      {:postgrex, "~> 0.11"}]
+      [
+        {:ecto, "~> 2.0"},
+        {:postgrex, "~> 0.11"}
+      ]
     end
     ```
 
@@ -150,7 +159,7 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
     mix deps.get
     ```
 
-    > deps ディレクトリ以下に各種ライブラリがインストールされｒｙ
+    > deps ディレクトリ以下に各種ライブラリがインストールされる
 
 1. Repo モジュールと config を作成する<br>
     以下のコマンドを実行することで、Repo モジュールを定義した `lib/${PROJECT_NAME}/repo.ex` と、そのコンフィグ情報を定義した `config/config.exs` が自動的に作成される。
@@ -238,8 +247,7 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
       database: "elixir_ecto_postgresql_repo",
       username: "postgres",
       password: "1234",
-      #hostname: "localhost"
-      hostname: "192.168.96.1"
+      hostname: "localhost"
 
     config :elixir_ecto_postgresql, ecto_repos: [ElixirEctoPostgresql.Repo]
     ```
@@ -263,18 +271,6 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
       >     config :elixir_ecto_postgresql, ecto_repos: [...]
       > ```
 
-    - `hostname: "localhost"` に設定すると、後述の DB 作成時に以下のエラーが発生したので、`hostname: "192.168.96.1"` に設定した
-      ```sh
-      14:00:06.437 [error] GenServer #PID<0.246.0> terminating
-      ** (Postgrex.Error) FATAL 28000 (invalid_authorization_specification): no pg_hba.conf entry for host "192.168.96.1", user "postgres", database "postgres", no encryption
-          (db_connection 1.1.3) lib/db_connection/connection.ex:163: DBConnection.Connection.connect/2
-          (connection 1.0.4) lib/connection.ex:622: Connection.enter_connect/5
-          (stdlib 4.0.1) proc_lib.erl:240: :proc_lib.init_p_do_apply/3
-      Last message: nil
-      State: Postgrex.Protocol
-      ** (Mix) The database for ElixirEctoPostgresql.Repo couldn't be created: FATAL 28000 (invalid_authorization_specification): no pg_hba.conf entry for host "192.168.96.1", user "postgres", database "postgres", no encryption
-      ```
-
 1. Schema を定義したスクリプトを作成する<br>
     Schema を定義した `lib/${PROJECT_NAME}/person_schema.ex` を作成する
     ```ex
@@ -295,6 +291,12 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
     - `use Ecto.Schema` で、Ecto.Schema を再定義することで、独自の Schema 定義を行っている
 
     - `schema "person_schema" do ... end` の部分で、PosgreSQL DB に反映するためのテーブル定義を行っている
+
+1. PosgreSQL サーバーにデータベースを作成する<br>
+    ```sh
+    cd ${PROJECT_NAME}
+    mix ecto.create
+    ```
 
 1. Elixir shell を起動する
     ```sh
