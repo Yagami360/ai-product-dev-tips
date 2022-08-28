@@ -1,4 +1,4 @@
-# Elixir 言語において Phoenix 版 Ecto の Ecto.Schema で定義したテーブルデータの内容を PostgreSQL データベースのテーブルに追加する
+# Elixir 言語において Phoenix 版 Ecto の Ecto.Query を使用して PosgreSQL DB のテーブルデータを取り出す
 
 Ecto は、Elixer における各種データベース（PostgreSQL や MySQL など。デフォルトは PostgreSQL）の操作を共通のインターフェイスで操作可能なラッパーライブラリである。
 
@@ -15,11 +15,10 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
   PosgreSQL データベースのテーブルデータの一部の列のみを変更する処理（changeset）などで使用する
 
 - Ecto.Query<br>
-  データベースへの問い合わせは、まず Query を構築してから、次に Ecto.Repo に Query を渡してデータベースへの問い合わせを実行する、というステップを踏む
+  PosgreSQL データベースへの問い合わせ（クエリ）を行う際に使用する。
+  データベースへの問い合わせは、まず Ecto.Query オブジェクトを作成してから、次に Ecto.Repo にこの Ecto.Query オブジェクトを渡してデータベースへの問い合わせを実行する、というステップを踏む
 
-
-「[Elixir 言語において Ecto の Ecto.Schema で定義したテーブルデータの内容を PostgreSQL データベースに反映する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/93)」では、オリジナルの Ecto の Ecto.Schema を使用して、テーブルデータ（Schema）を PosgreSQL データベースに反映する方法を記載したが、ここでは、
-ここでは、Phoenix にインストール済みの Ecto の Ecto.Schema を使用して、テーブルデータ（Schema）を PosgreSQL データベースのテーブルに反映する方法を記載する
+ここでは、Phoenix にインストール済みの Ecto の Ecto.Query を使用して PosgreSQL DB のテーブルデータを 取り出す
 
 ## ■ 方法
 
@@ -224,8 +223,8 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
         mix ecto.migrate
         ```
 
-1. Schema を定義したスクリプトを作成する<br>
-    Schema を定義した `lib/${PROJECT_NAME}/person_schema.ex` を作成する
+1. Schema と Chengeset を定義したスクリプトを作成する<br>
+    Schema と Chengeset を定義した `lib/${PROJECT_NAME}/person_schema.ex` を作成する
     ```ex
     defmodule ElixirPhoenixEcto.PersonSchema do
       # `use Ecto.Schema` で、Ecto.Schema を再定義することで、独自の Schema 定義を行っている
@@ -236,14 +235,35 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
         field :name, :string
         field :age, :integer
       end
+
+      # changeset を行う関数
+      def changeset(person_schema, params \\ %{}) do
+        # Ecto.Changeset.cast() : changeset を作成する
+        #   第１引数 : Ecto.Schema オブジェクト（今回は person_schema |> のようにパイプライン演算子で渡している）
+        #   第２引数 : 値の登録や更新に使われるパラメーター
+        #   第３引数 : 変更対象（changeset）の列
+        # Ecto.Changeset.validate_required() : 
+        #   第１引数 : Ecto.Changeset.cast() の戻り値
+        #   第２引数 : validate（確認）する変更対象の列
+        person_schema
+        |> Ecto.Changeset.cast(params, [:age])
+        |> Ecto.Changeset.validate_required([:age])
+      end      
     end
     ```
 
     ポイントは、以下の通り
 
-    - `use Ecto.Schema` で、Ecto.Schema を再定義することで、独自の Schema 定義を行っている
+    - Ecto.Schema<br>
+      - `use Ecto.Schema` で、Ecto.Schema を再定義することで、独自の Schema 定義を行っている
 
-    - `schema ${TABLE_ANME} do ... end` の部分で、PosgreSQL DB のテーブルに反映する要素値の定義を行っている
+      - `schema ${TABLE_ANME} do ... end` の部分で、PosgreSQL DB のテーブルに反映する要素値の定義を行っている
+
+    - Ecto.Changeset<br>
+      - `schema "person_table" do ... end`　で定義した Schema に対して changeset を行う関数 `def changeset()` を定義することで、changeset（テーブルデータの一部の列のみ値を変更する処理）を実現する
+
+      - 具体的には、関数の内部では、`Ecto.Schema` を use したこのモジュールのオブジェクト `ElixirPhoenixEcto.PersonSchema` を引数として、`Ecto.Changeset.cast()` と `Ecto.Changeset.validate_required()` で changeset（テーブルデータの一部の列のみ値を変更する処理）を行う
+
 
 1. Elixir shell を起動する
     ```sh
@@ -251,24 +271,82 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
     iex -S mix
     ```
 
-1. 作成した Schema を PosgreSQL DB に反映する。<br>
+1. Ecto.Query を使用して、PosgreSQL DB への問い合わせを行う<br>
     Elixir shell 内にて、以下の Elixer スクリプトを実行する
     ```sh
     # Schema オブジェクト作成
     person1 = %ElixirPhoenixEcto.PersonSchema{name: "Yagami", age: 28}
     person2 = %ElixirPhoenixEcto.PersonSchema{name: "Yagoo", age: 30}
 
-    # PosgreSQL DB のテーブルに schema の内容を insert
+    # PosgreSQL DB のテーブルに schema を insert
     ElixirPhoenixEcto.Repo.insert(person1)
     ElixirPhoenixEcto.Repo.insert(person2)
     ```
 
-    Ecto.Schema で定義したテーブルデータの内容を PosgreSQL データベースのテーブルに反映する処理の流れは、以下のようになる
+    - １つ目のテーブル内容を fetch（取り出し）する問い合わせ（クエリ）の場合<br>
+      ```sh
+      iex(5)> ElixirPhoenixEcto.PersonSchema |> Ecto.Query.first |> ElixirPhoenixEcto.Repo.one
+      [debug] QUERY OK source="person_table" db=5.9ms queue=2.1ms idle=1588.3ms
+      SELECT p0."id", p0."name", p0."age" FROM "person_table" AS p0 ORDER BY p0."id" LIMIT 1 []
+      ↳ :erl_eval.do_apply/7, at: erl_eval.erl:744
+      %ElixirPhoenixEcto.PersonSchema{
+        __meta__: #Ecto.Schema.Metadata<:loaded, "person_table">,
+        age: 28,
+        id: 1,
+        name: "Yagami"
+      }
+      ```
 
-    1. Ecto.Schema を use した Schema モジュール内で `schema xxx do .. end` を定義
-    1. このモジュールに対する Schema オブジェクトを作成
-    1. Ecto.Repo の `insert()` 関数に、この Schema オブジェクトを指定し、Schema オブジェクトの内容を PosgreSQL データベースのテーブルに反映する
+    - 最後のテーブル内容を fetch（取り出し）する問い合わせ（クエリ）の場合<br>
+      ```sh
+      iex(6)> ElixirPhoenixEcto.PersonSchema |> Ecto.Query.last |> ElixirPhoenixEcto.Repo.one
+      [debug] QUERY OK source="person_table" db=4.9ms queue=2.6ms idle=1068.3ms
+      SELECT p0."id", p0."name", p0."age" FROM "person_table" AS p0 ORDER BY p0."id" DESC LIMIT 1 []
+      ↳ :erl_eval.do_apply/7, at: erl_eval.erl:744
+      %ElixirPhoenixEcto.PersonSchema{
+        __meta__: #Ecto.Schema.Metadata<:loaded, "person_table">,
+        age: 30,
+        id: 2,
+        name: "Yagoo"
+      }
+      ```
 
+    - id で fetch（取り出し）する問い合わせ（クエリ）の場合<br>
+      ```sh
+      iex(7)> ElixirPhoenixEcto.PersonSchema |> ElixirPhoenixEcto.Repo.get(1)
+      [debug] QUERY OK source="person_table" db=6.5ms queue=2.2ms idle=1918.9ms
+      SELECT p0."id", p0."name", p0."age" FROM "person_table" AS p0 WHERE (p0."id" = $1) [1]
+      ↳ :erl_eval.do_apply/7, at: erl_eval.erl:744
+      %ElixirPhoenixEcto.PersonSchema{
+        __meta__: #Ecto.Schema.Metadata<:loaded, "person_table">,
+        age: 28,
+        id: 1,
+        name: "Yagami"
+      }
+      ```
+
+    - テーブルの項目の値で fetch（取り出し）する問い合わせ（クエリ）の場合<br>
+      ```sh
+      iex(8)> ElixirPhoenixEcto.PersonSchema |> ElixirPhoenixEcto.Repo.get_by(name: "Yagami")
+      [debug] QUERY OK source="person_table" db=3.8ms queue=5.7ms idle=1449.2ms
+      SELECT p0."id", p0."name", p0."age" FROM "person_table" AS p0 WHERE (p0."name" = $1) ["Yagami"]
+      ↳ :erl_eval.do_apply/7, at: erl_eval.erl:744
+      %ElixirPhoenixEcto.PersonSchema{
+        __meta__: #Ecto.Schema.Metadata<:loaded, "person_table">,
+        age: 28,
+        id: 1,
+        name: "Yagami"
+      }
+      ```
+
+    データベースへの問い合わせは、以下の手順で行っていることに注目
+
+    1. Schema オブジェクトを、パイプライン演算子 `|>` で Ecto.Query オブジェクトへ渡し、Ecto.Query オブジェクトを作成
+    1. Ecto.Repo モジュールの各種メンバや関数（`Ecto.Repo.one`, `Ecto.Repo.get_by()` など）に、パイプライン演算子 `|>` でこの Ecto.Query オブジェクトを渡す。
+
+    > 必ずしも Ecto.Query を介して、Ecto.Repo モジュールの各種メンバや関数（`Ecto.Repo.one`, `Ecto.Repo.get_by()` など）を呼び出す必要はないことに注意。Ecto.Query を介すれば、`Ecto.Query.first` や `Ecto.Query.last` などで feach のフィルターなどができるだけ
+
+<!--
 1. PosgreSQL サーバーにログインしてデータベースとテーブルが作成されていることを確認する
     ```sh
     # PosgreSQL サーバーにログイン
@@ -346,14 +424,14 @@ Ecto は大きくわけて以下の4つの構成要素から構成される。
     ```sh
       age  
     --------
-      28
-      30
+      35
+      40
     (2 rows)
     ```
 
-    > Schcma で定義したテーブルの値がうまく追加されている
+    > changeset で変更後のテーブルの値がうまく追加されている
+-->
 
 ## ■ 参考サイト
 
 - https://qiita.com/sand/items/71d0b35d74a4781f3564#%EF%BC%94ectoschema
-- https://zenn.dev/koga1020/books/phoenix-guide-ja-1-5/viewer/ecto#%E3%82%B9%E3%82%AD%E3%83%BC%E3%83%9E
