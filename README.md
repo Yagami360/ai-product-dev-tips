@@ -410,7 +410,7 @@ AIプロダクト開発のための Tips 集。<br>
         - [Elixir 言語において Phoenix 版 Ecto の Ecto.Schema で定義したテーブルデータの内容を PostgreSQL データベースのテーブルに追加する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/95)
         - [Elixir 言語において Phoenix 版 Ecto の Ecto.Changeset を使用して PosgreSQL DB のテーブルデータの一部の列のみを変更する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/96)
         - [Elixir 言語において Phoenix 版 Ecto の Ecto.Query を使用して PosgreSQL DB のテーブルデータを取り出す](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/97)
-        - [[In-progress] Elixir 言語において Phoenix 版 Ecto の Ecto.Multi を使用して複数のテーブルデータを PosgreSQL DB に同時に追加する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/98)
+        - [Elixir 言語において Phoenix 版 Ecto の Ecto.Multi を使用して PosgreSQL DB に対しての複数のデータベース処理を１つのトランザクションで行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/98)
     - 【GCP】Google Cloud SQL
         - [【GCP】Google Cloud SQL の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/56)
         - [【GCP】Google Cloud SQL を使用して SQL インスタンス上の MySQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/57)
