@@ -144,6 +144,7 @@ AIプロダクト開発のための Tips 集。<br>
 - Cuda
 - cupy
 - OpenCV (GPU版)
+- [【Golang】goroutine と Channel を使用してマルチスレッド処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/100)
 
 </details>
 
@@ -357,14 +358,13 @@ AIプロダクト開発のための Tips 集。<br>
     - FastAPI を使用した非同期処理での Web-API の出力完了結果を Slack に通知する
 - 【Python】httpx を用いて複数の　Web-API に並列実行でリクエストする
 - 【Golang】net/http（標準ライブラリ）
-    - [net/http を使用して GET リクエストに対しての簡単な REST API を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/72)
+    - [【Golang】net/http を使用して GET リクエストに対しての簡単な REST API を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/72)
     - net/http を使用して POST リクエストに対しての簡単な REST API を作成する
 - 【Golang】Gin
-    - [Go 言語で Gin を使用して簡単な REST API を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/69)
-- 【Golang】Echo
+    - [【Golang】Gin を使用して簡単な REST API を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/69)
 - 【Elixir】Phoenix
-    - [Elixir 言語で Phoenix を使用して簡単な REST API を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/86)
-    - [[In-progress] Elixir 言語で Phoenix を使用して簡単な REST API を作成する（docker 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/83)
+    - [【Elixir】Phoenix を使用して簡単な REST API を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/86)
+    - [【Elixir】[In-progress] Phoenix を使用して簡単な REST API を作成する（docker 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/83)
 
 </details>
 
@@ -404,13 +404,13 @@ AIプロダクト開発のための Tips 集。<br>
         - [PostgreSQL CLI を使用して PostgreSQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/80)
         - [PostgreSQL CLI を使用して PostgreSQL データベースの CRUD 処理を行う（docker 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/81)
         - [alembic を使用して PostgreSQL データベースの DB マイグレーションを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/84)
-        - [[In-progress] Elixir 言語において Ecto の Ecto.Repo を使用して PostgreSQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/92)
-        - [[In-progress] Elixir 言語において Ecto の Ecto.Schema で定義したテーブルデータの内容を PostgreSQL データベースのテーブルに追加する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/93)
-        - [Elixir 言語において Phoenix 版 Ecto の Ecto.Repo を使用して PostgreSQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/94)
-        - [Elixir 言語において Phoenix 版 Ecto の Ecto.Schema で定義したテーブルデータの内容を PostgreSQL データベースのテーブルに追加する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/95)
-        - [Elixir 言語において Phoenix 版 Ecto の Ecto.Changeset を使用して PosgreSQL DB のテーブルデータの一部の列のみを変更する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/96)
-        - [Elixir 言語において Phoenix 版 Ecto の Ecto.Query を使用して PosgreSQL DB のテーブルデータを取り出す](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/97)
-        - [Elixir 言語において Phoenix 版 Ecto の Ecto.Multi を使用して PosgreSQL DB に対しての複数のデータベース処理を１つのトランザクションで行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/98)
+        - [[In-progress]【Elixir】Ecto の Ecto.Repo を使用して PostgreSQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/92)
+        - [[In-progress]【Elixir】Ecto の Ecto.Schema で定義したテーブルデータの内容を PostgreSQL データベースのテーブルに追加する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/93)
+        - [【Elixir】Phoenix 版 Ecto の Ecto.Repo を使用して PostgreSQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/94)
+        - [【Elixir】Phoenix 版 Ecto の Ecto.Schema で定義したテーブルデータの内容を PostgreSQL データベースのテーブルに追加する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/95)
+        - [【Elixir】Phoenix 版 Ecto の Ecto.Changeset を使用して PosgreSQL DB のテーブルデータの一部の列のみを変更する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/96)
+        - [【Elixir】Phoenix 版 Ecto の Ecto.Query を使用して PosgreSQL DB のテーブルデータを取り出す](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/97)
+        - [【Elixir】Phoenix 版 Ecto の Ecto.Multi を使用して PosgreSQL DB に対しての複数のデータベース処理を１つのトランザクションで行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/98)
     - 【GCP】Google Cloud SQL
         - [【GCP】Google Cloud SQL の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/56)
         - [【GCP】Google Cloud SQL を使用して SQL インスタンス上の MySQL データベースの CRUD 処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/57)
