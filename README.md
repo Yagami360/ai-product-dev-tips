@@ -13,7 +13,7 @@ AIプロダクト開発のための Tips 集。<br>
 - [【シェルスクリプト】ランダムに１００個のファイルをサンプリングする。](https://github.com/Yagami360/ai-product-dev-tips/tree/master/io_processing/4)
 - [【Python】独自の Python CLI コマンドを作成する（ローカル環境にあるファイルでインストールする場合）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/io_processing/5)
 - 【Python】独自の Python CLI コマンドを作成する（PyPI に公開したファイルでインストールする場合）
-- [【Go lang】cobra を使用して独自の Go lang CLI コマンドを使用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/io_processing/7)
+- [【Golang】cobra を使用して独自の Golang CLI コマンドを使用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/io_processing/7)
 
 </details>
 
@@ -487,6 +487,8 @@ AIプロダクト開発のための Tips 集。<br>
 <details>
 <summary>品質テスト / 負荷テスト</summary>
 
+- 単体テスト
+    - [[In-progress]【Golang】go test と go mock を使用してコードの単体テストを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/101)
 - 負荷テスト
     - 機械学習 API サーバーの負荷テストの基礎事項
     - [GKE で構成した Web API に vegeta atteck を使用して負荷テストする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/25)
