@@ -576,6 +576,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 <details>
 <summary>外部APIサービス</summary>
+
 - OpenAI API
     - [OpenAI API の使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/102)
 
