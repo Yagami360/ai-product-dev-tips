@@ -123,7 +123,10 @@ AIプロダクト開発のための Tips 集。<br>
 <details>
 <summary>自然言語処理</summary>
 
-- xxx
+- LangChain
+    - [LangChain の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/1)
+    - [【Python】LangChain Model I/O を使用して OpenAI API の LLM モデルから応答文を得る](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/2)
+    - 【Python】LangChain と LlamaIndex を使用して外部データを LLM に受け渡す
 
 </details>
 

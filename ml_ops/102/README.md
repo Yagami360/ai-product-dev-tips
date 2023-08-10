@@ -116,7 +116,7 @@ OpenAI API には様々な API があるが、ここでは、[Chat機能](https:
         exit(0)
     ```
 
-1. スプリントを実行する
+1. Python スクリプトを実行する
     ```sh
     python3 run_open_ai_api.py --openai_api_key=${OPENAI_API_KEY}
     ```
