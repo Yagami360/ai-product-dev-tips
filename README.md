@@ -578,10 +578,16 @@ AIプロダクト開発のための Tips 集。<br>
 </details>
 
 <details>
-<summary>外部APIサービス</summary>
+<summary>外部APIサービス・プラットフォームサービス</summary>
 
 - OpenAI API
     - [OpenAI API の使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/102)
+- Azure OpenAI Service
+    - Azure OpenAI Service の使用方法    
+- Hugging Face
+    - Hugging Face の概要
+    - [Hugging Face Hub の基本的な使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/104)
+    - 【Python】Huggingface Transformers の使用方法
 
 </details>
 
