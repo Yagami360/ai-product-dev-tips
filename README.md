@@ -585,9 +585,9 @@ AIプロダクト開発のための Tips 集。<br>
 - Azure OpenAI Service
     - Azure OpenAI Service の使用方法
 - Hugging Face
-    - Hugging Face の概要
+    - [[In-progress] Hugging Face の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/103)
     - [Hugging Face Hub の基本的な使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/104)
-    - 【Python】Huggingface Transformers の使用方法
+    - [【Python】Huggingface Transformers を使用して NLP モデルの推論処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/106)
     - 【Python】Hugging Face の LLM モデルを LangChain で使用する
 
 </details>
