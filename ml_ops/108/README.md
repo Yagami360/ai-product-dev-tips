@@ -238,11 +238,11 @@
         "description_for_human": "Manage your TODO list. You can add, remove and view your TODOs.",
         "description_for_model": "Plugin for managing a TODO list, you can add, remove and view your TODOs.",
         "auth": {
-        "type": "none"
+          "type": "none"
         },
         "api": {
-        "type": "openapi",
-        "url": "http://localhost:5000/openapi.yaml"
+          "type": "openapi",
+          "url": "http://localhost:5000/openapi.yaml"
         },
         "logo_url": "http://localhost:5000/logo.png",
         "contact_email": "legal@example.com",
@@ -261,68 +261,68 @@
     ```yml
     openapi: 3.0.1
     info:
-    title: TODO Plugin
-    description: A plugin that allows the user to create and manage a TODO list using ChatGPT. If you do not know the user's username, ask them first before making queries to the plugin. Otherwise, use the username "global".
-    version: 'v1'
+      title: TODO Plugin
+      description: A plugin that allows the user to create and manage a TODO list using ChatGPT. If you do not know the user's username, ask them first before making queries to the plugin. Otherwise, use the username "global".
+      version: 'v1'
     servers:
-    - url: http://localhost:5000  # API の URL
+      - url: http://localhost:5000  # API の URL
     paths:
-    # API のエンドポイント毎の定義
-    /todos/{username}:
+      # API のエンドポイント毎の定義
+      /todos/{username}:
         # GET method
         get:
-        operationId: getTodos
-        summary: Get the list of todos
-        # パスパラメータ
-        parameters:
-        - in: path
+          operationId: getTodos
+          summary: Get the list of todos
+          # パスパラメータ
+          parameters:
+          - in: path
             name: username
             schema:
-                type: string
+              type: string
             required: true
             description: The name of the user.
         # レスポンス定義
         responses:
-            # ステータスコード: 200 => {"OK", ["todo1", "todo2", ...]}
-            "200":
+          # ステータスコード: 200 => {"OK", ["todo1", "todo2", ...]}
+          "200":
             description: OK
             content:
-                # json レスポンス
-                application/json:
-                # components.schemas フィールドで定義しているものの参照
+              # json レスポンス
+              application/json:
+              # components.schemas フィールドで定義しているものの参照
                 schema:
-                    $ref: '#/components/schemas/getTodosResponse'
+                  $ref: '#/components/schemas/getTodosResponse'
         # POST method
         post:
-        operationId: addTodo
-        summary: Add a todo to the list
-        # パスパラメータ
-        parameters:
-        - in: path
+          operationId: addTodo
+          summary: Add a todo to the list
+          # パスパラメータ
+          parameters:
+          - in: path
             name: username
             schema:
-                type: string
+              type: string
             required: true
             description: The name of the user.
-        # リクエスト body 定義
-        requestBody:
+          # リクエスト body 定義
+          requestBody:
             required: true
             content:
-            application/json:
+              application/json:
                 schema:
-                $ref: '#/components/schemas/addTodoRequest'
-        # レスポンス定義
-        responses:
-            # ステータスコード: 200 => {"OK"}
-            "200":
-            description: OK
+                  $ref: '#/components/schemas/addTodoRequest'
+          # レスポンス定義
+          responses:
+              # ステータスコード: 200 => {"OK"}
+              "200":
+                description: OK
         # DELETE method
         delete:
-        operationId: deleteTodo
-        summary: Delete a todo from the list
-        # パスパラメータ
-        parameters:
-        - in: path
+          operationId: deleteTodo
+          summary: Delete a todo from the list
+          # パスパラメータ
+          parameters:
+          - in: path
             name: username
             schema:
                 type: string
@@ -330,45 +330,45 @@
             description: The name of the user.
         # リクエスト body 定義
         requestBody:
-            required: true
-            content:
+          required: true
+          content:
             application/json:
-                schema:
+              schema:
                 $ref: '#/components/schemas/deleteTodoRequest'
         # レスポンス定義
         responses:
-            # ステータスコード :200 => {"OK"}
-            "200":
+          # ステータスコード :200 => {"OK"}
+          "200":
             description: OK
 
     components:
-    # スキーマ（レスポンスやリクエストbody）定義
-    schemas:
+      # スキーマ（レスポンスやリクエストbody）定義
+      schemas:
         getTodosResponse:
-        type: object
-        # json レスポンスの形式
-        properties:
+          type: object
+          # json レスポンスの形式
+          properties:
             todos:
             type: array
             items:
-                type: string
+              type: string
             description: The list of todos.
         addTodoRequest:
-        type: object
-        # リクエスト body に "todo" 必要
-        required:
-        - todo
-        properties:
+          type: object
+          # リクエスト body に "todo" 必要
+          required:
+          - todo
+          properties:
             todo:
             type: string
             description: The todo to add to the list.
             required: true
         deleteTodoRequest:
-        type: object
-        # リクエスト body に "todo_idx" 必要
-        required:
-        - todo_idx
-        properties:
+          type: object
+          # リクエスト body に "todo_idx" 必要
+          required:
+          - todo_idx
+          properties:
             todo_idx:
             type: integer
             description: The index of the todo to delete.
