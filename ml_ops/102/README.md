@@ -1,4 +1,4 @@
-# OpenAI API の使用方法
+# 【CLI/Python】OpenAI API の使用方法
 
 OpenAI API は、API 経由で OpenAI が開発いている LLM モデルの推論が簡単に使用できる API サービス<br>
 利用可能な言語モデルは、[OpenAI Platform](https://platform.openai.com/docs/models/overview) に記載されている。<br>

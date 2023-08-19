@@ -1,0 +1,114 @@
+openapi: 3.0.1
+info:
+  title: TODO Plugin
+  description: A plugin that allows the user to create and manage a TODO list using ChatGPT. If you do not know the user's username, ask them first before making queries to the plugin. Otherwise, use the username "global".
+  version: 'v1'
+servers:
+  - url: http://localhost:5000  # API の URL
+paths:
+  # API のエンドポイント毎の定義
+  /todos/{username}:
+    # GET method
+    get:
+      operationId: getTodos
+      summary: Get the list of todos
+      # パスパラメータ
+      parameters:
+      - in: path
+        name: username
+        schema:
+            type: string
+        required: true
+        description: The name of the user.
+      # レスポンス定義
+      responses:
+        # ステータスコード: 200 => {"OK", ["todo1", "todo2", ...]}
+        "200":
+          description: OK
+          content:
+            # json レスポンス
+            application/json:
+              # components.schemas フィールドで定義しているものの参照
+              schema:
+                $ref: '#/components/schemas/getTodosResponse'
+    # POST method
+    post:
+      operationId: addTodo
+      summary: Add a todo to the list
+      # パスパラメータ
+      parameters:
+      - in: path
+        name: username
+        schema:
+            type: string
+        required: true
+        description: The name of the user.
+      # リクエスト body 定義
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/addTodoRequest'
+      # レスポンス定義
+      responses:
+        # ステータスコード: 200 => {"OK"}
+        "200":
+          description: OK
+    # DELETE method
+    delete:
+      operationId: deleteTodo
+      summary: Delete a todo from the list
+      # パスパラメータ
+      parameters:
+      - in: path
+        name: username
+        schema:
+            type: string
+        required: true
+        description: The name of the user.
+      # リクエスト body 定義
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/deleteTodoRequest'
+      # レスポンス定義
+      responses:
+        # ステータスコード :200 => {"OK"}
+        "200":
+          description: OK
+
+components:
+  # スキーマ（レスポンスやリクエストbody）定義
+  schemas:
+    getTodosResponse:
+      type: object
+      # json レスポンスの形式
+      properties:
+        todos:
+          type: array
+          items:
+            type: string
+          description: The list of todos.
+    addTodoRequest:
+      type: object
+      # リクエスト body に "todo" 必要
+      required:
+      - todo
+      properties:
+        todo:
+          type: string
+          description: The todo to add to the list.
+          required: true
+    deleteTodoRequest:
+      type: object
+      # リクエスト body に "todo_idx" 必要
+      required:
+      - todo_idx
+      properties:
+        todo_idx:
+          type: integer
+          description: The index of the todo to delete.
+          required: true

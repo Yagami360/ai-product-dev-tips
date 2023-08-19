@@ -1,0 +1,17 @@
+version: '3.4'
+
+services:
+  chatgpt-plugin-api-server:
+    container_name: chatgpt-plugin-api-server
+    image: chatgpt-plugin-api-server
+    build:
+      context: "."
+      dockerfile: Dockerfile
+    volumes:
+      - ${PWD}:/app
+    ports:
+      - "5000:5000"
+    tty: true
+    environment:
+      LOG_LEVEL: DEBUG
+    command: python3 app.py

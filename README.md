@@ -581,12 +581,13 @@ AIプロダクト開発のための Tips 集。<br>
 <summary>外部APIサービス・外部プラットフォームサービス</summary>
 
 - OpenAI API
-    - [OpenAI API の使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/102)
+    - [【CLI/Python】OpenAI API の使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/102)
+    - [[In-progress]【Python】ChatGPT plugins を利用＆作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/108)
 - Azure OpenAI Service
     - Azure OpenAI Service の使用方法
 - Hugging Face
     - [Hugging Face の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/103)
-    - [Hugging Face Hub の基本的な使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/104)
+    - [【CLI/Python】Hugging Face Hub の基本的な使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/104)
     - [【Python】Huggingface Transformers を使用して NLP モデルの推論処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/106)
     - [【Python】Hugging Face Spaces を利用して簡単な機械学習デモアプリを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/107)
     - 【Python】Hugging Face の LLM モデルを LangChain で使用する

@@ -1,0 +1,7 @@
+Flask~=2.3.2
+Flask-Cors~=4.0.0
+Pillow~=10.0.0
+black~=22.0
+flake8>=3.7.9, <5.0
+isort~=5.0
+requests>=2.23.0

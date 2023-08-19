@@ -4,10 +4,8 @@
 *.xlsx
 *.lnk
 *.ini
-*.png
 *.code-workspace
 *.pt
-*.json
 *.local
 *.out
 *.pth

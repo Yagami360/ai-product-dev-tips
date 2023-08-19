@@ -1,4 +1,4 @@
-# Hugging Face Hub の基本的な使用方法
+# 【CLI/Python】Hugging Face Hub の基本的な使用方法
 
 ## 使用方法
 
