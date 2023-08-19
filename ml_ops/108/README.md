@@ -281,15 +281,15 @@
               type: string
             required: true
             description: The name of the user.
-        # レスポンス定義
-        responses:
-          # ステータスコード: 200 => {"OK", ["todo1", "todo2", ...]}
-          "200":
-            description: OK
-            content:
-              # json レスポンス
-              application/json:
-              # components.schemas フィールドで定義しているものの参照
+          # レスポンス定義
+          responses:
+            # ステータスコード: 200 => {"OK", ["todo1", "todo2", ...]}
+            "200":
+              description: OK
+              content:
+                # json レスポンス
+                application/json:
+                # components.schemas フィールドで定義しているものの参照
                 schema:
                   $ref: '#/components/schemas/getTodosResponse'
         # POST method
@@ -328,18 +328,18 @@
                 type: string
             required: true
             description: The name of the user.
-        # リクエスト body 定義
-        requestBody:
-          required: true
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/deleteTodoRequest'
-        # レスポンス定義
-        responses:
-          # ステータスコード :200 => {"OK"}
-          "200":
-            description: OK
+          # リクエスト body 定義
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/deleteTodoRequest'
+          # レスポンス定義
+          responses:
+            # ステータスコード :200 => {"OK"}
+            "200":
+              description: OK
 
     components:
       # スキーマ（レスポンスやリクエストbody）定義
