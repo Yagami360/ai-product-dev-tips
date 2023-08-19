@@ -211,16 +211,16 @@
         version: '3.4'
 
         services:
-        chatgpt-plugin-api-server:
+          chatgpt-plugin-api-server:
             container_name: chatgpt-plugin-api-server
             image: chatgpt-plugin-api-server
             build:
-            context: "."
-            dockerfile: Dockerfile
+              context: "."
+              dockerfile: Dockerfile
             volumes:
-            - ${PWD}:/app
+              - ${PWD}:/app
             ports:
-            - "5000:5000"
+              - "5000:5000"
             tty: true
             environment:
             LOG_LEVEL: DEBUG
