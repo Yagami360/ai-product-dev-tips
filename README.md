@@ -127,6 +127,7 @@ AIプロダクト開発のための Tips 集。<br>
     - [LangChain の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/1)
     - [【Python】LangChain Model I/O を使用して OpenAI API の LLM モデルから応答文を得る](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/2)
     - [【Python】LangChain Retrievers を使用して LLM が学習に使用していない独自ドメインでの外部データに対しての LLM の応答文を得る](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/3)
+    - [[In-progress]【Python】LangSmith を使用して UI コンソール上から LLM アプリケーションの実行トレースと実行ログを確認する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/5)
 
 </details>
 

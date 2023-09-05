@@ -40,7 +40,6 @@ LangChain は、OpenAI API などの LLM API のラッパーライブラリで�
     >   LLM における インデックス化とは、あらかじめシステムに情報を用意しておき、ユーザーの入力に応じて抜粋した情報と合わせてプロンプトとして LLM にわたす手法。
     >   具体的には、PDF や CSV などの外部データを用いて LLM の回答を生成する機能で、上記 Data connection の機能がインデックス化に対応している<br>
 
-
 1. Chains<br>
     複数のプロンプト入力を実行するための機能
 
@@ -49,6 +48,9 @@ LangChain は、OpenAI API などの LLM API のラッパーライブラリで�
 1. Memory<br>
 
 1. Callbacks<br>
+
+1. LangSmith<br>
+    LangSmith は、2023/7/21 月頃に新規追加された LangChain の機能（2023/08/26 時点では、クローズドベータ版機能）の１つで、LLM アプリケーションの本番運用のための便利機能（LLM アプリケーション実行トレースや実行ログのモニタリング機能など）を織り込んだ UI コンソール付きのモジュールになっている。
 
 ## 参加サイト
 - https://python.langchain.com/docs/get_started/introduction.html
