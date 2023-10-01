@@ -7,8 +7,8 @@ LangSmith は、2023/7/21 月頃に新規追加された LangChain の機能（2
     具体的には、LangChain で実装した LLM アプリケーションの各コンポーネントの入力と出力の実行トレースや実行ログを UI コンソール上で確認することができる<br>
     <img width="800" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/5f8dd200-05e4-44a1-8863-7b553389b79b"><br>
 
-    また、LLM アプリケーションを一度実行し実行トレースを取得できれば、LLM アプリケーション内部で使用している LLM モデルのパラメーター（temperature など）を LangSmith コンソール UI 上から直接変更して、LLM アプリケーションの出力がどうなるかを確認できる。
-    <img width="800" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/8b3fa58f-f025-4d30-966a-e3f05b3253e7">
+    また、LLM アプリケーションを一度実行し実行トレースを取得できれば、LLM アプリケーション内部で使用している LLM モデルのパラメーター（temperature など）を LangSmith コンソール UI 上から直接変更して、LLM アプリケーションの出力がどうなるかを確認できる。<br>
+    <img width="800" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/8b3fa58f-f025-4d30-966a-e3f05b3253e7"><br>
     
 - LLM アプリケーションの出力をデータセットとして保存＆収集する機能<br>
     LLM アプリケーションの実行ログの出力結果をデータセットとして保存することができる。<br>

@@ -1,4 +1,11 @@
-# 【Python】 LangChain Model I/O を使用して OpenAI API の LLM モデルから応答文を得る
+# 【Python】 LangChain Language models を使用して OpenAI API の LLM モデルから応答文を得る
+
+1. Model I/O<br>
+    <img width="700" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/e105f560-624f-4b16-89de-a338df5ca75d"><br>
+    LLM とのインターフェースモジュール<br>
+
+    - Language models<br>
+        OpenAI API の LLM モデル（GPT-3.5 など）や他の LLM モデルのラッパーモジュール。その企業の LLM モデルによって、API のライブラリや呼び出し方が異なるが、LangChain を使用するととで同じ手続きで LLM を使用できるようになるメリットがある
 
 ## 使用方法
 

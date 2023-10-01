@@ -1,0 +1,12 @@
+{
+    "input_variables": [
+        "keyword1",
+        "keyword2"
+    ],
+    "output_parser": null,
+    "partial_variables": {},
+    "template": "{keyword1}\u3068{keyword2}\u306b\u3064\u3044\u3066\u6559\u3048\u3066\u304f\u3060\u3055\u3044",
+    "template_format": "f-string",
+    "validate_template": true,
+    "_type": "prompt"
+}

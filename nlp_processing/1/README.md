@@ -9,13 +9,20 @@ LangChain は、OpenAI API などの LLM API のラッパーライブラリで�
 
     - Prompts<br>
         プロンプト（LLMモデルへの入力文章。特にLLMモデルの応答を導くためにユーザーによって提供される一連の指示や入力）のラッパーモジュール<br>
-        具体的には、プロンプトのテンプレート化や Zero-shot, Few-shot learning などの機能を提供している
+        具体的には、プロンプトのテンプレート化（Prompt templates）や Zero-shot, Few-shot learning などの機能を提供している。<br>
+        LangChain Prompt には、以下の機能ある
 
-    - Language models
-        OpenAI API の LLM モデル（GPT-3.5 など）や他の LLM モデルのラッパーモジュール<br>
-        その企業の LLM モデルによって、API のライブラリや呼び出し方が異なるが、LangChain を使用するととで同じ手続きで LLM を使用できるようになるメリットがある
+        - Prompt templates<br>
+            LLM 用のプロンプトを生成するためのあらかじめ定義されたテンプレートを提供する機能
 
-    - Output parsers
+        - Example selectors<br>
+            大量の教師データからプロンプトに入力するデータを選択するための機能
+
+    - Language models<br>
+        OpenAI API の LLM モデル（GPT-3.5 など）や他の LLM モデルのラッパーモジュール。その企業の LLM モデルによって、API のライブラリや呼び出し方が異なるが、LangChain を使用するととで同じ手続きで LLM を使用できるようになるメリットがある
+
+    - Output parsers<br>
+        出力のデータ形式を指定するための機能
 
 1. Data connection<br>
     <img width="700" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/2195a553-b688-4f91-8212-d0e0ab0a5ba6"><br>

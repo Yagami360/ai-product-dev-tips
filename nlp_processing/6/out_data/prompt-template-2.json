@@ -1,0 +1,36 @@
+{
+    "input_variables": [
+        "input"
+    ],
+    "output_parser": null,
+    "partial_variables": {},
+    "examples": [
+        {
+            "keyword1": "cat",
+            "keyword2": "\u732b"
+        },
+        {
+            "keyword1": "dog",
+            "keyword2": "\u72ac"
+        }
+    ],
+    "example_selector": null,
+    "validate_template": true,
+    "example_prompt": {
+        "input_variables": [
+            "keyword1",
+            "keyword2"
+        ],
+        "output_parser": null,
+        "partial_variables": {},
+        "template": "\n    \u82f1\u8a9e: {keyword1}\n    \u65e5\u672c\u8a9e: {keyword2}\n\n    ",
+        "template_format": "f-string",
+        "validate_template": true,
+        "_type": "prompt"
+    },
+    "suffix": "\u82f1\u8a9e : {input}\n",
+    "example_separator": "\n\n",
+    "prefix": "\u82f1\u8a9e\u3092\u65e5\u672c\u8a9e\u306b\u7ffb\u8a33\u3057\u3066\u304f\u3060\u3055\u3044",
+    "template_format": "f-string",
+    "_type": "few_shot"
+}
