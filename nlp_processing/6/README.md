@@ -2,15 +2,13 @@
 
 LangChain Prompt には、以下の２種類の機能が存在する
 
-- Prompt templates
+- Prompt templates<br>
     LLM 用のプロンプトを生成するためのあらかじめ定義されたテンプレートを提供する機能
 
-- Example selectors
-    大量の教師データからプロンプトに入力するデータを選択するための機能
+- Example selectors<br>
+    大量の教師データ（正解例）からプロンプトに入力するデータを選択するための機能。Few-shot learning（いくつかの正解例を与えた後に、質問文を投げる形式）の文脈等での利用を想定した機能
 
 ここでは、Prompt templates の使用方法を説明する
-
-## 
 
 ## 使用法
 

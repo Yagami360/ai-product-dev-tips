@@ -16,7 +16,7 @@ LangChain は、OpenAI API などの LLM API のラッパーライブラリで�
             LLM 用のプロンプトを生成するためのあらかじめ定義されたテンプレートを提供する機能
 
         - Example selectors<br>
-            大量の教師データからプロンプトに入力するデータを選択するための機能
+            大量の教師データ（正解例）からプロンプトに入力するデータを選択するための機能。Few-shot learning（いくつかの正解例を与えた後に、質問文を投げる形式）の文脈等での利用を想定した機能
 
     - Language models<br>
         OpenAI API の LLM モデル（GPT-3.5 など）や他の LLM モデルのラッパーモジュール。その企業の LLM モデルによって、API のライブラリや呼び出し方が異なるが、LangChain を使用するととで同じ手続きで LLM を使用できるようになるメリットがある
@@ -50,9 +50,37 @@ LangChain は、OpenAI API などの LLM API のラッパーライブラリで�
 1. Chains<br>
     複数のプロンプト入力を実行するための機能
 
-1. Agents<br>
-
 1. Memory<br>
+    <img width="788" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/6a1c7a5b-4a2e-4841-9819-6323af8b6fca"><br>
+
+    LLM へのプロンプトや応答文の履歴を保持したり、Chains や Agentsの内部における状態保持をする機能。
+    
+    - Chat Message History
+        xxx
+
+    - Simple Memory
+        xxx
+
+    - Buffer Memory
+        xxx
+
+1. Agents<br>
+    LLM を使って一連の外部ツール（例：Python スクリプトの実行、外部 API の実行など）を選択して実行できる機能。<br>
+    Chains を使用すれば、同様の機能は実現可能であるが、Chain では Python スクリプトで一連の機能をハードコードする必要がある。一方エージェントでは、LLM を推論エンジンとして使用し、どの外部ツールをどの順番で実行するかを決定できる。
+
+    LangChain Agents には、以下の主要モジュールがある
+
+    - Agent
+        プロンプトの内容に応じて適切な外部ツールを選択するための Agent
+
+    - Tools
+        Agent が外部とやり取りをするために呼び出す関数
+
+    - Toolkits
+        特定のユースケースに応じて、外部ツールを初期搭載した Agent 機能
+
+    - Agent Executor
+        Agent の行動（最適な外部ツール選択）を実行するための機能（＝最適な外部ツール実行）
 
 1. Callbacks<br>
 
