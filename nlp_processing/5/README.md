@@ -50,10 +50,15 @@ LangSmith は、2023/7/21 月頃に新規追加された LangChain の機能（2
     ```
     - `LANGCHAIN_API_KEY` : 上記作成した LangChain の API キー
 
+1. OpenAI の API 用キーを設定する
+    ```sh
+    export OPENAI_API_KEY='dummy'
+    ```
+
 1. LangChain を使用した LLM アプリケーションのコードを実装する<br>
     ここでは、最も簡単な例として、以下のようなコードを作成する
 
-    - `run_langchain.py`
+    - `run_llm_call.py`
         ```python
         from langchain.chat_models import ChatOpenAI
 
@@ -63,14 +68,23 @@ LangSmith は、2023/7/21 月頃に新規追加された LangChain の機能（2
 
 1. 上記実装した LLM アプリケーションを実行する<br>
     ```sh
-    python3 run_langchain.py
+    python3 run_llm_call.py
     ```
 
     > LangChain を使用した LLM アプリケーションのコードを実行すると、その実行トレースが LangSmith コンソール UI から確認できるようになる
 
 1. LangSmith のコンソール UI から実行ログを確認する<br>
-    [LangSmith コンソール UI](https://smith.langchain.com/) の「Projects」ページから、上記実装した LLM アプリケーションの実行ログを確認する
-    <img width="800" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/5f8dd200-05e4-44a1-8863-7b553389b79b"><br>
+    [LangSmith コンソール UI](https://smith.langchain.com/) の「Projects」ページの対象プロジェクト（`LANGCHAIN_PROJECT`）から、上記実装した LLM アプリケーションの実行ログを確認する
+
+    - 全体画面<br>
+       <img width="800" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/4bbdff2a-4043-4e17-b676-2b1805025c5c">
+    
+    - トレース画面<br>
+        <img width="800" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/b180d40e-660e-461a-8cc5-e4ec93d26f1b">
+        - 入力プロンプトと応答文のペアが確認できる
+
+    - モニター画面
+        <img width="800" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/d60ab701-1565-4af7-b394-ff367c7f9902">
 
 1. 【オプション】実行トレースの LLM モデルのパラメーターなどをLangSmith コンソール UI 上から直接修正し、出力を再確認する<br>
     LLM アプリケーションを一度実行し、実行トレースを取得できれば、LLM アプリケーション内部で使用している LLM モデルのパラメーター（temperature など）を LangSmith コンソール UI 上から直接変更して、LLM アプリケーションの出力がどうなるかを確認できる。

@@ -131,8 +131,9 @@ AIプロダクト開発のための Tips 集。<br>
     - LangChain Data connection
         - [【Python】LangChain Retrievers を使用して LLM が学習に使用していない独自ドメインでの外部データに対しての LLM の応答文を得る](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/3)
     - LangChain Memory
+        - [[In-progress]【Python】LangChain Memory を使用して LLM へのプロンプトや応答文の履歴を保持し、過去の応答履歴を反映した出力を得る](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/8)
     - LangChain Agents
-        - [[In-progress] 【Python】LangChain Agents を使用してプロンプトの内容に応じた外部ツールを実行する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/7)
+        - [[In-progress]【Python】LangChain Agents を使用してプロンプトの内容に応じた外部ツールを実行する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/7)
 
 - LangSmith
     - [[In-progress]【Python】LangSmith を使用して UI コンソール上から LLM アプリケーションの実行トレースと実行ログを確認する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/5)

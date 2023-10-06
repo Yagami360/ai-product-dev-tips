@@ -52,16 +52,15 @@ LangChain は、OpenAI API などの LLM API のラッパーライブラリで�
 
 1. Memory<br>
     <img width="788" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/6a1c7a5b-4a2e-4841-9819-6323af8b6fca"><br>
-
-    LLM へのプロンプトや応答文の履歴を保持したり、Chains や Agentsの内部における状態保持をする機能。
+    LLM へのプロンプトや応答文の履歴を保持したり、Chains や Agents 内部における状態保持をする機能。
     
-    - Chat Message History
+    - Chat Message History<br>
         xxx
 
-    - Simple Memory
+    - Simple Memory<br>
         xxx
 
-    - Buffer Memory
+    - Buffer Memory<br>
         xxx
 
 1. Agents<br>
