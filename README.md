@@ -137,6 +137,12 @@ AIプロダクト開発のための Tips 集。<br>
 
 - LangSmith
     - [[In-progress]【Python】LangSmith を使用して UI コンソール上から LLM アプリケーションの実行トレースと実行ログを確認する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/5)
+    - [[In-progress]【Python】LangSmith の Evaluation 機能を使用して LLM アプリケーション入出力履歴の評価スコアを表示する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/9)
+    - [[In-progress]【Python】LangSmith を使用して人間によるフィードバックを作成＆表示する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/11)
+
+<!--
+    - [[In-progress]【Python】LangSmith を使用してデータセットから LLM モデルのファインチューニングを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/10)
+-->
 
 </details>
 

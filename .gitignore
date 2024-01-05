@@ -21,3 +21,4 @@ _tmp/
 old/
 _old/
 .old/
+.debug/
