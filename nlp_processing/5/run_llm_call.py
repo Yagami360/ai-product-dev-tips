@@ -8,7 +8,7 @@ if __name__ == '__main__':
     parser.add_argument('--project_name', type=str, default="default")
     parser.add_argument('--langchain_api_key', type=str, default="dummy")
     parser.add_argument('--openai_api_key', type=str, default="dummy")
-    parser.add_argument('--prompt', type=str, default="Hello, world!")
+    parser.add_argument('--prompt', type=str, default="LLMOpsについて教えて")
     args = parser.parse_args()
 
     os.environ["LANGCHAIN_PROJECT"] = args.project_name
@@ -16,12 +16,12 @@ if __name__ == '__main__':
     os.environ["OPENAI_API_KEY"] = args.openai_api_key
 
     # モデル定義
-    llm = ChatOpenAI(temperature=0.9)
+    llm = ChatOpenAI(temperature=0.6)
     print("llm: ", llm)
 
     # LLM推論実行
     try:
-        result = llm.predict(args.prompt)
+        result = llm.predict(args.prompt, tags=["gpt-3.5-turbo"])
         print(f'result={result}')
     except Exception as e:
         print(f"Excception was occurred | {e}")

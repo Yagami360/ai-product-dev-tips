@@ -1,4 +1,4 @@
-# 【Python】 LangSmith の Evaluation 機能を使用して LLM アプリケーション入出力履歴の評価スコアを表示する
+# 【Python】 LangSmith の Evaluation 機能を使用して、データセット化した入出力履歴の評価スコアを表示する
 
 ## 使用方法
 
