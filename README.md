@@ -123,6 +123,14 @@ AIプロダクト開発のための Tips 集。<br>
 <details>
 <summary>自然言語処理</summary>
 
+- OpenAI API
+    - [【CLI/Python】OpenAI API の使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/102)
+    - [[In-progress]【Python】ChatGPT plugins を利用＆作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/108)
+    - [Function calling を使用して、入力文に応じて適切な外部関数の呼び出し、外部関数の戻り値に基づく出力文を生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/12)
+
+- Azure OpenAI Service
+    - Azure OpenAI Service の使用方法
+
 - LangChain
     - [LangChain の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/1)
     - LangChain Model I/O
@@ -134,6 +142,7 @@ AIプロダクト開発のための Tips 集。<br>
         - [[In-progress]【Python】LangChain Memory を使用して LLM へのプロンプトや応答文の履歴を保持し、過去の応答履歴を反映した出力を得る](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/8)
     - LangChain Agents
         - [[In-progress]【Python】LangChain Agents を使用してプロンプトの内容に応じた外部ツールを実行する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/7)
+        - [In-progress] OpenAI Functions Agent を使用して Function calling を使用する
 
 - LangSmith
     - 実行トレース管理機能
@@ -598,11 +607,6 @@ AIプロダクト開発のための Tips 集。<br>
 <details>
 <summary>外部APIサービス・外部プラットフォームサービス</summary>
 
-- OpenAI API
-    - [【CLI/Python】OpenAI API の使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/102)
-    - [[In-progress]【Python】ChatGPT plugins を利用＆作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/108)
-- Azure OpenAI Service
-    - Azure OpenAI Service の使用方法
 - Hugging Face
     - [Hugging Face の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/103)
     - [【CLI/Python】Hugging Face Hub の基本的な使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/104)
