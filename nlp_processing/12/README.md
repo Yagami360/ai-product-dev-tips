@@ -4,7 +4,11 @@ Function calling とは、OpenAI の LLM API において、ユーザーから�
 
 OpenAI の LLM API が回答できないようなある特定ドメインでの質問文の場合は外部関数からの戻り値から生成した回答文を返し、OpenAI の LLM API が回答できる一般的な質問文の場合は OpenAI の LLM API での回答文を直接返すといったことができるようになる。
 
-> 似た機能として ChatGPT Plugin や LangChain の Agent などがある
+なお LangChain を使用する場合は、LangChain Agents の OpenAI Functions Agent を使用すれば同様の機能を実現できる
+
+> - LangChain Agents の OpenAI Functions Agent<br>
+> 「[LangChain Agents の OpenAI Functions Agent を使用して Function calling を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/12)」を使用することができる
+
 
 ## 使用方法
 

@@ -142,7 +142,7 @@ AIプロダクト開発のための Tips 集。<br>
         - [[In-progress]【Python】LangChain Memory を使用して LLM へのプロンプトや応答文の履歴を保持し、過去の応答履歴を反映した出力を得る](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/8)
     - LangChain Agents
         - [[In-progress]【Python】LangChain Agents を使用してプロンプトの内容に応じた外部ツールを実行する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/7)
-        - [In-progress] OpenAI Functions Agent を使用して Function calling を使用する
+        - [[In-progress] LangChain Agents の OpenAI Functions Agent を使用して Function calling を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/13)
 
 - LangSmith
     - 実行トレース管理機能
