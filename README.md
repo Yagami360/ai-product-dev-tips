@@ -128,8 +128,11 @@ AIプロダクト開発のための Tips 集。<br>
     - [[In-progress]【Python】ChatGPT plugins を利用＆作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/108)
     - [Function calling を使用して、入力文に応じて適切な外部関数の呼び出し、外部関数の戻り値に基づく出力文を生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/12)
 
-- Azure OpenAI Service
-    - Azure OpenAI Service の使用方法
+- Azure の LLM 系サービス
+    - Azure OpenAI Service
+        - Azure OpenAI Service の使用方法
+    - Azure Machine Learning Prompt flow
+        - [Azure Machine Learning Prompt flow の基本的な使い方](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/14)
 
 - LangChain
     - [LangChain の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/1)
@@ -143,16 +146,15 @@ AIプロダクト開発のための Tips 集。<br>
     - LangChain Agents
         - [[In-progress]【Python】LangChain Agents を使用してプロンプトの内容に応じた外部ツールを実行する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/7)
         - [[In-progress] LangChain Agents の OpenAI Functions Agent を使用して Function calling を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/13)
-
-- LangSmith
-    - 実行トレース管理機能
-        - [[In-progress]【Python】LangSmith を使用して UI コンソール上から LLM アプリケーションの実行トレースと実行ログを確認する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/5)
-        - [[In-progress]【Python】LangSmith を使用して人間によるフィードバックを実行トレースに付与する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/11)
-    - データセット管理機能
-        - [[In-progress]【Python】LangSmith の Evaluation 機能を使用して、データセット化した入出力履歴の評価スコアを表示する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/9)
+    - LangSmith
+        - 実行トレース管理機能
+            - [[In-progress]【Python】LangSmith を使用して UI コンソール上から LLM アプリケーションの実行トレースと実行ログを確認する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/5)
+            - [[In-progress]【Python】LangSmith を使用して人間によるフィードバックを実行トレースに付与する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/11)
+        - データセット管理機能
+            - [[In-progress]【Python】LangSmith の Evaluation 機能を使用して、データセット化した入出力履歴の評価スコアを表示する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/9)
 
 <!--
-    - [[In-progress]【Python】LangSmith を使用してデータセットから LLM モデルのファインチューニングを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/10)
+        - [[In-progress]【Python】LangSmith を使用してデータセットから LLM モデルのファインチューニングを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/10)
 -->
 
 </details>
