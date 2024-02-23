@@ -132,7 +132,10 @@ AIプロダクト開発のための Tips 集。<br>
     - Azure OpenAI Service
         - Azure OpenAI Service の使用方法
     - Azure Machine Learning Prompt flow
+        - [Azure Machine Learning Prompt flow の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/16)
         - [Azure Machine Learning Prompt flow の基本的な使い方](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/14)
+        - [Azure Machine Learning Prompt flow を使用してプロンプトチューニングを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/15)
+        - Prompt flow をデプロイして、アプリケーションから利用できるようにする
 
 - LangChain
     - [LangChain の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/1)

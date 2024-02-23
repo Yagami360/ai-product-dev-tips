@@ -18,12 +18,12 @@
     `Azure Machine Learning Studio` のワークスペースから、Prompt flow を作成する。<br>
     <img width="800" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/77f1159d-1633-40f7-85ed-c02570a62e63"><br>
 
-    今回は簡単のため、既存の「標準フロー」を選択する<br>
+    今回は簡単のため、既存の「標準フロー（Standard flow）」を選択する<br>
     <img width="800" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/49ffd07b-8123-4d80-8314-d3cc423bd40d"><br>
     <img width="800" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/9289215a-f85b-4783-88fb-8169d72f69ff"><br>
 
 1. 作成された Prompt flow を確認する<br>
-    今回の「標準フロー」の例では、LLM API がジョークを出力するという単純なフローになっている。
+    今回の「標準フロー（Standard flow）」の例では、LLM API がジョークを出力するという単純なフローになっている。
     <img width="800" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/738031ff-58a1-4ed3-87d8-12413886f1aa"><br>
     <img width="800" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/746ab5ef-bb52-44ca-8ec3-9863b043191f"><br>
 
@@ -37,9 +37,11 @@
 
 
 1. Prompt flow を実行するための Runtime を作成する<br>
-    Prompt flow を実行するための Runtime（Docker や各種ライブラリなどの実行環境）を作成する。今回は簡単のため「自動ランタイム」で作成する<br>
+    Prompt flow を実行するための Runtime（Docker や各種ライブラリなどの実行環境がインストールされた VM インスタンス）を作成する。今回は簡単のため「自動ランタイム」で作成する<br>
     <img width="800" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/6583ee31-5565-4f4c-a77f-933ba9b058aa"><br>
     <img width="800" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/f0614f1c-ae2e-4dcb-af5d-2c97e378f10b"><br>
+
+    > Runtime 起動中は、コストが発生することに注意。デフォルト設定では、Runtime 起動後に1時間アイドリング状態なら Runtime は自動的に停止するようになっている
 
 1. Prompt flow を実行する<br>
     入力項目に入力文を入力後、「実行」ボタンをクリックし、この Prompt flow を実行する<br>
