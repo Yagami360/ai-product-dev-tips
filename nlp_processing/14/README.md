@@ -1,4 +1,4 @@
-# Azure Machine Learning Prompt flow の基本的な使い方
+# Prompt flow の基本的な使い方
 
 ## 使用方法
 
@@ -34,7 +34,6 @@
 
     API 接続後、LLM API の各種パラメーターも設定することができる。
     <img width="800" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/546a20fa-fa4a-4daa-a152-27effca1244e">
-
 
 1. Prompt flow を実行するための Runtime を作成する<br>
     Prompt flow を実行するための Runtime（Docker や各種ライブラリなどの実行環境がインストールされた VM インスタンス）を作成する。今回は簡単のため「自動ランタイム」で作成する<br>

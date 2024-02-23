@@ -1,6 +1,6 @@
-# Azure Machine Learning Prompt flow の概要
+# Prompt flow の概要
 
-Azure Machine Learning Prompt flow は、Microsoft が Azure 上で提供している LLM アプリケーションのための LLMOps ツールで、LLM アプリケーションの処理をコンソール UI 上で定義＆実行＆可視化できるようになっている。
+Prompt flow（旧 Azure Machine Learning Prompt flow）は、Microsoft が Azure 上で提供している LLM アプリケーションのための LLMOps ツールで、LLM アプリケーションの処理をコンソール UI 上で定義＆実行＆可視化できるようになっている。
 
 <img width="800" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/738031ff-58a1-4ed3-87d8-12413886f1aa"><br>
 
@@ -20,3 +20,5 @@ Azure Machine Learning Prompt flow は、Microsoft が Azure 上で提供して�
 
 - モニタリング機能
     - デプロイ後の LLM アプリケーションのモニタリングができる
+
+> Prompt flow はもともとは Azure Machine Learning 内の１機能（Azure Machine Learning Prompt flow）であったが、現在は Azure AI Studio で利用できる独立したツールになっている

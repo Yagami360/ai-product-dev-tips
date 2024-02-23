@@ -1,11 +1,11 @@
-# Azure Machine Learning Prompt flow を使用してプロンプトチューニングを行う
+# Prompt flow を使用してプロンプトチューニングを行う
 
-Azure Machine Learning Prompt flow を使用すれば、プロンプトチューニングやプロンプト管理も簡単に行える。
-より詳細には、Azure Machine Learning Prompt flow では、バリアント（variant）と名付けられた機能でプロンプト管理を行うことができる
+Prompt flow を使用すれば、プロンプトチューニングやプロンプト管理も簡単に行える。
+より詳細には、Prompt flow では、バリアント（variant）と名付けられた機能でプロンプト管理を行うことができる
 
 ## 使用方法
 
-1. 「[Azure Machine Learning Prompt flow の基本的な使い方](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/14)」に従って Prompt flow を作成する
+1. 「[Prompt flow の基本的な使い方](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/14)」に従って Prompt flow を作成する
 
 1. 作成された Prompt flow を確認する<br>
     今回の「標準フロー（Standard flow）」の例では、LLM API がジョークを出力するという単純なフローになっている。
@@ -23,7 +23,7 @@ Azure Machine Learning Prompt flow を使用すれば、プロンプトチュー
     <img width="800" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/3dae9eba-37b7-4e66-9810-19aefc6842ea"><br>
     <img width="800" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/0653201e-6a20-4850-9405-17e3e40e6fad"><br>
 
-    > Azure Machine Learning Prompt flow では、プロンプトID のようなプロンプトを一意に識別する ID は存在しない？
+    > Prompt flow では、プロンプトID のようなプロンプトを一意に識別する ID は存在しない？
 
 1. Prompt flow を実行する<br>
     入力項目に入力文を入力後、「実行」ボタンをクリックし、この Prompt flow を実行する<br>
