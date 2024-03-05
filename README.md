@@ -123,45 +123,6 @@ AIプロダクト開発のための Tips 集。<br>
 <details>
 <summary>自然言語処理</summary>
 
-- OpenAI API
-    - [【CLI/Python】OpenAI API の使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/102)
-    - [[In-progress]【Python】ChatGPT plugins を利用＆作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/108)
-    - [Function calling を使用して、入力文に応じて適切な外部関数の呼び出し、外部関数の戻り値に基づく出力文を生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/12)
-
-- Azure の LLM 系サービス
-    - Azure OpenAI Service
-        - Azure OpenAI Service の使用方法
-    - Prompt flow（旧 Azure Machine Learning Prompt flow）
-        - [Prompt flow の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/16)
-        - [Prompt flow の基本的な使い方](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/14)
-        - [Prompt flow を使用してプロンプトチューニングを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/15)
-        - Prompt flow をデプロイして、アプリケーションから利用できるようにする
-        - Prompt flow CLI/SDK を使用して、Prompt flow の実行を行う
-        - Prompt flow CLI/SDK を使用して、Prompt flow の CI/CD を行う
-
-- LangChain
-    - [LangChain の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/1)
-    - LangChain Model I/O
-        - [【Python】LangChain Language models を使用して OpenAI API の LLM モデルから応答文を得る](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/2)
-        - [【Python】LangChain Prompt の Prompt templates 使用してプロンプトを生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/6)
-    - LangChain Data connection
-        - [【Python】LangChain Retrievers を使用して LLM が学習に使用していない独自ドメインでの外部データに対しての LLM の応答文を得る](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/3)
-    - LangChain Memory
-        - [[In-progress]【Python】LangChain Memory を使用して LLM へのプロンプトや応答文の履歴を保持し、過去の応答履歴を反映した出力を得る](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/8)
-    - LangChain Agents
-        - [[In-progress]【Python】LangChain Agents を使用してプロンプトの内容に応じた外部ツールを実行する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/7)
-        - [[In-progress] LangChain Agents の OpenAI Functions Agent を使用して Function calling を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/13)
-    - LangSmith
-        - 実行トレース管理機能
-            - [[In-progress]【Python】LangSmith を使用して UI コンソール上から LLM アプリケーションの実行トレースと実行ログを確認する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/5)
-            - [[In-progress]【Python】LangSmith を使用して人間によるフィードバックを実行トレースに付与する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/11)
-        - データセット管理機能
-            - [[In-progress]【Python】LangSmith の Evaluation 機能を使用して、データセット化した入出力履歴の評価スコアを表示する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/9)
-
-<!--
-        - [[In-progress]【Python】LangSmith を使用してデータセットから LLM モデルのファインチューニングを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/10)
--->
-
 </details>
 
 <details>
@@ -184,7 +145,6 @@ AIプロダクト開発のための Tips 集。<br>
 - [【Golang】goroutine と Channel を使用してマルチスレッド処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/100)
 
 </details>
-
 
 ## ■ 機械学習モデル開発・機械学習フレームワーク
 
@@ -614,13 +574,6 @@ AIプロダクト開発のための Tips 集。<br>
 <details>
 <summary>外部APIサービス・外部プラットフォームサービス</summary>
 
-- Hugging Face
-    - [Hugging Face の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/103)
-    - [【CLI/Python】Hugging Face Hub の基本的な使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/104)
-    - [【Python】Huggingface Transformers を使用して NLP モデルの推論処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/106)
-    - [【Python】Hugging Face Spaces を利用して簡単な機械学習デモアプリを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/107)
-    - 【Python】Hugging Face の LLM モデルを LangChain で使用する
-
 </details>
 
 ## ■ アプリ開発・フロントエンド
@@ -704,6 +657,9 @@ AIプロダクト開発のための Tips 集。<br>
     - [[In-progress]【Firebase】Firebase Hosting を使用して GKE 上の https 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/5)
     - [【Firebase】Firebase Hosting と Firebase Cloud Function を使用して GKE 上の http 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する（リバースプロキシとしての firebase cloud function 経由で API を呼び出す）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/6)
     - 【Firebase】Firestore Security Rules の設定
+
+- Streamlit
+    - [Streamlit を使用して簡単なウェブサイトを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/48)
 
 </details>
 
@@ -807,6 +763,54 @@ AIプロダクト開発のための Tips 集。<br>
         - 【Figma】Figma で Material-UI の UI を使用する
 
 </details>
+
+## ■ LLM アプリケーション開発
+
+- OpenAI API
+    - [【CLI/Python】OpenAI API の使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/102)
+    - [[In-progress]【Python】ChatGPT plugins を利用＆作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/108)
+    - [Function calling を使用して、入力文に応じて適切な外部関数の呼び出し、外部関数の戻り値に基づく出力文を生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/12)
+
+- Azure の LLM 系サービス
+    - Azure OpenAI Service
+        - [[In-progress] Azure OpenAI Service の使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/4)
+    - Prompt flow（旧 Azure Machine Learning Prompt flow）
+        - [Prompt flow の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/16)
+        - [Prompt flow の基本的な使い方](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/14)
+        - [Prompt flow を使用してプロンプトチューニングを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/15)
+        - [Prompt flow をデプロイして、アプリケーションから API として利用できるようにする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/17)
+        - Prompt flow CLI/SDK を使用して Prompt flow の実行を行う
+        - Prompt flow CLI/SDK を使用して Prompt flow の CI/CD を行う
+
+- LangChain
+    - [LangChain の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/1)
+    - LangChain Model I/O
+        - [【Python】LangChain Language models を使用して OpenAI API の LLM モデルから応答文を得る](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/2)
+        - [【Python】LangChain Prompt の Prompt templates 使用してプロンプトを生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/6)
+    - LangChain Data connection
+        - [【Python】LangChain Retrievers を使用して LLM が学習に使用していない独自ドメインでの外部データに対しての LLM の応答文を得る](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/3)
+    - LangChain Memory
+        - [[In-progress]【Python】LangChain Memory を使用して LLM へのプロンプトや応答文の履歴を保持し、過去の応答履歴を反映した出力を得る](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/8)
+    - LangChain Agents
+        - [[In-progress]【Python】LangChain Agents を使用してプロンプトの内容に応じた外部ツールを実行する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/7)
+        - [[In-progress] LangChain Agents の OpenAI Functions Agent を使用して Function calling を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/13)
+    - LangSmith
+        - 実行トレース管理機能
+            - [[In-progress]【Python】LangSmith を使用して UI コンソール上から LLM アプリケーションの実行トレースと実行ログを確認する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/5)
+            - [[In-progress]【Python】LangSmith を使用して人間によるフィードバックを実行トレースに付与する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/11)
+        - データセット管理機能
+            - [[In-progress]【Python】LangSmith の Evaluation 機能を使用して、データセット化した入出力履歴の評価スコアを表示する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/9)
+
+<!--
+        - [[In-progress]【Python】LangSmith を使用してデータセットから LLM モデルのファインチューニングを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/10)
+-->
+
+- Hugging Face
+    - [Hugging Face の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/103)
+    - [【CLI/Python】Hugging Face Hub の基本的な使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/104)
+    - [【Python】Hugging Face Transformers を使用して NLP モデルの推論処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/106)
+    - [【Python】Hugging Face Spaces を利用して簡単な機械学習デモアプリを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/107)
+    - 【Python】Hugging Face の LLM モデルを LangChain で使用する
 
 ## ■ 特許
 

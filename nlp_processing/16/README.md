@@ -13,6 +13,7 @@ Prompt flow（旧 Azure Machine Learning Prompt flow）は、Microsoft が Azure
     <img width="800" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/08e19e92-43d4-444b-be29-8bc597937066"><br>
 
 - 作成したフローをデプロイし、Arure リソース上の API として公開することで、任意のアプリケーションに組み込める
+    - デプロイした API のオートスケーリングも行える
 
 - CI/CD 機能
     - CIツールと連携して、自動テストを行うことができる
