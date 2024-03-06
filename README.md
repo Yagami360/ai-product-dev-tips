@@ -657,7 +657,8 @@ AIプロダクト開発のための Tips 集。<br>
     - [[In-progress]【Firebase】Firebase Hosting を使用して GKE 上の https 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/5)
     - [【Firebase】Firebase Hosting と Firebase Cloud Function を使用して GKE 上の http 通信での WebAPI からの出力を返す GUI 付きウェブアプリを作成する（リバースプロキシとしての firebase cloud function 経由で API を呼び出す）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/6)
     - 【Firebase】Firestore Security Rules の設定
-
+- Netlify
+    - [Netlify を使用して簡単なウェブサイトをホスティングする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/49)
 - Streamlit
     - [Streamlit を使用して簡単なウェブサイトを作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/48)
 
