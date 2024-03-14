@@ -8,31 +8,7 @@
     AWS のリソースに対して、誰（メンバー）がどのようなアクセス権（ロール）を持つか定義し、アクセス制御を管理する機能
 
 - IAM ポリシー<br>
-    各種 AWS サービスに対してのどのようなアクセス権を持つかを json 形式で定義したもの。この IAM ポリシー を IAM ユーザーや IAM ロールに割り当てることで、「誰が」その権限を持つのかといったことを決定できる。
-
-    作成済みの IAM ポリシーは、「[AWS の IAM のコンソール画面](https://us-east-1.console.aws.amazon.com/iamv2/home?region=us-east-1#/policies)」から確認できる
-
-    IAM ポリシーには、以下の３つの種類がある
-
-    1. AWS 管理ポリシー<br>
-        AWS が元々用意している再利用可能なポリシー
-
-    1. カスタマー管理ポリシー<br>
-        ユーザーが作成した再利用可能なポリシー
-
-    1. インラインポリシー<br>
-        各 IAM ユーザー・IAMグループ・IAMロール専用に、ユーザーが個別作成するポリシー
-
-    > - リソースポリシー
-    > xxx
-
-    > - 信頼ポリシー<br>
-    > xxx
-
-    > - AssumeRolePolicy<br>
-    > xxx
-
-
+    各種 AWS サービスに対してのどのようなアクセス権を持つかを json 形式で定義したもの。この IAM ポリシー を IAM ユーザーや IAM ロールに割り当てることで、「誰が」その権限を持つのかといったことを決定できる。<br>
     IAM ポリシーを定義した json ファイルの中身は、以下のようになる
     ```json
     {
@@ -54,9 +30,28 @@
     - `"Action"` :  
     - `"Resource"` : Actionで設定した操作を適用できるリソース(範囲)を設定
 
+    作成済みの IAM ポリシーは、「[AWS の IAM のコンソール画面](https://us-east-1.console.aws.amazon.com/iamv2/home?region=us-east-1#/policies)」から確認できる
+
+    IAM ポリシーには、以下の３つの種類がある
+
+    1. AWS 管理ポリシー<br>
+        AWS が元々用意している再利用可能なポリシー
+
+    1. カスタマー管理ポリシー<br>
+        ユーザーが作成した再利用可能なポリシー
+
+    1. インラインポリシー<br>
+        各 IAM ユーザー・IAMグループ・IAMロール専用に、ユーザーが個別作成するポリシー
+
+    > - リソースポリシー
+    > xxx
+
+    > - AssumeRolePolicy（信頼ポリシー）<br>
+    > AssumeRole で使用するための IAM ポリシー。AssumeRole の詳細は下記で説明
+
 
 - IAM ロール<br>
-    （ユーザーやグループではなく）AWS サービス（EC2など）に対して、アクセス権（ロール）を付与するための機能。
+    （ユーザーやグループではなく）AWS サービス（EC2など）に対して、複数のアクセス権（IAM ロール）を付与するための機能で、複数の IAM ポリシーをグルーピングしたもの。
 
     作成済みの IAM ロールは、「[AWS の IAM のコンソール画面](https://us-east-1.console.aws.amazon.com/iamv2/home?region=us-east-1#/roles)」から確認できる
 
@@ -89,6 +84,23 @@
     ```
     - `partition` : 基本的にAWS
     - `service` : AWS製品名
+
+- AssumeRole<br>
+    IAM ロールを引き受ける（Assume）ためのアクション（=IAM ポリシーを定義した json の `Statement.Action` フィールド）で、AssumeRole することで（トークンを発行して）一時的に対象 IAM ロールにアクセス権限を（アクセスキー・シークレットキーといった情報を提供することなく）付与することができる。
+
+    Assume Role を行うためには、一時的な IAM ロールを使いたい IAM ユーザーに対して、以下のように AssumeRole ができる IAM ポリシー（AssumeRolePolicy: 信頼性ポリシー）を付与（アタッチ）する必要がある
+    ```json
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": "sts:AssumeRole",                         # "Action": "sts:AssumeRole" で Assume Role を行うことを明示
+                "Resource": "arn:aws:iam::123456789:role/dev-role"  # Assume Role　対象の IAM ロール（=一時的に付与したい IAM ロール）
+            }
+        ]
+    }
+    ```
 
 ## ■ 参考サイト
 - xxx

@@ -1,4 +1,4 @@
-# Netlify を使用して簡単なウェブサイトをホスティングする
+# Netlify を使用して簡単なウェブサイトをホスティングする（GitHub レポジトリの連携で行う場合）
 
 Netlify は、静的な Web サイトのホスティングツールで、Netlify を使用すれば、静的な Web サイトか簡単にホスティングして公開することができる
 
@@ -7,14 +7,12 @@ Netlify でホスティングする Web アプリの GitHub レポジトリは�
 
 ## 使用方法
 
-1. Netlifyにアクセスし、Get started for freeから始める。
-
 1. Web サイトの GitHub レポジトリを作成する<br>
     Netlify でホスティングするための Web サイトの GitHub レポジトリを作成する<br>
     今回は [`netlify-app-exercise`](https://github.com/Yagami360/netlify-app-exercise) という名前のレポジトリを作成している。
 
 1. Web サイトのコードを作成する<br>
-    今回は、簡単のため以下のような HTML ファイルを直接作成する
+    今回は、簡単のため以下のような HTML ファイル `index.html` を直接作成する
     ```html
     <!DOCTYPE html>
     <html>

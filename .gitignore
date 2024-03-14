@@ -22,3 +22,5 @@ old/
 _old/
 .old/
 .debug/
+# Local Netlify folder
+.netlify
