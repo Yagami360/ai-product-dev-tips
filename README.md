@@ -662,6 +662,7 @@ AIプロダクト開発のための Tips 集。<br>
     - [Netlify を使用して簡単なウェブサイトをホスティングする（CLI で行う場合）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/50)
 - Streamlit
     - [Streamlit を使用して簡単なウェブサイトを作成する（GitHub レポジトリの連携で行う場合）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/48)
+    - [[In-progress] stlite を使用して Streamlit アプリをサーバレスで動作させる](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/51)
 
 </details>
 
@@ -768,6 +769,9 @@ AIプロダクト開発のための Tips 集。<br>
 
 ## ■ LLM アプリケーション開発
 
+<details>
+<summary>LLM アプリケーション開発</summary>
+
 - OpenAI API
     - [【CLI/Python】OpenAI API の使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/102)
     - [[In-progress]【Python】ChatGPT plugins を利用＆作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/108)
@@ -813,6 +817,8 @@ AIプロダクト開発のための Tips 集。<br>
     - [【Python】Hugging Face Transformers を使用して NLP モデルの推論処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/106)
     - [【Python】Hugging Face Spaces を利用して簡単な機械学習デモアプリを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/107)
     - 【Python】Hugging Face の LLM モデルを LangChain で使用する
+
+</details>
 
 ## ■ 特許
 
