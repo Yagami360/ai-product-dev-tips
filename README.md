@@ -662,7 +662,7 @@ AIプロダクト開発のための Tips 集。<br>
     - [Netlify を使用して簡単なウェブサイトをホスティングする（CLI で行う場合）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/50)
 - Streamlit
     - [Streamlit を使用して簡単なウェブサイトを作成する（GitHub レポジトリの連携で行う場合）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/48)
-    - [[In-progress] stlite を使用して Streamlit アプリをサーバレスで動作させる](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/51)
+    - [stlite を使用して Streamlit アプリをローカルマシンのブラウザ上で実行（サーバレス）させる](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/51)
 
 </details>
 
