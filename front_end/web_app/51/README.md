@@ -6,8 +6,9 @@
 
 これにより、Streamlit Cloud やその他ホスティングサービスを使用せずに、Streamlit アプリを（ローカルマシンのブラウザ上で）実行することができる。
 
-<img width="1000" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/8d2b5bef-09ba-4d54-b14f-8f5347d837bd">
+<!-- <img width="1000" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/8d2b5bef-09ba-4d54-b14f-8f5347d837bd"> -->
 
+<img width="1324" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/8d445920-1ae1-477c-bd88-8526aa9f7ff4">
 
 ## 使用方法１（Web ブラウザ上で動作させる場合）
 

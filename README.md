@@ -322,6 +322,10 @@ AIプロダクト開発のための Tips 集。<br>
         - 【AWS】Amazon API Gateway を使用して EC2 インスタンス上の REST API を構築する（Amazon CLI 使用）
     - Ambassador
         - [[In-progress] Ambassador を使用して EKS クラスター上の Web-API の API Gateway を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/90)
+- DNS サーバー
+    - [DNS サーバーの基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/37)
+    - 【AWS】Route53
+    - 【GCP】Cloud DNS
 
 </details>
 
