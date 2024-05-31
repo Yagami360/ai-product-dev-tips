@@ -43,17 +43,25 @@ Streamlit アプリ用の GitHub レポジトリは、以下に保管してい�
 
     - xxx
 
-1. Streamlit Cloud アカウントを作成する<br>
-    「[Streamlit Cloud の Web ページ](https://streamlit.io/cloud)」からアカウント登録を行う。<br>
+1. Streamlit アプリを起動する
+    - Streamlit アプリをローカル起動させる場合<br>
+        以下のコマンドを実行することで、Streamlit アプリがローカル環境上（`http://localhost:8501/`）で起動する
+        ```sh
+        streamlit run streamlit_app.py
+        ```
 
-1. Streamlit Cloud にアプリの追加を行う<br>
-    ログイン後、コンソールUI 上から streamlit アプリ（GitHub レポジトリ）を追加し、デプロイ（ホスティング）する。
-    <img width="500" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/b91d7d30-d8e6-4fbe-b2d1-501c290c19c6"><br>
-    <img width="300" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/3e71b8b5-0efb-416f-91c0-b623f9ae4f41"><br>
-    <img width="500" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/792e9e99-437d-47e5-a034-24e15ea21bec"><br>
+    - Streamlit Cloud 上で起動させる場合
+        1. Streamlit Cloud アカウントを作成する<br>
+            「[Streamlit Cloud の Web ページ](https://streamlit.io/cloud)」からアカウント登録を行う。<br>
 
-1. デプロイ（ホスティング）された URL にアクセスする<br>
-    デプロイ（ホスティング）された URL（今回のケースでは `https://app-app-exercise-srimrz7jvk9udzphvp98bs.streamlit.app/` にアクセスする）
+        1. Streamlit Cloud にアプリの追加を行う<br>
+            ログイン後、コンソールUI 上から streamlit アプリ（GitHub レポジトリ）を追加し、デプロイ（ホスティング）する。
+            <img width="500" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/b91d7d30-d8e6-4fbe-b2d1-501c290c19c6"><br>
+            <img width="300" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/3e71b8b5-0efb-416f-91c0-b623f9ae4f41"><br>
+            <img width="500" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/792e9e99-437d-47e5-a034-24e15ea21bec"><br>
+
+        1. デプロイ（ホスティング）された URL にアクセスする<br>
+            デプロイ（ホスティング）された URL（今回のケースでは `https://app-app-exercise-srimrz7jvk9udzphvp98bs.streamlit.app/` にアクセスする）
 
 ## 参考サイト
 

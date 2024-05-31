@@ -1,10 +1,14 @@
 # stlite を使用して Streamlit アプリをローカルマシンのブラウザ上で実行（サーバレス）させる
 
+<!--
 「[Streamlit を使用して簡単なウェブサイトを作成する（GitHub レポジトリの連携で行う場合）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/48)」の項目では、Streamlit Cloud を使用して Streamlit アプリをホスティングする方法を紹介しているが、サードパーティ製の Streamlit Cloud を使用するので、セキュリティ上の懸念があり、また独自の認証認可が行えないといった問題がある。
+-->
 
 [stlite](https://github.com/whitphx/stlite) は、Streamlit の Python コードをサーバーサイドまで含めてブラウザ上で実行（サーバレス）することができるライブラリであり、Streamlit用 サーバーを起動することなく静的なウェブページ（`index.html`）に stlite を埋め込むするだけで、ユーザーのマシン上で直接実行することができる。
 
+<!--
 これにより、Streamlit Cloud やその他ホスティングサービスを使用せずに、Streamlit アプリを（ローカルマシンのブラウザ上で）実行することができる。
+-->
 
 <!-- <img width="1000" alt="image" src="https://github.com/Yagami360/ai-product-dev-tips/assets/25688193/8d2b5bef-09ba-4d54-b14f-8f5347d837bd"> -->
 
