@@ -301,6 +301,7 @@ AIプロダクト開発のための Tips 集。<br>
 <summary>Web サーバー / WSGI サーバー / ロードバランサー / API Gateway</summary>
 
 - Web サーバー / WSGI サーバー
+    - [Web サーバーの基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/38)
     - nginx
         - [【nginx】nginx の基本事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/22)
         - [【nginx】nginx での Webサーバーを https 化する（自己署名SSL認証書を使用する場合）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/23)
