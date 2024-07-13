@@ -821,8 +821,9 @@ AIプロダクト開発のための Tips 集。<br>
     - Dify の基本的な使い方（テンプレートを使用した LLM アプリケーションを作成する）
     - [Dify の基本的な使い方（ワークフローを使用した LLM アプリケーションを作成する）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/20)
     - Dify を使用して RAG を使用した LLM アプリケーションを作成する
-    - Dify を使用した LLM アプリケーションを API として外部公開する
-    - Dify を使用した LLM アプリケーションを Web サイト上に埋め込む
+    - [Dify を使用した LLM アプリケーションを Web アプリとして外部公開する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/21)
+    - [Dify を使用した LLM アプリケーションを API として外部公開する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/22)
+    - Dify を使用した LLM アプリケーションをサイトへの埋め込みとして外部公開する
     - Dify をローカル環境（オンプレ環境）で起動する
 
 <!--
