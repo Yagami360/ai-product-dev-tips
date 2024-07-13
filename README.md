@@ -816,6 +816,19 @@ AIプロダクト開発のための Tips 集。<br>
         - [[In-progress]【Python】LangSmith を使用してデータセットから LLM モデルのファインチューニングを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/10)
 -->
 
+- Dify
+    - [Dify の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/18)
+    - Dify の基本的な使い方（テンプレートを使用した LLM アプリケーションを作成する）
+    - [Dify の基本的な使い方（ワークフローを使用した LLM アプリケーションを作成する）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/20)
+    - Dify を使用して RAG を使用した LLM アプリケーションを作成する
+    - Dify を使用した LLM アプリケーションを API として外部公開する
+    - Dify を使用した LLM アプリケーションを Web サイト上に埋め込む
+    - Dify をローカル環境（オンプレ環境）で起動する
+
+<!--
+    - [[In-progress] Dify の基本的な使い方（チャットボット用ワークフローを構築する）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/19)
+-->
+
 - Hugging Face
     - [Hugging Face の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/103)
     - [【CLI/Python】Hugging Face Hub の基本的な使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/104)
