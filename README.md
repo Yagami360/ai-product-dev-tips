@@ -824,7 +824,7 @@ AIプロダクト開発のための Tips 集。<br>
     - [Dify を使用した LLM アプリケーションを Web アプリとして外部公開する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/21)
     - [Dify を使用した LLM アプリケーションを API として外部公開する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/22)
     - Dify を使用した LLM アプリケーションを Web サイトへの埋め込みとして外部公開する
-    - [[In-progress] Dify をローカル環境（オンプレ環境）で起動する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/23)
+    - [ Dify をローカル環境（オンプレ環境）で起動する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/23)
 
 <!--
     - [[In-progress] Dify の基本的な使い方（チャットボット用ワークフローを構築する）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/19)
