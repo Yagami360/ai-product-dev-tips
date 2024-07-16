@@ -837,6 +837,10 @@ AIプロダクト開発のための Tips 集。<br>
     - [【Python】Hugging Face Spaces を利用して簡単な機械学習デモアプリを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/107)
     - 【Python】Hugging Face の LLM モデルを LangChain で使用する
 
+- Claude
+    - [[In-progress] Claude の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/25)
+    - [Claude 3.5 Sonnet の Artifacts を使用してアプリのコードとデモを自動生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/26)
+
 </details>
 
 ## ■ 特許
