@@ -2,7 +2,7 @@
 
 ## 使用方法
 
-1. [Dify のコンソール UI](https://cloud.dify.ai/apps) から「スタジオ」に移動する<br>
+1. [Dify Cloud](https://cloud.dify.ai/apps) から「スタジオ」に移動する<br>
     <img width="800" alt="image" src="https://github.com/user-attachments/assets/d9b6ded0-2bc4-48a8-aeaf-7c4e8e94bbbb"><br>
 
 1. 「アプリを作成する」->「最初から作成する」ボタンをクリックし、アプリを作成する<br>
