@@ -22,6 +22,25 @@ config :phoenix_websocket_api, PhoenixWebsocketApiWeb.Endpoint,
   pubsub_server: PhoenixWebsocketApi.PubSub,
   live_view: [signing_salt: "HvYrN1fM"]
 
+# Configure the websocket proxy server
+config :phoenix_websocket_proxy_server,
+  # websocket_url: "ws://localhost:8501/_stcore/stream"
+  websocket_url: "ws://localhost:4000/socket"
+
+# Override cowboy routes to handle raw WebSocket requests.
+config :phoenix_websocket_proxy_server, PhoenixWebsocketApiWeb.Endpoint,
+  http: [
+    dispatch: [
+      {:_,
+       [
+         {"/socket", PhoenixWebsocketApiWeb.Proxy.Cowboy2Handler,
+          {PhoenixWebsocketApiWeb.Endpoint, []}},
+         {:_, PhoenixWebsocketApiWeb.Proxy.Cowboy2Handler,
+          {PhoenixWebsocketApiWeb.Endpoint, []}}
+       ]}
+    ]
+  ]
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails

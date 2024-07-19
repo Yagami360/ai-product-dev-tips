@@ -66,7 +66,7 @@ mix phx.new -v
 
 # Elixir プロジェクトを作成する
 if [ ! ${PROJECT_NAME} ] ; then
-    mix phx.new ${PROJECT_NAME}
+    mix phx.new ${PROJECT_NAME} --sup
 fi
 
 # Phoenix サーバーを起動する

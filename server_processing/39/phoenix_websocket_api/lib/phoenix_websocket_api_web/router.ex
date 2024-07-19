@@ -21,21 +21,17 @@ defmodule PhoenixWebsocketApiWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    # get "/socket", WebSocketController, :socket
   end
 
   # /api アクセス時のエンドポイント定義
-  scope "/api", ElixirPhoenixApiWeb do
+  scope "/api", PhoenixWebsocketApiWeb do
       # ルートアクセス時（http:${IP_ADDRESS}:${PORT}/）以外のエンドポイントアクセス時の共通処理を定義した pipeline 内の plug 関数を全て実行
       pipe_through :api
 
       # GET method
       get "/health", HealthController, :health
   end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", PhoenixWebsocketApiWeb do
-  #   pipe_through :api
-  # end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:phoenix_websocket_api, :dev_routes) do

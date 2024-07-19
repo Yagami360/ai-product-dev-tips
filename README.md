@@ -367,7 +367,7 @@ AIプロダクト開発のための Tips 集。<br>
 - 【Elixir】Phoenix
     - [【Elixir】Phoenix を使用して簡単な REST API を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/86)
     - [[In-progress]【Elixir】Phoenix を使用して簡単な REST API を作成する（docker 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/83)
-    - [In-progress] 【Elixir】Phoenix + PlugCowboy + WebSockex での Websocket サーバーを構築する
+    - [[In-progress]【Elixir】Phoenix + PlugCowboy + WebSockex を使用して Websocket 通信のプロキシーサーバーを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/39)
 
 </details>
 
