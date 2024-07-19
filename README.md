@@ -366,7 +366,8 @@ AIプロダクト開発のための Tips 集。<br>
     - [【Golang】Gin を使用して簡単な REST API を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/69)
 - 【Elixir】Phoenix
     - [【Elixir】Phoenix を使用して簡単な REST API を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/86)
-    - [【Elixir】[In-progress] Phoenix を使用して簡単な REST API を作成する（docker 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/83)
+    - [[In-progress]【Elixir】Phoenix を使用して簡単な REST API を作成する（docker 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/83)
+    - [In-progress] 【Elixir】Phoenix + PlugCowboy + WebSockex での Websocket サーバーを構築する
 
 </details>
 
