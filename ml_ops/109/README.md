@@ -196,6 +196,11 @@ OAuth 2.0 の拡張仕様で、認可だけでなく、異なるアプリケー�
 7. （オプション）トークンの有効期限が切れた場合は、リフレッシュトークンで新しいアクセストークンを取得
 
 
+その他補足事項
+
+- Firebase の Google ログインは OpenID Connect を活用している
+
+
 ## SAML 2.0 [Security Assertion Markup Language]
 
 
@@ -224,6 +229,23 @@ SSOを可能にするには、以下の方式で実現方法がある
     AWS SSO における認証フローは、以下のようになる<br>
     <img width="800" alt="image" src="https://github.com/user-attachments/assets/1aaaec6d-4a37-4671-9487-b3dc4a84c668" />
 
+
+## CORS [Cross-Origin Resource Sharing]
+
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/aed2a3d1-bcc8-418b-af96-518a99eb2166" />
+
+CORS [Cross-Origin Resource Sharing] （オリジン間リソース共有）は、あるオリジン（URLのドメイン・ポート番号）で動作しているウェブアプリケーション（Javascript）に対して、異なるオリジンにある選択されたリソース（APIなど）へのアクセス権を与えるよう”ブラウザーに”指示するための仕組み（※ あくまでブラウザに指示するための仕組み）
+
+> オリジン：ウェブコンテンツにアクセスするために使われる URL の｛*スキーム* （プロトコル）・ ホスト （ドメイン）・ポート番号 ｝のこと
+
+CORS を回避（別オリジン間でのアクセス制限をなくす）には、別オリジン（APIなど）のレスポンスヘッダーに以下のレスポンスヘッダーを付与すればよい
+
+- `Access-Control-Allow-Origin`
+    - 許可するドメインを指定しています
+- `Access-Control-Allow-Methods`
+    - 許可するHTTPメソッド（GET, POST）を指定
+- `Access-Control-Allow-Headers`
+    - リクエストに含まれるヘッダーの種類を指定します。
 
 ## 参考サイト
 

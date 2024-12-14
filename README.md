@@ -304,6 +304,7 @@ AIプロダクト開発のための Tips 集。<br>
     - [OpenID Connect](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#openid-connect-oidc)
     - SAML (Security Assertion Markup Language)
     - [SSO [Single Sign-On]](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#sso-single-sign-on)
+    - [CORS [Cross-Origin Resource Sharing]](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#cors-cross-origin-resource-sharing)
 - [【GCP】GCP の認証システム](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/11)
 - [[In-progress]【AWS】AWS の認証システム](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/59)
 
