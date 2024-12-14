@@ -123,6 +123,8 @@ AIプロダクト開発のための Tips 集。<br>
 <details>
 <summary>自然言語処理</summary>
 
+- [LLM アプリケーション開発に移動](https://github.com/Yagami360/ai-product-dev-tips?tab=readme-ov-file#-llm-%E3%82%A2%E3%83%97%E3%83%AA%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E9%96%8B%E7%99%BA)
+
 </details>
 
 <details>
@@ -293,8 +295,17 @@ AIプロダクト開発のための Tips 集。<br>
 <details>
 <summary>認証基盤</summary>
 
+- [認証認可の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109)
+    - [認証](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109)
+    - [認可](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109)
+    - [Basic認証](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109)
+    - [JWT認証](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109)
+    - [OAuth](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109)
+    - [OpenID Connect](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109)
+    - [SSO [Single Sign-On]](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109)
 - [【GCP】GCP の認証システム](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/11)
 - [[In-progress]【AWS】AWS の認証システム](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/59)
+
 </details>
 
 <details>
