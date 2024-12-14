@@ -103,9 +103,13 @@
     ```
 
 - AWS SSO<br>
-    AWS コンソール UI における シングルサインオン（SSO）
+    AWS コンソール UI における シングルサインオン（SSO）で、[SAML 2.0](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#saml-20-security-assertion-markup-language) 方式での SSO になっている
 
     > SSO [Single Sign-On]: 1回のログイン認証で複数のアプリケーションやサービスにアクセスできる認証方式
 
+    AWS SSO における認証フローは、以下のようになる<br>
+    <img width="800" alt="image" src="https://github.com/user-attachments/assets/1aaaec6d-4a37-4671-9487-b3dc4a84c668" />
+
 ## ■ 参考サイト
+
 - xxx

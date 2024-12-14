@@ -296,12 +296,13 @@ AIプロダクト開発のための Tips 集。<br>
 <summary>認証基盤</summary>
 
 - 認証認可の基礎事項
-    - [認証（Authentication）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#%E8%AA%8D%E8%A8%BC)
-    - [認可（Authorization）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#%E8%AA%8D%E5%8F%AF)
+    - [認証（Authentication）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#%E8%AA%8D%E8%A8%BCauthentication)
+    - [認可（Authorization）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#%E8%AA%8D%E5%8F%AFauthorization)
     - [Basic認証](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#basic-%E8%AA%8D%E8%A8%BC)
     - [JWT認証](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#jwt-json-web-token-%E8%AA%8D%E8%A8%BC)
     - [OAuth](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#oauth-20)
     - [OpenID Connect](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#openid-connect-oidc)
+    - SAML (Security Assertion Markup Language)
     - [SSO [Single Sign-On]](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#sso-single-sign-on)
 - [【GCP】GCP の認証システム](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/11)
 - [[In-progress]【AWS】AWS の認証システム](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/59)
