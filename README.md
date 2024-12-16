@@ -306,7 +306,7 @@ AIプロダクト開発のための Tips 集。<br>
     - [SSO [Single Sign-On]](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#sso-single-sign-on)
     - [CORS [Cross-Origin Resource Sharing]](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#cors-cross-origin-resource-sharing)
 - [【GCP】GCP の認証システム](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/11)
-- [[In-progress]【AWS】AWS の認証システム](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/59)
+- [【AWS】AWS の認証システム](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/59)
 
 </details>
 
@@ -409,7 +409,15 @@ AIプロダクト開発のための Tips 集。<br>
 - 非構造化データ
     - 【GCP】GCS [Google Cloud Storage]
     - 【AWS】Amazon S3
-- 構造化データ（SQL）
+- 構造化データとSQL
+    - [[In-progress] 構造化データの基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/110)
+        - セッションとトランザクション
+        - コネクションプールとコネクション数
+        - リレーション
+        - インデックス
+        - 正規化
+        - テーブル操作（CRUD）
+        - パフォーマンス指標
     - MySQL
         - [【MySQL】SQLAlchemy を使用して Python スクリプトから MySQL に接続する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/34)
         - [【MySQL】SQLAlchemy を使用して Python スクリプトから MySQL に接続する（docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/35)
