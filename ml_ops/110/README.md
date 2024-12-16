@@ -1,5 +1,159 @@
 # 構造化データの基礎事項
 
+## セッションとトランザクション
+
+- トランザクション<br>
+    複数の SQL 文によるCRUD操作を1つの処理としてまとめてデータベースに反映させる操作。<br>
+
+    トランザクションを使用することで、複数テーブルにまたがる API 処理などにおいて、テーブルレコードの一貫性が保証されるような処理が可能になる。<br>
+    例えば、オーガニゼーション＆ユーザーを作成する API において、オーガニゼーションの追加には成功したが、ユーザーの追加には失敗した場合、トランザクションを使用しないと、オーガニゼーションレコードのみが作成されてユーザーが作成されていないという不整合が発生するが、トランザクションを使用することで、オーガニゼーションとユーザーの作成の両方が成功した場合のみオーガニゼーションとユーザーの作成が完了するという処理が可能になる。
+
+    - SQLAlchemy（PostgreSQL）の場合
+        ```python
+        from sqlalchemy import create_engine
+        from sqlalchemy.orm import sessionmaker
+
+        # データベースへの接続を確立
+        engine = create_engine('postgresql://user:password@localhost:5432/dbname')
+
+        # DBセッションを作成
+        Session = sessionmaker(bind=engine)
+        session = Session()
+
+        # セッションを Begin して、トランザクションを開始する
+        session.begin()
+
+        try:
+            # CRUD処理
+            # この時点では、データベースに対してのCRUD処理は反映されていない
+            organization = session.query(Organization).filter_by(id=organization_id).first()
+            user = session.query(User).filter_by(id=user_id).first()
+            ...
+
+            # セッションを Commit して、トランザクションを終了する
+            # この時点で、データベースに対してのCRUD処理が反映される
+            session.commit()
+        except Exception as e:
+            # エラーが発生した場合は、トランザクションをロールバックする（データベースに対してのCRUD処理が反映されない）
+            session.rollback()
+            raise e
+        finally:
+            # セッションを Close して、DBセッションを終了する
+            session.close()
+        ```
+
+    <!-- トランザクションには、以下の制御モードが存在する
+
+    - 自動モード
+        - デフォルトのモード
+        - トランザクションの開始、コミット、ロールバックは自動的に行われる
+
+    - 手動モード
+        - トランザクションの開始、コミット、ロールバックは手動で行われる -->
+
+- セッション<br>
+    データベースへの1つの接続を表すオブジェクト。アプリケーションは複数のセッションを持つことが可能であるが、1つのセッションには同時に1つのアクティブなトランザクションしか持てない点に注意。セッションが終了すると、未コミットのトランザクションは自動的にロールバックされる
+
+    <img width="500" alt="image" src="https://github.com/user-attachments/assets/718b2ae5-165b-49d5-a541-a440bcfb645f" />
+
+- Begin<br>
+    セッション及びトランザクションを開始する操作。
+    例えば SQLAlchemy の場合は、`session.begin()` で行う。
+
+- コミット（Commit）<br>
+    トランザクションの結果（各種CRUD処理の結果）をデータベースに「恒久的に」反映させる操作。トランザクションも終了するので、Commit 成功後のロールバックは不可能になっている。（Commit 失敗の場合は、ロールバックは可能）<br>
+    例えば SQLAlchemy の場合は、`session.commit()` で行う。内部では、`session.commit()` が呼ばれると、`session.flush()` が自動的に呼ばれている
+
+- フラッシュ（Flush）<br>
+    トランザクションの結果（各種CRUD処理の結果）をデータベースに「一時的に」反映させる操作。Flush 後でもロールバックは可能になっている。<br>
+    例えば SQLAlchemy の場合は、`session.flush()` で行う。
+
+    あくまで一時的な反映である Flush 後でもロールバックは可能になっているので、テーブル A 作成後に別のテーブル B 作成時にテーブル A の ID が必要になるようなケースなどで利用する
+
+    - SQLAlchemy（PostgreSQL）の場合
+        ```python
+        from sqlalchemy import create_engine
+        from sqlalchemy.orm import sessionmaker
+
+        # データベースへの接続を確立
+        engine = create_engine('postgresql://user:password@localhost:5432/dbname')
+
+        # DBセッションを作成
+        Session = sessionmaker(bind=engine)
+        session = Session()
+
+        # セッションを Begin して、トランザクションを開始する
+        session.begin()
+
+        try:
+            # ユーザーを作成
+            user = User(email=email)
+            session.add(user)
+            
+            # Flushして、user.idを取得
+            # この時点では、一時的な反映であるので、ロールバックは可能
+            session.flush()
+
+            # UserSettings では、レコード作成時に user.id が必要であるが、Flush したことで user.id が利用可能になる
+            settings = UserSettings(
+                user_id=user.id,  # flush したので id が利用可能
+                theme='default'
+            )
+            session.add(settings)
+
+            # セッションを Commit して、トランザクションを終了する
+            # この時点で、データベースに対してのCRUD処理が恒久的に反映される
+            session.commit()
+        except Exception as e:
+            # エラーが発生した場合は、トランザクションをロールバックする（データベースに対してのCRUD処理が反映されない）
+            session.rollback()
+            raise e
+        finally:
+            # セッションを Close して、DBセッションを終了する
+            session.close()
+        ```
+
+- ロールバック（Rollback）<br>
+    トランザクションの結果（各種CRUD処理の結果）をデータベースに反映させない操作で、主に各種CRUD処理でエラーが発生したケースで使用する。<br>
+    例えば SQLAlchemy の場合は、`session.rollback()` で行う。<br>
+
+- クローズ（Close）<br>
+    セッションを終了する操作。例えば SQLAlchemy の場合は、`session.close()` で行う。<br>
+    1つのセッションには同時に1つのアクティブなトランザクションしか持てないので、セッションが終了すると未コミットのトランザクションは自動的にロールバックされる。<br>
+
+
+## コネクションプールとコネクション数
+
+- コネクションプール<br>
+    コネクションプールとは、（APIやアプリケーション等から）データベースへの複数接続を効率的に管理するための仕組みで、アプリケーションがデータベースへの接続を必要とする際に、既存の接続を再利用することで、接続の確立と切断のオーバーヘッドを削減し、パフォーマンスを向上させることができる機能になっている。
+
+    より詳細には、アプリケーションからデータベースを操作する際は以下の手順で行われるが、
+
+    1. アプリとデータベースとの接続を確立する
+    2. トランザクションを開始する
+    3. SQLを実行する
+    4. トランザクションを終了する
+    5. データベースとの接続を切断する
+
+    この内の１つ目の接続処理は処理負荷が大きく時間がかかり、アプリケーションから複数のデータベースアクセスが行われるようなケースでは、毎回接続処理を行うとパフォーマンスが大きく低下してしまう。そのため、４つ目のトランザクション終了処理のあとに、５つ目の確立した接続の切断処理を行わず、プールと呼ばれる場所にコネクションを保存することで、接続処理のオーバーヘッドを削減することができる。
+
+    <img width="500" alt="image" src="https://github.com/user-attachments/assets/e27dfef2-c4e7-4303-a74c-bb0ad2fe219e" /><br>
+    <img width="500" alt="image" src="https://github.com/user-attachments/assets/5abcf5e4-386e-4b23-a71c-665c3d2fed6b" /><br>
+
+
+- コネクション数<br>
+    コネクション数が大きくなりすぎるとデータベースへの負荷が高くなり、各種 CRUD 処理のパフォーマンスが低下する可能性があるので注意が必要。
+
+    コネクション数の適切な数は、データベースの種類やデータベースのパフォーマンス、アプリケーションのニーズによって異なるが、一般的にはデータベースのパフォーマンスに応じて、数百から数千程度のコネクション数が適切な場合が多い。コネクション数を適切に管理することで、データベースへの負荷を最小化し、パフォーマンスを向上させることができる。
+
+    データベースコネクション数の上限は、PostgreSQL の場合 `max_connections` で確認できる。
+    ```sh
+    postgres=> SHOW max_connections;
+    -[ RECORD 1 ]---+-----
+    max_connections | 1704
+    ```
+
+
 ## リレーション
 
 データベースにおけリレーション（関係）とは、主キー（Primary Key）と外部キー（Foreign Key）を使用して実現する異なるテーブル間の関連付けのこと。リレーションには、以下のパターンが存在する。
@@ -193,134 +347,8 @@
     - LIKE
     - xxx
 
-## セッションとトランザクション
-
-- トランザクション<br>
-    複数の SQL 文によるCRUD操作を1つの処理としてまとめてデータベースに反映させる操作。<br>
-
-    トランザクションを使用することで、複数テーブルにまたがる API 処理などにおいて、テーブルレコードの一貫性が保証されるような処理が可能になる。<br>
-    例えば、オーガニゼーション＆ユーザーを作成する API において、オーガニゼーションの追加には成功したが、ユーザーの追加には失敗した場合、トランザクションを使用しないと、オーガニゼーションレコードのみが作成されてユーザーが作成されていないという不整合が発生するが、トランザクションを使用することで、オーガニゼーションとユーザーの作成の両方が成功した場合のみオーガニゼーションとユーザーの作成が完了するという処理が可能になる。
-
-    - SQLAlchemy（PostgreSQL）の場合
-        ```python
-        from sqlalchemy import create_engine
-        from sqlalchemy.orm import sessionmaker
-
-        # データベースへの接続を確立
-        engine = create_engine('postgresql://user:password@localhost:5432/dbname')
-
-        # DBセッションを作成
-        Session = sessionmaker(bind=engine)
-        session = Session()
-
-        # セッションを Begin して、トランザクションを開始する
-        session.begin()
-
-        try:
-            # CRUD処理
-            # この時点では、データベースに対してのCRUD処理は反映されていない
-            organization = session.query(Organization).filter_by(id=organization_id).first()
-            user = session.query(User).filter_by(id=user_id).first()
-            ...
-
-            # セッションを Commit して、トランザクションを終了する
-            # この時点で、データベースに対してのCRUD処理が反映される
-            session.commit()
-        except Exception as e:
-            # エラーが発生した場合は、トランザクションをロールバックする（データベースに対してのCRUD処理が反映されない）
-            session.rollback()
-            raise e
-        finally:
-            # セッションを Close して、DBセッションを終了する
-            session.close()
-        ```
-
-    <!-- トランザクションには、以下の制御モードが存在する
-
-    - 自動モード
-        - デフォルトのモード
-        - トランザクションの開始、コミット、ロールバックは自動的に行われる
-
-    - 手動モード
-        - トランザクションの開始、コミット、ロールバックは手動で行われる -->
-
-- セッション<br>
-    データベースへの1つの接続を表すオブジェクト。アプリケーションは複数のセッションを持つことが可能であるが、1つのセッションには同時に1つのアクティブなトランザクションしか持てない点に注意。セッションが終了すると、未コミットのトランザクションは自動的にロールバックされる
-
-    <img width="500" alt="image" src="https://github.com/user-attachments/assets/718b2ae5-165b-49d5-a541-a440bcfb645f" />
-
-- Begin<br>
-    セッション及びトランザクションを開始する操作。
-    例えば SQLAlchemy の場合は、`session.begin()` で行う。
-
-- コミット（Commit）<br>
-    トランザクションの結果（各種CRUD処理の結果）をデータベースに「恒久的に」反映させる操作。トランザクションも終了するので、Commit 成功後のロールバックは不可能になっている。（Commit 失敗の場合は、ロールバックは可能）<br>
-    例えば SQLAlchemy の場合は、`session.commit()` で行う。内部では、`session.commit()` が呼ばれると、`session.flush()` が自動的に呼ばれている
-
-- フラッシュ（Flush）<br>
-    トランザクションの結果（各種CRUD処理の結果）をデータベースに「一時的に」反映させる操作。Flush 後でもロールバックは可能になっている。<br>
-    例えば SQLAlchemy の場合は、`session.flush()` で行う。
-
-    あくまで一時的な反映である Flush 後でもロールバックは可能になっているので、テーブル A 作成後に別のテーブル B 作成時にテーブル A の ID が必要になるようなケースなどで利用する
-
-    - SQLAlchemy（PostgreSQL）の場合
-        ```python
-        from sqlalchemy import create_engine
-        from sqlalchemy.orm import sessionmaker
-
-        # データベースへの接続を確立
-        engine = create_engine('postgresql://user:password@localhost:5432/dbname')
-
-        # DBセッションを作成
-        Session = sessionmaker(bind=engine)
-        session = Session()
-
-        # セッションを Begin して、トランザクションを開始する
-        session.begin()
-
-        try:
-            # ユーザーを作成
-            user = User(email=email)
-            session.add(user)
-            
-            # Flushして、user.idを取得
-            # この時点では、一時的な反映であるので、ロールバックは可能
-            session.flush()
-
-            # UserSettings では、レコード作成時に user.id が必要であるが、Flush したことで user.id が利用可能になる
-            settings = UserSettings(
-                user_id=user.id,  # flush したので id が利用可能
-                theme='default'
-            )
-            session.add(settings)
-
-            # セッションを Commit して、トランザクションを終了する
-            # この時点で、データベースに対してのCRUD処理が恒久的に反映される
-            session.commit()
-        except Exception as e:
-            # エラーが発生した場合は、トランザクションをロールバックする（データベースに対してのCRUD処理が反映されない）
-            session.rollback()
-            raise e
-        finally:
-            # セッションを Close して、DBセッションを終了する
-            session.close()
-        ```
-
-- ロールバック（Rollback）<br>
-    トランザクションの結果（各種CRUD処理の結果）をデータベースに反映させない操作で、主に各種CRUD処理でエラーが発生したケースで使用する。<br>
-    例えば SQLAlchemy の場合は、`session.rollback()` で行う。<br>
-
-- クローズ（Close）<br>
-    セッションを終了する操作。例えば SQLAlchemy の場合は、`session.close()` で行う。<br>
-    1つのセッションには同時に1つのアクティブなトランザクションしか持てないので、セッションが終了すると未コミットのトランザクションは自動的にロールバックされる。<br>
-
-## コネクションプールとコネクション数
-
-コネクションプールとは、（API等から）データベースへの複数接続を効率的に管理するための仕組みで、
-
 
 ## テーブル操作（CRUD）
-
 
 ### バルグ処理（一括操作）関連
 
@@ -403,6 +431,7 @@ RDSのデータベースに関するパフォーマンス指標（メトリク�
 - ReadLatency / WriteLatency<br>
     ディスクI/O操作の平均所要時間（秒）。高い値はディスクの遅延を示す。<br>
     高い場合は、DBインスタンスのスケーリング（インスタンスタイプの変更）や、API側でのデータベースのCRUD処理のチューニングを行うことでパフォーマンスを改善できる。
+
 
 ## その他
 

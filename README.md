@@ -410,14 +410,14 @@ AIプロダクト開発のための Tips 集。<br>
     - 【GCP】GCS [Google Cloud Storage]
     - 【AWS】Amazon S3
 - 構造化データとSQL
-    - [[In-progress] 構造化データの基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/110)
-        - セッションとトランザクション
-        - コネクションプールとコネクション数
-        - リレーション
-        - インデックス
-        - 正規化
-        - テーブル操作（CRUD）
-        - パフォーマンス指標
+    - [構造化データの基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/110)
+        - [セッションとトランザクション](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/110#%E3%82%BB%E3%83%83%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%A8%E3%83%88%E3%83%A9%E3%83%B3%E3%82%B6%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3)
+        - [コネクションプールとコネクション数](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/110#%E3%82%B3%E3%83%8D%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3%E3%83%97%E3%83%BC%E3%83%AB%E3%81%A8%E3%82%B3%E3%83%8D%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3%E6%95%B0)
+        - [リレーション](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/110#%E3%83%AA%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3)
+        - [In-progress] インデックス
+        - [In-progress] 正規化
+        - [In-progress] テーブル操作（CRUD）
+        - [パフォーマンス指標](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/110#db%E3%83%91%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%B3%E3%82%B9%E6%8C%87%E6%A8%99)
     - MySQL
         - [【MySQL】SQLAlchemy を使用して Python スクリプトから MySQL に接続する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/34)
         - [【MySQL】SQLAlchemy を使用して Python スクリプトから MySQL に接続する（docker + docker-compose での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/35)
