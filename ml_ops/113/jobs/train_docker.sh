@@ -7,8 +7,8 @@ WORKDIR=${WORKDIR:-"/app"}
 IMAGE_NAME=${IMAGE_NAME:-"slurm-exercises-train-job"}
 TAG=${TAG:-"latest"}
 
-# PROJECT_DIR=$(cd $(dirname $0)/..; pwd)
-# cd ${PROJECT_DIR}/jobs
+PROJECT_DIR=${PWD}
+echo "PROJECT_DIR: ${PROJECT_DIR}"
 
 N_EPOCHES=1
 BATCH_SIZE=8
@@ -46,7 +46,7 @@ fi
 # Run train job
 # -------------------
 # NOTE: "-it" option is not used because slurm will run the job in interactive mode
-docker run --rm --name ${IMAGE_NAME} -v ${PROJECT_DIR}/jobs:${WORKDIR} ${IMAGE_NAME}:${TAG} /bin/bash -c \
+docker run --rm --name ${IMAGE_NAME} -v ${PROJECT_DIR}:${WORKDIR} ${IMAGE_NAME}:${TAG} /bin/bash -c \
     "python3 train.py \
     --device cpu \
     --exper_name ${EXEP_NAME} \
