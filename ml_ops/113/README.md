@@ -47,7 +47,7 @@
         chmod +x train.sh
 
         # ジョブを実行する
-        srun train.sh
+        srun --nodes=1 --ntasks=1 train.sh
         ```
 
     - ジョブを予約する場合（`sbatch` コマンド）<br>
@@ -60,6 +60,18 @@
         # ジョブを予約する
         sbatch train.sh
         ```
+
+        - `train.sh` の例<br>
+            ```bash
+            #!/bin/bash
+            #SBATCH --job-name=test_job
+            #SBATCH --nodes=1
+            #SBATCH --ntasks=1
+            #SBATCH --time=01:00:00
+
+            python train.py
+            ```
+
 
 1. （オプション）ジョブの実行状況を確認する<br>
     ```bash
