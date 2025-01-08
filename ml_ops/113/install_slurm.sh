@@ -44,7 +44,7 @@ grep -i munge config.log
 # -------------------
 # Setup SLURM
 # -------------------
-sudo cp /usr/local/etc/slurm.conf.example /usr/local/etc/slurm.conf
+sudo cp etc/slurm.conf.example /usr/local/etc/slurm.conf
 
 # -------------------
 # Run SLURM

@@ -73,9 +73,10 @@
 
 1. SLURM の設定ファイルを作成する<br>
     SLURM の各種設定は、`slurm.conf` で行う。
-    SLURM のインストール後に `/usr/local/etc/slurm.conf` が自動的に作成されるので、このファイルを編集するかコピーして設定を行う。
+    SLURM のインストール後に、`slurm-${SLURM_VERSION}/etc` ディレクトリ以下に `slurm.conf.example` が作成されるので、このファイルを `/usr/local/etc/slurm.conf` にコピーして設定を行う。
 
     ```bash
+    sudo cp etc/slurm.conf.example /usr/local/etc/slurm.conf
     sudo vi /usr/local/etc/slurm.conf
     ```
 
