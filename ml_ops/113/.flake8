@@ -1,0 +1,18 @@
+# vim: filetype=conf :
+[flake8]
+max_line_length = 150
+
+ignore =
+  E123,
+  E126,
+  E203,
+  E241,
+  E402
+  # E712 breaks peewee's operator '==' with boolean.
+  # comparison to False should be 'if cond is False:' or 'if not cond:'
+  E712,
+  F401,
+  # f-string is missing placeholders
+  F541,
+  F811,
+  W503

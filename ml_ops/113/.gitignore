@@ -1,0 +1,24 @@
+# Mac
+.DS_Store
+
+# App artifacts
+*.pyc
+
+# vscode
+/.vscode
+/.devcontainer
+
+# archives
+*.zip
+
+# train jobs
+dataset
+.logs
+.tensorboard
+.results
+checkpoints
+*.out
+
+# Debug
+.debug
+.old

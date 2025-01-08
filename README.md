@@ -529,7 +529,7 @@ AIプロダクト開発のための Tips 集。<br>
 - SLURM
     - [[In-progress] SLURM の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/111)
     - [SLURM をインストールする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/112)
-    - SLURM を使用して学習ジョブの予約＆実行を行う
+    - [SLURM を使用して学習ジョブの予約＆実行を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/113)
     - SLURM を使用して複数サーバーでの分散学習を行う
 - 【AWS】AWS Batch
     - [【AWS】 AWS Batch を使用して EC2 インスタンス上で簡単なバッチ処理を行う（AWS CLI 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/73)
