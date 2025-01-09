@@ -41,6 +41,12 @@
     Nov 28 01:36:31 sakai-dev systemd[1]: Started MUNGE authentication service.
     ```
 
+1. libdbus-1-dev をインストールする<br>
+    後述の slurmd 起動時に、`slurmd: error: cannot create cgroup context for cgroup/v2` エラーが出る場合は、libdbus-1-dev をインストールする
+    ```bash
+    sudo apt install -y libdbus-1-dev
+    ```
+
 1. gcc をインストールする
     ```bash
     sudo apt install -y build-essential
@@ -50,7 +56,6 @@
     gcc --version
     ```
     SLURM をビルドする際に必要になるため、gcc をインストールする
-
 
 1. SLURM をインストールする
     1. SLURM のダウンロード
@@ -133,6 +138,24 @@
         NodeName=sakai-dev CPUs=4 State=UNKNOWN
         PartitionName=debug Nodes=ALL Default=YES MaxTime=INFINITE State=UP
         ```
+
+    各設定項目の意味は、https://slurm.schedmd.com/configurator.easy.html で確認できる
+
+1. （オプション）SLURM 実行用のユーザーを作成する<br>
+    `slurm.conf` で `SlurmUser=slurm` とした場合は、SLURM 実行用のユーザー `slurm` を作成する
+    ```bash
+    # ユーザーを作成する
+    sudo groupadd -g 5000 slurm
+    sudo useradd -M -d /var/lib/slurm -s /sbin/nologin -u 5000 -g slurm slurm
+    ```
+    ```bash
+    # 各種パーミッションを設定する
+    sudo mkdir -p /var/lib/slurm/spool
+    sudo mkdir -p /var/log/slurm
+
+    sudo chown -R slurm:slurm /var/log/slurm
+    sudo chown -R slurm:slurm /var/lib/slurm
+    ```
 
 1. `slurmctld` と `slurmd` を起動する<br>
     各サーバーのリソース監視を行う Slurm の管理用デーモンである `slurmctld` と、各計算ノードにおけるジョブの実行管理や監視を行う `slurmd` を起動する。

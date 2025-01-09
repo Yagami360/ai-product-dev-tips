@@ -19,6 +19,10 @@ sudo systemctl start munge
 # MUNGE の起動状態を確認する
 sudo systemctl status munge
 
+# Install libdbus-1-dev to avoid "slurmd: error: cannot create cgroup context for cgroup/v2" error
+sudo apt install -y libdbus-1-dev
+# sudo apt install -y dbus
+
 # Install gcc
 # SLURM をビルドする際に必要になるため、gcc をインストールする
 sudo apt install -y gcc
@@ -45,6 +49,17 @@ grep -i munge config.log
 # Setup SLURM
 # -------------------
 sudo cp etc/slurm.conf.example /usr/local/etc/slurm.conf
+
+# add slurm user
+sudo groupadd -g 5000 slurm
+sudo useradd -M -d /var/lib/slurm -s /sbin/nologin -u 5000 -g slurm slurm
+
+# set permission
+sudo mkdir -p /var/lib/slurm/spool
+sudo mkdir -p /var/log/slurm
+
+sudo chown -R slurm:slurm /var/log/slurm
+sudo chown -R slurm:slurm /var/lib/slurm
 
 # -------------------
 # Run SLURM
