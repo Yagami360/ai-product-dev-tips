@@ -72,3 +72,7 @@ sudo systemctl start slurmctld slurmd
 
 # check slurm is running
 sudo systemctl status slurmctld slurmd
+
+# reload systemd
+# sudo systemctl daemon-reload
+# sudo systemctl restart slurmctld slurmd
