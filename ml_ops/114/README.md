@@ -40,6 +40,20 @@
 1. 複数サーバーに SLURM をインストールする<br>
     [SLURM をインストールする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/112)　に従って、サーバー A には、`slurmctld` と `slurmd` をインストールし、サーバー B には、`slurmd` をインストールする
 
+1. （オプション）複数サーバーの slurm 用ユーザー `slurm` の ID を一致させる<br>
+    サーバー A と サーバー B の `slurm` 用ユーザーの ID が異なる場合は、同じ ID になるように変更する
+    `slurm.conf` で定義した `SlurmUser` の ID を一致させる
+    ```bash
+    # USER ID を確認する
+    id slurm
+    ```
+
+    例えば、USER ID が 5000 の場合は、以下のように設定する
+    ```bash
+    sudo usermod -u 5000 slurm
+    sudo groupmod -g 5000 slurm
+    ```
+
 1. 複数サーバーの `slurm.conf` を設定する<br>
     両方のサーバーの `slurm.conf` を設定する
 
@@ -202,7 +216,15 @@
     scontrol show node
     ```
 
+1. 学習用ジョブのスクリプトを作成する<br>
+
 1. マスターノード（サーバーA）からワーカーノード（サーバーB）にジョブを投入する<br>
+
     ```bash
-    srun --nodes=1 --ntasks=4 --time=01:00:00 python train.py
+    srun --nodelist=server-b --ntasks=1 --ntasks-per-node=1 python train.py
+    ```
+
+    GPU の分散学習を行う場合は、`--gres=gpu:1` オプションを追加する
+    ```bash
+    srun --nodes=2 --ntasks=2 --ntasks-per-node=1 --gres=gpu:1 python train.py
     ```

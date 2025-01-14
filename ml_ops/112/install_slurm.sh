@@ -70,6 +70,9 @@ sudo cp etc/slurmd.service /etc/systemd/system
 # start slurmctld and slurmd
 sudo systemctl start slurmctld slurmd
 
+# enable to auto start slurm
+sudo systemctl enable slurmctld slurmd
+
 # check slurm is running
 sudo systemctl status slurmctld slurmd
 

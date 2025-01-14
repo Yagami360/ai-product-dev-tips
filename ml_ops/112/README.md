@@ -144,7 +144,7 @@
 1. （オプション）SLURM 実行用のユーザーを作成する<br>
     `slurm.conf` で `SlurmUser=slurm` とした場合は、SLURM 実行用のユーザー `slurm` を作成する
     ```bash
-    # ユーザーを作成する
+    # ユーザーを作成する（例：USER ID を 5000 とする場合）
     sudo groupadd -g 5000 slurm
     sudo useradd -M -d /var/lib/slurm -s /sbin/nologin -u 5000 -g slurm slurm
     ```
@@ -194,4 +194,9 @@
             CPU: 10.854s
         CGroup: /system.slice/slurmd.service
                 └─599 /usr/local/sbin/slurmd -D -s
+    ```
+
+1. （オプション）`slurmctld` と `slurmd` を自動起動するように設定する<br>
+    ```bash
+    sudo systemctl enable slurmctld slurmd
     ```
