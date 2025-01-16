@@ -4,6 +4,8 @@ HPC環境でよく利用されるジョブ環境ツールで、特に機械学�
 
 <img width="500" alt="image" src="https://github.com/user-attachments/assets/f29c3880-9d17-4db6-bc41-05f6361a9b7b" />
 
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/6045435e-6c1f-4fd3-ba0d-8ef7ec8fce3a" />
+
 - slurmctld<br>
     Slurm の管理用デーモンで、後述するSlurmデーモンとリソースの監視を担う。マスターノードなどのユーザーがジョブを投入するサーバーに配置する必要がある。（計算ノードには不要）
 

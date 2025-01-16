@@ -1,5 +1,7 @@
 # SLURM を使用して複数サーバーでの分散学習を行う
 
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/6045435e-6c1f-4fd3-ba0d-8ef7ec8fce3a" />
+
 ## 方法（Ubuntu や Debian の場合）
 
 1. 複数サーバーを用意する<br>
@@ -58,6 +60,14 @@
 1. 複数サーバー間を ssh で接続できるようにする<br>
     サーバー A と サーバー B の間で ssh で接続できるようにする。
 
+    1. サーバーBで SSH 秘密鍵と公開鍵を作成する<br>
+        ```bash
+        cd .ssh
+        ssh-keygen
+        ```
+
+    2. 作成された公開鍵 `id_rsa.pub` をサーバーAの　`.ssh/authorized_keys` に追加する
+
 1. 複数サーバーの `slurm.conf` を設定する<br>
     両方のサーバーの `slurm.conf` を設定する
 
@@ -111,7 +121,11 @@
         # COMPUTE NODES（'/usr/local/sbin/slurmd -C' で確認可能）
         NodeName=server-a CPUs=4 Boards=1 SocketsPerBoard=1 CoresPerSocket=2 ThreadsPerCore=2 RealMemory=15033
         NodeName=server-b CPUs=4 Boards=1 SocketsPerBoard=1 CoresPerSocket=2 ThreadsPerCore=2 RealMemory=15033
+        # NodeName=server-b CPUs=4 Boards=1 SocketsPerBoard=1 CoresPerSocket=2 ThreadsPerCore=2 RealMemory=15033 Gres=gpu:1
         PartitionName=debug Nodes=ALL Default=YES MaxTime=INFINITE State=UP
+
+        # GPU設定
+        # GresTypes=gpu
 
         # ポート設定
         SlurmctldPort=6817          # slurmctld で使用するポート番号
@@ -127,7 +141,7 @@
         SlurmctldTimeout=300
         ```
 
-1. 複数サーバーの MUGE キーを一致させる<br>
+1. 複数サーバーの MUNGE キーを一致させる<br>
     ```bash
     sudo cat /etc/munge/munge.key
     ```
@@ -185,9 +199,9 @@
         srun --nodelist=server-b --ntasks=1 --ntasks-per-node=1 python train.py
         ```
 
-        GPU の分散学習を行う場合は、`--gres=gpu:1` オプションを追加する
+        GPU の分散学習を行う場合は、`--gres=gpu:0` オプションを追加する
         ```bash
-        srun --nodes=2 --ntasks=2 --ntasks-per-node=1 --gres=gpu:1 python train.py
+        srun --nodelist=server-b --ntasks=1 --ntasks-per-node=1 --gres=gpu:0 python train.py
         ```
 
     - sbatch コマンドを使用する場合<br>
@@ -195,10 +209,45 @@
         sbatch train.sh
         ```
 
-        GPU の分散学習を行う場合は、`--gres=gpu:1` オプションを追加する
+        GPU の分散学習を行う場合は、`--gres=gpu:0` オプションを追加する
         ```bash
-        sbatch --gres=gpu:1 train.sh
+        sbatch --gres=gpu:0 train.sh
         ```
+
+1. （オプション）Docker で動作する学習ジョブの場合<br>
+    計算ノード（server-b）上の Docker で動作する学習ジョブを動かしそうとして、以下のエラーが出た場合
+    ```sh
+    srun --nodelist=server-b --ntasks=1 --ntasks-per-node=1 train_docker.sh
+    ```
+    ```sh
+    Building Docker image slurm-exercises-train-job:latest...
+    permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Head "http://%2Fvar%2Frun%2Fdocker.sock/_ping": dial unix /var/run/docker.sock: connect: permission denied
+    srun: error: server-b: task 0: Exited with exit code 1
+    ERROR: mkdir /home/sakai/.docker/buildx: permission denied
+    ```
+
+    以下のように、計算ノード（server-b）側で `docker` グループに `slurm` ユーザーを追加し、`docker` サービスを再起動する
+    ```bash
+    sudo usermod -aG docker slurm
+    ```
+    ```bash
+    sudo systemctl restart docker
+    sudo systemctl restart slurmd
+    ```
+
+    依然としてエラーが発生する場合は、以下のコマンドも実行する
+    ```bash
+    # Dockerソケットのパーミッションを確認と修正
+    ls -l /var/run/docker.sock
+    sudo chmod 666 /var/run/docker.sock
+    ```
+    ```bash
+    # .dockerディレクトリの所有権を修正
+    sudo mkdir -p /home/sakai/.docker
+    sudo chown -R sakai:sakai /home/sakai/.docker
+    sudo mkdir -p /var/lib/slurm/.docker
+    sudo chown -R slurm:slurm /var/lib/slurm/.docker
+    ```
 
 1. ジョブの状態を確認する<br>
     ```bash

@@ -315,6 +315,9 @@ AIプロダクト開発のための Tips 集。<br>
 
 - Web サーバー / WSGI サーバー
     - [Web サーバーの基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/38)
+        - SSL/TLS 通信
+        - HTTP クッキー（Cookie）
+        - WebSocket 通信
     - nginx
         - [【nginx】nginx の基本事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/22)
         - [【nginx】nginx での Webサーバーを https 化する（自己署名SSL認証書を使用する場合）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/server_processing/23)
@@ -497,6 +500,8 @@ AIプロダクト開発のための Tips 集。<br>
     - Sentry
         - [【Sentry】Sentry を使用して FastAPI を使用した Web-API のエラーを監視する（FastAPI + uvicorn + gunicorn + docker + docker-compose + Sentry での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/53)
     - Grafana
+        - Grafana + Prometheus + NVIDIA DCGM Exporter を使用して、単一ノードのオンプレミス環境における GPU の駆動状況や Slurm での学習ジョブの予約＆実行状況を可視化する
+        - [[In-progress] Grafana + Prometheus + NVIDIA DCGM Exporter を使用して、マルチノードのオンプレミス環境における GPU の駆動状況や Slurm での学習ジョブの予約＆実行状況を可視化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/116)
     - OpsGenie
         - [[In-progress] Opsgenie を使用して EC2 インスタンスに導入している Datadog で検知したアラートを管理・通知する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/63)
 - ログフォワーダ

@@ -1,5 +1,7 @@
 # SLURM を使用して学習ジョブの予約＆実行を行う
 
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/6045435e-6c1f-4fd3-ba0d-8ef7ec8fce3a" />
+
 ## 方法（Ubuntu や Debian の場合）
 
 1. SLURM をインストールする<br>
