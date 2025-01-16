@@ -192,11 +192,6 @@ Slurm のマスターノードと計算ノードのマルチノードで構成�
         sudo systemctl enable grafana-server
         ```
 
-1. Grafana の UI にアクセスする<br>
-    ```bash
-    http://${外部IPアドレス}:3000
-    ```
-
 ### 計算ノード側
 
 1. サーバーのホスト名を設定する<br>
@@ -260,6 +255,34 @@ Slurm のマスターノードと計算ノードのマルチノードで構成�
         # 自動起動有効化
         docker update --restart=always nvidia/dcgm-exporter
         ```
+
+### ブラウザ上からの操作
+
+1. Grafana の UI にアクセスする<br>
+    ```bash
+    http://0.0.0.0:3000
+    ```
+    初回は、ユーザー名（`admin`）とパスワード（`admin`）でログインできる
+
+1. Grafana のダッシュボードを作成する<br>
+    Grafana の UI 上からダッシュボードを作成する
+
+    <img width="500" alt="image" src="https://github.com/user-attachments/assets/123bb8d1-d07d-456e-b7c0-7703c48bb7aa" /><br>
+    <img width="500" alt="image" src="https://github.com/user-attachments/assets/5ee572a7-e0c1-4f90-b4eb-76eda96c800c" /><br>
+
+    - Node Exporter のダッシュボード<br>
+        「Import Dashboard」の画面で、[node-exporter-dashboard.json](./node-exporter-dashboard.json) を import する
+
+        <img width="800" alt="image" src="https://github.com/user-attachments/assets/2146885b-c83f-412a-a6fe-622b5e40fa0e" />
+
+        成功すると、以下のような Node Exporter で測定可能な「CPU」「メモリ」「ディスク」等のダッシュボードが作成される
+        <img width="800" alt="image" src="https://github.com/user-attachments/assets/0f9ee5e1-2dbc-4613-b7a9-c5048e488ca2" /><br>
+
+    - Slurm Exporter のダッシュボード<br>
+        「Import Dashboard」の画面で、[slurm-exporter-dashboard.json](./slurm-exporter-dashboard.json) を import する
+
+    - NVIDIA DCGM Exporter のダッシュボード<br>
+        「Import Dashboard」の画面で、[nvidia-dcgm-exporter-dashboard.json](./nvidia-dcgm-exporter-dashboard.json) を import する
 
 ## 参考サイト
 

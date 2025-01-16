@@ -93,12 +93,6 @@ docker run -d --name grafana \
     -v ${PROJECT_DIR}/grafana/plugins:/var/lib/grafana/plugins \
     grafana/grafana:latest
 
-# docker run -d --name grafana \
-#   -p 3000:3000 \
-#   -v /opt/monitoring/grafana/data:/var/lib/grafana \
-#   -v /opt/monitoring/grafana/plugins:/var/lib/grafana/plugins \
-#   grafana/grafana:latest
-
 # 自動起動有効化
 docker update --restart=always grafana
 
