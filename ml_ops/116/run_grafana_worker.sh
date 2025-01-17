@@ -38,9 +38,9 @@ docker run -d --name dcgm-exporter \
     --network="host" \
     --pid="host" \
     -p 9400:9400 \
-    -v "/:/host:ro,rslave" \
-    nvidia/dcgm-exporter:latest \
-    --path.rootfs=/host
+    --runtime=nvidia \
+    --gpus all \
+    nvidia/dcgm-exporter:latest
 
 # 自動起動有効化
 docker update --restart=always dcgm-exporter

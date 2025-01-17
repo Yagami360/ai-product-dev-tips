@@ -102,6 +102,7 @@ Slurm のマスターノードと計算ノードのマルチノードで構成�
         docker run -d --name node-exporter \
             --network="host" \
             --pid="host" \
+            -p 9100:9100 \
             -v "/:/host:ro,rslave" \
             prom/node-exporter:latest \
             --path.rootfs=/host
@@ -112,18 +113,41 @@ Slurm のマスターノードと計算ノードのマルチノードで構成�
 
 1. Slurm Exporter をインストールして起動する<br>
 
-    - Docker コンテナでインストールする場合<br>
+    - （公式の方法）パッケージでインストールする場合<br>
+        docker pull ではインストールできないので、git clone して make する必要がある
+        ```bash
+        # https://github.com/vpenso/prometheus-slurm-exporter/blob/master/DEVELOPMENT.md
+        # インストール
+        git clone https://github.com/vpenso/prometheus-slurm-exporter.git
+        cd prometheus-slurm-exporter
+        make
+
+        # 起動（フォワグラウンドで実行する場合）
+        ./bin/prometheus-slurm-exporter
+
+        # 起動（バックグラウンドで実行する場合）
+        # nohup ./bin/prometheus-slurm-exporter &
+        ```
+
+    - （非公式）Docker コンテナでインストールする場合<br>
+        非公式なのもあって、環境によっては動かない可能性大
         ```bash
         # インストール
-        # https://github.com/vpenso/prometheus-slurm-exporter
-        docker pull vpenso/prometheus-slurm-exporter:latest
+        # https://github.com/dholt/prometheus-slurm-exporter
+        docker pull dholt/prometheus-slurm-exporter:latest
 
         # 起動
         docker run -d --name slurm-exporter \
             --network="host" \
+            -p 8080:8080 \
+            -v /usr/bin/sdiag:/usr/bin/sdiag \
+            -v /usr/bin/sinfo:/usr/bin/sinfo \
+            -v /usr/bin/squeue:/usr/bin/squeue \
             -v /etc/slurm:/etc/slurm:ro \
-            -v /var/run/slurmctld.pid:/var/run/slurmctld.pid \
-            vpenso/prometheus-slurm-exporter:latest
+            -v /usr/lib/slurm:/usr/lib/slurm:ro \
+            -v /etc/hosts:/etc/hosts:ro \
+            -v /var/run/munge:/var/run/munge:ro \
+            dholt/prometheus-slurm-exporter:latest
 
         # 自動起動有効化
         docker update --restart=always slurm-exporter
@@ -139,6 +163,7 @@ Slurm のマスターノードと計算ノードのマルチノードで構成�
         # 起動（-v オプションでローカル環境上の設定ファイル prometheus.yml を /etc/prometheus に同期）
         docker run -d --name prometheus \
             --network="host" \
+            -p 9090:9090 \
             -v ${HOME}/monitoring/prometheus:/etc/prometheus \
             prom/prometheus:latest
 
@@ -170,6 +195,7 @@ Slurm のマスターノードと計算ノードのマルチノードで構成�
         # 起動
         docker run -d --name grafana \
             --network="host" \
+            -p 3000:3000 \
             -v ${HOME}/monitoring/grafana/data:/var/lib/grafana/data \
             -v ${HOME}/monitoring/grafana/plugins:/var/lib/grafana/plugins \
             grafana/grafana:latest
@@ -234,6 +260,7 @@ Slurm のマスターノードと計算ノードのマルチノードで構成�
         docker run -d --name node-exporter \
             --network="host" \
             --pid="host" \
+            -p 9100:9100 \
             -v "/:/host:ro,rslave" \
             prom/node-exporter:latest \
             --path.rootfs=/host
@@ -250,13 +277,27 @@ Slurm のマスターノードと計算ノードのマルチノードで構成�
         docker pull nvidia/dcgm-exporter
 
         # 起動
-        docker run -d --gpus all --rm -p 9400:9400 nvidia/dcgm-exporter
+        docker run -d --name dcgm-exporter \
+            --network="host" \
+            --pid="host" \
+            -p 9400:9400 \
+            --runtime=nvidia \
+            --gpus all \
+            nvidia/dcgm-exporter:latest
 
         # 自動起動有効化
         docker update --restart=always nvidia/dcgm-exporter
         ```
 
 ### ブラウザ上からの操作
+
+1. （オプション）Prometheus の UI にアクセスする<br>
+    疎通確認を兼ねて、Prometheus の UI にアクセスする
+    ```bash
+    http://0.0.0.0:9090
+    ```
+    <img width="500" alt="image" src="https://github.com/user-attachments/assets/28e8d1a4-286b-4810-a702-79cc8ba87f95" />
+    <img width="500" alt="image" src="https://github.com/user-attachments/assets/38afe84b-300e-4c7c-bdcf-48582bc9fa94" />
 
 1. Grafana の UI にアクセスする<br>
     ```bash
@@ -281,9 +322,14 @@ Slurm のマスターノードと計算ノードのマルチノードで構成�
     - Slurm Exporter のダッシュボード<br>
         「Import Dashboard」の画面で、[slurm-exporter-dashboard.json](./slurm-exporter-dashboard.json) を import する
 
+        <img width="800" alt="image" src="https://github.com/user-attachments/assets/aeddf084-3da6-4010-8692-174a2ff86239" />
+
     - NVIDIA DCGM Exporter のダッシュボード<br>
         「Import Dashboard」の画面で、[nvidia-dcgm-exporter-dashboard.json](./nvidia-dcgm-exporter-dashboard.json) を import する
+
+        <img width="800" alt="image" src="https://github.com/user-attachments/assets/43e92b66-a351-42de-8ad7-23dfba2637bb" />
 
 ## 参考サイト
 
 - https://qiita.com/dcm_miura-h/items/1e545f6cd486f27ecfaa
+- https://zenn.dev/prage_negoya/articles/c9d023bffbf2a3

@@ -27,10 +27,31 @@ docker update --restart=always node-exporter
 
 # -------------------------
 # Run Slurm Exporter
+# パッケージでインストールする場合
+# https://github.com/vpenso/prometheus-slurm-exporter/blob/master/DEVELOPMENT.md
+# -------------------------
+# インストール
+if [ ! -d prometheus-slurm-exporter ]; then
+    git clone https://github.com/vpenso/prometheus-slurm-exporter.git
+fi
+
+cd prometheus-slurm-exporter
+if [ ! -f bin/prometheus-slurm-exporter ]; then
+    make
+fi
+
+# 起動（バックグラウンドで実行する場合）
+nohup ./bin/prometheus-slurm-exporter &
+cd ..
+
+# -------------------------
+# Run Slurm Exporter
+# Docker コンテナでインストールする場合
+# https://github.com/dholt/prometheus-slurm-exporter
+# https://hub.docker.com/layers/dholt/prometheus-slurm-exporter/latest/images/sha256-f3d167304f457016d5d63a934ed57e2acc1967f9d03fe92dab03559d9e405582
 # -------------------------
 # # インストール
-# # https://github.com/vpenso/prometheus-slurm-exporter
-# docker pull vpenso/prometheus-slurm-exporter:latest
+# docker pull dholt/prometheus-slurm-exporter:latest
 
 # # 起動
 # set +e
@@ -40,9 +61,14 @@ docker update --restart=always node-exporter
 # docker run -d --name slurm-exporter \
 #     --network="host" \
 #     -p 8080:8080 \
+#     -v /usr/bin/sdiag:/usr/bin/sdiag \
+#     -v /usr/bin/sinfo:/usr/bin/sinfo \
+#     -v /usr/bin/squeue:/usr/bin/squeue \
 #     -v /etc/slurm:/etc/slurm:ro \
-#     -v /var/run/slurmctld.pid:/var/run/slurmctld.pid \
-#     vpenso/prometheus-slurm-exporter:latest
+#     -v /usr/lib/slurm:/usr/lib/slurm:ro \
+#     -v /etc/hosts:/etc/hosts:ro \
+#     -v /var/run/munge:/var/run/munge:ro \
+#     dholt/prometheus-slurm-exporter:latest
 
 # # 自動起動有効化
 # docker update --restart=always slurm-exporter
@@ -89,6 +115,7 @@ set -e
 
 docker run -d --name grafana \
     --network="host" \
+    -p 3000:3000 \
     -v ${PROJECT_DIR}/grafana/data:/var/lib/grafana/data \
     -v ${PROJECT_DIR}/grafana/plugins:/var/lib/grafana/plugins \
     grafana/grafana:latest
@@ -99,4 +126,4 @@ docker update --restart=always grafana
 # -------------------------
 # Run Grafana Dashboard
 # -------------------------
-# open http://localhost:3000
+# curl http://localhost:3000
