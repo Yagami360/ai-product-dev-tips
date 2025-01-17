@@ -13,6 +13,63 @@
           "type": "prometheus",
           "uid": "prometheus"
         },
+        "description": "All Slurm Jobs",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "filterable": true,
+              "inspect": false
+            }
+          },
+          "overrides": []
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "editorMode": "code",
+            "expr": "sum by (user,account,partition) (slurm_account_jobs_pending > 0 or slurm_partition_jobs_pending > 0 or slurm_user_jobs_pending > 0)",
+            "format": "table",
+            "instant": true,
+            "legendFormat": "__auto",
+            "range": false,
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "editorMode": "code",
+            "expr": "slurm_queue_running > 0 or slurm_queue_pending > 0 or slurm_queue_completed > 0",
+            "format": "table",
+            "instant": true,
+            "hide": false,
+            "legendFormat": "__auto",
+            "range": false,
+            "refId": "B"
+          }
+        ],
+        "title": "All Slurm Jobs",
+        "transformations": [
+          {
+            "id": "merge",
+            "options": {}
+          }
+        ],
+        "type": "table"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
         "description": "Node States",
         "fieldConfig": {
           "defaults": {

@@ -322,7 +322,8 @@ Slurm のマスターノードと計算ノードのマルチノードで構成�
     - Slurm Exporter のダッシュボード<br>
         「Import Dashboard」の画面で、[slurm-exporter-dashboard.json](./slurm-exporter-dashboard.json) を import する
 
-        <img width="800" alt="image" src="https://github.com/user-attachments/assets/aeddf084-3da6-4010-8692-174a2ff86239" />
+        <img width="800" alt="image" src="https://github.com/user-attachments/assets/eca2466d-67be-4e15-be64-8af8630753ba" />
+
 
     - NVIDIA DCGM Exporter のダッシュボード<br>
         「Import Dashboard」の画面で、[nvidia-dcgm-exporter-dashboard.json](./nvidia-dcgm-exporter-dashboard.json) を import する
