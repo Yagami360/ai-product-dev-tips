@@ -456,6 +456,10 @@ AIプロダクト開発のための Tips 集。<br>
 - NAS [Network Attached Storage] / NFS [Network File System]
     - 【AWS】Amazon EFS
         - [【AWS】Amazon EFS を使用して EC2 インスタンスに共有ストレージ（NAS）を追加する（AWS CLI 使用）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/77)
+- DVC [Data Version Control]
+    - [DVC を使用して機械学習モデルの学習用データセットのバージョン管理を行う（リモートストレージとしてS3を使用する場合）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/117)
+    - DVC を使用して機械学習モデルの学習用データセットのバージョン管理を行う（リモートストレージとしてNASを使用する場合）
+
 
 </details>
 
@@ -501,7 +505,7 @@ AIプロダクト開発のための Tips 集。<br>
         - [【Sentry】Sentry を使用して FastAPI を使用した Web-API のエラーを監視する（FastAPI + uvicorn + gunicorn + docker + docker-compose + Sentry での構成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/53)
     - Grafana
         - Grafana + Prometheus + NVIDIA DCGM Exporter を使用して、単一ノードのオンプレミス環境における GPU の駆動状況や Slurm での学習ジョブの予約＆実行状況を可視化する
-        - [[In-progress] Grafana + Prometheus + NVIDIA DCGM Exporter を使用して、マルチノードのオンプレミス環境における GPU の駆動状況や Slurm での学習ジョブの予約＆実行状況を可視化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/116)
+        - [Grafana + Prometheus + NVIDIA DCGM Exporter を使用して、マルチノードのオンプレミス環境における GPU の駆動状況や Slurm での学習ジョブの予約＆実行状況を可視化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/116)
     - OpsGenie
         - [[In-progress] Opsgenie を使用して EC2 インスタンスに導入している Datadog で検知したアラートを管理・通知する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/63)
 - ログフォワーダ
