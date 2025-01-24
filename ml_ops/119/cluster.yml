@@ -1,0 +1,6 @@
+nodes:
+- address: xx.xxx.xx.xxx
+  internal_address: xx.xxx.xx.xxx
+  user: ubuntu
+  role: [controlplane,etcd,worker]
+  ssh_key_path: ~/.ssh/id_rsa

@@ -289,6 +289,9 @@ AIプロダクト開発のための Tips 集。<br>
         - [[In-progress]【AWS】`eksctl` コマンドを使用して Amazon EKS 上の Web API を構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/60)
         - [【AWS】Spotinst Ocean を使用して AWS の EKS クラスターを低価格＆高安定で運用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/88)
         - 【AWS】Spotinst Ocean を使用して AWS の EKS クラスターを低価格＆高安定で運用する（terraform 使用）
+    - Rancher / RKE [Rancher Kubernetes Engine]
+        - [Rancher の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/118)
+        - [Rancher の RKE を使用して、オンプレミス環境上に Kubernetes クラスターを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/119)
 
 </details>
 
@@ -301,7 +304,7 @@ AIプロダクト開発のための Tips 集。<br>
     - [Basic認証](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#basic-%E8%AA%8D%E8%A8%BC)
     - [JWT認証](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#jwt-json-web-token-%E8%AA%8D%E8%A8%BC)
     - [OAuth](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#oauth-20)
-    - [OpenID Connect](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#openid-connect-oidc)
+    - [OIDC [OpenID Connect]](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#openid-connect-oidc)
     - SAML (Security Assertion Markup Language)
     - [SSO [Single Sign-On]](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#sso-single-sign-on)
     - [CORS [Cross-Origin Resource Sharing]](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/109#cors-cross-origin-resource-sharing)
