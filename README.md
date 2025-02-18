@@ -816,12 +816,12 @@ AIプロダクト開発のための Tips 集。<br>
 <details>
 <summary>LLM アプリケーション開発</summary>
 
-- OpenAI API
+- OpenAI の LLM 系サービス
     - [【CLI/Python】OpenAI API の使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/102)
     - [[In-progress]【Python】ChatGPT plugins を利用＆作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/108)
     - [Function calling を使用して、入力文に応じて適切な外部関数の呼び出し、外部関数の戻り値に基づく出力文を生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/12)
 
-- Azure の LLM 系サービス
+- Microsoft (Azure) の LLM 系サービス
     - Azure OpenAI Service
         - [[In-progress] Azure OpenAI Service の使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/4)
     - Prompt flow（旧 Azure Machine Learning Prompt flow）
@@ -831,6 +831,10 @@ AIプロダクト開発のための Tips 集。<br>
         - [Prompt flow をデプロイして、アプリケーションから API として利用できるようにする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/17)
         - Prompt flow CLI/SDK を使用して Prompt flow の実行を行う
         - Prompt flow CLI/SDK を使用して Prompt flow の CI/CD を行う
+
+- Anthropic の LLM 系サービス
+    - [[In-progress] Claude の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/25)
+    - [Claude 3.5 Sonnet の Artifacts を使用してアプリのコードとデモを自動生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/26)
 
 - LangChain
     - [LangChain の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/1)
@@ -844,6 +848,8 @@ AIプロダクト開発のための Tips 集。<br>
     - LangChain Agents
         - [[In-progress]【Python】LangChain Agents を使用してプロンプトの内容に応じた外部ツールを実行する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/7)
         - [[In-progress] LangChain Agents の OpenAI Functions Agent を使用して Function calling を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/13)
+    - LangChain Evaluation
+        - LangChain Evaluation を使用して LLM からの回答の品質評価を行う
     - LangSmith
         - 実行トレース管理機能
             - [[In-progress]【Python】LangSmith を使用して UI コンソール上から LLM アプリケーションの実行トレースと実行ログを確認する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/5)
@@ -854,6 +860,13 @@ AIプロダクト開発のための Tips 集。<br>
 <!--
         - [[In-progress]【Python】LangSmith を使用してデータセットから LLM モデルのファインチューニングを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/10)
 -->
+
+- Hugging Face
+    - [Hugging Face の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/103)
+    - [【CLI/Python】Hugging Face Hub の基本的な使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/104)
+    - [【Python】Hugging Face Transformers を使用して NLP モデルの推論処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/106)
+    - [【Python】Hugging Face Spaces を利用して簡単な機械学習デモアプリを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/107)
+    - 【Python】Hugging Face の LLM モデルを LangChain で使用する
 
 - Dify
     - [Dify の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/18)
@@ -869,16 +882,9 @@ AIプロダクト開発のための Tips 集。<br>
     - [[In-progress] Dify の基本的な使い方（チャットボット用ワークフローを構築する）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/19)
 -->
 
-- Hugging Face
-    - [Hugging Face の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/103)
-    - [【CLI/Python】Hugging Face Hub の基本的な使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/104)
-    - [【Python】Hugging Face Transformers を使用して NLP モデルの推論処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/106)
-    - [【Python】Hugging Face Spaces を利用して簡単な機械学習デモアプリを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/107)
-    - 【Python】Hugging Face の LLM モデルを LangChain で使用する
-
-- Claude
-    - [[In-progress] Claude の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/25)
-    - [Claude 3.5 Sonnet の Artifacts を使用してアプリのコードとデモを自動生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/26)
+- DeepEval
+    - DeepEval を使用して LLM からの回答の品質評価を行う
+    - DeepEval のローカル評価モードを使用して LLM からの回答の品質評価を非API経由で行う
 
 </details>
 
