@@ -883,7 +883,8 @@ AIプロダクト開発のための Tips 集。<br>
 -->
 
 - DeepEval
-    - DeepEval を使用して LLM からの回答の品質評価を行う
+    - [DeepEval を使用して LLM からの回答の品質評価を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/27)
+    - [DeepEval を使用してデータセットの品質評価を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/28)
     - DeepEval のローカル評価モードを使用して LLM からの回答の品質評価を非API経由で行う
 
 </details>
