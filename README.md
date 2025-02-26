@@ -816,10 +816,14 @@ AIプロダクト開発のための Tips 集。<br>
 <details>
 <summary>LLM アプリケーション開発</summary>
 
+- LLM 基礎事項
+    - [LLM学習方法の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/31)
+
 - OpenAI の LLM 系サービス
     - [【CLI/Python】OpenAI API の使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/102)
     - [[In-progress]【Python】ChatGPT plugins を利用＆作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/108)
     - [Function calling を使用して、入力文に応じて適切な外部関数の呼び出し、外部関数の戻り値に基づく出力文を生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/12)
+    - OpenAI API を使用して、OpenAI LLM（GPT-3.5, GPT-4系）のファインチューニングを行う
 
 - Microsoft (Azure) の LLM 系サービス
     - Azure OpenAI Service
@@ -867,6 +871,12 @@ AIプロダクト開発のための Tips 集。<br>
     - [【Python】Hugging Face Transformers を使用して NLP モデルの推論処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/106)
     - [【Python】Hugging Face Spaces を利用して簡単な機械学習デモアプリを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/107)
     - 【Python】Hugging Face の LLM モデルを LangChain で使用する
+    - [HuggingFace Transformers を使用して LLM のファインチューニングを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/29)
+    - HuggingFace Transformers を使用して Llama での推論を行う
+    - HuggingFace Transformers を使用して Mistral での推論を行う
+    - [HuggingFace Transformers を使用して Qwen での推論を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/30)
+
+- NVIDIA NeMo
 
 - Dify
     - [Dify の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/18)
@@ -886,6 +896,7 @@ AIプロダクト開発のための Tips 集。<br>
     - [DeepEval を使用して LLM からの回答の品質評価を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/27)
     - [DeepEval を使用してデータセットの品質評価を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/28)
     - DeepEval のローカル評価モードを使用して LLM からの回答の品質評価を非API経由で行う
+
 
 </details>
 

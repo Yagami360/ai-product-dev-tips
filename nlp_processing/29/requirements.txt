@@ -1,0 +1,14 @@
+black~=22.0
+flake8>=3.7.9, <5.0
+isort~=5.0
+pydantic~=2.7
+python-json-logger~=2.0
+PyYAML~=6.0
+requests~=2.26
+python-dotenv~=1.0
+Pillow==9.2.0
+scipy==1.9.2
+networkx
+tqdm
+tensorboardX
+imageio~=2.22.0
