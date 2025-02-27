@@ -878,13 +878,14 @@ AIプロダクト開発のための Tips 集。<br>
 
 - NVIDIA AI Enterprise
     - [[In-progress] NVIDIA AI Enterprise & NVIDIA NeMo の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/33)
-    - NVIDIA AI Enterprise を使用してオンプレミス環境にLLMアプリケーションをデプロイする
     - NVIDIA NeMo
         - [[In-progress] NVIDIA NeMo を使用して LLM の推論処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/32)
         - NVIDIA NeMo を使用して LLM のファインチューニングを行う
-    - NeMo Curator
-    - NeMo Customizer
-    - NeMo Evaluator
+        - NeMo Curator
+        - NeMo Customizer
+        - NeMo Evaluator
+    - NVIDIA NIM
+        - [[In-progress] NVIDIA NIM を使用してオンプレミス環境にLLM APIをデプロイする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/34)
 
 - Dify
     - [Dify の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/18)
