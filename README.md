@@ -876,7 +876,14 @@ AIプロダクト開発のための Tips 集。<br>
     - HuggingFace Transformers を使用して Mistral での推論を行う
     - [[In-progress] HuggingFace Transformers を使用して Qwen での推論を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/30)
 
-- NVIDIA NeMo
+- NVIDIA AI Enterprise
+    - [[In-progress] NVIDIA AI Enterprise & NVIDIA NeMo の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/33)
+    - NVIDIA AI Enterprise を使用してオンプレミス環境にLLMアプリケーションをデプロイする
+    - NVIDIA NeMo
+        - [[In-progress] NVIDIA NeMo を使用して LLM の推論処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/32)
+        - NeMo Curator
+        - NeMo Customizer
+        - NeMo Evaluator
 
 - Dify
     - [Dify の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/18)
