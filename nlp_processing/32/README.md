@@ -2,11 +2,15 @@
 
 ## 使用方法
 
+1. GPU ありのインスタンス環境を用意する
+
 1. NVIDIA NeMo をインストールする
 
     - pip を使用する場合
         ```bash
-        pip install nemo_toolkit[all]
+        apt-get update && apt-get install -y libsndfile1 ffmpeg
+        pip install Cython packaging
+        pip install nemo_toolkit['all']
         ```
 
     - （推奨）Docker を使用する場合
@@ -26,8 +30,6 @@
             nvcr.io/nvidia/nemo:24.12 /bin/bash -c \
                 "python3 run.py --device cuda"
         ```
-
-
 
 ## 参考サイト
 

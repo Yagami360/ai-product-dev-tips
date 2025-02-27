@@ -27,3 +27,5 @@
 - 公式ユーザーガイド: https://docs.nvidia.com/nemo-framework/user-guide/latest/overview.html
 
 - https://developer.nvidia.com/ja-jp/blog/simplify-custom-generative-ai-development-with-nvidia-nemo-microservices/
+
+- https://github.com/NVIDIA/NeMo

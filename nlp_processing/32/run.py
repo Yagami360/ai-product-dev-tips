@@ -5,7 +5,7 @@ import lightning as L
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--device", type=str, default="cpu", choices=["cpu", "cuda"])
+    parser.add_argument("--device", type=str, default="cuda", choices=["cpu", "cuda"])
     args = parser.parse_args()
 
     trainer = L.Trainer(
