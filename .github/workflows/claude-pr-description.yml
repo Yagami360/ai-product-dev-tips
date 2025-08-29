@@ -1,0 +1,100 @@
+name: Claude PR Description Generator
+
+on:
+  pull_request:
+    types: [opened]
+  issue_comment:
+    types: [created]
+
+jobs:
+  claude-pr-description:
+    if: |
+      (github.event_name == 'pull_request' && github.event.action == 'opened') ||
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '@claude-pr-describe'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # PR差分の取得に必要
+
+      - name: Setup GitHub CLI
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+      - name: Run Claude PR Description Generator
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+          # This is an optional setting that allows Claude to read CI results on PRs
+          additional_permissions: |
+            actions: read
+
+          # PR説明生成専用のトリガーフレーズ
+          trigger_phrase: "@claude-pr-describe"
+
+          # PR説明生成に特化した設定
+          claude_args: |
+            --allowedTools "Bash(gh pr edit *),Bash(gh pr view *)"
+            --max-turns 5
+            --system-prompt "常に日本語でレスポンスしてください。あなたはPR説明文生成専用のアシスタントです。
+
+            【PR作成イベントの場合】
+            新しいPull Requestが作成されました。GitHubのUIから手動作成されたPRの説明文を自動生成します。
+
+            手順：
+            1. 'gh pr view ${{ github.event.pull_request.number }}' でPRの現在の状態を確認
+            2. Git差分を詳細に分析
+            3. 以下の形式で説明文を生成：
+
+            ## 📋 変更内容の概要
+            - このPRで何を実装/修正したかを簡潔に説明
+
+            ## 🔍 変更詳細
+            - ファイル別の変更内容
+            - 追加・削除・修正された機能
+
+            ## ✅ 確認事項
+            - [ ] 動作テスト完了
+            - [ ] コードレビュー対象
+            - [ ] ドキュメント更新の必要性
+
+            ## 🚀 影響範囲
+            - この変更が与える影響
+            - 注意すべき点やリスク
+
+            ## 📝 備考
+            - その他補足事項があれば記載
+
+            4. 'gh pr edit ${{ github.event.pull_request.number }} --body \"[生成した説明文]\"' でPRの説明文を直接更新
+
+            【コメントイベントの場合】
+            既存のPRに対して '@claude-pr-describe' がコメントされました。
+            1. PR番号を特定
+            2. 上記と同じ形式で説明文を生成
+            3. gh pr editコマンドでPR説明文を更新、またはコメントで説明を提供
+
+            重要：
+            - PR説明文が空の場合は必ずgh pr editで更新してください
+            - PR説明文が既にある場合はコメントで補足説明を提供してください
+            - Git差分を詳細に分析してください
+            - 実際のコード変更に基づいた具体的な説明を提供してください
+            - 技術的な詳細も含めて説明してください"
+
+          # Optional: Advanced settings configuration
+          # settings: |
+          #   {
+          #     "env": {
+          #       "NODE_ENV": "development"
+          #     }
+          #   }
