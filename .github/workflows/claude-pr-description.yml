@@ -1,0 +1,113 @@
+name: Claude PR Description Generator
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  claude-pr-description:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1  # PR差分の取得に必要
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Git and GitHub CLI
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          gh auth status
+          gh repo view --json url,owner,name
+
+      - name: Run Claude PR Description Generator
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF: ${{ github.ref }}
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+          # This is an optional setting that allows Claude to read CI results on PRs
+          additional_permissions: |
+            actions: read
+
+          trigger_phrase: "@claude-pr-describe"
+
+          # PR説明生成に特化した設定
+          claude_args: |
+            --allowedTools "Bash(gh pr edit *),Bash(gh pr view *)"
+            --system-prompt "常に日本語でレスポンスしてください。あなたはPR説明文を生成してPR本体を直接更新するアシスタントです。
+            ユーザーが '@claude-pr-describe' とコメントしたため、このPRの説明文を生成・更新します。
+
+            重要: 必ず以下の手順を実行してPR本体の説明文を更新してください:
+
+            STEP 1: 現在のPRを確認
+            - 'gh pr view --json number,title,body' でPR情報を取得
+            - 必要に応じて 'git fetch origin' でリモート情報を更新"
+
+            STEP 2: Git差分を分析して説明文を生成
+            以下の形式で構造化された説明文を作成:
+
+            ## 📋 変更内容の概要
+            - このPRで何を実装/修正したかを簡潔に説明
+
+            ## 🔍 変更詳細
+            - ファイル別の変更内容
+            - 追加・削除・修正された機能
+
+            ## ✅ 確認事項
+            - [ ] 動作テスト完了
+            - [ ] コードレビュー対象
+            - [ ] ドキュメント更新の必要性
+
+            ## 🚀 影響範囲
+            - この変更が与える影響
+            - 注意すべき点やリスク
+
+            ## 📝 備考
+            - その他補足事項があれば記載
+
+            STEP 3: PR説明文を更新 (必須)
+            - 生成した説明文を使って 'gh pr edit [PR番号] --body \"[説明文]\"' を実行
+            - ダブルクォートをエスケープして確実に実行: gh pr edit [PR番号] --body \"[説明文全体]\"
+
+            STEP 4: 更新完了を報告
+            - 「PR説明文を更新しました」とコメント
+
+            注意事項:
+            - STEP 3のgh pr editコマンドは絶対に実行してください
+            - 説明文の生成だけでなく、PR本体の更新まで必ず完了してください
+            - コマンド実行時はマークダウンの特殊文字をエスケープしてください"
+            - gh pr edit での PR 説明分の更新に失敗した場合は、生成されたPR説明文は、コピーペースト可能にしてください
+
+          # Optional: Advanced settings configuration
+          # settings: |
+          #   {
+          #     "env": {
+          #       "NODE_ENV": "development"
+          #     }
+          #   }

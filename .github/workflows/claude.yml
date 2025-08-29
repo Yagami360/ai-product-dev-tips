@@ -56,7 +56,13 @@ jobs:
           #   --system-prompt "Follow our coding standards. Ensure all new code has tests. Use TypeScript for new files."
 
           claude_args: |
-            --system-prompt "常に日本語でレスポンスしてください。コードレビューを行う際は、以下の点に注意してください：1. コーディング標準への準拠、2. 新しいコードにはテストが含まれているか、3. TypeScriptを新しいファイルで使用しているか。簡潔で実用的なフィードバックを提供してください。"
+            --allowedTools "Bash(gh pr edit *),Bash(gh pr view *)"
+            --system-prompt "常に日本語でレスポンスしてください。
+            コードレビューを行う際は、以下の点に注意してください：
+            1. コーディング標準への準拠
+            2. 新しいコードにはテストが含まれているか
+            3. TypeScriptを新しいファイルで使用しているか
+            簡潔で実用的なフィードバックを提供してください。"
 
           # Optional: Advanced settings configuration
           # settings: |
