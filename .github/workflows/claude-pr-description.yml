@@ -5,25 +5,29 @@ on:
     types: [opened]
   issue_comment:
     types: [created]
+  repository_dispatch:
+    types: [pr-description-request]
 
 jobs:
-  auto-comment:
+  auto-trigger:
     if: github.event_name == 'pull_request' && github.event.action == 'opened'
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
       issues: write
     steps:
-      - name: Add automatic PR description trigger
+      - name: Trigger PR description generation
         run: |
           curl -X POST \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
-            -d '{"body":"@claude-pr-describe"}'
+            "https://api.github.com/repos/${{ github.repository }}/dispatches" \
+            -d '{"event_type":"pr-description-request","client_payload":{"pr_number":"${{ github.event.pull_request.number }}","pr_title":"${{ github.event.pull_request.title }}"}}'
 
   claude-pr-description:
-    if: github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '@claude-pr-describe')
+    if: |
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '@claude-pr-describe')) ||
+      (github.event_name == 'repository_dispatch' && github.event.action == 'pr-description-request')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -65,7 +69,9 @@ jobs:
             重要: 必ず以下の手順を実行してPR本体の説明文を更新してください:
 
             STEP 1: 現在のPRを確認
-            - 'gh pr view --json number,title,body' でPR情報を取得
+            - repository_dispatchイベントの場合: client_payload.pr_numberを使用
+            - issue_commentイベントの場合: コメントのあるPR番号を使用
+            - 'gh pr view [PR番号] --json number,title,body' でPR情報を取得
 
             STEP 2: Git差分を分析して説明文を生成
             以下の形式で構造化された説明文を作成:
@@ -90,8 +96,8 @@ jobs:
             - その他補足事項があれば記載
 
             STEP 3: PR説明文を更新 (必須)
-            - 生成した説明文を使って 'gh pr edit --body \"[説明文]\"' を実行
-            - ダブルクォートをエスケープして確実に実行: gh pr edit --body \"[説明文全体]\"
+            - 生成した説明文を使って 'gh pr edit [PR番号] --body \"[説明文]\"' を実行
+            - ダブルクォートをエスケープして確実に実行: gh pr edit [PR番号] --body \"[説明文全体]\"
 
             STEP 4: 更新完了を報告
             - 「PR説明文を更新しました」とコメント
