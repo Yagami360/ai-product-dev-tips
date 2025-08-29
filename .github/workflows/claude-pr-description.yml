@@ -16,18 +16,16 @@ jobs:
       pull-requests: write
       issues: write
     steps:
-      - name: Trigger PR description generation
+      - name: Add PR description trigger comment
         run: |
           curl -X POST \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/dispatches" \
-            -d '{"event_type":"pr-description-request","client_payload":{"pr_number":"${{ github.event.pull_request.number }}","pr_title":"${{ github.event.pull_request.title }}"}}'
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
+            -d '{"body":"@claude-pr-describe"}'
 
   claude-pr-description:
-    if: |
-      (github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '@claude-pr-describe')) ||
-      (github.event_name == 'pull_request' && github.event.action == 'opened')
+    if: github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '@claude-pr-describe')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -57,7 +55,7 @@ jobs:
           additional_permissions: |
             actions: read
 
-          # PR説明生成専用のトリガーフレーズ
+          # PR作成時は無条件実行、手動時は@claude-pr-describe
           trigger_phrase: "@claude-pr-describe"
 
           # PR説明生成に特化した設定
@@ -66,12 +64,15 @@ jobs:
             --max-turns 5
             --system-prompt "常に日本語でレスポンスしてください。あなたはPR説明文を生成してPR本体を直接更新するアシスタントです。
 
+            このワークフローはPR作成時またはコメント '@claude-pr-describe' 時に実行されます。
+
             重要: 必ず以下の手順を実行してPR本体の説明文を更新してください:
 
             STEP 1: 現在のPRを確認
-            - repository_dispatchイベントの場合: client_payload.pr_numberを使用
+            - GitHub Event: ${{ github.event_name }}
+            - pull_requestイベントの場合: PR番号 ${{ github.event.pull_request.number }}
             - issue_commentイベントの場合: コメントのあるPR番号を使用
-            - 'gh pr view [PR番号] --json number,title,body' でPR情報を取得
+            - 'gh pr view [PR番号] --json number,title,body' でPR情報を取得"
 
             STEP 2: Git差分を分析して説明文を生成
             以下の形式で構造化された説明文を作成:
