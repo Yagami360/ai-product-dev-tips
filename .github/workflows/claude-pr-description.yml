@@ -9,7 +9,7 @@ jobs:
     if: github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '@claude-pr-describe')
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       pull-requests: write
       issues: write
       id-token: write
@@ -19,16 +19,25 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # PR差分の取得に必要
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup GitHub CLI
+      - name: Setup Git and GitHub CLI
         run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          gh auth status
+          gh repo view --json url,owner,name
 
       - name: Run Claude PR Description Generator
         id: claude
         uses: anthropics/claude-code-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF: ${{ github.ref }}
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
 
@@ -50,7 +59,8 @@ jobs:
             重要: 必ず以下の手順を実行してPR本体の説明文を更新してください:
 
             STEP 1: 現在のPRを確認
-            - 'gh pr view --json number,title,body' でPR情報を取得"
+            - 'gh pr view --json number,title,body' でPR情報を取得
+            - 必要に応じて 'git fetch origin' でリモート情報を更新"
 
             STEP 2: Git差分を分析して説明文を生成
             以下の形式で構造化された説明文を作成:
