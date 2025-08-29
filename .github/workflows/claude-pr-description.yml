@@ -1,29 +1,10 @@
 name: Claude PR Description Generator
 
 on:
-  pull_request:
-    types: [opened]
   issue_comment:
     types: [created]
-  repository_dispatch:
-    types: [pr-description-request]
 
 jobs:
-  auto-trigger:
-    if: github.event_name == 'pull_request' && github.event.action == 'opened'
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      issues: write
-    steps:
-      - name: Add PR description trigger comment
-        run: |
-          curl -X POST \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
-            -d '{"body":"@claude-pr-describe"}'
-
   claude-pr-description:
     if: github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '@claude-pr-describe')
     runs-on: ubuntu-latest
@@ -64,15 +45,12 @@ jobs:
             --max-turns 5
             --system-prompt "常に日本語でレスポンスしてください。あなたはPR説明文を生成してPR本体を直接更新するアシスタントです。
 
-            このワークフローはPR作成時またはコメント '@claude-pr-describe' 時に実行されます。
+            ユーザーが '@claude-pr-describe' とコメントしたため、このPRの説明文を生成・更新します。
 
             重要: 必ず以下の手順を実行してPR本体の説明文を更新してください:
 
             STEP 1: 現在のPRを確認
-            - GitHub Event: ${{ github.event_name }}
-            - pull_requestイベントの場合: PR番号 ${{ github.event.pull_request.number }}
-            - issue_commentイベントの場合: コメントのあるPR番号を使用
-            - 'gh pr view [PR番号] --json number,title,body' でPR情報を取得"
+            - 'gh pr view --json number,title,body' でPR情報を取得"
 
             STEP 2: Git差分を分析して説明文を生成
             以下の形式で構造化された説明文を作成:
