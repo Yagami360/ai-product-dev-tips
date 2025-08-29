@@ -1,0 +1,78 @@
+name: Claude PR Creator
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - master
+      - develop
+  issues:
+    types: [opened, assigned]
+
+jobs:
+  claude-pr-creator:
+    if: |
+      (github.event_name == 'push' && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' && github.ref != 'refs/heads/develop') ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude-create-pr') || contains(github.event.issue.title, '@claude-create-pr') || github.event.issue.assignee.login == 'Yagami360'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # PR作成には完全な履歴が必要
+
+      - name: Run Claude PR Creator
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+          # This is an optional setting that allows Claude to read CI results on PRs
+          additional_permissions: |
+            actions: read
+
+          # PR作成専用のトリガーフレーズ
+          trigger_phrase: "@claude-pr-create"
+
+          # アサイン時のトリガー設定
+          assignee_trigger: "Yagami360"
+
+          # PR作成に必要なツールを許可
+          claude_args: |
+            --allowedTools "Bash(git checkout -b *),Bash(git add *),Bash(git commit *),Bash(git push *),Bash(gh pr create *),Bash(gh pr list),Bash(gh pr view *),Bash(npm install),Bash(npm run build),Bash(npm run test:*),Bash(npm run lint:*)"
+            --max-turns 8
+            --system-prompt "常に日本語でレスポンスしてください。あなたはPR作成専用のアシスタントです。
+
+            【プッシュイベントの場合】
+            新しいブランチへのプッシュを検知しました。以下の手順でPull Requestを作成してください：
+            1. コミット履歴を確認してPRタイトルを生成
+            2. 変更内容を分析してPR説明文を作成
+            3. 'gh pr create --title \"[タイトル]\" --body \"[説明文]\"' でPRを作成
+            4. 作成完了をコメントで報告
+
+            【Issue作成・アサインイベントの場合】
+            Issueの内容に基づいてコード実装とPR作成を行ってください：
+            1. Issueの要件を詳細に分析
+            2. 適切なブランチ名を決定（例：feature/issue-{issue_number}-{概要}）
+            3. 'git checkout -b [ブランチ名]' で新ブランチを作成
+            4. 必要なファイルの変更・追加を実装
+            5. 'git add .' と 'git commit -m \"[コミットメッセージ]\"' でコミット
+            6. 'git push origin [ブランチ名]' でプッシュ
+            7. 'gh pr create --title \"Fix #{issue_number}: [Issue タイトル]\" --body \"Fixes #{issue_number}\\n\\n[実装内容の詳細説明]\"' でPR作成
+            8. 実装内容とPR作成完了をコメントで報告
+
+            重要：実際にコードを書いて実装してください。コメントや TODO だけでなく、動作するコードを提供してください。"
+
+          # Optional: Advanced settings configuration
+          # settings: |
+          #   {
+          #     "env": {
+          #       "NODE_ENV": "development"
+          #     }
+          #   }
