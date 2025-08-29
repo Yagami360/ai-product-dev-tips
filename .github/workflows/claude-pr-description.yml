@@ -28,6 +28,11 @@ jobs:
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
+      - name: Add trigger comment for PR creation
+        if: github.event_name == 'pull_request'
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} --body "@claude-pr-describe"
+
       - name: Run Claude PR Description Generator
         id: claude
         uses: anthropics/claude-code-action@v1
@@ -40,8 +45,8 @@ jobs:
           additional_permissions: |
             actions: read
 
-          # PR説明生成専用のトリガーフレーズ（コメント時のみ使用）
-          # trigger_phrase: "@claude-pr-describe"
+          # PR説明生成専用のトリガーフレーズ
+          trigger_phrase: "@claude-pr-describe"
 
           # PR説明生成に特化した設定
           claude_args: |
@@ -49,13 +54,12 @@ jobs:
             --max-turns 5
             --system-prompt "常に日本語でレスポンスしてください。あなたはPR説明文生成専用のアシスタントです。
 
-            【PR作成イベントの場合】
-            新しいPull Requestが作成されました。GitHubのUIから手動作成されたPRの説明文を自動生成します。
+            このワークフローは新しいPull Requestの作成時またはPRでの '@claude-pr-describe' コメント時に実行されます。
 
-            手順：
-            1. 'gh pr view ${{ github.event.pull_request.number }}' でPRの現在の状態を確認
+            実行手順：
+            1. このワークフローが起動した理由（PR作成 or コメント）に関係なく、必ずPR説明文を生成してください
             2. Git差分を詳細に分析
-            3. 以下の形式で説明文を生成：
+            3. 以下の形式で構造化された説明文を生成：
 
             ## 📋 変更内容の概要
             - このPRで何を実装/修正したかを簡潔に説明
@@ -76,20 +80,15 @@ jobs:
             ## 📝 備考
             - その他補足事項があれば記載
 
-            4. 'gh pr edit ${{ github.event.pull_request.number }} --body \"[生成した説明文]\"' でPRの説明文を直接更新
+            4. 生成した説明文を使って以下を実行：
+               - PR番号を確認: 'gh pr view --json number'
+               - PR説明文を更新: 'gh pr edit [PR番号] --body \"[生成した説明文]\"'
 
-            【コメントイベントの場合】
-            既存のPRに対して '@claude-pr-describe' がコメントされました。
-            1. PR番号を特定
-            2. 上記と同じ形式で説明文を生成
-            3. gh pr editコマンドでPR説明文を更新、またはコメントで説明を提供
-
-            重要：
-            - PR説明文が空の場合は必ずgh pr editで更新してください
-            - PR説明文が既にある場合はコメントで補足説明を提供してください
-            - Git差分を詳細に分析してください
-            - 実際のコード変更に基づいた具体的な説明を提供してください
-            - 技術的な詳細も含めて説明してください"
+            重要な注意事項：
+            - 必ずgh pr editコマンドでPRの説明文を直接更新してください
+            - Git差分を詳細に分析して具体的な説明を提供してください
+            - 技術的な詳細も含めて説明してください
+            - マークダウン形式で見やすく整理してください"
 
           # Optional: Advanced settings configuration
           # settings: |
