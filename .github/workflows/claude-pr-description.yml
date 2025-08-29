@@ -3,10 +3,20 @@ name: Claude PR Description Generator
 on:
   issue_comment:
     types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
 
 jobs:
   claude-pr-description:
-    if: github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '@claude-pr-describe')
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -18,7 +28,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # PR差分の取得に必要
+          fetch-depth: 1  # PR差分の取得に必要
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Git and GitHub CLI
@@ -45,15 +55,12 @@ jobs:
           additional_permissions: |
             actions: read
 
-          # PR作成時は無条件実行、手動時は@claude-pr-describe
           trigger_phrase: "@claude-pr-describe"
 
           # PR説明生成に特化した設定
           claude_args: |
             --allowedTools "Bash(gh pr edit *),Bash(gh pr view *)"
-            --max-turns 5
             --system-prompt "常に日本語でレスポンスしてください。あなたはPR説明文を生成してPR本体を直接更新するアシスタントです。
-
             ユーザーが '@claude-pr-describe' とコメントしたため、このPRの説明文を生成・更新します。
 
             重要: 必ず以下の手順を実行してPR本体の説明文を更新してください:
