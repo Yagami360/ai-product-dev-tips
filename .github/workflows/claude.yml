@@ -42,10 +42,11 @@ jobs:
             actions: read
 
           # Optional: Customize the trigger phrase (default: @claude)
-          trigger_phrase: "@claude"
+          # trigger_phrase: "/claude"
 
           # Optional: Trigger when specific user is assigned to an issue
-          assignee_trigger: "claude-bot"
+          # assignee_trigger: "claude-bot"
+          assignee_trigger: "Yagami360"
 
           # Optional: Configure Claude's behavior with CLI arguments
           # claude_args: |

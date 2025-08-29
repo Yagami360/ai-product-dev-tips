@@ -1,4 +1,4 @@
-# Claude Code GitHub Actions を使用して PR 作成＆レビューを自動化する
+# Claude Code GitHub Actions を使用して PR レビューを自動化する
 
 ## 方法
 
