@@ -18,7 +18,7 @@
 
 4. レポジトリに GitHubActions の定義ファイルを追加する
 
-    https://github.com/anthropics/claude-code-action/blob/main/examples/claude.yml の GitHubAction 定義ファイルをコピーして、レポジトリの `.github/workflows` に配置する
+    https://github.com/anthropics/claude-code-action/blob/main/examples/claude.yml の GitHubAction 定義ファイルを参考に、Claude Code GitHub Actions を使用した GitHubActions ワークフローを作成し、レポジトリの [`.github/workflows/claude.yml`](../../.github/workflows/claude.yml) に配置する
 
     `claude.yml`
 

@@ -16,9 +16,9 @@
 
     <img width="728" height="606" alt="Image" src="https://github.com/user-attachments/assets/baa344ee-a0cf-4377-9ffc-b95f6279f0d9" />
 
-4. レポジトリに GitHubActions の定義ファイルを追加する
+4. Claude Code GitHub Actions を使用した GitHubActions ワークフローを作成する
 
-    ワークフローファイルを `.github/workflows/` に配置します：
+    [.github/workflows/claude-pr-description.yml](../../.github/workflows/claude-pr-description.yml)
 
 ## 参考サイト
 
