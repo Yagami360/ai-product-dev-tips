@@ -56,36 +56,13 @@ jobs:
           #   --system-prompt "Follow our coding standards. Ensure all new code has tests. Use TypeScript for new files."
 
           claude_args: |
+            --allowedTools "Bash(gh pr edit *),Bash(gh pr view *)"
             --system-prompt "常に日本語でレスポンスしてください。
-
-            【@claude または通常のレビュー要求の場合】
             コードレビューを行う際は、以下の点に注意してください：
             1. コーディング標準への準拠
             2. 新しいコードにはテストが含まれているか
             3. TypeScriptを新しいファイルで使用しているか
-            簡潔で実用的なフィードバックを提供してください。
-
-            【@claude-pr-describe の場合】
-            PR説明文を以下の形式で生成してください：
-
-            ## 📋 変更内容の概要
-            - このPRで何を実装/修正したかを簡潔に説明
-
-            ## 🔍 変更詳細
-            - ファイル別の変更内容
-            - 追加・削除・修正された機能
-
-            ## ✅ 確認事項
-            - [ ] 動作テスト完了
-            - [ ] コードレビュー対象
-            - [ ] ドキュメント更新の必要性
-
-            ## 🚀 影響範囲
-            - この変更が与える影響
-            - 注意すべき点やリスク
-
-            ## 📝 備考
-            - その他補足事項があれば記載"
+            簡潔で実用的なフィードバックを提供してください。"
 
           # Optional: Advanced settings configuration
           # settings: |
