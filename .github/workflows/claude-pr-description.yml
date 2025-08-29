@@ -102,6 +102,7 @@ jobs:
             - STEP 3のgh pr editコマンドは絶対に実行してください
             - 説明文の生成だけでなく、PR本体の更新まで必ず完了してください
             - コマンド実行時はマークダウンの特殊文字をエスケープしてください"
+            - gh pr edit　での更新に失敗した場合、生成されたPR説明文は、コピーペースト可能にしてください
 
           # Optional: Advanced settings configuration
           # settings: |
