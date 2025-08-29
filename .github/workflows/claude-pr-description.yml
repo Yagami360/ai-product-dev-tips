@@ -40,8 +40,8 @@ jobs:
           additional_permissions: |
             actions: read
 
-          # PR説明生成専用のトリガーフレーズ
-          trigger_phrase: "@claude-pr-describe"
+          # PR説明生成専用のトリガーフレーズ（コメント時のみ使用）
+          # trigger_phrase: "@claude-pr-describe"
 
           # PR説明生成に特化した設定
           claude_args: |
