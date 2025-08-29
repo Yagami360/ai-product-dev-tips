@@ -909,6 +909,10 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
+## ■ 開発効率化
+
+- [Claude Code GitHub Actions を使用して PR 作成＆レビューを自動化する](dev_optimize/1)
+
 ## ■ 特許
 
 <details>
