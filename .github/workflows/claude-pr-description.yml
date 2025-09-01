@@ -1,4 +1,4 @@
-name: Claude PR Description Generator
+name: Claude PR Description
 
 on:
   issue_comment:
