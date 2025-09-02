@@ -1,0 +1,83 @@
+name: Upsert README automatically by Claude Code
+
+env:
+  # README_FILE: README.md
+  README_FILE: README_claude.md
+
+on:
+  push:
+    branches: [main, master]
+    paths-ignore:
+      - '${{ env.README_FILE }}'
+      - '.github/**'
+
+jobs:
+  upsert-readme:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "readme-bot[bot]"
+          git config --global user.email "readme-bot[bot]@users.noreply.github.com"
+
+      - name: Upsert README with Claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --allowedTools "Bash(ls -la *),Bash(cat *),Bash(find . -name '*' -type f),Bash(head -20 *),Bash(tree -L 2),Bash(git add ${{ env.README_FILE }}),Bash(git commit -m *),Bash(git push)"
+            --system-prompt "リポジトリを分析して、${{ env.README_FILE }}を作成または更新してください。
+
+            ## 最初に実行すること：
+            1. '${{ env.README_FILE }}'ファイルが存在するかチェック (ls -la コマンドで確認)
+            2. 存在する場合は内容を確認 (cat ${{ env.README_FILE }})
+            3. リポジトリの構造を分析 (ls -la, find . -name '*.py' -o -name '*.js' -o -name '*.md' | head -20)
+
+            ## README作成/更新の方針：
+            **ファイルが存在しない場合（新規作成）:**
+            - リポジトリ全体を詳細に分析
+            - 以下の構造で包括的なREADMEを作成：
+              # プロジェクト名
+              ## 📋 概要
+              ## ✨ 特徴
+              ## 🛠️ 技術スタック
+              ## 📦 インストール
+              ## 🚀 使用方法
+              ## 📁 ディレクトリ構造
+              ## 🤝 コントリビューション
+              ## 📄 ライセンス
+
+            **ファイルが存在する場合（更新）:**
+            - 既存の構造とスタイルを維持
+            - 最新のコミット変更内容を反映
+            - 新機能や変更点を適切に追加・修正
+            - 古くなった情報を更新
+
+            ## 分析すべき要素：
+            - package.json, requirements.txt, Cargo.toml, go.mod等の依存関係
+            - ソースコードの主要機能
+            - 設定ファイル（Docker, CI/CD等）
+            - 既存のドキュメント
+            - ディレクトリ構造
+
+            ## 重要な指示：
+            - 常に日本語で記述
+            - 実際のコードを分析して正確な情報を記載
+            - サンプルコードは実際に動作するものを提供
+            - 作成/更新後は必ずgitでコミット・プッシュ
+            - コミットメッセージは作成か更新かを明確に示す
+
+            作業を開始してください！"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
