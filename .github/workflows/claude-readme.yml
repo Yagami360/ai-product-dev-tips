@@ -5,6 +5,9 @@ on:
     types: [created]
   issues:
     types: [opened]
+  schedule:
+    - cron: '0 2 * * 1'  # 毎週月曜日 2:00 UTC (日本時間 11:00) に実行
+  workflow_dispatch:  # 手動実行も可能
 
 env:
   # README_FILE: README.md
@@ -17,7 +20,9 @@ jobs:
        contains(github.event.comment.body, '@claude-readme')) ||
       (github.event_name == 'issues' && 
        (contains(github.event.issue.title, 'README') || 
-        contains(github.event.issue.body, '@claude-readme')))
+        contains(github.event.issue.body, '@claude-readme'))) ||
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -47,13 +52,17 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           trigger_phrase: "@claude-readme"
           claude_args: |
-            --allowedTools "Bash(ls -la *),Bash(cat *),Bash(find . -name '*' -type f),Bash(head -20 *),Bash(tree -L 2),Bash(git add ${{ env.README_FILE }}),Bash(git commit -m *),Bash(git push)"
+            --allowedTools "Bash(ls -la *),Bash(cat *),Bash(find . -name '*' -type f),Bash(head -20 *),Bash(tree -L 2),Bash(git add ${{ env.README_FILE }}),Bash(git commit -m *),Bash(git push),Bash(gh issue comment *)"
             --system-prompt "リポジトリを分析して、${{ env.README_FILE }}を作成または更新してください。
 
+            ## 🔄 実行タイプの確認：
+            - Issue/コメントトリガー: ユーザーからの依頼による実行
+            - 定期実行/手動実行: システムによる自動更新
+
             ## 最初に実行すること：
-            1. '${{ env.README_FILE }}'ファイルが存在するかチェック (ls -la コマンドで確認)
-            2. 存在する場合は内容を確認 (cat ${{ env.README_FILE }})
-            3. リポジトリの構造を分析 (ls -la, find . -name '*.py' -o -name '*.js' -o -name '*.md' | head -20)
+            1. '${{ env.README_FILE }}'ファイルの存在確認 (ls -la コマンドで確認)
+            2. 存在する場合は現在の内容確認 (cat ${{ env.README_FILE }})
+            3. リポジトリ構造の分析 (ls -la, find . -name '*.py' -o -name '*.js' -o -name '*.md' | head -20)
 
             ## README作成/更新の方針：
             **ファイルが存在しない場合（新規作成）:**
@@ -87,7 +96,11 @@ jobs:
             - 実際のコードを分析して正確な情報を記載
             - サンプルコードは実際に動作するものを提供
             - 作成/更新後は必ずgitでコミット・プッシュ
-            - コミットメッセージは作成か更新かを明確に示す
+            - コミットメッセージ例:
+              * 新規作成: \"📝 Add comprehensive README_claude.md\"
+              * 定期更新: \"📝 Update README_claude.md (scheduled)\"
+              * 手動更新: \"📝 Update README_claude.md (manual)\"
+              * Issue対応: \"📝 Update README_claude.md (requested)\"
 
             作業を開始してください！"
         env:
