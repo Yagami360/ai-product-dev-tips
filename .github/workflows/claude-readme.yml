@@ -135,12 +135,14 @@ jobs:
 
       - name: Create Issue to trigger Claude README generation
         run: |
-          # 既存の README 更新 Issue がないか確認
-          existing_issue=$(gh issue list --label "readme-update" --state open --json number --jq '.[0].number' || echo "")
-          
-          if [ -z "$existing_issue" ]; then
+          # 既存の README 更新 Issue がないか確認（シンプルな方法）
+          existing_issues=$(gh issue list --label "readme-update" --state open --limit 1 | wc -l)
+
+          if [ "$existing_issues" -eq 0 ]; then
             # 新しい Issue を作成
-            issue_number=$(gh issue create \
+            echo "📝 新しいREADME更新Issueを作成します..."
+
+            issue_url=$(gh issue create \
               --title "📝 README定期更新 - $(date +'%Y/%m/%d')" \
               --body "@claude-readme
 
@@ -165,21 +167,25 @@ jobs:
             4. このIssueへの完了報告
 
             よろしくお願いします！" \
-              --label "readme-update,automated" \
-              --json number --jq '.number')
-            
-            echo "✅ Issue #$issue_number を作成しました"
+              --label "readme-update,automated")
+
+            echo "✅ Issue を作成しました: $issue_url"
             echo "🔄 Claude Code Action が自動的にREADME更新を開始します..."
           else
-            echo "⚠️ 既存の README 更新 Issue #$existing_issue が見つかりました"
+            echo "⚠️ 既存の README 更新 Issue が見つかりました"
             echo "📝 既存 Issue にコメントを追加します..."
-            
-            gh issue comment "$existing_issue" --body "🔄 定期実行による追加更新リクエスト
+
+            # 最初の該当Issueにコメント追加
+            issue_number=$(gh issue list --label "readme-update" --state open --limit 1 | head -n1 | cut -f1)
+
+            gh issue comment "$issue_number" --body "🔄 定期実行による追加更新リクエスト
 
             **実行日時**: $(date +'%Y年%m月%d日 %H:%M UTC')
             **トリガー**: ${{ github.event_name == 'schedule' && 'スケジュール実行' || '手動実行' }}
 
             @claude-readme 最新の変更を反映してREADMEを更新してください。"
+
+            echo "✅ Issue #$issue_number にコメントを追加しました"
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
