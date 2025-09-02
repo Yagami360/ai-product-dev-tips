@@ -3,9 +3,9 @@ name: Upsert README automatically by Claude Code
 on:
   push:
     branches: [main, master]
-    paths-ignore:
-      - 'README_claude.md'
-      - '.github/**'
+    # paths-ignore:
+    #   - 'README_claude.md'
+    #   - '.github/**'
 
 env:
   # README_FILE: README.md
