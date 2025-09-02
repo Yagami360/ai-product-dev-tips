@@ -911,7 +911,7 @@ AIプロダクト開発のための Tips 集。<br>
     - [Claude Code GitHub Actions を使用して PR レビューを自動化する](dev_optimize/1)
     - [Claude Code GitHub Actions を使用して PR 説明文作成を自動化する](dev_optimize/2)
     - Claude Code GitHub Actions を使用して Issue からの PR 作成を自動化する
-    - [Claude Code GitHub Actions を使用して README 作成を自動化する](dev_optimize/5)
+    - [[In-progress] Claude Code GitHub Actions を使用して README 作成を自動化する](dev_optimize/5)
     - [[In-progress] Claude Code GitHub Actions + Reusable Workflows を使用して複数レポジトリで PR 自動レビューを導入する際でもメンテナンスが容易にできるようにする](dev_optimize/4)
 
 ## ■ 特許

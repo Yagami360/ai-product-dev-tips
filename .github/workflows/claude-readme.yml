@@ -1,18 +1,10 @@
 name: Upsert README automatically by Claude Code
 
 on:
-  workflow_dispatch:  # 手動実行
-    inputs:
-      force_update:
-        description: 'Force update README even if no changes'
-        required: false
-        default: 'false'
-        type: choice
-        options:
-          - 'true'
-          - 'false'
-  # schedule:
-  #   - cron: '0 0 * * 0'  # 毎週日曜日 0:00 UTC に実行
+  issue_comment:
+    types: [created]
+  issues:
+    types: [opened]
 
 env:
   # README_FILE: README.md
@@ -20,9 +12,17 @@ env:
 
 jobs:
   upsert-readme:
+    if: |
+      (github.event_name == 'issue_comment' && 
+       contains(github.event.comment.body, '@claude-readme')) ||
+      (github.event_name == 'issues' && 
+       (contains(github.event.issue.title, 'README') || 
+        contains(github.event.issue.body, '@claude-readme')))
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      issues: write
+      pull-requests: write
       actions: read
       id-token: write
 
@@ -33,15 +33,19 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Git
+      - name: Setup Git and GitHub CLI
         run: |
           git config --global user.name "readme-bot[bot]"
           git config --global user.email "readme-bot[bot]@users.noreply.github.com"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          gh auth status
 
       - name: Upsert README with Claude
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          trigger_phrase: "@claude-readme"
           claude_args: |
             --allowedTools "Bash(ls -la *),Bash(cat *),Bash(find . -name '*' -type f),Bash(head -20 *),Bash(tree -L 2),Bash(git add ${{ env.README_FILE }}),Bash(git commit -m *),Bash(git push)"
             --system-prompt "リポジトリを分析して、${{ env.README_FILE }}を作成または更新してください。
@@ -88,3 +92,6 @@ jobs:
             作業を開始してください！"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF: ${{ github.ref }}
