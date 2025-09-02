@@ -135,16 +135,21 @@ jobs:
 
       - name: Create Issue to trigger Claude README generation
         run: |
-          # 既存の README 更新 Issue がないか確認（シンプルな方法）
-          existing_issues=$(gh issue list --label "readme-update" --state open --limit 1 | wc -l)
+          # 必要なラベルを作成（存在しない場合）
+          gh label create "readme-update" --description "README automatic update" --color "0075ca" || true
+          gh label create "automated" --description "Automated process" --color "1d76db" || true
+
+          # 既存の README 更新 Issue がないか確認（タイトルベース検索）
+          existing_issues=$(gh issue list --state open --search "README定期更新 in:title" --limit 5 | wc -l)
 
           if [ "$existing_issues" -eq 0 ]; then
             # 新しい Issue を作成
             echo "📝 新しいREADME更新Issueを作成します..."
 
+            # Issueを作成（ラベル付与を試行、失敗してもIssue作成は継続）
             issue_url=$(gh issue create \
-              --title "📝 README定期更新 - $(date +'%Y/%m/%d')" \
-              --body "@claude-readme
+                --title "📝 README定期更新 - $(date +'%Y/%m/%d')" \
+                --body "@claude-readme
 
             ## 📋 定期更新リクエスト
 
@@ -167,7 +172,32 @@ jobs:
             4. このIssueへの完了報告
 
             よろしくお願いします！" \
-              --label "readme-update,automated")
+                --label "readme-update,automated" 2>/dev/null || \
+              gh issue create \
+                --title "📝 README定期更新 - $(date +'%Y/%m/%d')" \
+                --body "@claude-readme
+
+            ## 📋 定期更新リクエスト
+
+            定期実行により README_claude.md の更新を依頼します。
+
+            ### 📅 実行タイミング
+            - **実行日時**: $(date +'%Y年%m月%d日 %H:%M UTC')
+            - **トリガー**: ${{ github.event_name == 'schedule' && 'スケジュール実行' || '手動実行' }}
+
+            ### 🎯 更新内容
+            - プロジェクト構造の最新化
+            - 依存関係情報の更新  
+            - 機能説明の見直し
+            - サンプルコードの確認
+
+            ### ✅ 期待する動作
+            1. リポジトリ全体の分析
+            2. README_claude.md の作成/更新
+            3. 自動コミット・プッシュ
+            4. このIssueへの完了報告
+
+            よろしくお願いします！")
 
             echo "✅ Issue を作成しました: $issue_url"
             echo "🔄 Claude Code Action が自動的にREADME更新を開始します..."
@@ -175,8 +205,8 @@ jobs:
             echo "⚠️ 既存の README 更新 Issue が見つかりました"
             echo "📝 既存 Issue にコメントを追加します..."
 
-            # 最初の該当Issueにコメント追加
-            issue_number=$(gh issue list --label "readme-update" --state open --limit 1 | head -n1 | cut -f1)
+            # 最初の該当Issueにコメント追加（タイトルベース検索）
+            issue_number=$(gh issue list --state open --search "README定期更新 in:title" --limit 1 | head -n1 | cut -f1)
 
             gh issue comment "$issue_number" --body "🔄 定期実行による追加更新リクエスト
 
