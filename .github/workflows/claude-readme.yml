@@ -1,15 +1,15 @@
 name: Upsert README automatically by Claude Code
 
-env:
-  # README_FILE: README.md
-  README_FILE: README_claude.md
-
 on:
   push:
     branches: [main, master]
     paths-ignore:
-      - '${{ env.README_FILE }}'
+      - 'README_claude.md'
       - '.github/**'
+
+env:
+  # README_FILE: README.md
+  README_FILE: README_claude.md
 
 jobs:
   upsert-readme:
