@@ -14,15 +14,14 @@ env:
   README_FILE: README_claude.md
 
 jobs:
-  upsert-readme:
+  # Claude Code Action を使用するジョブ (Issue/コメントトリガー)
+  claude-readme:
     if: |
       (github.event_name == 'issue_comment' && 
        contains(github.event.comment.body, '@claude-readme')) ||
       (github.event_name == 'issues' && 
        (contains(github.event.issue.title, 'README') || 
-        contains(github.event.issue.body, '@claude-readme'))) ||
-      github.event_name == 'schedule' ||
-      github.event_name == 'workflow_dispatch'
+        contains(github.event.issue.body, '@claude-readme')))
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -108,3 +107,80 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_REF: ${{ github.ref }}
+
+  # スケジュール/手動実行用のジョブ (自動Issue作成でClaude Code Actionをトリガー)
+  scheduled-readme:
+    if: |
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      actions: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup GitHub CLI
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          gh auth status
+
+      - name: Create Issue to trigger Claude README generation
+        run: |
+          # 既存の README 更新 Issue がないか確認
+          existing_issue=$(gh issue list --label "readme-update" --state open --json number --jq '.[0].number' || echo "")
+          
+          if [ -z "$existing_issue" ]; then
+            # 新しい Issue を作成
+            issue_number=$(gh issue create \
+              --title "📝 README定期更新 - $(date +'%Y/%m/%d')" \
+              --body "@claude-readme
+
+            ## 📋 定期更新リクエスト
+
+            定期実行により README_claude.md の更新を依頼します。
+
+            ### 📅 実行タイミング
+            - **実行日時**: $(date +'%Y年%m月%d日 %H:%M UTC')
+            - **トリガー**: ${{ github.event_name == 'schedule' && 'スケジュール実行' || '手動実行' }}
+
+            ### 🎯 更新内容
+            - プロジェクト構造の最新化
+            - 依存関係情報の更新  
+            - 機能説明の見直し
+            - サンプルコードの確認
+
+            ### ✅ 期待する動作
+            1. リポジトリ全体の分析
+            2. README_claude.md の作成/更新
+            3. 自動コミット・プッシュ
+            4. このIssueへの完了報告
+
+            よろしくお願いします！" \
+              --label "readme-update,automated" \
+              --json number --jq '.number')
+            
+            echo "✅ Issue #$issue_number を作成しました"
+            echo "🔄 Claude Code Action が自動的にREADME更新を開始します..."
+          else
+            echo "⚠️ 既存の README 更新 Issue #$existing_issue が見つかりました"
+            echo "📝 既存 Issue にコメントを追加します..."
+            
+            gh issue comment "$existing_issue" --body "🔄 定期実行による追加更新リクエスト
+
+            **実行日時**: $(date +'%Y年%m月%d日 %H:%M UTC')
+            **トリガー**: ${{ github.event_name == 'schedule' && 'スケジュール実行' || '手動実行' }}
+
+            @claude-readme 最新の変更を反映してREADMEを更新してください。"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
