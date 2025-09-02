@@ -907,12 +907,13 @@ AIプロダクト開発のための Tips 集。<br>
     - DeepEval のローカル評価モードを使用して LLM からの回答の品質評価を非API経由で行う
 
 - Claude Code
-    - [CLAUDE.md により Claude Code でのコード生成品質を向上させる](dev_optimize/3)
-    - [Claude Code GitHub Actions を使用して PR レビューを自動化する](dev_optimize/1)
-    - [Claude Code GitHub Actions を使用して PR 説明文作成を自動化する](dev_optimize/2)
+    - [CLAUDE.md により Claude Code でのコード生成品質を向上させる](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/3)
+    - [Claude Code GitHub Actions を使用して PR レビューを自動化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/1)
+    - [Claude Code GitHub Actions を使用して PR 説明文作成を自動化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/2)
     - Claude Code GitHub Actions を使用して Issue からの PR 作成を自動化する
-    - [[In-progress] Claude Code GitHub Actions を使用して README 作成を自動化する](dev_optimize/5)
-    - [[In-progress] Claude Code GitHub Actions + Reusable Workflows を使用して複数レポジトリで PR 自動レビューを導入する際でもメンテナンスが容易にできるようにする](dev_optimize/4)
+    - [Claude Code GitHub Actions を使用して README 作成を自動化する（Issueからの自動作成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/5)
+    - Claude Code GitHub Actions を使用して README 作成を自動化する（定期自動更新）
+    - [[In-progress] Claude Code GitHub Actions + Reusable Workflows を使用して複数レポジトリで PR 自動レビューを導入する際でもメンテナンスが容易にできるようにする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/4)
 
 ## ■ 特許
 
