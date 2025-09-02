@@ -1,4 +1,4 @@
-name: Claude Code upsert README
+name: Claude Code README
 
 on:
   issue_comment:
