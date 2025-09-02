@@ -1,4 +1,4 @@
-name: Claude PR Description
+name: Claude Code PR Description
 
 on:
   issue_comment:

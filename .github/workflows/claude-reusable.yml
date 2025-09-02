@@ -1,4 +1,4 @@
-name: Claude Code using Reusable Workflows
+name: Claude Code Reusable
 
 on:
   issue_comment:
