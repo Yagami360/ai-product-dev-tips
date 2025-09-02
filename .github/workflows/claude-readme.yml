@@ -1,11 +1,18 @@
 name: Upsert README automatically by Claude Code
 
 on:
-  push:
-    branches: [main, master]
-    # paths-ignore:
-    #   - 'README_claude.md'
-    #   - '.github/**'
+  workflow_dispatch:  # 手動実行
+    inputs:
+      force_update:
+        description: 'Force update README even if no changes'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+  # schedule:
+  #   - cron: '0 0 * * 0'  # 毎週日曜日 0:00 UTC に実行
 
 env:
   # README_FILE: README.md
