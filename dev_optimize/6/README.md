@@ -15,6 +15,10 @@
 
     アプリを作成後に、秘密鍵（.pemファイル）を生成してダウンロードし、App ID をメモする
 
+1. 作成した GitHub Appをリポジトリにインストールする
+
+    <img width="500" height="331" alt="Image" src="https://github.com/user-attachments/assets/5cbf0534-8de5-49cb-90fa-e5c1e5eff5d8" />
+
 1. Workload Identity 作成を行なう
 
     1. Workload Identity Pool の作成
@@ -88,6 +92,7 @@
 
     - `APP_ID`
     - `APP_PRIVATE_KEY` : ダウンロードした秘密鍵（.pemファイル）の内容
+    - `GCP_SERVICE_ACCOUNT`: サービスアカウント名
     - `GCP_WORKLOAD_IDENTITY_PROJECT_ID`: Workload Identityを作成した GCP プロジェクトID
     - `GCP_WORKLOAD_IDENTITY_PROVIDER`: `projects/<Google Cloudのプロジェクト番号>/locations/global/workloadIdentityPools/<Workload Identity プール ID>/providers/<Workload Identity プロバイダの表示名またはID>`
 
