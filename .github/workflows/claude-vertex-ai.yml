@@ -66,7 +66,7 @@ jobs:
             actions: read
 
           # Optional: Customize the trigger phrase (default: @claude)
-          # trigger_phrase: "/claude"
+          trigger_phrase: "@claude-vertex-ai"
 
           # Optional: Trigger when specific user is assigned to an issue
           # assignee_trigger: "claude-bot"
