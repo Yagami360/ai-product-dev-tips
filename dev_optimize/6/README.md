@@ -93,8 +93,17 @@
     - `APP_ID`
     - `APP_PRIVATE_KEY` : ダウンロードした秘密鍵（.pemファイル）の内容
     - `GCP_SERVICE_ACCOUNT`: サービスアカウント名
+
     - `GCP_WORKLOAD_IDENTITY_PROJECT_ID`: Workload Identityを作成した GCP プロジェクトID
+
     - `GCP_WORKLOAD_IDENTITY_PROVIDER`: `projects/<Google Cloudのプロジェクト番号>/locations/global/workloadIdentityPools/<Workload Identity プール ID>/providers/<Workload Identity プロバイダの表示名またはID>`
+        以下のコマンドで取得可能
+
+        ```bash
+        gcloud iam workload-identity-pools providers list \
+            --workload-identity-pool="claude-code-actions-wi-pool" \
+            --location="global"
+        ```
 
 1. VertexAI 経由での Claude Code Action の GitHub Action ワークフローを作成する
 

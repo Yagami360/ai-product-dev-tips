@@ -1,4 +1,4 @@
-name: Claude Code Action with Vertex AI
+name: Claude Code with Vertex AI
 
 on:
   issue_comment:
@@ -48,6 +48,8 @@ jobs:
         id: claude
         uses: anthropics/claude-code-action@v1
         env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
           # Vertex AI設定
           ANTHROPIC_VERTEX_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
           ANTHROPIC_VERTEX_REGION: us-east5
@@ -60,7 +62,7 @@ jobs:
           # プロンプトキャッシング設定（オプション）
           ANTHROPIC_VERTEX_ENABLE_PROMPT_CACHING: true
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
 
           # This is an optional setting that allows Claude to read CI results on PRs
           additional_permissions: |
