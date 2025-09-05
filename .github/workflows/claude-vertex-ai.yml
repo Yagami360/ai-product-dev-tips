@@ -66,6 +66,9 @@ jobs:
           # プロンプトキャッシング設定（オプション）
           ANTHROPIC_VERTEX_ENABLE_PROMPT_CACHING: true
         with:
+          use_vertex: "true"
+          github_token: ${{ steps.app-token.outputs.token }}
+
           # NOTE: Vertex AI を利用する場合は、Anthropic API Key は不要（使用しない）
           # anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
 
