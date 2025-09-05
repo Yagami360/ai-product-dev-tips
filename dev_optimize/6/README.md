@@ -8,7 +8,8 @@
 
     Model Garden から有効化する
 
-    https://console.cloud.google.com/vertex-ai/publishers/anthropic/model-garden/claude-3-7-sonnet
+    - claude-3-7-sonnet: https://console.cloud.google.com/vertex-ai/publishers/anthropic/model-garden/claude-3-7-sonnet
+    - claude-sonnet-4: https://console.cloud.google.com/vertex-ai/publishers/anthropic/model-garden/claude-sonnet-4
 
 1. カスタム GitHub アプリを作成する
 
