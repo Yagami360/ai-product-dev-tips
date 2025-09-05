@@ -8,6 +8,8 @@
 
     Model Garden から有効化する
 
+    https://console.cloud.google.com/vertex-ai/publishers/anthropic/model-garden/claude-3-7-sonnet
+
 1. カスタム GitHub アプリを作成する
 
     https://github.com/settings/apps/new
@@ -99,11 +101,8 @@
     - `APP_ID`
     - `APP_PRIVATE_KEY` : ダウンロードした秘密鍵（.pemファイル）の内容
     - `GCP_SERVICE_ACCOUNT`: サービスアカウント名
-
     - `GCP_WORKLOAD_IDENTITY_PROJECT_ID`: Workload Identityを作成した GCP プロジェクトID
-
-    - `GCP_WORKLOAD_IDENTITY_PROVIDER`: `projects/<Google Cloudのプロジェクト番号>/locations/global/workloadIdentityPools/<Workload Identity プール ID>/providers/<Workload Identity プロバイダの表示名またはID>`
-
+    - `GCP_WORKLOAD_IDENTITY_PROVIDER`: `projects/<Google Cloudのプロジェクト番号>/locations/global/workloadIdentityPools/<Workload Identity プール ID>/providers/<Workload Identity プロバイダの表示名またはID>`<br>
         以下のコマンドで取得可能
 
         ```bash

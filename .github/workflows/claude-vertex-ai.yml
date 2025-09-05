@@ -38,66 +38,80 @@ jobs:
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Authenticate to Google Cloud
+        id: auth
         uses: google-github-actions/auth@v2
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
-      - name: Run Claude Code
-        id: claude
-        uses: anthropics/claude-code-action@v1
-        env:
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+      # - name: Run Claude Code
+      #   id: claude
+      #   uses: anthropics/claude-code-action@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
-          # Vertex AI設定
-          ANTHROPIC_VERTEX_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
-          ANTHROPIC_VERTEX_REGION: us-east5
-          CLAUDE_CODE_ENDPOINT: vertex
+      #     # Vertex AI設定
+      #     ANTHROPIC_VERTEX_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+      #     ANTHROPIC_VERTEX_REGION: us-east5
+      #     CLOUD_ML_REGION: us-east5
+      #     CLAUDE_CODE_ENDPOINT: vertex
 
-          # モデル設定（オプション）
-          # CLAUDE_CODE_PRIMARY_MODEL: claude-opus-4-20250514
-          # CLAUDE_CODE_ASSISTANT_MODEL: claude-sonnet-4-20250514
-          CLAUDE_CODE_PRIMARY_MODEL: claude-3-7-sonnet@20250219
-          CLAUDE_CODE_ASSISTANT_MODEL: claude-3-7-sonnet@20250219
+      #     # モデル設定（オプション）
+      #     # CLAUDE_CODE_PRIMARY_MODEL: claude-opus-4-20250514
+      #     # CLAUDE_CODE_ASSISTANT_MODEL: claude-sonnet-4-20250514
+      #     CLAUDE_CODE_PRIMARY_MODEL: claude-3-7-sonnet@20250219
+      #     CLAUDE_CODE_ASSISTANT_MODEL: claude-3-7-sonnet@20250219
 
-          # プロンプトキャッシング設定（オプション）
-          ANTHROPIC_VERTEX_ENABLE_PROMPT_CACHING: true
+      #     # プロンプトキャッシング設定（オプション）
+      #     ANTHROPIC_VERTEX_ENABLE_PROMPT_CACHING: true
+      #   with:
+      #     # NOTE: Vertex AI を利用する場合は、Anthropic API Key は不要（使用しない）
+      #     # anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      #     # This is an optional setting that allows Claude to read CI results on PRs
+      #     additional_permissions: |
+      #       actions: read
+
+      #     # Optional: Customize the trigger phrase (default: @claude)
+      #     trigger_phrase: "@claude-vertex-ai"
+
+      #     # Optional: Trigger when specific user is assigned to an issue
+      #     # assignee_trigger: "claude-bot"
+      #     assignee_trigger: "Yagami360"
+
+      #     # Optional: Configure Claude's behavior with CLI arguments
+      #     # claude_args: |
+      #     #   --model claude-opus-4-1-20250805
+      #     #   --max-turns 10
+      #     #   --allowedTools "Bash(npm install),Bash(npm run build),Bash(npm run test:*),Bash(npm run lint:*)"
+      #     #   --system-prompt "Follow our coding standards. Ensure all new code has tests. Use TypeScript for new files."
+
+      #     claude_args: |
+      #       --allowedTools "Bash(gh pr edit *),Bash(gh pr view *)"
+      #       --system-prompt "常に日本語でレスポンスしてください。
+      #       コードレビューを行う際は、以下の点に注意してください：
+      #       1. コーディング標準への準拠
+      #       2. 新しいコードにはテストが含まれているか
+      #       3. TypeScriptを新しいファイルで使用しているか
+      #       簡潔で実用的なフィードバックを提供してください。"
+
+      #     # Optional: Advanced settings configuration
+      #     # settings: |
+      #     #   {
+      #     #     "env": {
+      #     #       "NODE_ENV": "test"
+      #     #     }
+      #     #   }
+
+      - uses: anthropics/claude-code-action@beta
         with:
-          # NOTE: Vertex AI を利用する場合は、Anthropic API Key は不要（使用しない）
-          # anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-
-          # This is an optional setting that allows Claude to read CI results on PRs
-          additional_permissions: |
-            actions: read
-
-          # Optional: Customize the trigger phrase (default: @claude)
+          model: "claude-3-7-sonnet@20250219"
+          # model: "claude-sonnet-4@20250514"
+          use_vertex: "true"
+          github_token: ${{ steps.app-token.outputs.token }}
           trigger_phrase: "@claude-vertex-ai"
-
-          # Optional: Trigger when specific user is assigned to an issue
-          # assignee_trigger: "claude-bot"
-          assignee_trigger: "Yagami360"
-
-          # Optional: Configure Claude's behavior with CLI arguments
-          # claude_args: |
-          #   --model claude-opus-4-1-20250805
-          #   --max-turns 10
-          #   --allowedTools "Bash(npm install),Bash(npm run build),Bash(npm run test:*),Bash(npm run lint:*)"
-          #   --system-prompt "Follow our coding standards. Ensure all new code has tests. Use TypeScript for new files."
-
-          claude_args: |
-            --allowedTools "Bash(gh pr edit *),Bash(gh pr view *)"
-            --system-prompt "常に日本語でレスポンスしてください。
-            コードレビューを行う際は、以下の点に注意してください：
-            1. コーディング標準への準拠
-            2. 新しいコードにはテストが含まれているか
-            3. TypeScriptを新しいファイルで使用しているか
-            簡潔で実用的なフィードバックを提供してください。"
-
-          # Optional: Advanced settings configuration
-          # settings: |
-          #   {
-          #     "env": {
-          #       "NODE_ENV": "test"
-          #     }
-          #   }
+          timeout_minutes: "60"
+        env:
+          ANTHROPIC_VERTEX_PROJECT_ID: ${{ steps.auth.outputs.project_id }}
+          CLOUD_ML_REGION: us-east5
