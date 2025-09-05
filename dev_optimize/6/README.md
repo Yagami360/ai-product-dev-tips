@@ -2,6 +2,12 @@
 
 ## 方法
 
+1. Vertex AI を有効化する
+
+1. Vertex AI 内の Claude モデルの有効化する
+
+    Model Garden から有効化する
+
 1. カスタム GitHub アプリを作成する
 
     https://github.com/settings/apps/new
@@ -97,6 +103,7 @@
     - `GCP_WORKLOAD_IDENTITY_PROJECT_ID`: Workload Identityを作成した GCP プロジェクトID
 
     - `GCP_WORKLOAD_IDENTITY_PROVIDER`: `projects/<Google Cloudのプロジェクト番号>/locations/global/workloadIdentityPools/<Workload Identity プール ID>/providers/<Workload Identity プロバイダの表示名またはID>`
+
         以下のコマンドで取得可能
 
         ```bash
