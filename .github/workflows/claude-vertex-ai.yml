@@ -113,5 +113,6 @@ jobs:
           trigger_phrase: "@claude-vertex-ai"
           timeout_minutes: "60"
         env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
           ANTHROPIC_VERTEX_PROJECT_ID: ${{ steps.auth.outputs.project_id }}
           CLOUD_ML_REGION: us-east5
