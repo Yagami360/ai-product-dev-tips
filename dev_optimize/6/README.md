@@ -83,9 +83,15 @@
     gcloud projects add-iam-policy-binding $PROJECT_ID \
         --member="serviceAccount:${SA_EMAIL}" \
         --role="roles/aiplatform.user"
+
+    gcloud projects add-iam-policy-binding $PROJECT_ID \
+        --member="serviceAccount:${SA_EMAIL}" \
+        --role="roles/ml.developer"
+
     gcloud projects add-iam-policy-binding $PROJECT_ID \
         --member="serviceAccount:${SA_EMAIL}" \
         --role="roles/iam.workloadIdentityUser"
+
     gcloud projects add-iam-policy-binding $PROJECT_ID \
         --member="serviceAccount:${SA_EMAIL}" \
         --role="roles/iam.serviceAccountTokenCreator"
@@ -93,7 +99,7 @@
     # サービスアカウントをプールに接続
     gcloud iam service-accounts add-iam-policy-binding "${SA_EMAIL}" \
         --role="roles/iam.workloadIdentityUser" \
-        --member="principal://iam.googleapis.com/projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${POOL_ID}/subject/${GITHUB_OWNER}/${REPO_NAME}"
+        --member="principalSet://iam.googleapis.com/projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${POOL_ID}/attribute.repository/${GITHUB_OWNER}/${REPO_NAME}"
     ```
 
 1. GitHub シークレットを追加する
