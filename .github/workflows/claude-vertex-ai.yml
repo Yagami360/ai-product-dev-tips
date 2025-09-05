@@ -52,8 +52,8 @@ jobs:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
           # Vertex AI設定
-          ANTHROPIC_VERTEX_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
-          ANTHROPIC_VERTEX_REGION: us-east5
+          ANTHROPIC_VERTEX_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          # ANTHROPIC_VERTEX_REGION: us-east5
           CLOUD_ML_REGION: us-east5
           CLAUDE_CODE_ENDPOINT: vertex
 
