@@ -1,4 +1,4 @@
-name: Claude Code with Vertex AI
+name: Claude Code Vertex AI
 
 on:
   issue_comment:
