@@ -55,33 +55,31 @@ jobs:
           ANTHROPIC_VERTEX_PROJECT_ID: ${{ steps.auth.outputs.project_id }}
           CLOUD_ML_REGION: us-east5
           CLAUDE_CODE_ENDPOINT: vertex
-          # モデル設定（オプション）
-          # CLAUDE_CODE_PRIMARY_MODEL: claude-3-7-sonnet@20250219
-          # CLAUDE_CODE_PRIMARY_MODEL: claude-sonnet-4@20250514
-          # CLAUDE_CODE_PRIMARY_MODEL: claude-opus-4-20250514
-          # CLAUDE_CODE_ASSISTANT_MODEL: claude-3-7-sonnet@20250219
           # プロンプトキャッシング設定（オプション）
           ANTHROPIC_VERTEX_ENABLE_PROMPT_CACHING: true
+        # valid inputs are ['trigger_phrase', 'assignee_trigger', 'label_trigger', 'base_branch', 'branch_prefix', 'allowed_bots', 'prompt', 'settings', 'anthropic_api_key', 'claude_code_oauth_token', 'github_token', 'use_bedrock', 'use_vertex', 'claude_args', 'additional_permissions', 'use_sticky_comment', 'use_commit_signing', 'track_progress', 'experimental_allowed_domains', 'path_to_claude_code_executable', 'path_to_bun_executable']
         with:
           use_vertex: "true"
           github_token: ${{ steps.app-token.outputs.token }}
           # NOTE: Vertex AI を利用する場合は、Anthropic API Key は不要（使用しない）
           # anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
           # This is an optional setting that allows Claude to read CI results on PRs
           additional_permissions: |
             actions: read
+
           # Optional: Customize the trigger phrase (default: @claude)
           trigger_phrase: "@claude-vertex-ai"
+
           # Optional: Trigger when specific user is assigned to an issue
           # assignee_trigger: "claude-bot"
           assignee_trigger: "Yagami360"
+
           # Optional: Configure Claude's behavior with CLI arguments
-          # claude_args: |
-          #   --model claude-sonnet-4@20250514
-          #   --max-turns 10
-          #   --allowedTools "Bash(npm install),Bash(npm run build),Bash(npm run test:*),Bash(npm run lint:*)"
-          #   --system-prompt "Follow our coding standards. Ensure all new code has tests. Use TypeScript for new files."
           claude_args: |
+            --model claude-sonnet-4@20250514
+            --max-turns 5
+            --timeout-minute 10
             --allowedTools "Bash(gh pr edit *),Bash(gh pr view *)"
             --system-prompt "常に日本語でレスポンスしてください。
             コードレビューを行う際は、以下の点に注意してください：
@@ -89,6 +87,7 @@ jobs:
             2. 新しいコードにはテストが含まれているか
             3. TypeScriptを新しいファイルで使用しているか
             簡潔で実用的なフィードバックを提供してください。"
+
           # Optional: Advanced settings configuration
           # settings: |
           #   {

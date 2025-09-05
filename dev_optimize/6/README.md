@@ -51,6 +51,14 @@
         - attribute.actor: assertion.actor
         - attribute.repository: assertion.repository
 
+        ```bash
+        gcloud iam workload-identity-pools providers update-oidc ${PROVIDER_ID} \
+        --workload-identity-pool=${POOL_ID} \
+        --location="global" \
+        --project=${PROJECT_ID} \
+        --attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository,attribute.actor=assertion.actor,attribute.ref=assertion.ref"
+        ```
+
         属性条件
 
         ```bash
@@ -120,7 +128,7 @@
 
 1. VertexAI 経由での Claude Code Action の GitHub Action ワークフローを作成する
 
-    [.github/workflows/claude-vertex.yml](../../.github/workflows/claude-vertex.yml)
+    [.github/workflows/claude-vertex-ai.yml](../../.github/workflows/claude-vertex-ai.yml)
 
 ## 参考サイト
 
