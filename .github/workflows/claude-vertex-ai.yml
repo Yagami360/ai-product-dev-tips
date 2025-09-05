@@ -53,15 +53,14 @@ jobs:
 
           # Vertex AI設定
           ANTHROPIC_VERTEX_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-          # ANTHROPIC_VERTEX_REGION: us-east5
           CLOUD_ML_REGION: us-east5
           CLAUDE_CODE_ENDPOINT: vertex
 
           # モデル設定（オプション）
-          CLAUDE_CODE_PRIMARY_MODEL: claude-3-7-sonnet@20250219
-          CLAUDE_CODE_ASSISTANT_MODEL: claude-3-7-sonnet@20250219
+          # CLAUDE_CODE_PRIMARY_MODEL: claude-3-7-sonnet@20250219
+          # CLAUDE_CODE_PRIMARY_MODEL: claude-sonnet-4@20250514
           # CLAUDE_CODE_PRIMARY_MODEL: claude-opus-4-20250514
-          # CLAUDE_CODE_ASSISTANT_MODEL: claude-sonnet-4-20250514
+          # CLAUDE_CODE_ASSISTANT_MODEL: claude-3-7-sonnet@20250219
 
           # プロンプトキャッシング設定（オプション）
           ANTHROPIC_VERTEX_ENABLE_PROMPT_CACHING: true
@@ -85,7 +84,7 @@ jobs:
 
           # Optional: Configure Claude's behavior with CLI arguments
           # claude_args: |
-          #   --model claude-opus-4-1-20250805
+          #   --model claude-sonnet-4@20250514
           #   --max-turns 10
           #   --allowedTools "Bash(npm install),Bash(npm run build),Bash(npm run test:*),Bash(npm run lint:*)"
           #   --system-prompt "Follow our coding standards. Ensure all new code has tests. Use TypeScript for new files."
@@ -106,20 +105,3 @@ jobs:
           #       "NODE_ENV": "test"
           #     }
           #   }
-
-      # - name: Run Claude Code
-      #   id: claude
-      #   # uses: anthropics/claude-code-action@v1
-      #   uses: anthropics/claude-code-action@beta
-      #   with:
-      #     model: "claude-3-7-sonnet@20250219"
-      #     # model: "claude-sonnet-4@20250514"
-      #     use_vertex: "true"
-      #     github_token: ${{ steps.app-token.outputs.token }}
-      #     trigger_phrase: "@claude-vertex-ai"
-      #     timeout_minutes: "60"
-      #   env:
-      #     GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-      #     ANTHROPIC_VERTEX_PROJECT_ID: ${{ steps.auth.outputs.project_id }}
-      #     # ANTHROPIC_VERTEX_REGION: us-east5
-      #     CLOUD_ML_REGION: us-east5
