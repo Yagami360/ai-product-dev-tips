@@ -104,7 +104,10 @@ jobs:
       #     #     }
       #     #   }
 
-      - uses: anthropics/claude-code-action@beta
+      - name: Run Claude Code
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        # uses: anthropics/claude-code-action@beta
         with:
           model: "claude-3-7-sonnet@20250219"
           # model: "claude-sonnet-4@20250514"
