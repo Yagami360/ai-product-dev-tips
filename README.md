@@ -923,6 +923,8 @@ AIプロダクト開発のための Tips 集。<br>
     - Slack MCP サーバー
     - Notion MCP サーバー
 
+</details>
+
 ## ■ Pysical AI / Robotics
 
 - https://github.com/Yagami360/ai-robotics-exercises
