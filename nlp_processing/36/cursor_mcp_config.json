@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "hello-world-mcp-server": {
+      "command": "uv",
+      "args": [
+        "run", 
+        "--directory", 
+        "/Users/yusukesakai/personal/ai-product-dev-tips/nlp_processing/36",
+        "python", 
+        "mcp_server.py"
+      ],
+      "alwaysAllow": [
+        "add",
+        "get_current_time",
+        "echo"
+      ],
+      "disabled": false,
+      "env": {}
+    }
+  }
+}

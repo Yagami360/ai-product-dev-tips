@@ -916,6 +916,17 @@ AIプロダクト開発のための Tips 集。<br>
     - [[In-progress] Claude Code GitHub Actions + Reusable Workflows を使用して複数レポジトリで PR 自動レビューを導入する際でもメンテナンスが容易にできるようにする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/4)
     - [Vertex AI 経由で Claude Code GitHub Actions を利用し Claude API の請求先を GCP にする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/6)
 
+- MCPサーバー
+    - [MCP サーバーの概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/35)
+    - MCP サーバーを自作する
+    - GitHub MCPサーバー
+    - Slack MCPサーバー
+    - Notion MCPサーバー
+
+## ■ Pysical AI / Robotics
+
+- https://github.com/Yagami360/ai-robotics-exercises
+
 ## ■ 特許
 
 <details>
