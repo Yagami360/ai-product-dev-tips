@@ -1,4 +1,4 @@
-# MCP サーバーを自作して Claude Code と Cursor で利用する
+# MCP サーバーを自作して MCP クライアント（Claude Code や Cursor など）で利用する
 
 ## 方法
 
@@ -10,7 +10,7 @@
     pip install mcp
     ```
 
-    MCP サーバーは、FastAPI などを利用して実装することもできるが
+    MCP サーバーは、FastAPI などを利用して実装することもできるが、Python パッケージの `mcp` を利用すると実装が簡単
 
 1. MCP サーバーの Python コードを実装する
 
@@ -19,7 +19,7 @@
     [`mcp_server.py`](mcp_server.py)
 
 
-### MCP ホスト側で MCP サーバーを利用する
+### MCP クライアント側で MCP サーバーを利用する
 
 #### Calude Code で MCP サーバーを利用する場合
 

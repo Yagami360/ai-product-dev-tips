@@ -1,11 +1,11 @@
 # MCP サーバーの概要
 
-LLM の分野における MCP [Motion Control Protocol] とは、AIアシスタント（Claude、ChatGPTなど）が外部のツールやデータソースと効果的に連携するための Anthropic が提唱したオープンなプロトコル。
+LLM の分野における MCP [Motion Control Protocol] とは、Claude、ChatGPTなどの AIアシスタント（MCP クライアント）が外部のツールやデータソースと効果的に連携するための Anthropic が提唱したオープンなプロトコル。
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Claude        │◄──►│   MCP Server    │◄──►│  External APIs  │
-│   (MCPホスト)    │    │   (Protocol)    │    │   (Tools)       │
+│  (MCPクライアント)│    │ (Protocol)      │    │   (Tools)       │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
@@ -13,12 +13,13 @@ LLM の分野における MCP [Motion Control Protocol] とは、AIアシスタ�
 
 > MCP [Motion Control Protocol] サーバーという用語自体は、1980 年頃に工場自動化の技術分野で出てきた用語
 
-- MCP ホスト
-    - Claude Desktop、Cursor などの自身のローカル環境で動くクライアント側 UI
+- MCP クライアント / MCP ホスト
+    - Claude, Cursor などの MCP サーバーを利用して回答を行うクライアント
 
 - MCP サーバー
 
     - 自身のローカル環境や特定ので動き、「ローカル上でのデータ取得」「SQLiteにアクセスする」「YouTubeを検索する」「天気APIを叩く」などの特定のタスクを実行するプログラム
+
         - サーバーという名前がついているが、ただの１つのタスク郡のまとまり
 
         > なぜ「サーバー」という呼び方なのか？一言でいうと、クライアント＝ホスト（LLMが動いているアプリ）からの要求を受け取って処理を行う“提供者”だから
@@ -29,14 +30,5 @@ LLM の分野における MCP [Motion Control Protocol] とは、AIアシスタ�
 
     - MCP サーバーの例
 
-        - **AWSナレッジベース検索**: AWSのクラウドナレッジベースから情報を取得。
-        - **Brave検索**: Braveの検索APIを利用したウェブおよびローカル検索。
-        - **Googleマップ**: クラウド上で位置情報や経路案内を提供。
-        - **GitHub**: リモートリポジトリの管理やAPI連携。
-        - **GitLab**: プロジェクト管理APIを用いたリモート操作。
-        - **Puppeteer**: リモート環境でのブラウザ自動化。
-        - **Sentry**: クラウド経由でアプリケーションエラーを監視・分析。
-
-## 方法
-
-1. xxx
+        - GitHub MCP サーバー
+        - Slack MCP サーバー
