@@ -29,7 +29,7 @@
 
 1. Cursor の MCP 設定ファイルを作成する
 
-    <img width="500" height="478" alt="Image" src="https://github.com/user-attachments/assets/88a9e535-2905-4007-a346-2b04ccd20235" />
+    <img width="800" alt="Image" src="https://github.com/user-attachments/assets/88a9e535-2905-4007-a346-2b04ccd20235" />
 
     Cursor の MCP 設定ファイル `$(HOME)/.cursor/mcp_config.json` に自作した MCP サーバーの設定を追加する
 
@@ -63,7 +63,7 @@
 
 1. Cursor を再起動する
 
-    <img width="500" height="478" alt="Image" src="https://github.com/user-attachments/assets/5df8bd14-3e35-4336-a06b-a09367d495e4" />
+    <img width="800" alt="Image" src="https://github.com/user-attachments/assets/5df8bd14-3e35-4336-a06b-a09367d495e4" />
 
     再起動後に、自作した MCP サーバーが有効化される（緑の丸が表示されていれば正常動作）
 
@@ -73,6 +73,6 @@
 
     > Cursor 側で MCP サーバーを起動するので、予め MCP サーバーを起動させておく必要はなし
 
-    <img width="538" height="443" alt="Image" src="https://github.com/user-attachments/assets/2cc0eb64-fc8b-4f9a-b885-7c40e95fbb4f" />
+    <img width="800" alt="Image" src="https://github.com/user-attachments/assets/2cc0eb64-fc8b-4f9a-b885-7c40e95fbb4f" />
 
-    <img width="538" height="298" alt="Image" src="https://github.com/user-attachments/assets/d058dfce-e76c-4080-b59c-20f9a36310bb" />
+    <img width="800" alt="Image" src="https://github.com/user-attachments/assets/d058dfce-e76c-4080-b59c-20f9a36310bb" />
