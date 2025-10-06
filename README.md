@@ -919,10 +919,12 @@ AIプロダクト開発のための Tips 集。<br>
 - MCP サーバー
     - [MCP サーバーの概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/35)
     - [MCP サーバーを自作して MCP クライアント（Claude Code CLI や Cursor など）で利用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/36)
-    - GitHub MCP サーバーを使用する
-    - Slack MCP サーバーを使用する
-    - Notion MCP サーバーを使用する
-    - Sentry MCP サーバーを使用する
+    - [GitHub MCP サーバーを使用して様々な GitHub 操作を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/37)
+    - Claude Code CLI MCP サーバーを使用して Cursor から Claude Code を使用する
+    - Gemini CLI MCP サーバー
+    - Slack MCP サーバー
+    - Notion MCP サーバー
+    - Sentry MCP サーバー
     - Hugging Face MCP サーバー
     - ArXiv MCP サーバー
 
