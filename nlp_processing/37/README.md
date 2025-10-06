@@ -309,7 +309,40 @@
 
 ## Cursor で使用する場合
 
-xxx
+1. Cursor の MCP 設定ファイルを作成する
+
+    - グローバル設定にする場合
+
+        <img width="800" alt="Image" src="https://github.com/user-attachments/assets/88a9e535-2905-4007-a346-2b04ccd20235" />
+
+        Cursor の MCP 設定ファイル `$(HOME)/.cursor/mcp_config.json` に自作した MCP サーバーの設定を追加する
+
+        ```json
+        {
+          "mcpServers": {
+            "github": {
+            "url": "https://api.githubcopilot.com/mcp/",
+            "headers": {
+                "Authorization": "Bearer YOUR_GITHUB_PAT"
+            }
+            }
+          }
+        }
+        ```
+
+1. Cursor を再起動する
+
+    <img width="768" height="659" alt="Image" src="https://github.com/user-attachments/assets/268a9073-7408-46f0-9a97-9ce62ee7e110" />
+
+1. Cursor の UI から自作 MCP サーバーを利用する
+
+    Cursor の UI から「github の MCP サーバーを使用したいです」、「github の MCP サーバーを使用して PR を作成して」のような文章を入力する
+
+    <img width="447" height="72" alt="Image" src="https://github.com/user-attachments/assets/bdee91cc-c264-4d21-9be9-323527e9cc62" />
+
+    <img width="447" height="565" alt="Image" src="https://github.com/user-attachments/assets/eba4975e-a8fc-4694-bc5c-9401cb0538b8" />
+
+    <img width="635" height="667" alt="Image" src="https://github.com/user-attachments/assets/d722b9f3-51f9-4bbe-924d-53336d205a8c" />
 
 ## 参考サイト
 
