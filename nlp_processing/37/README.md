@@ -1,4 +1,4 @@
-# GitHub MCP サーバーを使用して様々な GitHub 操作を行う
+# GitHub MCP サーバーを使用して PR 作成や PR レビューなどの様々な GitHub 操作を行う
 
 ## 事前準備
 
@@ -99,8 +99,7 @@
     │ ↓ 5.   Assign Copilot to issue   
     ```
 
-1. Claude Code CLI でMCPサーバーのツールを使用する
-
+1. Claude Code CLI で GitHub MCP サーバーの各種ツールを使用する
 
     - PR作成
 
@@ -108,32 +107,10 @@
         mcp__github__create_pull_request
         ```
 
-        - Tool 情報
-            ```bash
-            > /mcp github create_pull_request
-            ╭────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-            │ Open new pull request (github)                                                                         │
-            │                                                                                                        │
-            │ Tool name: create_pull_request                                                                         │
-            │ Full name: mcp__github__create_pull_request                                                            │
-            │                                                                                                        │
-            │ Description:                                                                                           │
-            │ Create a new pull request in a GitHub repository.                                                      │
-            │                                                                                                        │
-            │ Parameters:                                                                                            │
-            │   • base (required): string - Branch to merge into                                                     │
-            │   • body: string - PR description                                                                      │
-            │   • draft: boolean - Create as draft PR                                                                │
-            │   • head (required): string - Branch containing changes                                                │
-            │   • maintainer_can_modify: boolean - Allow maintainer edits                                            │
-            │   • owner (required): string - Repository owner                                                        │
-            │   • repo (required): string - Repository name                                                          │
-            │   • title (required): string - PR title                                                                │
-            ╰────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-            Esc to go back
-            ```
+    - PR レビュー => 投稿
 
-    - PR レビューを投稿
+        ```bash
+        ```
 
     - PR 取得 => ローカルでレビュー
 
@@ -330,12 +307,9 @@
         る可能性があります。
         ```
 
-    - Issue 作成
-        ```
-        バグレポートのイシューを作成してください。タイトルは「ログイン機能のエラー」で
-        ```
-
 ## Cursor で使用する場合
+
+xxx
 
 ## 参考サイト
 

@@ -919,7 +919,7 @@ AIプロダクト開発のための Tips 集。<br>
 - MCP サーバー
     - [MCP サーバーの概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/35)
     - [MCP サーバーを自作して MCP クライアント（Claude Code CLI や Cursor など）で利用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/36)
-    - [GitHub MCP サーバーを使用して様々な GitHub 操作を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/37)
+    - [GitHub MCP サーバーを使用して PR 作成や PR レビューなどの様々な GitHub 操作を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/37)
     - Claude Code CLI MCP サーバーを使用して Cursor から Claude Code を使用する
     - Gemini CLI MCP サーバー
     - Slack MCP サーバー
