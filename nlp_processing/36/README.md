@@ -1,4 +1,4 @@
-# MCP サーバーを自作して MCP クライアント（Claude Code や Cursor など）で利用する
+# MCP サーバーを自作して MCP クライアント（Claude Code CLI や Cursor など）で利用する
 
 ## 方法
 
@@ -21,17 +21,162 @@
 
 ### MCP クライアント側で MCP サーバーを利用する
 
-#### Calude Code で MCP サーバーを利用する場合
+#### Claude Code CLI で MCP サーバーを利用する場合
 
-1. xxx
+1. Claude Code CLI で MCP サーバーを登録する
+
+    - 方法1: CLI で登録する場合
+
+        ```bash
+        # MCPサーバーを登録（プロジェクトスコープ）
+        claude mcp add hello-world-mcp-server \
+            --scope project \
+            -- uv run --directory /Users/yusukesakai/personal/ai-product-dev-tips/nlp_processing/36 python mcp_server.py
+        ```
+
+        プロジェクトスコープで作成した場合は、コマンド実行可ディレクトリ以下に `.mcp.json` が作成される
+
+    - 方法2: 設定ファイルで登録する場合
+
+        Claude CLI が認識しているプロジェクトルート（今回のケースでは `ai-product-dev-tips` ディレクトリ）に `.mcp.json` ファイルを作成：
+
+        ```json
+        {
+        "mcpServers": {
+            "hello-world-mcp-server": {
+              "type": "stdio",
+                "command": "uv",
+                "args": [
+                    "run", 
+                    "--directory", 
+                    "/Users/yusukesakai/personal/ai-product-dev-tips/nlp_processing/36",
+                    "python", 
+                    "mcp_server.py"
+                ]
+                }
+        }
+        }
+        ```
+
+    その後、Claude Code CLIで自動認識されます。
+
+1. 登録されたMCPサーバーを確認する
+
+    ```bash
+    # 登録済みMCPサーバーの一覧を表示
+    claude mcp list
+
+    # 特定のサーバーの詳細を確認
+    claude mcp get hello-world-mcp-server
+    ```
+
+1. Claude Code CLI に接続する
+
+    ```bash
+    claude
+    ```
+
+1. （オプション）Claude Code CLI で登録されたMCPサーバーを確認する
+
+    ```bash
+    /mcp hello-world-mcp-server
+    ```
+    ```bash
+    > /mcp hello-world-mcp-server 
+    ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+    │ Hello-world-mcp-server MCP Server                                                                          │
+    │                                                                                                            │
+    │ Status: ✔ connected                                                                                        │
+    │ Command: uv                                                                                                │
+    │ Args:run --directory /Users/yusukesakai/personal/ai-product-dev-tips/nlp_processing/36 python              │
+    │      mcp_server.py --scope project                                                                         │
+    │ Config location: /Users/yusukesakai/.claude.json [project:                                                 │
+    │                  /Users/yusukesakai/personal/ai-product-dev-tips/nlp_processing/36]                        │
+    │ Capabilities: tools                                                                                        │
+    │ Tools: 2 tools                                                                                             │
+    │                                                                                                            │
+    │ ❯ 1. View tools                                                                                            │
+    │   2. Reconnect
+    ```
+
+    ```bash
+    /mcp hello-world-mcp-server get_current_time
+    ```
+    ```bash
+    ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+    │ get_current_time (hello-world-mcp-server)                                                                  │
+    │                                                                                                            │
+    │ Tool name: get_current_time                                                                                │
+    │ Full name: mcp__hello-world-mcp-server__get_current_time                                                   │
+    │                                                                                                            │
+    │ Description:                                                                                               │
+    │ 現在の日時を取得します                                                                                     │
+    │                                                                                                            │
+    │ Parameters:                                                                                                │
+    │   • format: string - 日時のフォーマット(デフォルト: '%Y-%m-%d %H:%M:%S')
+    ```
+
+    Full name で MCP サーバーを使用可能
+
+1. Claude Code CLI でMCPサーバーのツールを使用する
+
+    ```bash
+    mcp__hello-world-mcp-server__get_current_time
+    ```
+    ```bash
+    > mcp__hello-world-mcp-server__get_current_time 
+    ⎿  ⧉ Selected 1 lines from README.md in Cursor
+
+    ⏺ It looks like you're trying to use an MCP (Model Context Protocol) tool. The mcp__hello-world-mcp-server__get_current_time function is available as a
+    tool, not a slash command.
+
+    Let me call it for you:
+
+    ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+    │ Tool use                                                                                                                                                     │
+    │                                                                                                                                                              │
+    │   hello-world-mcp-server - get_current_time() (MCP)                                                                                                          │
+    │   現在の日時を取得します                                                                                                                                     │
+    │                                                                                                                                                              │
+    │ Do you want to proceed?                                                                                                                                      │
+    │ ❯ 1. Yes                                                                                                                                                     │
+    │   2. Yes, and don't ask again for hello-world-mcp-server - get_current_time commands in /Users/yusukesakai/personal/ai-product-dev-tips/nlp_processing/36    │
+    │   3. No, and tell Claude what to do differently (esc)                                                                                                        │
+    │                                                                                                                                                              │
+    ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+      Let me call it for you:
+    ⎿  現在の時刻: 2025-10-06 10:52:44                                                                                                                       
+
+    ⏺ 現在の時刻: 2025-10-06 10:52:44
+    ```
+
+1. MCPサーバーの管理コマンド
+
+    ```bash
+    # MCPサーバーを削除
+    claude mcp remove hello-world-mcp-server
+
+    # MCPサーバーを一時的に無効化
+    claude mcp disable hello-world-mcp-server
+
+    # MCPサーバーを有効化
+    claude mcp enable hello-world-mcp-server
+    ```
 
 #### Cursor で MCP サーバーを利用する場合
 
 1. Cursor の MCP 設定ファイルを作成する
 
-    <img width="800" alt="Image" src="https://github.com/user-attachments/assets/88a9e535-2905-4007-a346-2b04ccd20235" />
+    - グローバル設定にする場合
 
-    Cursor の MCP 設定ファイル `$(HOME)/.cursor/mcp_config.json` に自作した MCP サーバーの設定を追加する
+        <img width="800" alt="Image" src="https://github.com/user-attachments/assets/88a9e535-2905-4007-a346-2b04ccd20235" />
+
+        Cursor の MCP 設定ファイル `$(HOME)/.cursor/mcp_config.json` に自作した MCP サーバーの設定を追加する
+
+    - プロジェクト設定にする場合
+
+        `~/プロジェクトルート/.cursor/mcp.json`
 
     ```json
     {
@@ -76,3 +221,7 @@
     <img width="800" alt="Image" src="https://github.com/user-attachments/assets/2cc0eb64-fc8b-4f9a-b885-7c40e95fbb4f" />
 
     <img width="800" alt="Image" src="https://github.com/user-attachments/assets/d058dfce-e76c-4080-b59c-20f9a36310bb" />
+
+## 参考サイト
+
+- https://docs.claude.com/ja/docs/claude-code/mcp
