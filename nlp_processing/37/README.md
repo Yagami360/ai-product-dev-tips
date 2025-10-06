@@ -315,7 +315,7 @@
 
         <img width="800" alt="Image" src="https://github.com/user-attachments/assets/88a9e535-2905-4007-a346-2b04ccd20235" />
 
-        Cursor の MCP 設定ファイル `$(HOME)/.cursor/mcp_config.json` に自作した MCP サーバーの設定を追加する
+        Cursor の MCP 設定ファイル `$(HOME)/.cursor/mcp.json` に自作した MCP サーバーの設定を追加する
 
         ```json
         {
@@ -334,15 +334,25 @@
 
     <img width="768" height="659" alt="Image" src="https://github.com/user-attachments/assets/268a9073-7408-46f0-9a97-9ce62ee7e110" />
 
-1. Cursor の UI から自作 MCP サーバーを利用する
+1. Cursor の UI から GitHub MCP サーバーを利用する
 
     Cursor の UI から「github の MCP サーバーを使用したいです」、「github の MCP サーバーを使用して PR を作成して」のような文章を入力する
 
-    <img width="447" height="72" alt="Image" src="https://github.com/user-attachments/assets/bdee91cc-c264-4d21-9be9-323527e9cc62" />
+    - github の MCP サーバーを使用して PR を作成して
 
-    <img width="447" height="565" alt="Image" src="https://github.com/user-attachments/assets/eba4975e-a8fc-4694-bc5c-9401cb0538b8" />
+        <img width="447" height="72" alt="Image" src="https://github.com/user-attachments/assets/bdee91cc-c264-4d21-9be9-323527e9cc62" />
 
-    <img width="635" height="667" alt="Image" src="https://github.com/user-attachments/assets/d722b9f3-51f9-4bbe-924d-53336d205a8c" />
+        <img width="447" height="565" alt="Image" src="https://github.com/user-attachments/assets/eba4975e-a8fc-4694-bc5c-9401cb0538b8" />
+
+        <img width="635" height="667" alt="Image" src="https://github.com/user-attachments/assets/d722b9f3-51f9-4bbe-924d-53336d205a8c" />
+
+    - 「github の MCP サーバーを使用して @https://github.com/Yagami360/ai-tech-catchup-agent/pull/44 をレビューして」
+
+        <img width="458" height="501" alt="Image" src="https://github.com/user-attachments/assets/d1db3d93-3ea2-485f-8b7a-c22557ece9d2" />
+
+        <img width="458" height="501" alt="Image" src="https://github.com/user-attachments/assets/6218c0c7-548e-42ea-bbcf-ad1fe3dcecb0" />
+
+        <img width="582" height="501" alt="Image" src="https://github.com/user-attachments/assets/446cce72-5b0f-4d31-9f45-95b8046d12bf" />
 
 ## 参考サイト
 
