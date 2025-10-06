@@ -8,18 +8,18 @@ install:
 	uv sync --extra dev
 
 # Cursor MCP 設定の適用
-setup-cursor:
-	@echo "⚙️  Cursor MCP設定を適用中..."
-	@CURSOR_CONFIG_DIR="$(HOME)/.cursor"
-	@mkdir -p "$$CURSOR_CONFIG_DIR"
-	@if [ -f "$$CURSOR_CONFIG_DIR/mcp_config.json" ]; then \
-		cp "$$CURSOR_CONFIG_DIR/mcp_config.json" \
-		   "$$CURSOR_CONFIG_DIR/mcp_config.json.backup.$$(date +%Y%m%d_%H%M%S)"; \
-		echo "   既存設定をバックアップしました"; \
-	fi
-	@cp cursor_mcp_config.json "$$CURSOR_CONFIG_DIR/mcp_config.json"
-	@echo "   Cursor MCP設定を更新しました"
-	@echo "   設定ファイル: $$CURSOR_CONFIG_DIR/mcp_config.json"
+# setup-cursor:
+# 	@echo "⚙️  Cursor MCP設定を適用中..."
+# 	@CURSOR_CONFIG_DIR="$(HOME)/.cursor"
+# 	@mkdir -p "$$CURSOR_CONFIG_DIR"
+# 	@if [ -f "$$CURSOR_CONFIG_DIR/mcp_config.json" ]; then \
+# 		cp "$$CURSOR_CONFIG_DIR/mcp_config.json" \
+# 		   "$$CURSOR_CONFIG_DIR/mcp_config.json.backup.$$(date +%Y%m%d_%H%M%S)"; \
+# 		echo "   既存設定をバックアップしました"; \
+# 	fi
+# 	@cp cursor_mcp_config.json "$$CURSOR_CONFIG_DIR/mcp_config.json"
+# 	@echo "   Cursor MCP設定を更新しました"
+# 	@echo "   設定ファイル: $$CURSOR_CONFIG_DIR/mcp_config.json"
 
 # MCPサーバー実行
 run: install
