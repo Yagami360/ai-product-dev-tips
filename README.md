@@ -928,7 +928,7 @@ AIプロダクト開発のための Tips 集。<br>
     - Sentry MCP サーバー
     - AWS MCP サーバー
     - GCP MCP サーバー
-    - Hugging Face MCP サーバー
+    - [Hugging Face MCP サーバー](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/39)
     - ArXiv MCP サーバー
 
 </details>
