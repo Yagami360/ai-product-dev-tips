@@ -52,7 +52,7 @@
         ```
 
         ```bash
-        > mcp__hf-mcp-server__model_search 最新の日本語LLMモデルを検索して 
+        > mcp__hf-mcp-server__model_search 最新の日本語LLMモデルを検索して
         ⎿  ⧉ Selected 1 lines from nlp_processing/39/README.md in Cursor
 
         ⏺ 最新の日本語LLMモデルを検索します。

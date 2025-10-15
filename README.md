@@ -835,10 +835,29 @@ AIプロダクト開発のための Tips 集。<br>
         - [Prompt flow をデプロイして、アプリケーションから API として利用できるようにする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/17)
         - Prompt flow CLI/SDK を使用して Prompt flow の実行を行う
         - Prompt flow CLI/SDK を使用して Prompt flow の CI/CD を行う
+    - Microsoft Agent Framework (Semantic Kernel + AutoGen)
+        - [Microsoft Agent Framework の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/40)
+        - [Microsoft Agent Framework を使用して簡単なチャットを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/41)
+        - Microsoft Agent Framework を使用してマルチ Agent での
 
 - Anthropic の LLM 系サービス
-    - [[In-progress] Claude の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/25)
-    - [Claude 3.5 Sonnet の Artifacts を使用してアプリのコードとデモを自動生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/26)
+    - Claude
+        - [[In-progress] Claude の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/25)
+        - [Claude 3.5 Sonnet の Artifacts を使用してアプリのコードとデモを自動生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/26)
+    - Claude Code
+        - [CLAUDE.md により Claude Code でのコード生成品質を向上させる](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/3)
+        - [Claude Code GitHub Actions を使用して PR レビューを自動化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/1)
+        - [Claude Code GitHub Actions を使用して PR 説明文作成を自動化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/2)
+        - Claude Code GitHub Actions を使用して Issue からの PR 作成を自動化する
+        - [Claude Code GitHub Actions を使用して README 作成を自動化する（Issueからの自動作成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/5)
+        - Claude Code GitHub Actions を使用して README 作成を自動化する（定期自動更新）
+        - [[In-progress] Claude Code GitHub Actions + Reusable Workflows を使用して複数レポジトリで PR 自動レビューを導入する際でもメンテナンスが容易にできるようにする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/4)
+        - [Vertex AI 経由で Claude Code GitHub Actions を利用し Claude API の請求先を GCP にする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/6)
+
+- Google の LLM 系サービス
+    - Gemini
+    - Gemini CLI
+    - Google ADK
 
 - LangChain
     - [LangChain の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/1)
@@ -860,10 +879,7 @@ AIプロダクト開発のための Tips 集。<br>
             - [[In-progress]【Python】LangSmith を使用して人間によるフィードバックを実行トレースに付与する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/11)
         - データセット管理機能
             - [[In-progress]【Python】LangSmith の Evaluation 機能を使用して、データセット化した入出力履歴の評価スコアを表示する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/9)
-
-<!--
-        - [[In-progress]【Python】LangSmith を使用してデータセットから LLM モデルのファインチューニングを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/10)
--->
+            - [[In-progress]【Python】LangSmith を使用してデータセットから LLM モデルのファインチューニングを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/10)
 
 - Hugging Face
     - [Hugging Face の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/103)
@@ -896,27 +912,14 @@ AIプロダクト開発のための Tips 集。<br>
     - [Dify を使用した LLM アプリケーションを API として外部公開する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/22)
     - [[In-progress] Dify を使用した LLM アプリケーションを Web サイトへの埋め込みとして外部公開する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/24)
     - [ Dify をローカル環境（オンプレ環境）で起動する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/23)
-
-<!--
     - [[In-progress] Dify の基本的な使い方（チャットボット用ワークフローを構築する）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/19)
--->
 
 - DeepEval
     - [DeepEval を使用して LLM からの回答の品質評価を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/27)
     - [DeepEval を使用してデータセットの品質評価を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/28)
     - DeepEval のローカル評価モードを使用して LLM からの回答の品質評価を非API経由で行う
 
-- Claude Code
-    - [CLAUDE.md により Claude Code でのコード生成品質を向上させる](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/3)
-    - [Claude Code GitHub Actions を使用して PR レビューを自動化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/1)
-    - [Claude Code GitHub Actions を使用して PR 説明文作成を自動化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/2)
-    - Claude Code GitHub Actions を使用して Issue からの PR 作成を自動化する
-    - [Claude Code GitHub Actions を使用して README 作成を自動化する（Issueからの自動作成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/5)
-    - Claude Code GitHub Actions を使用して README 作成を自動化する（定期自動更新）
-    - [[In-progress] Claude Code GitHub Actions + Reusable Workflows を使用して複数レポジトリで PR 自動レビューを導入する際でもメンテナンスが容易にできるようにする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/4)
-    - [Vertex AI 経由で Claude Code GitHub Actions を利用し Claude API の請求先を GCP にする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/6)
-
-- MCP サーバー
+- MCP [Model Context Protocol] サーバー
     - [MCP サーバーの概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/35)
     - [MCP サーバーを自作して MCP クライアント（Claude Code CLI や Cursor など）で利用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/36)
     - [GitHub MCP サーバーを使用して PR 作成や PR レビューなどの様々な GitHub 操作を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/37)
@@ -930,6 +933,9 @@ AIプロダクト開発のための Tips 集。<br>
     - GCP MCP サーバー
     - [Hugging Face MCP サーバー](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/39)
     - ArXiv MCP サーバー
+
+- A2A [Agent2Agent] プロトコル
+    - A2A の概要
 
 </details>
 
