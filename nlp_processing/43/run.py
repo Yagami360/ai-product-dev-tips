@@ -3,12 +3,36 @@ from typing import Any
 from azure.identity.aio import AzureCliCredential
 from agent_framework.azure import AzureOpenAIChatClient
 from agent_framework import ConcurrentBuilder
-from agent_framework import ChatMessage, WorkflowOutputEvent, WorkflowViz
+from agent_framework import ChatMessage, Role, WorkflowOutputEvent, WorkflowViz
 
 
-def create_workflow() -> None:
-    chat_client = AzureOpenAIChatClient(credential=AzureCliCredential())
+def create_workflow(chat_client: AzureOpenAIChatClient) -> None:
+    # カスタムアグリゲーター関数を定義（chat_clientにアクセスするためにクロージャーを使用）
+    async def summarize_results(results: list[Any], ctx: Any) -> str:
+        # Extract one final assistant message per agent
+        expert_sections: list[str] = []
+        for r in results:
+            try:
+                messages = getattr(r.agent_run_response, "messages", [])
+                final_text = messages[-1].text if messages and hasattr(messages[-1], "text") else "(no content)"
+                expert_sections.append(f"{getattr(r, 'executor_id', 'expert')}:\n{final_text}")
+            except Exception as e:
+                expert_sections.append(f"{getattr(r, 'executor_id', 'expert')}: (error: {type(e).__name__}: {e})")
 
+        # Ask the model to synthesize a concise summary of the experts' outputs
+        system_msg = ChatMessage(
+            Role.SYSTEM,
+            text=(
+                "あなたは複数のドメイン専門家の出力を1つのまとまりのある簡潔な要約に統合する"
+                "優秀なアシスタントです。重要なポイントを明確にして、200語以内にまとめてください。"
+            ),
+        )
+        user_msg = ChatMessage(Role.USER, text="\n\n".join(expert_sections))
+
+        response = await chat_client.get_response([system_msg, user_msg])
+        # Return the model's final assistant text as the completion result
+        return response.messages[-1].text if response.messages else ""
+    
     # 1) AI Agent を作成する
     researcher = chat_client.create_agent(
         instructions=(
@@ -32,8 +56,19 @@ def create_workflow() -> None:
     )
 
     # 2) マルチ AI Agent から構成される並列処理のワークフローを作成する
-    # Participants are either Agents (type of AgentProtocol) or Executors
-    workflow = ConcurrentBuilder().participants([researcher, marketer, legal]).build()
+    # デフォルトの aggregator を使用する場合
+    # workflow = (
+    #     ConcurrentBuilder()
+    #     .participants([researcher, marketer, legal])
+    #     .build()
+    # )
+    # 独自の aggregator を使用する場合
+    workflow = (
+        ConcurrentBuilder()
+        .participants([researcher, marketer, legal])
+        .with_aggregator(summarize_results)
+        .build()
+    )
     return workflow
 
 
@@ -49,15 +84,21 @@ async def run_workflow(workflow) -> None:
 
     if completion:
         print("===== 最終的な応答 (messages) =====")
-        messages: list[ChatMessage] | Any = completion.data
-        for i, msg in enumerate(messages, start=1):
-            name = msg.author_name if msg.author_name else "user"
-            print(f"{'-' * 60}\n\n{i:02d} [{name}]:\n{msg.text}")
+        # デフォルトの aggregator を使用する場合
+        # messages: list[ChatMessage] | Any = completion.data
+        # for i, msg in enumerate(messages, start=1):
+        #     name = msg.author_name if msg.author_name else "user"
+        #     print(f"{'-' * 60}\n\n{i:02d} [{name}]:\n{msg.text}")
+
+        # 独自の aggregator を使用する場合
+        print(completion.data)
 
 
 if __name__ == "__main__":
+    chat_client = AzureOpenAIChatClient(credential=AzureCliCredential())
+
     # AI Agent とワークフローを作成
-    workflow = create_workflow()
+    workflow = create_workflow(chat_client)
 
     # ワークフローを実行
     asyncio.run(run_workflow(workflow))

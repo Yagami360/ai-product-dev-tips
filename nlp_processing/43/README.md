@@ -52,7 +52,7 @@
 
     ポイントは、以下の通り
 
-    - 以下の３つの AI Agent の並列処理から構成されるマルチエージェントのワークフローになっている
+    - 以下の３つの AI Agent の並列処理と１つの要約用 aggregator から構成されるマルチエージェントのワークフローになっている
 
         - Researcher の AI Agent
             - プロンプトで市場調査と製品調査の専門家と指示しただけの簡単な AI Agent
@@ -63,15 +63,21 @@
         - Legal の AI Agent
             - プロンプトで法務・コンプライアンスレビュアーと指示しただけの簡単な AI Agent
 
+        - 要約用 aggregator (AI Agent とみなすこともできる)
+
+            上記３つの AI Agent の応答を要約する AI Agent
+
+
 1. Microsoft Agent Framework を使用したコードを実行する
 
     ```bash
     python run.py
     ```
 
+    各 Agent の応答
+
     ```bash
     入力プロンプト:  新しい価格帯の電動自転車を都市部での通勤に向けて発売することについて、市場調査と製品調査を行ってください。
-    ===== 最終的な応答 (messages) =====
     ------------------------------------------------------------
 
     01 [user]:
@@ -189,7 +195,15 @@
     以上の点を考慮しながら、適切な市場調査と製品調査を行い、法的なリスクを軽減し、健全な商品提供を目指すことが重要です。
     ```
 
-    ３つつのマルチ AI Agent それぞれで回答を出力し集約している簡単なマルチエージェントシステムになっていることがわかる
+    最終的な応答は、独自の要約用 aggregator によって、まとめられたものになる
+
+    ```bash
+    電動自転車市場は、持続可能な交通手段の需要増加に伴い成長しています。特に通勤者層（ミレニアル世代やZ世代）をターゲットにし、手頃な価格帯（60,000円〜100,000円）を設定することが提案されています。競合分析によると、既存ブランドとの価格競争が進行中で、低価格帯市場が有望な成長セグメントです。製品調査では、耐久性や機能性、デザインが重視されており、特にスマート機能の搭載がユーザーの満足度向上につながると考えられます。
+
+    法務面では、製品規制の遵守や知的財産権に注意が必要であり、利用者への安全性情報の提供も成約です。環境への配慮やデータ保護に関するポリシーも遵守することが求められ、法令遵守を意識したプロジェクト推進が重要です。これらを考慮しつつ、マーケティング戦略を策定することが、成功の鍵となるでしょう。
+    ```
+
+    ３つつのマルチ AI Agent それぞれで回答を出力し、独自の要約用 aggregator (AI Agent) で集約している簡単なマルチエージェントシステムになっていることがわかる
 
     ```mermaid
     flowchart TD
@@ -197,12 +211,12 @@
         researcher["researcher"];
         marketer["marketer"];
         legal["legal"];
-        aggregator["aggregator"];
-        fan_in__aggregator__e3a4ff58((fan-in))
-        legal --> fan_in__aggregator__e3a4ff58;
-        marketer --> fan_in__aggregator__e3a4ff58;
-        researcher --> fan_in__aggregator__e3a4ff58;
-        fan_in__aggregator__e3a4ff58 --> aggregator;
+        summarize_results["summarize_results"];
+        fan_in__summarize_results__83b51ad6((fan-in))
+        legal --> fan_in__summarize_results__83b51ad6;
+        marketer --> fan_in__summarize_results__83b51ad6;
+        researcher --> fan_in__summarize_results__83b51ad6;
+        fan_in__summarize_results__83b51ad6 --> summarize_results;
         dispatcher --> researcher;
         dispatcher --> marketer;
         dispatcher --> legal;
