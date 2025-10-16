@@ -838,7 +838,8 @@ AIプロダクト開発のための Tips 集。<br>
     - Microsoft Agent Framework (Semantic Kernel + AutoGen)
         - [Microsoft Agent Framework の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/40)
         - [Microsoft Agent Framework を使用して簡単なチャットを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/41)
-        - Microsoft Agent Framework を使用してマルチ Agent での
+        - [Microsoft Agent Framework のワークフローを使用してマルチ Agent での処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/42)
+        - Microsoft Agent Framework を使用して A2A [Agent-to-Agent] 対応 Agent を作成する
 
 - Anthropic の LLM 系サービス
     - Claude
@@ -857,7 +858,7 @@ AIプロダクト開発のための Tips 集。<br>
 - Google の LLM 系サービス
     - Gemini
     - Gemini CLI
-    - Google ADK
+    - Google ADK [Agent Development Kit]
 
 - LangChain
     - [LangChain の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/1)
