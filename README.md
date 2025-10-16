@@ -838,7 +838,8 @@ AIプロダクト開発のための Tips 集。<br>
     - Microsoft Agent Framework (Semantic Kernel + AutoGen)
         - [Microsoft Agent Framework の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/40)
         - [Microsoft Agent Framework を使用して簡単なチャットを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/41)
-        - [Microsoft Agent Framework のワークフローを使用してマルチ Agent での処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/42)
+        - [Microsoft Agent Framework のワークフローを使用してマルチ Agent での単純な直列処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/42)
+        - [Microsoft Agent Framework のワークフローオーケストレーションを使用してマルチ Agent での単純な並列処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/43)
         - Microsoft Agent Framework を使用して A2A [Agent-to-Agent] 対応 Agent を作成する
 
 - Anthropic の LLM 系サービス

@@ -1,6 +1,4 @@
-# Microsoft Agent Framework のワークフローを使用してマルチ Agent での処理を行う
-
-<img width="606" height="510" alt="Image" src="https://github.com/user-attachments/assets/970a94c9-eed4-494f-9fe7-645186dba991" />
+# Microsoft Agent Framework のワークフローを使用してマルチ Agent での簡単な直列処理を行う
 
 ## 方法
 
