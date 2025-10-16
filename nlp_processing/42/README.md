@@ -109,12 +109,12 @@
 
     複数の AI Agent で最終的な回答を出力するマルチエージェントシステムになっていることがわかる
 
-```mermaid
-flowchart TD
-    Writer["Writer (Start)"];
-    Reviewer["Reviewer"];
-    Writer --> Reviewer;
-```
+    ```mermaid
+    flowchart TD
+        Writer["Writer (Start)"];
+        Reviewer["Reviewer"];
+        Writer --> Reviewer;
+    ```
 
 ## 参考サイト
 
