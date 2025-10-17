@@ -23,8 +23,8 @@ def create_workflow(chat_client: AzureOpenAIChatClient) -> None:
         system_msg = ChatMessage(
             Role.SYSTEM,
             text=(
-                "あなたは複数のドメイン専門家の出力を1つのまとまりのある簡潔な要約に統合する"
-                "優秀なアシスタントです。重要なポイントを明確にして、200語以内にまとめてください。"
+                "あなたは複数のドメイン専門家の出力を1つのまとまりのある簡潔な要約に統合する優秀なアシスタントです。"
+                "重要なポイントを明確にして、200語以内にまとめてください。"
             ),
         )
         user_msg = ChatMessage(Role.USER, text="\n\n".join(expert_sections))

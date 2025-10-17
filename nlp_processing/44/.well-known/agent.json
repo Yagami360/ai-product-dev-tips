@@ -1,0 +1,33 @@
+{
+    "name": "Currency Agent",
+    "description": "Helps with exchange rates for currencies",
+    "url": "http://localhost:8080/",
+    "version": "1.0.0",
+    "capabilities": {
+      "streaming": true,
+      "pushNotifications": true,
+      "stateTransitionHistory": false
+    },
+    "defaultInputModes": [
+      "text",
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "text",
+      "text/plain"
+    ],
+    "skills": [
+      {
+        "id": "convert_currency",
+        "name": "Currency Exchange Rates Tool",
+        "description": "Helps with exchange values between various currencies",
+        "tags": [
+          "currency conversion",
+          "currency exchange"
+        ],
+        "examples": [
+          "What is exchange rate between USD and GBP?"
+        ]
+      }
+    ]
+}
