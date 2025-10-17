@@ -837,9 +837,9 @@ AIプロダクト開発のための Tips 集。<br>
         - Prompt flow CLI/SDK を使用して Prompt flow の CI/CD を行う
     - Microsoft Agent Framework (Semantic Kernel + AutoGen)
         - [Microsoft Agent Framework の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/40)
-        - [Microsoft Agent Framework を使用して簡単なチャットを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/41)
-        - [Microsoft Agent Framework のワークフローを使用してマルチ Agent での単純な直列処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/42)
-        - [Microsoft Agent Framework のワークフローオーケストレーションを使用してマルチ Agent での単純な並列処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/43)
+        - [Microsoft Agent Framework を使用して簡単な AI Agent を作成する（プロンプト指定のみの AI Agent）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/41)
+        - [Microsoft Agent Framework のワークフローを使用してマルチ Agent での単純な直列処理を行う（プロンプト指定のみの AI Agent）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/42)
+        - [Microsoft Agent Framework のワークフローオーケストレーションを使用してマルチ Agent での単純な並列処理を行う（プロンプト指定のみの AI Agent）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/43)
         - [[In-progress] Microsoft Agent Framework を使用して A2A [Agent-to-Agent] 対応 Agent を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/44)
 
 - Anthropic の LLM 系サービス
@@ -860,6 +860,10 @@ AIプロダクト開発のための Tips 集。<br>
     - Gemini
     - Gemini CLI
     - Google ADK [Agent Development Kit]
+        - [[In-progress] Google ADK の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/46)
+        - [Google ADK を使用して簡単な AI Agent を作成する（プロンプト指定のみの AI Agent）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/45)
+        - Google ADK を使用して Function calling を使用した AI Agent を作成する
+        - Google ADK を使用して簡単なマルチ AI Agent を作成する（プロンプト指定のみの AI Agent）
 
 - LangChain
     - [LangChain の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/1)

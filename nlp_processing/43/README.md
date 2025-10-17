@@ -1,4 +1,4 @@
-# Microsoft Agent Framework のワークフローを使用してマルチ Agent での簡単な並列処理を行う
+# Microsoft Agent Framework のワークフローを使用してマルチ Agent での簡単な並列処理を行う（プロンプト指定のみの AI Agent）
 
 ## 方法
 

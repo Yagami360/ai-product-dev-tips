@@ -7,7 +7,7 @@ Microsoft Agent Framework は、Microsoft が発表したオープンソース�
 
 Microsoft Agent Framework は、これら2つの強みを組み合わせることで、プロトタイピングから本番展開までの一貫したパイプラインを提供し、開発者が研究レベルのオーケストレーションパターンとエンタープライズレベルの堅牢性を両立させたマルチエージェントシステムを構築できるようにすることを目指しています。
 
-### 他のツールと比較したメリット
+### 他の AI Agent 系ツールと比較したメリット
 
 他の主要なマルチエージェントフレームワークと比較して、Microsoft Agent Framework には以下の優位点があります。
 
@@ -40,7 +40,7 @@ Microsoft Agent Framework は、これら2つの強みを組み合わせるこ�
 
 これらの優位点により、Microsoft Agent Framework は、特に企業が大規模で複雑なマルチエージェントシステムを構築し、既存の IT インフラストラクチャと統合しながら運用していく上で、強力な選択肢となるでしょう。
 
-### 他のツールと比較したデメリット
+### 他の AI Agent ツールと比較したデメリット
 
 - Azure (Microsoft Azure AI Foundry や Azure OpenAI) 前提になってしまう
 

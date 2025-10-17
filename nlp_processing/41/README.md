@@ -1,4 +1,4 @@
-# Microsoft Agent Framework を使用して簡単なチャットを行う
+# Microsoft Agent Framework を使用して簡単な AI Agent を作成する（プロンプト指定のみの AI Agent）
 
 ## 方法
 
