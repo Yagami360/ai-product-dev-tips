@@ -863,7 +863,8 @@ AIプロダクト開発のための Tips 集。<br>
         - [[In-progress] Google ADK の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/46)
         - [Google ADK を使用して簡単な AI Agent を作成する（プロンプト指定のみの AI Agent）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/45)
         - Google ADK を使用して Function calling を使用した AI Agent を作成する
-        - Google ADK を使用して簡単なマルチ AI Agent を作成する（プロンプト指定のみの AI Agent）
+        - [Google ADK を使用して簡単なマルチ AI Agent を作成する（プロンプト指定のみの AI Agent）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/47)
+        - Google ADK を使用してA2A 対応 AI Agent を作成する
 
 - LangChain
     - [LangChain の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/1)
