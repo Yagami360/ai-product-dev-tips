@@ -811,10 +811,10 @@ AIプロダクト開発のための Tips 集。<br>
 
 </details>
 
-## ■ LLM アプリケーション開発
+## ■ LLM アプリケーション開発 / AI Agent 開発
 
 <details>
-<summary>LLM アプリケーション開発</summary>
+<summary>LLM アプリケーション開発 / AI Agent 開発</summary>
 
 - LLM 基礎事項
     - [[In-progress] LLM学習方法の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/31)
