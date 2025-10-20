@@ -1,0 +1,26 @@
+{
+    "capabilities": {},
+    "defaultInputModes": [
+      "text/plain"
+    ],
+    "defaultOutputModes": [
+      "text/plain"
+    ],
+    "description": "I greet the user.",
+    "name": "Greeter",
+    "preferredTransport": "JSONRPC",
+    "protocolVersion": "0.3.0",
+    "skills": [
+      {
+        "description": "I greet the user. Greet the user in a friendly manner in Japanese.",
+        "id": "Greeter",
+        "name": "model",
+        "tags": [
+          "llm"
+        ]
+      }
+    ],
+    "supportsAuthenticatedExtendedCard": false,
+    "url": "http://localhost:8001",
+    "version": "0.0.1"
+}
