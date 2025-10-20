@@ -819,13 +819,29 @@ AIプロダクト開発のための Tips 集。<br>
 - LLM 基礎事項
     - [[In-progress] LLM学習方法の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/31)
 
-- OpenAI の LLM 系サービス
+- OpenAI の LLM / AI Agent 系サービス
     - [【CLI/Python】OpenAI API の使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/102)
     - [[In-progress]【Python】ChatGPT plugins を利用＆作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/108)
     - [Function calling を使用して、入力文に応じて適切な外部関数の呼び出し、外部関数の戻り値に基づく出力文を生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/12)
     - OpenAI API を使用して、OpenAI LLM（GPT-3.5, GPT-4系）のファインチューニングを行う
+    - OpenAI AgentKit / Agent Builder
+        - OpenAI Agent Builder を使用してノーコードで簡単な AI Agent を作成する
 
-- Microsoft (Azure) の LLM 系サービス
+- Anthropic の LLM / AI Agent 系サービス
+    - Claude
+        - [[In-progress] Claude の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/25)
+        - [Claude 3.5 Sonnet の Artifacts を使用してアプリのコードとデモを自動生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/26)
+    - Claude Code
+        - [CLAUDE.md により Claude Code でのコード生成品質を向上させる](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/3)
+        - [Claude Code GitHub Actions を使用して PR レビューを自動化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/1)
+        - [Claude Code GitHub Actions を使用して PR 説明文作成を自動化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/2)
+        - Claude Code GitHub Actions を使用して Issue からの PR 作成を自動化する
+        - [Claude Code GitHub Actions を使用して README 作成を自動化する（Issueからの自動作成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/5)
+        - Claude Code GitHub Actions を使用して README 作成を自動化する（定期自動更新）
+        - [[In-progress] Claude Code GitHub Actions + Reusable Workflows を使用して複数レポジトリで PR 自動レビューを導入する際でもメンテナンスが容易にできるようにする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/4)
+        - [Vertex AI 経由で Claude Code GitHub Actions を利用し Claude API の請求先を GCP にする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/6)
+
+- Microsoft (Azure) の LLM / AI Agent 系サービス
     - Azure OpenAI Service
         - [[In-progress] Azure OpenAI Service の使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/4)
     - Prompt flow（旧 Azure Machine Learning Prompt flow）
@@ -842,21 +858,7 @@ AIプロダクト開発のための Tips 集。<br>
         - [Microsoft Agent Framework のワークフローオーケストレーションを使用してマルチ Agent での単純な並列処理を行う（プロンプト指定のみの AI Agent）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/43)
         - [[In-progress] Microsoft Agent Framework を使用して A2A [Agent-to-Agent] 対応 Agent を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/44)
 
-- Anthropic の LLM 系サービス
-    - Claude
-        - [[In-progress] Claude の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/25)
-        - [Claude 3.5 Sonnet の Artifacts を使用してアプリのコードとデモを自動生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/26)
-    - Claude Code
-        - [CLAUDE.md により Claude Code でのコード生成品質を向上させる](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/3)
-        - [Claude Code GitHub Actions を使用して PR レビューを自動化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/1)
-        - [Claude Code GitHub Actions を使用して PR 説明文作成を自動化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/2)
-        - Claude Code GitHub Actions を使用して Issue からの PR 作成を自動化する
-        - [Claude Code GitHub Actions を使用して README 作成を自動化する（Issueからの自動作成）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/5)
-        - Claude Code GitHub Actions を使用して README 作成を自動化する（定期自動更新）
-        - [[In-progress] Claude Code GitHub Actions + Reusable Workflows を使用して複数レポジトリで PR 自動レビューを導入する際でもメンテナンスが容易にできるようにする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/4)
-        - [Vertex AI 経由で Claude Code GitHub Actions を利用し Claude API の請求先を GCP にする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/6)
-
-- Google の LLM 系サービス
+- Google の LLM / AI Agent 系サービス
     - Gemini
     - Gemini CLI
     - Google ADK [Agent Development Kit]
@@ -865,6 +867,8 @@ AIプロダクト開発のための Tips 集。<br>
         - Google ADK を使用して Function calling を使用した AI Agent を作成する
         - [Google ADK を使用して簡単なマルチ AI Agent を作成する（プロンプト指定のみの AI Agent）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/47)
         - [Google ADK を使用してA2A 対応 AI Agent を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/48)
+    - Vertex AI Agent Builder
+        - Vertex AI Agent Builder を使用してノーコードで簡単な AI Agent を作成する
 
 - LangChain
     - [LangChain の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/1)
@@ -880,6 +884,9 @@ AIプロダクト開発のための Tips 集。<br>
         - [[In-progress] LangChain Agents の OpenAI Functions Agent を使用して Function calling を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/13)
     - LangChain Evaluation
         - LangChain Evaluation を使用して LLM からの回答の品質評価を行う
+    - LangGraph / LangGraph Server / LangGraph Platform
+        - [LangGraph を使用して簡単なマルチ AI Agent を作成する（プロンプト指定のみの AI Agent）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/49)
+        - LangGraph Server を使用して簡単な A2A 対応 AI Agent を作成する
     - LangSmith
         - 実行トレース管理機能
             - [[In-progress]【Python】LangSmith を使用して UI コンソール上から LLM アプリケーションの実行トレースと実行ログを確認する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/5)
