@@ -1,6 +1,6 @@
 # Google ADK の概要
 
-### 他の AI Agent 系ツールと比較したメリット
+## 他の AI Agent 系ツールと比較したメリット
 
 - Google エコシステム（Google AI Studio, VertexAI）との深い統合:
 
@@ -16,6 +16,6 @@
 
     Google ADK コマンドで、簡単にコンソール UI で AI Agent を動かせる
 
-### 他の AI Agent ツールと比較したデメリット
+## 他の AI Agent ツールと比較したデメリット
 
 - GCP（Google AI Studio, VertexAI）前提になってしまう

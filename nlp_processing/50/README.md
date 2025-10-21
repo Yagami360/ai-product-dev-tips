@@ -29,7 +29,7 @@
     ```bash
     /server-agent
     + /src/agent
-    + --- grapy.py     # LangGraph でのグラフ（ワークフロー）定義のコード。テンプレート時点では、START -> END 空のグラフが定義されているのみ
+    + --- grapy.py     # LangGraph でのグラフ（ワークフロー）定義のコード。テンプレート時点では、START -> 空ノード -> END のグラフが定義されているのみ
     ```
 
 1. 環境変数を設定する
