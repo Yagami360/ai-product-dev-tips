@@ -886,7 +886,8 @@ AIプロダクト開発のための Tips 集。<br>
         - LangChain Evaluation を使用して LLM からの回答の品質評価を行う
     - LangGraph / LangGraph Server / LangGraph Platform
         - [LangGraph を使用して簡単なマルチ AI Agent を作成する（プロンプト指定のみの AI Agent）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/49)
-        - LangGraph Server を使用して簡単な A2A 対応 AI Agent を作成する
+        - [LangGraph Server を使用して AI Agent 作成＆管理用 API サーバーを起動する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/50)
+        - [In-progress] LangGraph Server を使用して簡単な A2A 対応 AI Agent を作成する
     - LangSmith
         - 実行トレース管理機能
             - [[In-progress]【Python】LangSmith を使用して UI コンソール上から LLM アプリケーションの実行トレースと実行ログを確認する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/5)
