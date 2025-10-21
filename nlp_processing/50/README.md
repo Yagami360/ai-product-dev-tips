@@ -79,6 +79,8 @@
 
     LangGraph Server によって、AI Agent 作成＆管理用 API サーバーとしてデプロイされているので、LangSmith のコンソール UI 経由で実行できる
 
+    > A2A もデフォルトでサポートされており、A2A プロンプトでの API 通信もサポートしている
+
 1. [Option] API ドキュメントのコンソール UI を確認する
 
     ```open
@@ -94,7 +96,6 @@
     また、各 API エンドポイントをコンソール UI から直接テストすることもできる
 
     <img width="721" height="370" alt="Image" src="https://github.com/user-attachments/assets/2c2098e7-8655-4a3c-b680-1f2ff665dfe0" />
-
 
 ## 参考サイト
 
