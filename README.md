@@ -900,14 +900,21 @@ AIプロダクト開発のための Tips 集。<br>
 
 - Hugging Face
     - [Hugging Face の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/103)
-    - [【CLI/Python】Hugging Face Hub の基本的な使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/104)
-    - [【Python】Hugging Face Transformers を使用して NLP モデルの推論処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/106)
-    - [【Python】Hugging Face Spaces を利用して簡単な機械学習デモアプリを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/107)
-    - 【Python】Hugging Face の LLM モデルを LangChain で使用する
-    - [[In-progress] HuggingFace Transformers を使用して LLM のファインチューニングを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/29)
-    - HuggingFace Transformers を使用して Llama での推論を行う
-    - HuggingFace Transformers を使用して Mistral での推論を行う
-    - [[In-progress] HuggingFace Transformers を使用して Qwen での推論を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/30)
+    - Hugging Face Hub
+        - [【CLI/Python】Hugging Face Hub の基本的な使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/104)
+    - Hugging Face Transformers
+        - [【Python】Hugging Face Transformers を使用して NLP モデルの推論処理を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/106)
+        - 【Python】Hugging Face の LLM モデルを LangChain で使用する
+        - [[In-progress] HuggingFace Transformers を使用して LLM のファインチューニングを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/29)
+        - HuggingFace Transformers を使用して Llama での推論を行う（ローカル LLM）
+        - HuggingFace Transformers を使用して Mistral での推論を行う（ローカル LLM）
+        - [[In-progress] HuggingFace Transformers を使用して Qwen での推論を行う（ローカル LLM）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/30)
+        - [[In-progress] HuggingFace Transformers の カスタム Trainer を使用して LLM の蒸留モデル（Logit蒸留）を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/53)
+    - Hugging Face Spaces
+        - [【Python】Hugging Face Spaces を利用して簡単な機械学習デモアプリを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/107)
+    - HuggingFace TRL
+        - HuggingFace TRL の SFTTrainer を使用して LLM の蒸留モデル（応答ベース蒸留）を作成する
+        - HuggingFace TRL の GKDTrainer を使用して LLM の蒸留モデル（On-policy蒸留）を作成する
 
 - NVIDIA AI Enterprise
     - [[In-progress] NVIDIA AI Enterprise & NVIDIA NeMo の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/33)

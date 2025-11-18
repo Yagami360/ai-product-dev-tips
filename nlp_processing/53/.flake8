@@ -1,0 +1,4 @@
+[flake8]
+max-line-length = 150
+exclude = .venv,venv,__pycache__,.git,.mypy_cache,.pytest_cache,.old,.debug,.logs
+ignore = E221,E222,E231,F401,F541
