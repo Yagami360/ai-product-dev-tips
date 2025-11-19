@@ -18,7 +18,7 @@ class LogitDistillationTrainer(Trainer):
         for param in self.teacher.parameters():
             param.requires_grad = False
 
-    def compute_loss(self, model, inputs, return_outputs=False):
+    def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
         outputs_student = model(**inputs)
         with torch.no_grad():
             outputs_teacher = self.teacher(**inputs)
