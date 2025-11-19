@@ -35,8 +35,8 @@ def train(args):
     student_model.resize_token_embeddings(len(tokenizer))
 
     # モデルのメモリ使用量の表示
-    print_model_memory(teacher_model, "Teacher Model")
-    print_model_memory(student_model, "Student Model")
+    print_model_memory(teacher_model, f"Teacher Model: {args.teacher_model_name}")
+    print_model_memory(student_model, f"Student Model: {args.student_model_name}")
     print_memory_summary(teacher_model, student_model, show_gpu=True)
 
     # データセット準備
@@ -48,8 +48,14 @@ def train(args):
 
     # トークン化
     print("   Tokenizing dataset...")
+    def tokenize_function(examples):
+        tokenized = tokenizer(examples["text"], truncation=True, max_length=256, padding="max_length", return_tensors=None)
+        # labelsを追加（Language Modeling用）
+        tokenized["labels"] = tokenized["input_ids"].copy()
+        return tokenized
+
     train_dataset = dataset.map(
-        lambda x: tokenizer(x["text"], truncation=True, max_length=256, padding="max_length"), batched=True, remove_columns=dataset.column_names
+        tokenize_function, batched=True, remove_columns=dataset.column_names
     )
     print(f"✅ Dataset ready: {len(train_dataset)} samples")
 
@@ -109,8 +115,10 @@ if __name__ == "__main__":
     parser.add_argument("--num_epochs", type=int, default=10)
     parser.add_argument("--batch_size", type=int, default=8)
     parser.add_argument("--output_dir", type=str, default="outputs")
-    parser.add_argument("--teacher_model_name", type=str, default="deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B")
-    parser.add_argument("--student_model_name", type=str, default="distilgpt2")
+    parser.add_argument("--teacher_model_name", type=str, default="Qwen/Qwen2-1.5B-Instruct")
+    # parser.add_argument("--teacher_model_name", type=str, default="deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B")
+    parser.add_argument("--student_model_name", type=str, default="Qwen/Qwen2-0.5B-Instruct")
+    # parser.add_argument("--student_model_name", type=str, default="distilgpt2")
     parser.add_argument("--distillation_logit_temperature", type=float, default=2.0)
     parser.add_argument("--distillation_logit_alpha", type=float, default=0.5)
     args = parser.parse_args()
