@@ -24,9 +24,7 @@ train: install
 	uv run python train.py --exper_name ${EXPER_NAME}
 
 train-nohup-poweroff: install
-	rm -rf outputs/${EXPER_NAME}
-	nohup uv run python train.py --exper_name ${EXPER_NAME} > ${EXPER_NAME}.out &
-	sudo poweroff
+	nohup bash train_poweroff.sh > ${EXPER_NAME}.out &
 
 # Run code linting
 lint: install
