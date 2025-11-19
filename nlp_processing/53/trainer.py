@@ -19,48 +19,23 @@ class LogitDistillationTrainer(Trainer):
             param.requires_grad = False
 
     def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
-        outputs_student = model(**inputs)
+        # 教師モデルの推論結果（正解データ）
         with torch.no_grad():
             outputs_teacher = self.teacher(**inputs)
 
-        # Cross Entropy loss
+        # 生徒モデルの推論結果（予測データ）
+        outputs_student = model(**inputs)
+
+        # Cross Entropy loss　(hard target loss)
+        # 学習用データセットの正解データと生徒モデルの予測データ間の loss。生徒モデルの出力が正解データに近づくようにする
+        # Hugging Face の transformers の AutoModelForCausalLM では、モデルを呼び出す際 (model(**inputs)) に、入力データ (inputs) に labels (正解データ) が含まれている場合、モデルは内部でクロスエントロピー損失 (Cross Entropy Loss) を自動的に計算し、.loss 属性に格納
         loss_ce = outputs_student.loss
 
-        # ロジットのサイズを取得
-        student_logits = outputs_student.logits
-        teacher_logits = outputs_teacher.logits
-
-        # 語彙サイズを揃える（モデル間で異なる場合）
-        student_vocab_size = student_logits.size(-1)
-        teacher_vocab_size = teacher_logits.size(-1)
-        vocab_size = min(student_vocab_size, teacher_vocab_size)
-
-        # 語彙サイズが異なる場合、小さい方に合わせる
-        if student_vocab_size > vocab_size:
-            student_logits_aligned = student_logits[..., :vocab_size]
-        else:
-            student_logits_aligned = student_logits
-
-        if teacher_vocab_size > vocab_size:
-            teacher_logits_aligned = teacher_logits[..., :vocab_size]
-        else:
-            teacher_logits_aligned = teacher_logits
-
-        # シーケンス長を揃える（モデル間で異なる場合）
-        student_seq_len = student_logits_aligned.size(1)
-        teacher_seq_len = teacher_logits_aligned.size(1)
-        seq_len = min(student_seq_len, teacher_seq_len)
-
-        # シーケンス長が異なる場合、小さい方に合わせる
-        if student_seq_len > seq_len:
-            student_logits_aligned = student_logits_aligned[:, :seq_len, :]
-        if teacher_seq_len > seq_len:
-            teacher_logits_aligned = teacher_logits_aligned[:, :seq_len, :]
-
-        # KL Divergence loss
+        # KL Divergence loss (soft target loss)
+        # 教師モデルの確率分布と生徒モデルの確率分布間の距離を最小化し、生徒モデルの出力が教師モデルの出力に近づくようにする
         loss_kd = F.kl_div(
-            F.log_softmax(student_logits_aligned / self.temperature, dim=-1),
-            F.softmax(teacher_logits_aligned / self.temperature, dim=-1),
+            F.log_softmax(outputs_student.logits / self.temperature, dim=-1),
+            F.softmax(outputs_teacher.logits / self.temperature, dim=-1),
             reduction="batchmean",
         ) * (self.temperature**2)
 

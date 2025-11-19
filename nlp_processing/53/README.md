@@ -18,22 +18,32 @@
 make install
 ```
 
-または手動で:
+`make install`を実行すると、自動的にGPUの有無を検出します:
+- **GPU検出時**: `bitsandbytes`を含むすべての依存関係をインストール
+- **GPU未検出時**: `bitsandbytes`をスキップしてインストール
+
+手動でインストールする場合:
 
 ```bash
+# GPUありの場合
+uv sync --extra dev --extra gpu
+
+# GPUなしの場合
 uv sync --extra dev
 ```
 
 ### 2. 設定の確認
 
-`train.py`の`CONFIG`辞書で以下の設定を確認・変更できます:
+`train.py`のコマンドライン引数で以下の設定を確認・変更できます:
 
-- **teacher_model_name**: 教師モデル（例: `deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B`）
-- **student_model_name**: 生徒モデル（例: `distilgpt2`）
-- **dataset_name**: 訓練データセット（例: `gsm8k`）
-- **temperature**: 蒸留温度（デフォルト: 2.0）
-- **alpha**: Hard lossの重み（デフォルト: 0.5）
-- **distill_loss_type**: 損失タイプ（`kl` または `mse`）
+- **exper_name**: 実験名（デフォルト: `qwen2-7b-to-qwen2-0.5b-distill-20251119`）
+- **teacher_model_name**: 教師モデル（デフォルト: `Qwen/Qwen2-7B-Instruct`）
+- **student_model_name**: 生徒モデル（デフォルト: `Qwen/Qwen2-0.5B-Instruct`）
+- **num_epochs**: 訓練エポック数（デフォルト: 100）
+- **batch_size**: バッチサイズ（デフォルト: 4）
+- **distillation_logit_temperature**: 蒸留温度（デフォルト: 2.0）
+- **distillation_logit_alpha**: Hard lossの重み（デフォルト: 0.5）
+- **use_4bit**: 教師モデルの4bit量子化を使用（デフォルト: True）
 
 ## 使用方法
 
@@ -51,22 +61,34 @@ uv run python train.py
 
 ### コマンドライン引数
 
-エポック数とバッチサイズをコマンドライン引数で指定できます:
+コマンドライン引数で訓練設定をカスタマイズできます:
 
 ```bash
-# エポック数を5、バッチサイズを4に設定
-uv run python train.py --num_epochs 5 --batch_size 4
+# 実験名、エポック数、バッチサイズを指定
+uv run python train.py --exper_name my-experiment --num_epochs 50 --batch_size 8
 
 # エポック数のみ変更
-uv run python train.py --num_epochs 3
+uv run python train.py --num_epochs 50
 
 # バッチサイズのみ変更
 uv run python train.py --batch_size 8
+
+# 教師モデルと生徒モデルを変更
+uv run python train.py --teacher_model_name Qwen/Qwen2-1.5B-Instruct --student_model_name distilgpt2
 ```
 
-**引数:**
-- `--num_epochs`: 訓練エポック数（デフォルト: 2）
-- `--batch_size`: バッチサイズ（デフォルト: 2）
+**主要な引数:**
+- `--exper_name`: 実験名（デフォルト: `qwen2-7b-to-qwen2-0.5b-distill-20251119`）
+- `--num_epochs`: 訓練エポック数（デフォルト: 100）
+- `--batch_size`: バッチサイズ（デフォルト: 4）
+- `--teacher_model_name`: 教師モデル名（デフォルト: `Qwen/Qwen2-7B-Instruct`）
+- `--student_model_name`: 生徒モデル名（デフォルト: `Qwen/Qwen2-0.5B-Instruct`）
+- `--distillation_logit_temperature`: 蒸留温度（デフォルト: 2.0）
+- `--distillation_logit_alpha`: Hard lossの重み（デフォルト: 0.5）
+- `--use_4bit`: 教師モデルの4bit量子化を使用（デフォルト: True）
+- `--output_dir`: 出力ディレクトリ（デフォルト: `outputs`）
+- `--logging_steps`: ログ出力間隔（デフォルト: 100）
+- `--save_steps`: モデル保存間隔（デフォルト: 500）
 
 ### 訓練の流れ
 
@@ -91,21 +113,25 @@ uv run python train.py --batch_size 8
 
 訓練後、以下のファイルが生成されます:
 
-- `{output_dir}/final_model/`: 訓練済みモデルとトークナイザー
-- `{output_dir}/loss_history.json`: 損失履歴とハイパーパラメータ
-- `{output_dir}/logs/`: TensorBoardログ
+- `{output_dir}/{exper_name}/final_model/`: 訓練済みモデルとトークナイザー
+- `{output_dir}/{exper_name}/logs/`: TensorBoardログ
+- `{output_dir}/{exper_name}/checkpoint-*/`: 訓練チェックポイント
 
 ## TensorBoardでの可視化
 
 ```bash
-tensorboard --logdir {output_dir}/logs
+tensorboard --logdir {output_dir}/{exper_name}/logs
 ```
 
 ## 注意事項
 
-- GPUメモリが不足する場合は、`batch_size`や`gradient_accumulation_steps`を調整してください
-- 教師モデルは4bit量子化でロードされます（bitsandbytesが必要）
-- 大規模なモデルを使用する場合は、適切なGPU環境を用意してください
+- **GPUメモリ**: GPUメモリが不足する場合は、`batch_size`を小さくするか、`use_4bit`を有効にして教師モデルを4bit量子化してください
+- **4bit量子化**: 
+  - 教師モデルは推論のみで使用するため、4bit量子化でメモリ節約が可能です
+  - **生徒モデルは訓練する必要があるため、4bit量子化は使用できません**（4bit量子化されたモデルは直接ファインチューニングできません）
+  - 4bit量子化を使用する場合は、GPU環境と`bitsandbytes`が必要です（`make install`で自動インストールされます）
+- **混合精度訓練**: 4bit量子化を使用する場合、`fp16`は自動的に無効化されます
+- **大規模モデル**: 大規模なモデルを使用する場合は、適切なGPU環境を用意してください
 
 ## 参考資料
 
