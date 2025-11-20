@@ -1,34 +1,49 @@
-.PHONY: install-uv install train lint format format-check infer
+.PHONY: install-uv install train train-nohup train-nohup-poweroff predict-teacher predict-student tensorboard lint format format-check
 
-export EXPER_NAME=qwen2-7b-to-qwen2-0.5b-distill-20251120
+export EXPER_NAME=qwen2-7b-to-qwen2-0.5b-distill-20251120-3
 export TEACHER_MODEL_NAME=Qwen/Qwen2-7B-Instruct
 export STUDENT_MODEL_NAME=Qwen/Qwen2-0.5B-Instruct
 
+# Install
 install-uv:
-	curl -LsSf https://astral.sh/uv/install.sh | sh
-	source ~/.bashrc
-	uv --version
+	if uv --version > /dev/null 2>&1; then \
+		echo "uv is already installed. Skipping installation."; \
+	else \
+		curl -LsSf https://astral.sh/uv/install.sh | sh
+		source ~/.bashrc
+		echo "uv installed successfully."; \
+		echo "uv version: $(uv --version)"; \
+	fi
 
-# Install dependencies
 install:
 	uv lock --upgrade
 	@if command -v nvidia-smi > /dev/null 2>&1; then \
-		echo "GPU detected. Installing bitsandbytes..."; \
+		echo "GPU detected. Installing GPU dependencies..."; \
 		uv sync --extra dev --extra gpu; \
 	else \
-		echo "No GPU detected. Skipping bitsandbytes installation."; \
+		echo "No GPU detected. Skipping GPU dependencies installation."; \
 		uv sync --extra dev; \
 	fi
 
-# train LLM model
+# Train LLM model
 train: install
 	rm -rf outputs/${EXPER_NAME}
-	uv run python train.py --exper_name ${EXPER_NAME} --teacher_model_name ${TEACHER_MODEL_NAME} --student_model_name ${STUDENT_MODEL_NAME}
+	uv run python train.py \
+		--exper_name ${EXPER_NAME} \
+		--teacher_model_name ${TEACHER_MODEL_NAME} \
+		--student_model_name ${STUDENT_MODEL_NAME}
+
+train-nohup: install
+	rm -rf outputs/${EXPER_NAME}
+	nohup uv run python train.py \
+		--exper_name ${EXPER_NAME} \
+		--teacher_model_name ${TEACHER_MODEL_NAME} \
+		--student_model_name ${STUDENT_MODEL_NAME} > ${EXPER_NAME}.out &
 
 train-nohup-poweroff: install
 	nohup bash train_poweroff.sh > ${EXPER_NAME}.out &
 
-# predict trained model
+# Predict trained model
 predict-teacher:
 	@echo "Predicting by pre-trained teacher model ..."
 	uv run python predict.py \
@@ -43,8 +58,8 @@ predict-student:
 		--teacher_model_name ${TEACHER_MODEL_NAME} \
 		--output_dir outputs/${EXPER_NAME}
 
-# view tensorboard
-run-tensorboard:
+# Run tensorboard
+tensorboard:
 	uv run tensorboard --logdir outputs/${EXPER_NAME}/logs
 
 # Run code linting
