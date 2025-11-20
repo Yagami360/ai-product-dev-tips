@@ -21,7 +21,9 @@ def train(args):
         args.teacher_model_name,
         trust_remote_code=True,
     )
-    tokenizer.pad_token = tokenizer.eos_token
+    # パディングトークンが未設定の場合のみ設定
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
 
     # 教師モデル（蒸留元モデル）
     print(f"📥 Loading teacher model: {args.teacher_model_name}")
@@ -101,8 +103,14 @@ def train(args):
 
     def tokenize_function(examples):
         tokenized = tokenizer(examples["text"], truncation=True, max_length=256, padding="max_length", return_tensors=None)
-        # labelsを追加（Language Modeling用）
-        tokenized["labels"] = tokenized["input_ids"].copy()
+        # labelsを追加
+        # パディングトークンのラベルを -100 に設定して、損失計算から除外する
+        # これを行わないと、!のみを出力するようなモデルが生成されてします
+        labels = []
+        for input_ids in tokenized["input_ids"]:
+            label = [token_id if token_id != tokenizer.pad_token_id else -100 for token_id in input_ids]
+            labels.append(label)
+        tokenized["labels"] = labels
         return tokenized
 
     train_dataset = dataset.map(tokenize_function, batched=True, remove_columns=dataset.column_names)
@@ -118,6 +126,8 @@ def train(args):
         logging_dir=f"{args.output_dir}/{args.exper_name}/logs",
         save_steps=args.save_steps,
         save_total_limit=args.save_total_limit,
+        learning_rate=args.learning_rate,
+        optim=args.optimizer,
         dataloader_pin_memory=True if torch.cuda.is_available() else False,
         remove_unused_columns=False,
         fp16=True if torch.cuda.is_available() and not args.use_4bit else False,
@@ -155,9 +165,11 @@ def train(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Logit-based Knowledge Distillation")
-    parser.add_argument("--exper_name", type=str, default="qwen2-7b-to-qwen2-0.5b-distill-20251119")
+    parser.add_argument("--exper_name", type=str, default="distill")
     parser.add_argument("--num_epochs", type=int, default=10)
     parser.add_argument("--batch_size", type=int, default=4)
+    parser.add_argument("--learning_rate", type=float, default=5e-5, help="The initial learning rate for AdamW.")
+    parser.add_argument("--optimizer", type=str, default="adamw_torch", help="The optimizer to use.")
     parser.add_argument("--logging_steps", type=int, default=100)
     parser.add_argument("--save_steps", type=int, default=500)
     parser.add_argument("--save_total_limit", type=int, default=4)
@@ -165,8 +177,8 @@ if __name__ == "__main__":
     parser.add_argument("--teacher_model_name", type=str, default="Qwen/Qwen2-7B-Instruct")
     # parser.add_argument("--teacher_model_name", type=str, default="Qwen/Qwen2-1.5B-Instruct")
     parser.add_argument("--student_model_name", type=str, default="Qwen/Qwen2-0.5B-Instruct")
-    parser.add_argument("--distillation_logit_temperature", type=float, default=2.0)
-    parser.add_argument("--distillation_logit_alpha", type=float, default=0.5)
+    parser.add_argument("--distillation_logit_temperature", type=float, default=1.0)
+    parser.add_argument("--distillation_logit_alpha", type=float, default=0.7)
     parser.add_argument("--use_4bit", action="store_true", default=True)
     args = parser.parse_args()
 

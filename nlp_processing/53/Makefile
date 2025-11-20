@@ -1,6 +1,6 @@
 .PHONY: install-uv install train lint format format-check infer
 
-export EXPER_NAME=qwen2-7b-to-qwen2-0.5b-distill-20251119
+export EXPER_NAME=qwen2-7b-to-qwen2-0.5b-distill-20251120
 export TEACHER_MODEL_NAME=Qwen/Qwen2-7B-Instruct
 export STUDENT_MODEL_NAME=Qwen/Qwen2-0.5B-Instruct
 
@@ -29,22 +29,23 @@ train-nohup-poweroff: install
 	nohup bash train_poweroff.sh > ${EXPER_NAME}.out &
 
 # predict trained model
-predict:
+predict-teacher:
 	@echo "Predicting by pre-trained teacher model ..."
 	uv run python predict.py \
 		--model_name ${TEACHER_MODEL_NAME} \
 		--teacher_model_name ${TEACHER_MODEL_NAME} \
 		--output_dir outputs/${EXPER_NAME}
 
+predict-student:
 	@echo "Predicting by distilled student model ..."
 	uv run python predict.py \
 		--model_name outputs/${EXPER_NAME}/checkpoint-final \
 		--teacher_model_name ${TEACHER_MODEL_NAME} \
 		--output_dir outputs/${EXPER_NAME}
-	# uv run python predict.py \
-	# 	--model_name outputs/qwen2-7b-to-qwen2-0.5b-distill-debug-20251119/checkpoint-2000 \
-	# 	--teacher_model_name ${TEACHER_MODEL_NAME} \
-	# 	--output_dir outputs/qwen2-7b-to-qwen2-0.5b-distill-debug-20251119
+
+# view tensorboard
+run-tensorboard:
+	uv run tensorboard --logdir outputs/${EXPER_NAME}/logs
 
 # Run code linting
 lint: install

@@ -32,53 +32,70 @@ def predict(args):
 
     # データセット準備
     print(f"\n📊 Loading dataset: GSM8K (test split)")
-    dataset = load_dataset("gsm8k", "main", split="test")
+    dataset = load_dataset("gsm8k", "main", split=f"test[:{args.num_samples}]")
     print(f"✅ Dataset loaded: {len(dataset)} samples")
 
     correct_predictions = 0
     total_predictions = 0
-    examples = []
+    samples = []
 
-    print("\n🚀 Starting inference...")
-    for i, example in enumerate(tqdm(dataset, desc="Inferring")):
-        question = example["question"]
-        answer_gt = example["answer"]
+    print(f"\n🚀 Starting inference with batch size {args.batch_size}...")
 
-        prompt = f"Q: {question}\nA:"
-        input_ids = tokenizer.encode(prompt, return_tensors="pt").to(model.device)
+    # バッチ推論
+    for batch_start in tqdm(range(0, len(dataset), args.batch_size), desc="Inferring"):
+        batch_end = min(batch_start + args.batch_size, len(dataset))
+        batch = dataset[batch_start:batch_end]
 
+        questions = batch["question"]
+        answers_gt = batch["answer"]
+
+        # バッチのプロンプトを作成
+        prompts = [f"Q: {q}\nA:" for q in questions]
+
+        # バッチトークナイズ
+        inputs = tokenizer(
+            prompts,
+            return_tensors="pt",
+            padding=True,
+            truncation=True,
+            max_length=512,
+        ).to(model.device)
+
+        # バッチ推論
         with torch.no_grad():
             outputs = model.generate(
-                input_ids,
+                **inputs,
                 max_new_tokens=100,
                 num_return_sequences=1,
                 pad_token_id=tokenizer.eos_token_id,
                 do_sample=False,
             )
 
-        generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-        # print(f"Generated text: {generated_text}")
+        # バッチデコード
+        generated_texts = tokenizer.batch_decode(outputs, skip_special_tokens=True)
 
-        # 回答部分を抽出
-        # モデルの出力が "Q: ... A: {answer}" の形式であることを期待
-        if "\nA:" in generated_text:
-            answer_pred_raw = generated_text.split("\nA:", 1)[1].strip()
-        else:
-            answer_pred_raw = generated_text.strip()
+        # 各サンプルの結果を処理
+        for question, answer_gt, generated_text in zip(questions, answers_gt, generated_texts):
+            # 回答部分を抽出
+            # モデルの出力が "Q: ... A: {answer}" の形式であることを期待
+            if "\nA:" in generated_text:
+                answer_pred_raw = generated_text.split("\nA:", 1)[1].strip()
+            else:
+                answer_pred_raw = generated_text.strip()
 
-        # ここでは簡易的な評価を行う。より厳密な評価は別途実装
-        # 正解の answer が含まれているかをチェックする
-        if answer_gt.lower() in answer_pred_raw.lower():
-            correct_predictions += 1
-        total_predictions += 1
+            # ここでは簡易的な評価を行う。より厳密な評価は別途実装
+            # 正解の answer が含まれているかをチェックする
+            is_correct = answer_gt.lower() in answer_pred_raw.lower()
+            if is_correct:
+                correct_predictions += 1
+            total_predictions += 1
 
-        if args.save_examples:
-            examples.append(
+            samples.append(
                 {
                     "question": question,
                     "answer_gt": answer_gt,
                     "answer_pred": answer_pred_raw,
-                    "is_correct": answer_gt.lower() in answer_pred_raw.lower(),
+                    "is_correct": is_correct,
                 }
             )
 
@@ -91,7 +108,7 @@ def predict(args):
     if args.output_dir:
         os.makedirs(args.output_dir, exist_ok=True)
         model_basename = os.path.basename(args.model_name.replace("/", "_"))
-        output_filename = f"{model_basename}_metrics.txt"
+        output_filename = f"eval_stats_{model_basename}_n{args.num_samples}.txt"
         output_filepath = os.path.join(args.output_dir, output_filename)
 
         with open(output_filepath, "w") as f:
@@ -99,21 +116,11 @@ def predict(args):
             f.write(f"Total predictions:   {total_predictions}\n")
             f.write(f"Accuracy:            {accuracy:.2f}%\n")
 
-        examples_filename = f"{model_basename}_examples.json"
-        examples_filepath = os.path.join(args.output_dir, examples_filename)
-        with open(examples_filepath, "w", encoding="utf-8") as f:
-            json.dump(examples, f, ensure_ascii=False, indent=4)
-        print(f"   Examples saved to:   {examples_filepath}")
-
-        print("\n--- Sample Examples ---")
-        for i, ex in enumerate(examples[: args.num_example_to_show]):
-            print(f"\nExample {i+1}:")
-            print(f"  Q: {ex['question']}")
-            print(f"  A (True): {ex['answer_gt']}")
-            print(f"  A (Predicted): {ex['predicted_answer']}")
-            print(f"  Correct: {ex['is_correct']}")
-        print("-----------------------")
-        print(f"   Results saved to:    {output_filepath}")
+        samples_filename = f"eval_samples_{model_basename}_n{args.num_samples}.json"
+        samples_filepath = os.path.join(args.output_dir, samples_filename)
+        with open(samples_filepath, "w", encoding="utf-8") as f:
+            json.dump(samples, f, ensure_ascii=False, indent=4)
+        print(f"   Evaluation Samples saved to:   {samples_filepath}")
 
 
 if __name__ == "__main__":
@@ -121,7 +128,8 @@ if __name__ == "__main__":
     parser.add_argument("--model_name", type=str, default="Qwen/Qwen2-7B-Instruct")
     parser.add_argument("--teacher_model_name", type=str, default="Qwen/Qwen2-7B-Instruct")
     parser.add_argument("--output_dir", type=str, default="outputs")
-    parser.add_argument("--num_example_to_show", type=int, default=10)
+    parser.add_argument("--batch_size", type=int, default=4)
+    parser.add_argument("--num_samples", type=int, default=20)
     args = parser.parse_args()
 
     predict(args)
