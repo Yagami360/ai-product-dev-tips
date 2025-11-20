@@ -1,4 +1,4 @@
-export EXPER_NAME=qwen2-7b-to-qwen2-0.5b-logit-distill-$(shell date +%Y%m%d)
+export EXPER_NAME=qwen2-7b-to-qwen2-0.5b-gkd-distill-$(shell date +%Y%m%d)
 export TEACHER_MODEL_NAME=Qwen/Qwen2-7B-Instruct
 export STUDENT_MODEL_NAME=Qwen/Qwen2-0.5B-Instruct
 

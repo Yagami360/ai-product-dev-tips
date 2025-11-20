@@ -1,0 +1,47 @@
+[project]
+name = "gkd-distillation"
+version = "0.1.0"
+description = "Generalized Knowledge Distillation (GKD) for Language Models"
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "huggingface-hub>=0.35.3",
+    "transformers>=4.46.0",
+    "torch>=2.0.0",
+    "datasets>=2.14.0",
+    "tensorboard>=2.14.0",
+    "accelerate>=0.26.0",
+    "trl>=0.11.0",
+    "tqdm>=4.66.0",
+    "sentencepiece>=0.2.0",
+    "protobuf>=3.20.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest~=7.0.0",
+    "black>=22.0.0,<24.0.0",
+    "isort~=5.12.0",
+    "flake8~=6.0.0",
+    "mypy~=1.0.0",
+    "types-PyYAML~=6.0.0",
+    "types-requests~=2.31.0",
+]
+gpu = [
+    "bitsandbytes>=0.41.0",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
