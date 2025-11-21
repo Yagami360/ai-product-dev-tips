@@ -36,7 +36,6 @@ def train(args):
         args.teacher_model_name,
         trust_remote_code=True,
     )
-    # パディングトークンが未設定の場合のみ設定
     if tokenizer.pad_token is None:
         tokenizer.add_special_tokens({"pad_token": "<|endoftext|>"})
 
@@ -123,8 +122,8 @@ def train(args):
         warmup_steps=100,
         gradient_accumulation_steps=args.gradient_accumulation_steps,
         gradient_checkpointing=True,
-        # fp16=False,
-        # bf16=True,
+        fp16=True if torch.cuda.is_available() and not args.use_4bit else False,
+        bf16=True if torch.cuda.is_available() and args.use_4bit else False,
         optim=args.optimizer,
         temperature=args.temperature,
         lmbda=args.lmbda,       # 生徒データ割合（0.0-1.0）
@@ -202,7 +201,5 @@ if __name__ == "__main__":
         print(f"{key}: {value}")
     print("=" * 60)
 
-    # 出力ディレクトリ作成
     os.makedirs(f"{args.output_dir}/{args.exper_name}", exist_ok=True)
-
     train(args)
