@@ -49,7 +49,7 @@ def train(args):
     if args.use_4bit:
         bnb_config = BitsAndBytesConfig(
             load_in_4bit=True,
-            bnb_4bit_compute_dtype=torch.float16,
+            # bnb_4bit_compute_dtype=torch.float16,
             bnb_4bit_use_double_quant=True,
             bnb_4bit_quant_type="nf4",
         )
@@ -82,18 +82,28 @@ def train(args):
         # load_in_4bit=True if args.use_4bit else False,
     )
 
-    # 語彙サイズの調整（必要に応じて）
-    if len(tokenizer) > student_model.config.vocab_size:
+    # 生徒モデルの語彙サイズを教師モデル（のトークナイザー）に合わせる
+    # 蒸留時には、教師モデルのトークナイザーのみを使用するためにアンマッチが生じるため必要
+    # 語彙サイズ（Vocabulary Size）: モデルが扱えるトークン（単語の最小単位）の種類の数
+    if len(tokenizer) != student_model.config.vocab_size:
         print(
             f"⚠️  生徒モデルの語彙サイズを調整: {student_model.config.vocab_size} -> {len(tokenizer)}"
         )
         student_model.resize_token_embeddings(len(tokenizer))
 
-    if len(tokenizer) > teacher_model.config.vocab_size:
+    # 教師モデルの語彙サイズをトークナイザーに合わせる
+    # トークナイザーとして教師モデルのトークナイザーを使用しているので、通常は不要
+    if len(tokenizer) != teacher_model.config.vocab_size:
         print(
             f"⚠️  教師モデルの語彙サイズを調整: {teacher_model.config.vocab_size} -> {len(tokenizer)}"
         )
         teacher_model.resize_token_embeddings(len(tokenizer))
+
+    # モデルの pad_token_id と eos_token_id をトークナイザーと一致させる
+    teacher_model.config.pad_token_id = tokenizer.pad_token_id
+    teacher_model.config.eos_token_id = tokenizer.eos_token_id
+    student_model.config.pad_token_id = tokenizer.pad_token_id
+    student_model.config.eos_token_id = tokenizer.eos_token_id
 
     # モデルのメモリ使用量の表示
     print_model_memory(teacher_model, f"Teacher Model: {args.teacher_model_name}")
@@ -124,8 +134,8 @@ def train(args):
         warmup_steps=100,
         gradient_accumulation_steps=args.gradient_accumulation_steps,
         gradient_checkpointing=True,
-        fp16=True if torch.cuda.is_available() and not args.use_4bit else False,
-        bf16=True if torch.cuda.is_available() and args.use_4bit else False,
+        # fp16=True if torch.cuda.is_available() and not args.use_4bit else False,
+        # bf16=True if torch.cuda.is_available() and args.use_4bit else False,
         optim=args.optimizer,
         temperature=args.temperature,
         lmbda=args.lmbda,       # 生徒データ割合（0.0-1.0）
@@ -172,7 +182,7 @@ if __name__ == "__main__":
         "--dataset_name", type=str, default="openai/gsm8k", help="データセット名"
     )
     parser.add_argument("--dataset_config", type=str, default="main", help="データセット設定")
-    parser.add_argument("--num_epochs", type=int, default=3, help="エポック数")
+    parser.add_argument("--num_epochs", type=int, default=5, help="エポック数")
     parser.add_argument("--batch_size", type=int, default=2, help="バッチサイズ")
     parser.add_argument(
         "--gradient_accumulation_steps", type=int, default=4, help="勾配累積ステップ数"
@@ -189,7 +199,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--beta", type=float, default=0.5, help="JSD補間係数 (0.0=KL, 1.0=逆KL)"
     )
-    parser.add_argument("--max_new_tokens", type=int, default=128, help="生成する最大トークン数")
+    parser.add_argument("--max_new_tokens", type=int, default=512, help="生成する最大トークン数")
     parser.add_argument("--seq_kd", action="store_true", help="Sequence-Level KDを使用")
     parser.add_argument(
         "--use_4bit", action="store_true", default=False, help="4bit量子化を使用"
