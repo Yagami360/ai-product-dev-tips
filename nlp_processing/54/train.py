@@ -1,22 +1,17 @@
-"""
-GKD (Generalized Knowledge Distillation) を使用した知識蒸留の訓練スクリプト
-https://huggingface.co/docs/trl/main/gkd_trainer
-
-GKDの主な利点:
-1. 訓練と推論の分布ミスマッチを解決
-2. 生徒モデルが自己生成した出力に対して教師からフィードバックを受ける
-3. 柔軟な損失関数の選択が可能
-"""
-
 import argparse
+import os
 from pathlib import Path
 
+import torch
 from datasets import Dataset, load_dataset
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import (AutoModelForCausalLM, AutoTokenizer,
+                          BitsAndBytesConfig)
 from trl import GKDConfig, GKDTrainer
 
+from utils import print_gpu_memory, print_memory_summary, print_model_memory
 
-def prepare_dataset_for_gkd(dataset, tokenizer):
+
+def prepare_dataset(dataset, tokenizer):
     """
     GKDTrainer用にデータセットを準備
     GKDTrainerは "messages" 形式のデータを期待する
@@ -34,87 +29,54 @@ def prepare_dataset_for_gkd(dataset, tokenizer):
 
 
 def train(args):
-    """GKDを使用した知識蒸留の訓練"""
-
-    print("=" * 60)
-    print("GKD (Generalized Knowledge Distillation) Training")
-    print("=" * 60)
-    print(f"実験名: {args.exper_name}")
-    print(f"教師モデル: {args.teacher_model_name}")
-    print(f"生徒モデル: {args.student_model_name}")
-    print(f"Lambda (生徒データ割合): {args.lmbda}")
-    print(f"Beta (JSD補間係数): {args.beta}")
-    print(f"Temperature: {args.temperature}")
-    print(f"Sequence-Level KD: {args.seq_kd}")
-    print("=" * 60)
-    print()
-
-    # 出力ディレクトリの設定
-    output_dir = Path(args.output_dir) / args.exper_name
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    # トークナイザーのロード
-    print("📥 トークナイザーをロード中...")
+    # トークナイザー（単語テキストをトークンIDに変換するモデル）
+    # 教師の知識を正確に蒸留するために、教師モデルのトークナイザーを使用する
+    print("\n📥 Loading tokenizer...")
     tokenizer = AutoTokenizer.from_pretrained(
-        args.teacher_model_name, trust_remote_code=True
+        args.teacher_model_name,
+        trust_remote_code=True,
     )
-
-    # パディングトークンの設定
+    # パディングトークンが未設定の場合のみ設定
     if tokenizer.pad_token is None:
+        # tokenizer.pad_token = tokenizer.eos_token
         tokenizer.add_special_tokens({"pad_token": "<|pad|>"})
 
-    # 量子化設定（4bit使用時）
-    quantization_config = None
-    if args.use_4bit:
-        # BitsAndBytesConfigをインポートして使用
-        import torch
-        from transformers import BitsAndBytesConfig
-
-        quantization_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_use_double_quant=True,
-            bnb_4bit_compute_dtype=torch.bfloat16,
-        )
-
     # 教師モデルのロード
-    print(f"📥 教師モデルをロード中: {args.teacher_model_name}")
+    print(f"📥 Loading teacher model: {args.teacher_model_name}")
     if args.use_4bit:
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=torch.float16,
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_quant_type="nf4",
+        )
         teacher_model = AutoModelForCausalLM.from_pretrained(
             args.teacher_model_name,
-            quantization_config=quantization_config,
-            device_map="auto",
             trust_remote_code=True,
+            device_map="auto",
+            torch_dtype=torch.float16,
+            quantization_config=bnb_config,
         )
     else:
-        import torch
-
         teacher_model = AutoModelForCausalLM.from_pretrained(
             args.teacher_model_name,
-            torch_dtype=torch.bfloat16,
-            device_map="auto",
             trust_remote_code=True,
+            device_map="auto",
+            # torch_dtype="auto",
+            torch_dtype=torch.float16,
         )
 
-    # 生徒モデルのロード
-    print(f"📥 生徒モデルをロード中: {args.student_model_name}")
-    # 生徒モデルは常にbf16で読み込む
-    try:
-        import torch
-
-        student_model = AutoModelForCausalLM.from_pretrained(
-            args.student_model_name,
-            torch_dtype=torch.bfloat16,
-            device_map="auto",
-            trust_remote_code=True,
-        )
-    except ImportError:
-        # torchがインポートできない場合は通常の読み込み
-        student_model = AutoModelForCausalLM.from_pretrained(
-            args.student_model_name,
-            device_map="auto",
-            trust_remote_code=True,
-        )
+    # 生徒モデル（蒸留先モデル）
+    print(f"📥 Loading student model: {args.student_model_name}")
+    student_model = AutoModelForCausalLM.from_pretrained(
+        args.student_model_name,
+        trust_remote_code=True,
+        device_map="auto",
+        # torch_dtype="auto",
+        torch_dtype=torch.float16,
+        # 生徒モデルは、4bit 量子化利用不可
+        # load_in_4bit=True if args.use_4bit else False,
+    )
 
     # 語彙サイズの調整（必要に応じて）
     if len(tokenizer) > student_model.config.vocab_size:
@@ -129,21 +91,17 @@ def train(args):
         )
         teacher_model.resize_token_embeddings(len(tokenizer))
 
-    # メモリ使用量の表示（オプション）
-    try:
-        from utils import print_memory_summary
-
-        print_memory_summary(teacher_model, student_model, show_gpu=True)
-    except ImportError:
-        # utilsがインポートできない場合はスキップ
-        print("⚠️ メモリ使用量の表示をスキップ（utils.pyが見つかりません）")
+    # モデルのメモリ使用量の表示
+    print_model_memory(teacher_model, f"Teacher Model: {args.teacher_model_name}")
+    print_model_memory(student_model, f"Student Model: {args.student_model_name}")
+    print_memory_summary(teacher_model, student_model, show_gpu=True)
 
     # データセットのロード
     print(f"\n📊 データセットをロード中: {args.dataset_name}")
     dataset = load_dataset(args.dataset_name, args.dataset_config, split="train")
 
     # データセットをGKD形式に変換
-    train_dataset = prepare_dataset_for_gkd(dataset, tokenizer)
+    train_dataset = prepare_dataset(dataset, tokenizer)
 
     # 評価用データセット（訓練データの一部を使用）
     eval_dataset = train_dataset.select(range(min(100, len(train_dataset))))
@@ -153,12 +111,13 @@ def train(args):
 
     # GKD設定
     training_args = GKDConfig(
-        output_dir=str(output_dir),
+        output_dir=str(f"{args.output_dir}/{args.exper_name}"),
         num_train_epochs=args.num_epochs,
         per_device_train_batch_size=args.batch_size,
         per_device_eval_batch_size=args.batch_size,
         learning_rate=args.learning_rate,
         logging_steps=args.logging_steps,
+        logging_dir=str(f"{args.output_dir}/{args.exper_name}/logs"),
         save_steps=args.save_steps,
         save_total_limit=args.save_total_limit,
         evaluation_strategy="steps",
@@ -177,7 +136,6 @@ def train(args):
         seq_kd=args.seq_kd,  # Sequence-Level KD
         disable_dropout=True,
         report_to=["tensorboard"],
-        logging_dir=str(output_dir / "logs"),
         push_to_hub=False,
         load_best_model_at_end=True,
         metric_for_best_model="eval_loss",
@@ -202,11 +160,13 @@ def train(args):
 
     # モデルの保存
     print("\n💾 モデルを保存中...")
-    trainer.save_model(str(output_dir / "checkpoint-final"))
-    tokenizer.save_pretrained(str(output_dir / "checkpoint-final"))
+    trainer.save_model(str(f"{args.output_dir}/{args.exper_name}/checkpoint-final"))
+    tokenizer.save_pretrained(
+        str(f"{args.output_dir}/{args.exper_name}/checkpoint-final")
+    )
 
     print(f"\n✅ 訓練が完了しました！")
-    print(f"   モデルは以下に保存されました: {output_dir / 'checkpoint-final'}")
+    print(f"   モデルは以下に保存されました: {args.output_dir}/{args.exper_name}/checkpoint-final")
     print("=" * 60)
 
 
@@ -240,8 +200,18 @@ if __name__ == "__main__":
     parser.add_argument("--max_new_tokens", type=int, default=128, help="生成する最大トークン数")
     parser.add_argument("--seq_kd", action="store_true", help="Sequence-Level KDを使用")
     parser.add_argument(
-        "--use_4bit", action="store_true", default=True, help="4bit量子化を使用"
+        "--use_4bit", action="store_true", default=False, help="4bit量子化を使用"
     )
-
     args = parser.parse_args()
+
+    print("=" * 60)
+    print("実行条件")
+    print("=" * 60)
+    for key, value in vars(args).items():
+        print(f"{key}: {value}")
+    print("=" * 60)
+
+    # 出力ディレクトリ作成
+    os.makedirs(f"{args.output_dir}/{args.exper_name}", exist_ok=True)
+
     train(args)
