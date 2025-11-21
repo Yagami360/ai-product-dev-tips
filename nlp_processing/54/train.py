@@ -38,8 +38,10 @@ def train(args):
     )
     # パディングトークンが未設定の場合のみ設定
     if tokenizer.pad_token is None:
-        # tokenizer.pad_token = tokenizer.eos_token
-        tokenizer.add_special_tokens({"pad_token": "<|pad|>"})
+        tokenizer.add_special_tokens({"pad_token": "<|endoftext|>"})
+
+    print(f"   Pad token: {tokenizer.pad_token} (ID: {tokenizer.pad_token_id})")
+    print(f"   EOS token: {tokenizer.eos_token} (ID: {tokenizer.eos_token_id})")
 
     # 教師モデルのロード
     print(f"📥 Loading teacher model: {args.teacher_model_name}")
@@ -54,7 +56,8 @@ def train(args):
             args.teacher_model_name,
             trust_remote_code=True,
             device_map="auto",
-            torch_dtype=torch.float16,
+            torch_dtype="auto",
+            # torch_dtype=torch.float16,
             quantization_config=bnb_config,
         )
     else:
@@ -62,8 +65,8 @@ def train(args):
             args.teacher_model_name,
             trust_remote_code=True,
             device_map="auto",
-            # torch_dtype="auto",
-            torch_dtype=torch.float16,
+            torch_dtype="auto",
+            # torch_dtype=torch.float16,
         )
 
     # 生徒モデル（蒸留先モデル）
@@ -72,8 +75,8 @@ def train(args):
         args.student_model_name,
         trust_remote_code=True,
         device_map="auto",
-        # torch_dtype="auto",
-        torch_dtype=torch.float16,
+        torch_dtype="auto",
+        # torch_dtype=torch.float16,
         # 生徒モデルは、4bit 量子化利用不可
         # load_in_4bit=True if args.use_4bit else False,
     )
@@ -99,41 +102,35 @@ def train(args):
     # データセットのロード
     print(f"\n📊 データセットをロード中: {args.dataset_name}")
     dataset = load_dataset(args.dataset_name, args.dataset_config, split="train")
-
-    # データセットをGKD形式に変換
     train_dataset = prepare_dataset(dataset, tokenizer)
-
-    # 評価用データセット（訓練データの一部を使用）
     eval_dataset = train_dataset.select(range(min(100, len(train_dataset))))
-
     print(f"✅ 訓練データ: {len(train_dataset)} samples")
     print(f"✅ 評価データ: {len(eval_dataset)} samples")
 
-    # GKD設定
+    # GKDTrainer の設定
     training_args = GKDConfig(
-        output_dir=str(f"{args.output_dir}/{args.exper_name}"),
+        output_dir=f"{args.output_dir}/{args.exper_name}",
+        logging_dir=f"{args.output_dir}/{args.exper_name}/logs",
         num_train_epochs=args.num_epochs,
         per_device_train_batch_size=args.batch_size,
         per_device_eval_batch_size=args.batch_size,
         learning_rate=args.learning_rate,
         logging_steps=args.logging_steps,
-        logging_dir=str(f"{args.output_dir}/{args.exper_name}/logs"),
         save_steps=args.save_steps,
         save_total_limit=args.save_total_limit,
-        evaluation_strategy="steps",
+        eval_strategy="steps",
         eval_steps=args.save_steps,
         warmup_steps=100,
         gradient_accumulation_steps=args.gradient_accumulation_steps,
         gradient_checkpointing=True,
-        fp16=False,
-        bf16=True,
+        # fp16=False,
+        # bf16=True,
         optim=args.optimizer,
-        # GKD特有のパラメータ
         temperature=args.temperature,
-        lmbda=args.lmbda,  # 生徒データ割合（0.0-1.0）
-        beta=args.beta,  # JSD補間係数（0.0=KL, 1.0=逆KL）
+        lmbda=args.lmbda,       # 生徒データ割合（0.0-1.0）
+        beta=args.beta,         # JSD補間係数（0.0=KL, 1.0=逆KL）
         max_new_tokens=args.max_new_tokens,
-        seq_kd=args.seq_kd,  # Sequence-Level KD
+        seq_kd=args.seq_kd,     # Sequence-Level KD
         disable_dropout=True,
         report_to=["tensorboard"],
         push_to_hub=False,
@@ -141,9 +138,6 @@ def train(args):
         metric_for_best_model="eval_loss",
         greater_is_better=False,
     )
-
-    # GKDTrainerの初期化
-    print("\n🎓 GKDTrainerを初期化中...")
     trainer = GKDTrainer(
         model=student_model,
         teacher_model=teacher_model,
@@ -153,18 +147,15 @@ def train(args):
         eval_dataset=eval_dataset,
     )
 
-    # 訓練の実行
-    print("\n🚀 訓練を開始します...")
+    # 学習の実行
+    print("\n🚀 学習を開始します...")
     print("=" * 60)
     trainer.train()
 
     # モデルの保存
     print("\n💾 モデルを保存中...")
-    trainer.save_model(str(f"{args.output_dir}/{args.exper_name}/checkpoint-final"))
-    tokenizer.save_pretrained(
-        str(f"{args.output_dir}/{args.exper_name}/checkpoint-final")
-    )
-
+    trainer.save_model(f"{args.output_dir}/{args.exper_name}/checkpoint-final")
+    tokenizer.save_pretrained(f"{args.output_dir}/{args.exper_name}/checkpoint-final")
     print(f"\n✅ 訓練が完了しました！")
     print(f"   モデルは以下に保存されました: {args.output_dir}/{args.exper_name}/checkpoint-final")
     print("=" * 60)
