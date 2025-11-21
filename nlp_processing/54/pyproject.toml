@@ -8,7 +8,7 @@ requires-python = ">=3.10"
 dependencies = [
     "huggingface-hub>=0.35.3",
     "transformers>=4.46.0",
-    "torch>=2.0.0,<2.5.0",
+    "torch>=2.0.0,<3.0.0",
     "datasets>=2.14.0",
     "tensorboard>=2.14.0",
     "accelerate>=0.26.0",
@@ -34,14 +34,14 @@ gpu = [
 
 [tool.ruff]
 line-length = 120
-target-version = "py310"
+target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W"]
 ignore = ["E501"]
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.12"
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true

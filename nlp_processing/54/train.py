@@ -183,7 +183,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("--dataset_config", type=str, default="main", help="データセット設定")
     parser.add_argument("--num_epochs", type=int, default=5, help="エポック数")
-    parser.add_argument("--batch_size", type=int, default=2, help="バッチサイズ")
+    parser.add_argument("--batch_size", type=int, default=4, help="バッチサイズ")
     parser.add_argument(
         "--gradient_accumulation_steps", type=int, default=4, help="勾配累積ステップ数"
     )
@@ -208,6 +208,7 @@ if __name__ == "__main__":
 
     print("=" * 60)
     print("実行条件")
+
     print("=" * 60)
     for key, value in vars(args).items():
         print(f"{key}: {value}")

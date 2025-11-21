@@ -1,20 +1,22 @@
-# export TEACHER_MODEL_NAME=Qwen/Qwen2-7B-Instruct
-export TEACHER_MODEL_NAME=Qwen/Qwen2-1.5B-Instruct
+# export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=0,1
+
+export EXPER_NAME=qwen2-7b-to-qwen2-0.5b-gkd-distill-$(shell date +%Y%m%d)
+export TEACHER_MODEL_NAME=Qwen/Qwen2-7B-Instruct
 export STUDENT_MODEL_NAME=Qwen/Qwen2-0.5B-Instruct
-# export EXPER_NAME=qwen2-7b-to-qwen2-0.5b-gkd-distill-$(shell date +%Y%m%d)
-export EXPER_NAME=qwen2-1.5b-to-qwen2-0.5b-gkd-distill-$(shell date +%Y%m%d)
 
 .PHONY: install-uv install train train-nohup train-nohup-poweroff predict-teacher predict-student tensorboard lint format format-check
 
 # Install
 install-uv:
-	if uv --version > /dev/null 2>&1; then \
+	@if command -v uv > /dev/null 2>&1; then \
 		echo "uv is already installed. Skipping installation."; \
+		echo "uv version: $$(uv --version)"; \
 	else \
-		curl -LsSf https://astral.sh/uv/install.sh | sh
-		source ~/.bashrc
+		echo "Installing uv..."; \
+		curl -LsSf https://astral.sh/uv/install.sh | sh; \
 		echo "uv installed successfully."; \
-		echo "uv version: $(uv --version)"; \
+		echo "Please restart your shell or run: source ~/.bashrc"; \
 	fi
 
 install:

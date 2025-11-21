@@ -21,16 +21,20 @@ def train(args):
         args.teacher_model_name,
         trust_remote_code=True,
     )
-    # パディングトークンが未設定の場合のみ設定
     if tokenizer.pad_token is None:
-        tokenizer.pad_token = tokenizer.eos_token
+        tokenizer.add_special_tokens({"pad_token": "<|pad|>"})
+    if tokenizer.eos_token is None:
+        tokenizer.add_special_tokens({"pad_token": "<|endoftext|>"})
+
+    print(f"   Pad token: {tokenizer.pad_token} (ID: {tokenizer.pad_token_id})")
+    print(f"   EOS token: {tokenizer.eos_token} (ID: {tokenizer.eos_token_id})")
 
     # 教師モデル（蒸留元モデル）
     print(f"📥 Loading teacher model: {args.teacher_model_name}")
     if args.use_4bit:
         bnb_config = BitsAndBytesConfig(
             load_in_4bit=True,
-            bnb_4bit_compute_dtype=torch.float16,
+            # bnb_4bit_compute_dtype=torch.float16,
             bnb_4bit_use_double_quant=True,
             bnb_4bit_quant_type="nf4",
         )
@@ -38,7 +42,8 @@ def train(args):
             args.teacher_model_name,
             trust_remote_code=True,
             device_map="auto",
-            torch_dtype=torch.float16,
+            torch_dtype="auto",
+            # torch_dtype=torch.float16,
             quantization_config=bnb_config,
         )
     else:
@@ -46,8 +51,8 @@ def train(args):
             args.teacher_model_name,
             trust_remote_code=True,
             device_map="auto",
-            # torch_dtype="auto",
-            torch_dtype=torch.float16,
+            torch_dtype="auto",
+            # torch_dtype=torch.float16,
         )
 
     # 生徒モデル（蒸留先モデル）
@@ -56,8 +61,8 @@ def train(args):
         args.student_model_name,
         trust_remote_code=True,
         device_map="auto",
-        # torch_dtype="auto",
-        torch_dtype=torch.float16,
+        torch_dtype="auto",
+        # torch_dtype=torch.float16,
         # 生徒モデルは、4bit 量子化利用不可
         # load_in_4bit=True if args.use_4bit else False,
     )
@@ -81,6 +86,12 @@ def train(args):
     print(f"   Tokenizer:  {len(tokenizer)}")
     print(f"   Teacher Model:    {teacher_model.config.vocab_size}")
     print(f"   Student Model:    {student_model.config.vocab_size}")
+
+    # モデルの pad_token_id と eos_token_id をトークナイザーと一致させる
+    teacher_model.config.pad_token_id = tokenizer.pad_token_id
+    teacher_model.config.eos_token_id = tokenizer.eos_token_id
+    student_model.config.pad_token_id = tokenizer.pad_token_id
+    student_model.config.eos_token_id = tokenizer.eos_token_id
 
     # モデルのメモリ使用量の表示
     print_model_memory(teacher_model, f"Teacher Model: {args.teacher_model_name}")
@@ -130,7 +141,7 @@ def train(args):
         optim=args.optimizer,
         dataloader_pin_memory=True if torch.cuda.is_available() else False,
         remove_unused_columns=False,
-        fp16=True if torch.cuda.is_available() and not args.use_4bit else False,
+        # fp16=True if torch.cuda.is_available() and not args.use_4bit else False,
     )
 
     # Trainer初期化
@@ -166,20 +177,19 @@ def train(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Logit-based Knowledge Distillation")
     parser.add_argument("--exper_name", type=str, default="distill")
-    parser.add_argument("--num_epochs", type=int, default=10)
+    parser.add_argument("--num_epochs", type=int, default=5)
     parser.add_argument("--batch_size", type=int, default=4)
     parser.add_argument("--learning_rate", type=float, default=5e-5, help="The initial learning rate for AdamW.")
     parser.add_argument("--optimizer", type=str, default="adamw_torch", help="The optimizer to use.")
-    parser.add_argument("--logging_steps", type=int, default=100)
+    parser.add_argument("--logging_steps", type=int, default=50)
     parser.add_argument("--save_steps", type=int, default=500)
     parser.add_argument("--save_total_limit", type=int, default=4)
     parser.add_argument("--output_dir", type=str, default="outputs")
     parser.add_argument("--teacher_model_name", type=str, default="Qwen/Qwen2-7B-Instruct")
-    # parser.add_argument("--teacher_model_name", type=str, default="Qwen/Qwen2-1.5B-Instruct")
     parser.add_argument("--student_model_name", type=str, default="Qwen/Qwen2-0.5B-Instruct")
     parser.add_argument("--distillation_logit_temperature", type=float, default=1.0)
     parser.add_argument("--distillation_logit_alpha", type=float, default=0.7)
-    parser.add_argument("--use_4bit", action="store_true", default=True)
+    parser.add_argument("--use_4bit", action="store_true", default=False)
     args = parser.parse_args()
 
     print("=" * 60)
