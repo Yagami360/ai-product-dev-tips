@@ -37,6 +37,8 @@ def train(args):
         trust_remote_code=True,
     )
     if tokenizer.pad_token is None:
+        tokenizer.add_special_tokens({"pad_token": "<|pad|>"})
+    if tokenizer.eos_token is None:
         tokenizer.add_special_tokens({"pad_token": "<|endoftext|>"})
 
     print(f"   Pad token: {tokenizer.pad_token} (ID: {tokenizer.pad_token_id})")
