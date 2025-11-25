@@ -10,6 +10,10 @@ from trl import GKDConfig, GKDTrainer
 
 from utils import print_gpu_memory, print_memory_summary, print_model_memory
 
+# CUDA エラー対策: 環境変数の設定
+os.environ["CUDA_LAUNCH_BLOCKING"] = "1"  # CUDA カーネルエラーのデバッグ用
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"  # メモリフラグメンテーション対策
+
 
 def prepare_dataset(dataset, tokenizer):
     """
@@ -148,6 +152,10 @@ def train(args):
         load_best_model_at_end=True,
         metric_for_best_model="eval_loss",
         greater_is_better=False,
+        # CUDA エラー対策
+        dataloader_pin_memory=False,  # メモリピンニングを無効化
+        dataloader_num_workers=0,     # データローダーのワーカー数を0に
+        max_grad_norm=1.0,            # 勾配クリッピングを追加
     )
     trainer = GKDTrainer(
         model=student_model,

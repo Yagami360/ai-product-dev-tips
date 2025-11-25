@@ -1,5 +1,5 @@
 # export CUDA_VISIBLE_DEVICES=0
-export CUDA_VISIBLE_DEVICES=0,1
+export CUDA_VISIBLE_DEVICES=10,11,12,13
 
 export EXPER_NAME=qwen2-7b-to-qwen2-0.5b-gkd-distill-$(shell date +%Y%m%d)
 export TEACHER_MODEL_NAME=Qwen/Qwen2-7B-Instruct

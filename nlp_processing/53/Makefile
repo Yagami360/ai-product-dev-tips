@@ -1,5 +1,5 @@
 # export CUDA_VISIBLE_DEVICES=0
-export CUDA_VISIBLE_DEVICES=2,3
+export CUDA_VISIBLE_DEVICES=8,9
 
 export EXPER_NAME=qwen2-7b-to-qwen2-0.5b-logit-distill-$(shell date +%Y%m%d)
 export TEACHER_MODEL_NAME=Qwen/Qwen2-7B-Instruct
@@ -56,6 +56,13 @@ predict-teacher:
 		--output_dir outputs/${EXPER_NAME}
 
 predict-student:
+	@echo "Predicting by pre-trained student model ..."
+	uv run python predict.py \
+		--model_name ${STUDENT_MODEL_NAME} \
+		--teacher_model_name ${TEACHER_MODEL_NAME} \
+		--output_dir outputs/${EXPER_NAME}
+
+predict-distilled-student:
 	@echo "Predicting by distilled student model ..."
 	uv run python predict.py \
 		--model_name outputs/${EXPER_NAME}/checkpoint-final \

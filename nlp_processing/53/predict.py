@@ -65,7 +65,7 @@ def predict(args):
         with torch.no_grad():
             outputs = model.generate(
                 **inputs,
-                max_new_tokens=100,
+                max_new_tokens=args.max_new_tokens,
                 num_return_sequences=1,
                 pad_token_id=tokenizer.eos_token_id,
                 do_sample=False,
@@ -83,39 +83,17 @@ def predict(args):
             else:
                 answer_pred_raw = generated_text.strip()
 
-            # ここでは簡易的な評価を行う。より厳密な評価は別途実装
-            # 正解の answer が含まれているかをチェックする
-            is_correct = answer_gt.lower() in answer_pred_raw.lower()
-            if is_correct:
-                correct_predictions += 1
-            total_predictions += 1
-
             samples.append(
                 {
                     "question": question,
                     "answer_gt": answer_gt,
                     "answer_pred": answer_pred_raw,
-                    "is_correct": is_correct,
                 }
             )
-
-    accuracy = (correct_predictions / total_predictions) * 100 if total_predictions > 0 else 0
-    print(f"\n✅ Inference complete!")
-    print(f"   Correct predictions: {correct_predictions}")
-    print(f"   Total predictions:   {total_predictions}")
-    print(f"   Accuracy:            {accuracy:.2f}%")
 
     if args.output_dir:
         os.makedirs(args.output_dir, exist_ok=True)
         model_basename = os.path.basename(args.model_name.replace("/", "_"))
-        output_filename = f"eval_stats_{model_basename}_n{args.num_samples}.txt"
-        output_filepath = os.path.join(args.output_dir, output_filename)
-
-        with open(output_filepath, "w") as f:
-            f.write(f"Correct predictions: {correct_predictions}\n")
-            f.write(f"Total predictions:   {total_predictions}\n")
-            f.write(f"Accuracy:            {accuracy:.2f}%\n")
-
         samples_filename = f"eval_samples_{model_basename}_n{args.num_samples}.json"
         samples_filepath = os.path.join(args.output_dir, samples_filename)
         with open(samples_filepath, "w", encoding="utf-8") as f:
@@ -127,6 +105,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Model Inference and Evaluation")
     parser.add_argument("--model_name", type=str, default="Qwen/Qwen2-7B-Instruct")
     parser.add_argument("--teacher_model_name", type=str, default="Qwen/Qwen2-7B-Instruct")
+    parser.add_argument("--max_new_tokens", type=int, default=512)
     parser.add_argument("--output_dir", type=str, default="outputs")
     parser.add_argument("--batch_size", type=int, default=4)
     parser.add_argument("--num_samples", type=int, default=20)
