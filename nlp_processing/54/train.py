@@ -142,10 +142,10 @@ def train(args):
         # bf16=True if torch.cuda.is_available() and args.use_4bit else False,
         optim=args.optimizer,
         temperature=args.temperature,
-        lmbda=args.lmbda,       # 生徒データ割合（0.0-1.0）
-        beta=args.beta,         # JSD補間係数（0.0=KL, 1.0=逆KL）
+        lmbda=args.lmbda,  # 生徒データ割合（0.0-1.0）
+        beta=args.beta,  # JSD補間係数（0.0=KL, 1.0=逆KL）
         max_new_tokens=args.max_new_tokens,
-        seq_kd=args.seq_kd,     # Sequence-Level KD
+        seq_kd=args.seq_kd,  # Sequence-Level KD
         disable_dropout=True,
         report_to=["tensorboard"],
         push_to_hub=False,
@@ -154,8 +154,8 @@ def train(args):
         greater_is_better=False,
         # CUDA エラー対策
         dataloader_pin_memory=False,  # メモリピンニングを無効化
-        dataloader_num_workers=0,     # データローダーのワーカー数を0に
-        max_grad_norm=1.0,            # 勾配クリッピングを追加
+        dataloader_num_workers=0,  # データローダーのワーカー数を0に
+        max_grad_norm=1.0,  # 勾配クリッピングを追加
     )
     trainer = GKDTrainer(
         model=student_model,

@@ -48,29 +48,29 @@ train-nohup-poweroff: install
 	nohup bash train_poweroff.sh > ${EXPER_NAME}.out &
 
 # Predict trained model
-predict-teacher:
+predict-teacher: install
 	@echo "Predicting by pre-trained teacher model ..."
 	uv run python predict.py \
 		--model_name ${TEACHER_MODEL_NAME} \
-		--teacher_model_name ${TEACHER_MODEL_NAME} \
+		--tokenizer_model_name ${TEACHER_MODEL_NAME} \
 		--output_dir outputs/${EXPER_NAME}
 
-predict-student:
+predict-student: install
 	@echo "Predicting by pre-trained student model ..."
 	uv run python predict.py \
 		--model_name ${STUDENT_MODEL_NAME} \
-		--teacher_model_name ${TEACHER_MODEL_NAME} \
+		--tokenizer_model_name ${STUDENT_MODEL_NAME} \
 		--output_dir outputs/${EXPER_NAME}
 
-predict-distilled-student:
+predict-distilled-student: install
 	@echo "Predicting by distilled student model ..."
 	uv run python predict.py \
 		--model_name outputs/${EXPER_NAME}/checkpoint-final \
-		--teacher_model_name ${TEACHER_MODEL_NAME} \
+		--tokenizer_model_name ${TEACHER_MODEL_NAME} \
 		--output_dir outputs/${EXPER_NAME}
 
 # Run tensorboard
-tensorboard:
+tensorboard: install
 	uv run tensorboard --logdir outputs/${EXPER_NAME}/logs
 
 # Run code linting

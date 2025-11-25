@@ -16,17 +16,24 @@ def predict(args):
     # トークナイザーのロード
     print("\n📥 Loading tokenizer...")
     tokenizer = AutoTokenizer.from_pretrained(
-        args.teacher_model_name,
+        args.tokenizer_model_name,
         trust_remote_code=True,
     )
-    tokenizer.pad_token = tokenizer.eos_token
+    if tokenizer.pad_token is None:
+        tokenizer.add_special_tokens({"pad_token": "<|pad|>"})
+    if tokenizer.eos_token is None:
+        tokenizer.add_special_tokens({"eos_token": "<|endoftext|>"})
+
+    print(f"   Pad token: {tokenizer.pad_token} (ID: {tokenizer.pad_token_id})")
+    print(f"   EOS token: {tokenizer.eos_token} (ID: {tokenizer.eos_token_id})")
 
     # モデルのロード
     model = AutoModelForCausalLM.from_pretrained(
         args.model_name,
         trust_remote_code=True,
         device_map="auto",
-        torch_dtype=torch.float16,
+        torch_dtype="auto",
+        # torch_dtype=torch.float16,
     )
     model.eval()
 
@@ -58,7 +65,7 @@ def predict(args):
             return_tensors="pt",
             padding=True,
             truncation=True,
-            max_length=512,
+            max_length=args.tokenizer_max_length,
         ).to(model.device)
 
         # バッチ推論
@@ -69,6 +76,8 @@ def predict(args):
                 num_return_sequences=1,
                 pad_token_id=tokenizer.eos_token_id,
                 do_sample=False,
+                repetition_penalty=1.2,  # 繰り返しを抑制
+                no_repeat_ngram_size=3,  # 3-gramの繰り返しを防ぐ
             )
 
         # バッチデコード
@@ -79,15 +88,15 @@ def predict(args):
             # 回答部分を抽出
             # モデルの出力が "Q: ... A: {answer}" の形式であることを期待
             if "\nA:" in generated_text:
-                answer_pred_raw = generated_text.split("\nA:", 1)[1].strip()
+                answer_pred = generated_text.split("\nA:", 1)[1].strip()
             else:
-                answer_pred_raw = generated_text.strip()
+                answer_pred = generated_text.strip()
 
             samples.append(
                 {
                     "question": question,
                     "answer_gt": answer_gt,
-                    "answer_pred": answer_pred_raw,
+                    "answer_pred": answer_pred,
                 }
             )
 
@@ -104,8 +113,9 @@ def predict(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Model Inference and Evaluation")
     parser.add_argument("--model_name", type=str, default="Qwen/Qwen2-7B-Instruct")
-    parser.add_argument("--teacher_model_name", type=str, default="Qwen/Qwen2-7B-Instruct")
-    parser.add_argument("--max_new_tokens", type=int, default=512)
+    parser.add_argument("--tokenizer_model_name", type=str, default="Qwen/Qwen2-7B-Instruct")
+    parser.add_argument("--tokenizer_max_length", type=int, default=512)
+    parser.add_argument("--max_new_tokens", type=int, default=256)
     parser.add_argument("--output_dir", type=str, default="outputs")
     parser.add_argument("--batch_size", type=int, default=4)
     parser.add_argument("--num_samples", type=int, default=20)

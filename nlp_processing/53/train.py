@@ -113,7 +113,7 @@ def train(args):
     print("   Tokenizing dataset...")
 
     def tokenize_function(examples):
-        tokenized = tokenizer(examples["text"], truncation=True, max_length=256, padding="max_length", return_tensors=None)
+        tokenized = tokenizer(examples["text"], truncation=True, max_length=args.tokenizer_max_length, padding="max_length", return_tensors=None)
         # labelsを追加
         # パディングトークンのラベルを -100 に設定して、損失計算から除外する
         # これを行わないと、!のみを出力するようなモデルが生成されてします
@@ -177,18 +177,19 @@ def train(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Logit-based Knowledge Distillation")
     parser.add_argument("--exper_name", type=str, default="distill")
-    parser.add_argument("--num_epochs", type=int, default=5)
+    parser.add_argument("--num_epochs", type=int, default=10)
     parser.add_argument("--batch_size", type=int, default=4)
     parser.add_argument("--learning_rate", type=float, default=5e-5, help="The initial learning rate for AdamW.")
     parser.add_argument("--optimizer", type=str, default="adamw_torch", help="The optimizer to use.")
     parser.add_argument("--logging_steps", type=int, default=50)
-    parser.add_argument("--save_steps", type=int, default=500)
+    parser.add_argument("--save_steps", type=int, default=1000)
     parser.add_argument("--save_total_limit", type=int, default=4)
     parser.add_argument("--output_dir", type=str, default="outputs")
     parser.add_argument("--teacher_model_name", type=str, default="Qwen/Qwen2-7B-Instruct")
     parser.add_argument("--student_model_name", type=str, default="Qwen/Qwen2-0.5B-Instruct")
-    parser.add_argument("--distillation_logit_temperature", type=float, default=1.0)
-    parser.add_argument("--distillation_logit_alpha", type=float, default=0.7)
+    parser.add_argument("--tokenizer_max_length", type=int, default=512)
+    parser.add_argument("--distillation_logit_temperature", type=float, default=2.0)
+    parser.add_argument("--distillation_logit_alpha", type=float, default=0.8)
     parser.add_argument("--use_4bit", action="store_true", default=False)
     args = parser.parse_args()
 
