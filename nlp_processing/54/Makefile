@@ -56,11 +56,19 @@ predict-teacher:
 		--output_dir outputs/${EXPER_NAME}
 
 predict-student:
+	@echo "Predicting by pre-trained student model ..."
+	uv run python predict.py \
+		--model_name ${STUDENT_MODEL_NAME} \
+		--teacher_model_name ${TEACHER_MODEL_NAME} \
+		--output_dir outputs/${EXPER_NAME}
+
+predict-distilled-student:
 	@echo "Predicting by distilled student model ..."
 	uv run python predict.py \
 		--model_name outputs/${EXPER_NAME}/checkpoint-final \
 		--teacher_model_name ${TEACHER_MODEL_NAME} \
 		--output_dir outputs/${EXPER_NAME}
+
 
 # Run tensorboard
 tensorboard:

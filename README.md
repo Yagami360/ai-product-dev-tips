@@ -914,7 +914,7 @@ AIプロダクト開発のための Tips 集。<br>
         - [【Python】Hugging Face Spaces を利用して簡単な機械学習デモアプリを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/107)
     - HuggingFace TRL
         - HuggingFace TRL の SFTTrainer を使用して LLM の蒸留モデル（応答ベース蒸留）を作成する
-        - [[In-progress] HuggingFace TRL の GKDTrainer を使用して LLM の蒸留モデル（On-policy蒸留）を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/54)
+        - [[In-progress] HuggingFace TRL の GKDTrainer を使用して LLM の蒸留モデル（GKD蒸留）を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/54)
 
 - NVIDIA AI Enterprise
     - [[In-progress] NVIDIA AI Enterprise & NVIDIA NeMo の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/33)
