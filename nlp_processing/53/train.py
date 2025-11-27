@@ -24,7 +24,7 @@ def train(args):
     if tokenizer.pad_token is None:
         tokenizer.add_special_tokens({"pad_token": "<|pad|>"})
     if tokenizer.eos_token is None:
-        tokenizer.add_special_tokens({"pad_token": "<|endoftext|>"})
+        tokenizer.add_special_tokens({"eos_token": "<|endoftext|>"})
 
     print(f"   Pad token: {tokenizer.pad_token} (ID: {tokenizer.pad_token_id})")
     print(f"   EOS token: {tokenizer.eos_token} (ID: {tokenizer.eos_token_id})")
@@ -189,7 +189,7 @@ if __name__ == "__main__":
     parser.add_argument("--student_model_name", type=str, default="Qwen/Qwen2-0.5B-Instruct")
     parser.add_argument("--tokenizer_max_length", type=int, default=512)
     parser.add_argument("--distillation_logit_temperature", type=float, default=2.0)
-    parser.add_argument("--distillation_logit_alpha", type=float, default=0.8)
+    parser.add_argument("--distillation_logit_alpha", type=float, default=0.5)
     parser.add_argument("--use_4bit", action="store_true", default=False)
     args = parser.parse_args()
 

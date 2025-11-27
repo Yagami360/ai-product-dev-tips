@@ -43,7 +43,7 @@ def train(args):
     if tokenizer.pad_token is None:
         tokenizer.add_special_tokens({"pad_token": "<|pad|>"})
     if tokenizer.eos_token is None:
-        tokenizer.add_special_tokens({"pad_token": "<|endoftext|>"})
+        tokenizer.add_special_tokens({"eos_token": "<|endoftext|>"})
 
     print(f"   Pad token: {tokenizer.pad_token} (ID: {tokenizer.pad_token_id})")
     print(f"   EOS token: {tokenizer.eos_token} (ID: {tokenizer.eos_token_id})")

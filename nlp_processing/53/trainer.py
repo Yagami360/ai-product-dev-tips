@@ -33,11 +33,29 @@ class LogitDistillationTrainer(Trainer):
 
         # KL Divergence loss (soft target loss)
         # 教師モデルの確率分布と生徒モデルの確率分布間の距離を最小化し、生徒モデルの出力が教師モデルの出力に近づくようにする
+        # loss_kd = F.kl_div(
+        #     F.log_softmax(outputs_student.logits / self.temperature, dim=-1),
+        #     F.softmax(outputs_teacher.logits / self.temperature, dim=-1),
+        #     reduction="batchmean",
+        # ) * (self.temperature**2)
+
+        # KL Divergence を計算（reduction="none" で各要素ごとの loss を取得）
+        student_logits = outputs_student.logits / self.temperature
+        teacher_logits = outputs_teacher.logits / self.temperature
         loss_kd = F.kl_div(
-            F.log_softmax(outputs_student.logits / self.temperature, dim=-1),
-            F.softmax(outputs_teacher.logits / self.temperature, dim=-1),
-            reduction="batchmean",
-        ) * (self.temperature**2)
+            F.log_softmax(student_logits, dim=-1),
+            F.softmax(teacher_logits, dim=-1),
+            reduction="none",
+        ).sum(dim=-1)
+
+        # attention_mask を適用して有効なトークンのみの平均を取る（パディングトークンを計算対象から除外）
+        attention_mask = inputs.get("attention_mask", None)
+        if attention_mask is not None:
+            loss_kd = (loss_kd * attention_mask).sum() / attention_mask.sum()
+        else:
+            loss_kd = loss_kd.mean()
+
+        loss_kd = loss_kd * (self.temperature**2)
 
         # Total loss: Cross Entropy loss と KL Divergence loss の線形結合
         loss = self.alpha * loss_ce + (1 - self.alpha) * loss_kd
