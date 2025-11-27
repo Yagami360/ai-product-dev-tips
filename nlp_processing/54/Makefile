@@ -1,7 +1,9 @@
 # export CUDA_VISIBLE_DEVICES=0
-export CUDA_VISIBLE_DEVICES=10,11,12,13
+# export CUDA_VISIBLE_DEVICES=10,11,12,13
+export CUDA_VISIBLE_DEVICES=6,7,8,9
 
 export EXPER_NAME=qwen2-7b-to-qwen2-0.5b-gkd-distill-$(shell date +%Y%m%d)
+# export EXPER_NAME=qwen2-7b-to-qwen2-0.5b-gkd-distill-20251125
 export TEACHER_MODEL_NAME=Qwen/Qwen2-7B-Instruct
 export STUDENT_MODEL_NAME=Qwen/Qwen2-0.5B-Instruct
 
@@ -52,23 +54,29 @@ predict-teacher:
 	@echo "Predicting by pre-trained teacher model ..."
 	uv run python predict.py \
 		--model_name ${TEACHER_MODEL_NAME} \
-		--teacher_model_name ${TEACHER_MODEL_NAME} \
+		--tokenizer_model_name ${TEACHER_MODEL_NAME} \
 		--output_dir outputs/${EXPER_NAME}
 
 predict-student:
 	@echo "Predicting by pre-trained student model ..."
 	uv run python predict.py \
 		--model_name ${STUDENT_MODEL_NAME} \
-		--teacher_model_name ${TEACHER_MODEL_NAME} \
+		--tokenizer_model_name ${STUDENT_MODEL_NAME} \
 		--output_dir outputs/${EXPER_NAME}
 
 predict-distilled-student:
 	@echo "Predicting by distilled student model ..."
 	uv run python predict.py \
 		--model_name outputs/${EXPER_NAME}/checkpoint-final \
-		--teacher_model_name ${TEACHER_MODEL_NAME} \
+		--tokenizer_model_name ${TEACHER_MODEL_NAME} \
 		--output_dir outputs/${EXPER_NAME}
 
+predict-distilled-student-500:
+	@echo "Predicting by distilled student model ..."
+	uv run python predict.py \
+		--model_name outputs/${EXPER_NAME}/checkpoint-500 \
+		--tokenizer_model_name ${TEACHER_MODEL_NAME} \
+		--output_dir outputs/${EXPER_NAME}
 
 # Run tensorboard
 tensorboard:

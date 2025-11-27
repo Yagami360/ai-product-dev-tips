@@ -19,6 +19,22 @@ class LogitDistillationTrainer(Trainer):
             param.requires_grad = False
 
     def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+        # [compute_loss] inputs: {
+        #     'input_ids': tensor([[    48,     25,  32016,  ..., 151643, 151643, 151643],
+        #         [    48,     25,  10978,  ..., 151643, 151643, 151643],
+        #         [    48,     25,   2619,  ..., 151643, 151643, 151643],
+        #         [    48,     25,  43924,  ..., 151643, 151643, 151643]],
+        #        device='cuda:0'),
+        #   'attention_mask': tensor([[1, 1, 1,  ..., 0, 0, 0],
+        #         [1, 1, 1,  ..., 0, 0, 0],
+        #         [1, 1, 1,  ..., 0, 0, 0],
+        #         [1, 1, 1,  ..., 0, 0, 0]], device='cuda:0'),
+        #   'labels': tensor([[   48,    25, 32016,  ...,  -100,  -100,  -100],
+        #         [   48,    25, 10978,  ...,  -100,  -100,  -100],
+        #         [   48,    25,  2619,  ...,  -100,  -100,  -100],
+        #         [   48,    25, 43924,  ...,  -100,  -100,  -100]], device='cuda:0')}
+        # print("[compute_loss] inputs:", inputs)
+
         # 教師モデルの推論結果（正解データ）
         with torch.no_grad():
             outputs_teacher = self.teacher(**inputs)

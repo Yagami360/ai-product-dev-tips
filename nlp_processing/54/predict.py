@@ -20,9 +20,9 @@ def predict(args):
         trust_remote_code=True,
     )
     if tokenizer.pad_token is None:
-        tokenizer.add_special_tokens({"pad_token": "<|pad|>"})
+        tokenizer.add_special_tokens({"pad_token": "<|endoftext|>"})
     if tokenizer.eos_token is None:
-        tokenizer.add_special_tokens({"eos_token": "<|endoftext|>"})
+        tokenizer.add_special_tokens({"eos_token": "<|im_end|>"})
 
     print(f"   Pad token: {tokenizer.pad_token} (ID: {tokenizer.pad_token_id})")
     print(f"   EOS token: {tokenizer.eos_token} (ID: {tokenizer.eos_token_id})")
@@ -56,8 +56,24 @@ def predict(args):
         questions = batch["question"]
         answers_gt = batch["answer"]
 
-        # バッチのプロンプトを作成
-        prompts = [f"Q: {q}\nA:" for q in questions]
+        # バッチのプロンプトを作成（学習時と同じ形式）
+        prompts = []
+        for q in questions:
+            messages = [{"role": "user", "content": f"Q: {q}"}]
+            # apply_chat_template を使用して学習時と同じ形式に変換
+            prompt = tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True,  # "A:" などの生成プロンプトを追加
+            )
+            prompts.append(prompt)
+
+        # デバッグ: 最初のプロンプトを表示
+        if batch_start == 0:
+            print("=" * 60)
+            print("推論時のプロンプト例:")
+            print(prompts[0])
+            print("=" * 60)
 
         # バッチトークナイズ
         inputs = tokenizer(
@@ -84,7 +100,9 @@ def predict(args):
         generated_texts = tokenizer.batch_decode(outputs, skip_special_tokens=True)
 
         # 各サンプルの結果を処理
-        for question, answer_gt, generated_text in zip(questions, answers_gt, generated_texts):
+        for question, answer_gt, generated_text in zip(
+            questions, answers_gt, generated_texts
+        ):
             # 回答部分を抽出
             # モデルの出力が "Q: ... A: {answer}" の形式であることを期待
             if "\nA:" in generated_text:
@@ -113,11 +131,13 @@ def predict(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Model Inference and Evaluation")
     parser.add_argument("--model_name", type=str, default="Qwen/Qwen2-7B-Instruct")
-    parser.add_argument("--tokenizer_model_name", type=str, default="Qwen/Qwen2-7B-Instruct")
+    parser.add_argument(
+        "--tokenizer_model_name", type=str, default="Qwen/Qwen2-7B-Instruct"
+    )
     parser.add_argument("--tokenizer_max_length", type=int, default=256)
-    parser.add_argument("--max_new_tokens", type=int, default=256)
+    parser.add_argument("--max_new_tokens", type=int, default=512)
     parser.add_argument("--output_dir", type=str, default="outputs")
-    parser.add_argument("--batch_size", type=int, default=4)
+    parser.add_argument("--batch_size", type=int, default=1)
     parser.add_argument("--num_samples", type=int, default=20)
     args = parser.parse_args()
 

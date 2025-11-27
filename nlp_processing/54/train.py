@@ -11,8 +11,8 @@ from trl import GKDConfig, GKDTrainer
 from utils import print_gpu_memory, print_memory_summary, print_model_memory
 
 # CUDA エラー対策: 環境変数の設定
-os.environ["CUDA_LAUNCH_BLOCKING"] = "1"  # CUDA カーネルエラーのデバッグ用
-os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"  # メモリフラグメンテーション対策
+# os.environ["CUDA_LAUNCH_BLOCKING"] = "1"  # CUDA カーネルエラーのデバッグ用
+# os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"  # メモリフラグメンテーション対策
 
 
 def prepare_dataset(dataset, tokenizer):
@@ -41,9 +41,9 @@ def train(args):
         trust_remote_code=True,
     )
     if tokenizer.pad_token is None:
-        tokenizer.add_special_tokens({"pad_token": "<|pad|>"})
+        tokenizer.add_special_tokens({"pad_token": "<|endoftext|>"})
     if tokenizer.eos_token is None:
-        tokenizer.add_special_tokens({"eos_token": "<|endoftext|>"})
+        tokenizer.add_special_tokens({"eos_token": "<|im_end|>"})
 
     print(f"   Pad token: {tokenizer.pad_token} (ID: {tokenizer.pad_token_id})")
     print(f"   EOS token: {tokenizer.eos_token} (ID: {tokenizer.eos_token_id})")
@@ -116,11 +116,14 @@ def train(args):
 
     # データセットのロード
     print(f"\n📊 データセットをロード中: {args.dataset_name}")
-    dataset = load_dataset(args.dataset_name, args.dataset_config, split="train")
+    dataset = load_dataset(args.dataset_name, "main", split="train")
     train_dataset = prepare_dataset(dataset, tokenizer)
     eval_dataset = train_dataset.select(range(min(100, len(train_dataset))))
-    print(f"✅ 訓練データ: {len(train_dataset)} samples")
+    print(f"✅ 学習データ: {len(train_dataset)} samples")
     print(f"✅ 評価データ: {len(eval_dataset)} samples")
+    print("dataset[0]:", dataset)
+    print("train_dataset[0]:", train_dataset)
+    print("dict(train_dataset[0]):", dict(train_dataset[0]))
 
     # GKDTrainer の設定
     training_args = GKDConfig(
@@ -128,34 +131,33 @@ def train(args):
         logging_dir=f"{args.output_dir}/{args.exper_name}/logs",
         num_train_epochs=args.num_epochs,
         per_device_train_batch_size=args.batch_size,
-        per_device_eval_batch_size=args.batch_size,
         learning_rate=args.learning_rate,
         logging_steps=args.logging_steps,
         save_steps=args.save_steps,
         save_total_limit=args.save_total_limit,
-        eval_strategy="steps",
-        eval_steps=args.save_steps,
-        warmup_steps=100,
-        gradient_accumulation_steps=args.gradient_accumulation_steps,
-        gradient_checkpointing=True,
+        # per_device_eval_batch_size=args.batch_size,
+        # eval_strategy="steps",
+        # eval_steps=args.save_steps,
+        # warmup_steps=100,
+        # gradient_accumulation_steps=args.gradient_accumulation_steps,
+        # gradient_checkpointing=True,
         # fp16=True if torch.cuda.is_available() and not args.use_4bit else False,
         # bf16=True if torch.cuda.is_available() and args.use_4bit else False,
         optim=args.optimizer,
+        max_new_tokens=args.max_new_tokens,
         temperature=args.temperature,
         lmbda=args.lmbda,  # 生徒データ割合（0.0-1.0）
-        beta=args.beta,  # JSD補間係数（0.0=KL, 1.0=逆KL）
-        max_new_tokens=args.max_new_tokens,
-        seq_kd=args.seq_kd,  # Sequence-Level KD
-        disable_dropout=True,
-        report_to=["tensorboard"],
-        push_to_hub=False,
-        load_best_model_at_end=True,
-        metric_for_best_model="eval_loss",
-        greater_is_better=False,
-        # CUDA エラー対策
-        dataloader_pin_memory=False,  # メモリピンニングを無効化
-        dataloader_num_workers=0,  # データローダーのワーカー数を0に
-        max_grad_norm=1.0,  # 勾配クリッピングを追加
+        # beta=args.beta,     # JSD補間係数（0.0=KL, 1.0=逆KL）
+        # seq_kd=args.seq_kd,  # Sequence-Level KD
+        # disable_dropout=True,
+        # report_to=["tensorboard"],
+        # push_to_hub=False,
+        # load_best_model_at_end=True,
+        # metric_for_best_model="eval_loss",
+        # greater_is_better=False,
+        # max_grad_norm=1.0,  # 勾配クリッピングを追加
+        dataloader_pin_memory=True if torch.cuda.is_available() else False,
+        # dataloader_num_workers=0,  # データローダーのワーカー数を0に
     )
     trainer = GKDTrainer(
         model=student_model,
@@ -175,7 +177,7 @@ def train(args):
     print("\n💾 モデルを保存中...")
     trainer.save_model(f"{args.output_dir}/{args.exper_name}/checkpoint-final")
     tokenizer.save_pretrained(f"{args.output_dir}/{args.exper_name}/checkpoint-final")
-    print(f"\n✅ 訓練が完了しました！")
+    print(f"\n✅ 学習が完了しました！")
     print(f"   モデルは以下に保存されました: {args.output_dir}/{args.exper_name}/checkpoint-final")
     print("=" * 60)
 
@@ -186,15 +188,9 @@ if __name__ == "__main__":
     parser.add_argument("--output_dir", type=str, default="outputs", help="出力ディレクトリ")
     parser.add_argument("--teacher_model_name", type=str, required=True, help="教師モデル名")
     parser.add_argument("--student_model_name", type=str, required=True, help="生徒モデル名")
-    parser.add_argument(
-        "--dataset_name", type=str, default="openai/gsm8k", help="データセット名"
-    )
-    parser.add_argument("--dataset_config", type=str, default="main", help="データセット設定")
-    parser.add_argument("--num_epochs", type=int, default=5, help="エポック数")
+    parser.add_argument("--dataset_name", type=str, default="gsm8k", help="データセット名")
+    parser.add_argument("--num_epochs", type=int, default=10, help="エポック数")
     parser.add_argument("--batch_size", type=int, default=4, help="バッチサイズ")
-    parser.add_argument(
-        "--gradient_accumulation_steps", type=int, default=4, help="勾配累積ステップ数"
-    )
     parser.add_argument("--learning_rate", type=float, default=5e-5, help="学習率")
     parser.add_argument("--optimizer", type=str, default="adamw_torch", help="オプティマイザ")
     parser.add_argument("--logging_steps", type=int, default=50, help="ログ出力間隔")
@@ -202,13 +198,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--save_total_limit", type=int, default=3, help="保存するチェックポイント数の上限"
     )
-    parser.add_argument("--temperature", type=float, default=0.9, help="サンプリング温度")
+    parser.add_argument("--temperature", type=float, default=1.5, help="サンプリング温度")
     parser.add_argument("--lmbda", type=float, default=0.7, help="生徒データ割合 (0.0-1.0)")
-    parser.add_argument(
-        "--beta", type=float, default=0.5, help="JSD補間係数 (0.0=KL, 1.0=逆KL)"
-    )
     parser.add_argument("--max_new_tokens", type=int, default=512, help="生成する最大トークン数")
-    parser.add_argument("--seq_kd", action="store_true", help="Sequence-Level KDを使用")
     parser.add_argument(
         "--use_4bit", action="store_true", default=False, help="4bit量子化を使用"
     )

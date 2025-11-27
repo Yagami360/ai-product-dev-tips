@@ -20,9 +20,9 @@ def predict(args):
         trust_remote_code=True,
     )
     if tokenizer.pad_token is None:
-        tokenizer.add_special_tokens({"pad_token": "<|pad|>"})
+        tokenizer.add_special_tokens({"pad_token": "<|endoftext|>"})
     if tokenizer.eos_token is None:
-        tokenizer.add_special_tokens({"eos_token": "<|endoftext|>"})
+        tokenizer.add_special_tokens({"eos_token": "<|im_end|>"})
 
     print(f"   Pad token: {tokenizer.pad_token} (ID: {tokenizer.pad_token_id})")
     print(f"   EOS token: {tokenizer.eos_token} (ID: {tokenizer.eos_token_id})")
@@ -58,6 +58,7 @@ def predict(args):
 
         # バッチのプロンプトを作成
         prompts = [f"Q: {q}\nA:" for q in questions]
+        print("prompts[0]:", prompts[0])
 
         # バッチトークナイズ
         inputs = tokenizer(
@@ -117,7 +118,7 @@ if __name__ == "__main__":
     parser.add_argument("--tokenizer_max_length", type=int, default=512)
     parser.add_argument("--max_new_tokens", type=int, default=256)
     parser.add_argument("--output_dir", type=str, default="outputs")
-    parser.add_argument("--batch_size", type=int, default=4)
+    parser.add_argument("--batch_size", type=int, default=1)
     parser.add_argument("--num_samples", type=int, default=20)
     args = parser.parse_args()
 
