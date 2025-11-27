@@ -1,9 +1,14 @@
-# export CUDA_VISIBLE_DEVICES=0
-export CUDA_VISIBLE_DEVICES=1,2
+export CUDA_VISIBLE_DEVICES=0
+# export CUDA_VISIBLE_DEVICES=1,2
+# export CUDA_VISIBLE_DEVICES=3,4
+# export CUDA_VISIBLE_DEVICES=14,15
 
+# export EXPER_NAME=qwen2-7b-to-qwen2-0.5b-logit-distill-debug
 export EXPER_NAME=qwen2-7b-to-qwen2-0.5b-logit-distill-$(shell date +%Y%m%d)
+# export EXPER_NAME=qwen2-7b-to-qwen2-1.5b-logit-distill-$(shell date +%Y%m%d)
 export TEACHER_MODEL_NAME=Qwen/Qwen2-7B-Instruct
 export STUDENT_MODEL_NAME=Qwen/Qwen2-0.5B-Instruct
+# export STUDENT_MODEL_NAME=Qwen/Qwen2-1.5B-Instruct
 
 .PHONY: install-uv install train train-nohup train-nohup-poweroff predict-teacher predict-student predict-distilled-student tensorboard lint format format-check
 

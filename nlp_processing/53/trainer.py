@@ -9,12 +9,14 @@ from transformers import Trainer
 
 
 class LogitDistillationTrainer(Trainer):
-    def __init__(self, teacher_model, temperature=2.0, alpha=0.5, *args, **kwargs):
+    def __init__(self, teacher_model, temperature=2.0, alpha=0.5, tokenizer=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.teacher = teacher_model
         self.teacher.eval()
         self.temperature = temperature
         self.alpha = alpha
+        self.tokenizer = tokenizer
+        self.debug_step = 0
         for param in self.teacher.parameters():
             param.requires_grad = False
 
@@ -38,6 +40,38 @@ class LogitDistillationTrainer(Trainer):
         # 教師モデルの推論結果（正解データ）
         with torch.no_grad():
             outputs_teacher = self.teacher(**inputs)
+
+            # 最初のステップのみデバッグ出力
+            if self.debug_step == 0 and self.tokenizer is not None:
+                print("\n" + "=" * 80)
+                print("🔍 教師モデルの推論結果を確認（最初のサンプルのみ）")
+                print("=" * 80)
+
+                input_ids = inputs["input_ids"][0]
+                attention_mask = inputs["attention_mask"][0]
+                labels = inputs["labels"][0]
+
+                # 入力テキスト（パディング除外）
+                valid_input_ids = input_ids[attention_mask == 1]
+                input_text = self.tokenizer.decode(valid_input_ids, skip_special_tokens=True)
+                print(f"\n📝 入力テキスト:\n{input_text}\n")
+
+                # 正解ラベル（-100を除外）
+                valid_labels = labels[labels != -100]
+                if len(valid_labels) > 0:
+                    label_text = self.tokenizer.decode(valid_labels, skip_special_tokens=True)
+                    print(f"✅ 正解（学習対象）:\n{label_text}\n")
+
+                # 教師モデルの予測（解答部分）
+                answer_start_idx = (labels != -100).nonzero(as_tuple=True)[0][0].item() if len(valid_labels) > 0 else 0
+                if answer_start_idx > 0:
+                    teacher_answer_logits = outputs_teacher.logits[0][answer_start_idx - 1 : attention_mask.sum() - 1]
+                    teacher_answer_predictions = teacher_answer_logits.argmax(dim=-1)
+                    predicted_text = self.tokenizer.decode(teacher_answer_predictions, skip_special_tokens=True)
+                    print(f"🎓 教師モデルの予測:\n{predicted_text}\n")
+
+                print("=" * 80 + "\n")
+                self.debug_step += 1
 
         # 生徒モデルの推論結果（予測データ）
         outputs_student = model(**inputs)

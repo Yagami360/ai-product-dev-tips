@@ -3,7 +3,7 @@ import os
 
 import torch
 from datasets import load_dataset
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, DataCollatorForLanguageModeling, TrainingArguments
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, TrainingArguments, default_data_collator
 
 from trainer import LogitDistillationTrainer
 from utils import print_gpu_memory, print_memory_summary, print_model_memory
@@ -119,8 +119,15 @@ def train(args):
     print("   Tokenizing dataset...")
 
     def tokenize_function(examples):
-        # text の部分だけ使用する
-        tokenized = tokenizer(examples["text"], truncation=True, max_length=args.tokenizer_max_length, padding="max_length", return_tensors=None)
+        # text の QA 部分だけ使用する
+        tokenized = tokenizer(
+            examples["text"],
+            truncation=True,
+            max_length=args.tokenizer_max_length,
+            padding="max_length",
+            return_tensors=None,
+            add_special_tokens=True,
+        )
 
         # labelsを追加
         # パディングトークンのラベルを -100 に設定して、損失計算から除外する
@@ -131,10 +138,11 @@ def train(args):
             # "A:" は通常 "\nA:" としてトークン化される
             text = examples["text"][i]
             question_answer_split = text.split("\nA:", 1)
+
+            # 質問部分のトークン数を計算
             if len(question_answer_split) == 2:
                 question_part = question_answer_split[0] + "\nA:"
-                # 質問部分のトークン数を計算
-                question_tokens = tokenizer(question_part, truncation=False, add_special_tokens=False)["input_ids"]
+                question_tokens = tokenizer(question_part, truncation=False, add_special_tokens=True)["input_ids"]
                 question_length = len(question_tokens)
             else:
                 question_length = 0
@@ -190,9 +198,10 @@ def train(args):
     trainer = LogitDistillationTrainer(
         teacher_model=teacher_model,
         model=student_model,
+        tokenizer=tokenizer,
         args=training_args,
         train_dataset=train_dataset,
-        data_collator=DataCollatorForLanguageModeling(tokenizer, mlm=False),
+        data_collator=default_data_collator,  # labels を上書きしないシンプルな collator
         temperature=args.distillation_logit_temperature,
         alpha=args.distillation_logit_alpha,
     )
