@@ -83,6 +83,7 @@ def predict(args):
 
         # バッチデコード
         generated_texts = tokenizer.batch_decode(outputs, skip_special_tokens=True)
+        print("generated_texts[0]:", generated_texts[0])
 
         # 各サンプルの結果を処理
         for question, answer_gt, generated_text in zip(questions, answers_gt, generated_texts):

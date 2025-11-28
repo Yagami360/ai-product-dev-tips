@@ -104,9 +104,9 @@ def predict(args):
             questions, answers_gt, generated_texts
         ):
             # 回答部分を抽出
-            # モデルの出力が "Q: ... A: {answer}" の形式であることを期待
-            if "\nA:" in generated_text:
-                answer_pred = generated_text.split("\nA:", 1)[1].strip()
+            # モデルの出力が "Q: ... assistant\n {answer}" の形式であることを期待
+            if "assistant\n" in generated_text:
+                answer_pred = generated_text.split("assistant\n", 1)[1].strip()
             else:
                 answer_pred = generated_text.strip()
 
