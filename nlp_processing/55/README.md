@@ -70,15 +70,143 @@ Agent Skills は、Claude Code CLI で特定のタスクを実行する方法を
     What Skills are available?
     ```
 
+    ```bash
+    ⏺ Available Skills
+
+    Currently, there is 1 skill available in this project:
+
+    📊 code-explanation-with-diagrams
+
+    Description: 図を使ってコードを説明します。コードの動作を説明する時、コードベースについて教える時、
+    または「これはどう動くの?」と聞かれた時に使用します。
+
+    What it does:
+    When explaining code, this skill ensures Claude will:
+    1. Draw diagrams using ASCII art to show flows, structures, or relationships
+    2. Walk through the code step-by-step
+    3. Highlight common mistakes or misconceptions
+
+    Located at: .claude/skills/code-explanation-with-diagrams/SKILL.md:1
+
+    ---
+    This is a project-level skill (stored in .claude/skills/), which means it's only active when
+    working within this specific project directory. The skill automatically activates when you ask
+    questions like "How does this work?" or request code explanations.
+    ```
+
 1. スキルをテストする
 
     プロジェクト内のファイルを開き、スキルの説明に一致する質問を Claude に尋ねます。
 
     ```
-    この認証関数はどう動くの？
+    How does this code work?
     ```
 
     Claude は `code-explanation-with-diagrams` スキルを適用し、図を使用してコードを説明します。
+
+    ```bash
+    ⏺ Looking at this project, it's a demonstration of Claude Code CLI's Agent Skills feature. Let me
+    explain how it works:
+
+    Architecture Overview
+
+    ┌─────────────────────────────────────────────────────────────┐
+    │                    Claude Code CLI                          │
+    │                                                             │
+    │  1. User asks question                                      │
+    │     "How does this work?"                                   │
+    │                    ↓                                        │
+    │  2. CLI checks skill descriptions                           │
+    │     Matches: "コードの動作を説明する時"                        │
+    │                    ↓                                        │
+    │  3. Loads SKILL.md as system prompt                         │
+    │     .claude/skills/code-explanation-with-diagrams/SKILL.md  │
+    │                    ↓                                        │
+    │  4. Claude responds with skill instructions                 │
+    │     - Draw ASCII diagrams                                   │
+    │     - Walk through code step-by-step                        │
+    │     - Highlight common mistakes                             │
+    └─────────────────────────────────────────────────────────────┘
+
+    How It Works Step-by-Step
+
+    1. Skill Definition (.claude/skills/code-explanation-with-diagrams/SKILL.md:1)
+
+    SKILL.md structure:
+    ├── YAML Frontmatter (lines 1-4)
+    │   ├── name: "code-explanation-with-diagrams"
+    │   └── description: "図を使ってコードを説明..."  ← Trigger condition
+    │
+    └── Markdown Instructions (lines 6-12)
+        └── Prompt that gets injected into Claude's system prompt
+
+    2. Automatic Activation
+
+    When you ask a question that matches the description field:
+    - ✅ "この認証関数はどう動くの?" → Activates skill
+    - ✅ "How does this work?" → Activates skill
+    - ❌ "What's the weather?" → Doesn't activate skill
+
+    3. Skill Injection Flow
+
+    User Input → Claude Code CLI → Skill Matcher
+                                        ↓
+                                    Check description
+                                        ↓
+                            Match found? YES/NO
+                                        ↓ YES
+                            Load SKILL.md content
+                                        ↓
+                        Inject as system prompt
+                                        ↓
+                            Claude responds with:
+                            - ASCII diagrams
+                            - Step-by-step walkthrough
+                            - Common pitfalls
+
+    Key Components
+
+    YAML Metadata (.claude/skills/code-explanation-with-diagrams/SKILL.md:1-4)
+
+    - name: Identifier for the skill
+    - description: Critical - Claude uses this to decide when to activate the skill
+
+    Markdown Instructions (.claude/skills/code-explanation-with-diagrams/SKILL.md:6-12)
+
+    - Becomes part of Claude's system prompt when skill is active
+    - Defines specific behavior: must include diagrams, walkthroughs, and warnings
+
+    Skill Types
+
+    Personal Skills                Project Skills
+    ~/.claude/skills/             .claude/skills/
+    ├── Available everywhere      ├── Only in this project
+    └── User-specific            └── Team-shareable (Git)
+
+    Common Pitfalls & Best Practices
+
+    ⚠️ Common Mistakes:
+    1. Vague descriptions - Claude won't know when to activate the skill
+    2. Missing SKILL.md - Skills require this exact filename
+    3. No YAML frontmatter - Both name and description are required
+
+    ✅ Best Practices:
+    1. Specific descriptions - Clearly define when the skill should activate
+    2. Clear instructions - The markdown content should be actionable
+    3. Use either language - Japanese or English works fine
+    4. Test activation - Ask questions that match your description
+
+    Comparison with Alternatives
+
+    | Feature    | Agent Skills          | Manual Prompts | MCP Servers         |
+    |------------|-----------------------|----------------|---------------------|
+    | Automation | Auto-applies          | Every time     | On request          |
+    | Scope      | Behavior instructions | One-off        | External tools      |
+    | Sharing    | Git-friendly          | Documentation  | Separate deployment |
+
+    This skill system essentially lets you teach Claude custom behaviors that automatically activate
+    based on context, without having to repeat yourself every time!
+    ```
 
 ## 参考サイト
 
