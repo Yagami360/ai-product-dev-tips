@@ -841,6 +841,7 @@ AIプロダクト開発のための Tips 集。<br>
         - [[In-progress] Claude Code GitHub Actions + Reusable Workflows を使用して複数レポジトリで PR 自動レビューを導入する際でもメンテナンスが容易にできるようにする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/4)
         - [Vertex AI 経由で Claude Code GitHub Actions を利用し Claude API の請求先を GCP にする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/6)
         - [Claude Code の plugin 機能を使用して開発作業を効率化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/7)
+        - [Claude Code Routines を使用して開発作業を定期実行・自動化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/8)
 
 - Microsoft (Azure) の LLM / AI Agent 系サービス
     - Azure OpenAI Service
