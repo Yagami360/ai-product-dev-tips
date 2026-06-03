@@ -37,9 +37,9 @@ Routine は **Web / デスクトップアプリ / CLI** のいずれからでも
 [claude.ai/code/routines](https://claude.ai/code/routines) を開き、「New routine」から、名前・プロンプト・対象リポジトリ・環境・トリガー・コネクタを設定する。
 プロンプトは自律実行されるため、「何をして何が成功か」を自己完結的に明示することが重要。
 
-<img width="800" alt="Image" src="https://github.com/user-attachments/assets/fac98983-8c9b-408b-b07d-1b3ba5f9f03d" />
+<img width="1000" alt="Image" src="https://github.com/user-attachments/assets/fac98983-8c9b-408b-b07d-1b3ba5f9f03d" />
 
-<img width="800" alt="Image" src="https://github.com/user-attachments/assets/b2481dda-7d5b-4fda-9dc1-024dc5780aed" />
+<img width="1000" alt="Image" src="https://github.com/user-attachments/assets/b2481dda-7d5b-4fda-9dc1-024dc5780aed" />
 
 ### デスクトップアプリから作成する
 
@@ -117,6 +117,38 @@ Routine 専用の HTTP エンドポイントに、Bearer トークン付きで P
 
 > 実行履歴の緑ステータスは「セッションがインフラエラーなく起動・終了した」ことを示すだけで、プロンプトのタスクが成功したことは意味しない。
 > 実際の結果は各 run のトランスクリプトを開いて確認する。
+
+## 例: リポジトリのスキルを定期実行する
+
+Routine の実行セッションは、対象リポジトリを clone した上で、そのリポジトリにコミットされた skill（`.claude/skills/<名前>/SKILL.md`）を利用できる。
+これを使うと「リポジトリの特定のスキルを、毎日決まった時刻に自動実行する」といったことができる。
+
+ここでは、この Tip に用意した最小構成のサンプルスキル [`daily-greeting`](.claude/skills/daily-greeting/SKILL.md)（短い挨拶メッセージを出力するだけの、動作確認用スキル）を、平日の毎朝9時に自動実行する手順を示す。
+
+1. 実行したいスキルをリポジトリにコミットしておく<br>
+    対象リポジトリの `.claude/skills/<名前>/SKILL.md` にスキルを置き、デフォルトブランチ（master 等）にコミット・push しておく。
+    ```
+    .claude/skills/daily-greeting/SKILL.md
+    ```
+    Routine は実行のたびにデフォルトブランチを clone するため、コミット済みのスキルを実行セッションから利用できる。
+
+1. `/schedule` で定期実行の Routine を作成する<br>
+    Claude Code の任意のセッションで `/schedule` を実行し、対話に沿って設定する。
+    説明を直接渡して作成することもできる。
+    ```text
+    /schedule every weekday at 9am, use the daily-greeting skill on this repo and output the greeting
+    ```
+
+    - 対象リポジトリ: スキルをコミットしたリポジトリを選ぶ
+    - 頻度: 平日 9:00 など
+    - プロンプト: 使うスキル名と「何をして何が成功か」を自己完結的に書く
+
+1. 動作を確認する<br>
+    [claude.ai/code/routines](https://claude.ai/code/routines) の Routine 詳細画面で「Run now」を押して即時実行し、スキルが意図どおり動くかをセッションのトランスクリプトで確認する。
+
+1. 以降は自動実行される<br>
+    設定した頻度（平日9時など）で Routine がスキルを自動実行する。
+    一時停止したいときは詳細画面の「Repeats」トグルで止められる。
 
 ## ユースケース例
 
