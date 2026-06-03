@@ -141,6 +141,12 @@ README のみの更新では `/code-review` の効果は限定的なので必須
 ただしユーザーから「別ブランチで」「PR を作って」と依頼があればそれに従う。
 コミット・push を行うのはユーザーがそれを望むときだけにし、勝手に push しない。
 
+push が完了したら、リモート上の以下のリンクをユーザーに伝える。
+ユーザーがすぐに GitHub 上で確認できるようにするため。
+
+- 更新した Tip ディレクトリ: `https://github.com/Yagami360/ai-product-dev-tips/tree/master/<category>/<番号>`
+- ルート README: `https://github.com/Yagami360/ai-product-dev-tips/blob/master/README.md`
+
 ## やってはいけないこと
 
 - 対象 Tip の**番号変更・カテゴリ移動・別 Tip 化**をしない。
