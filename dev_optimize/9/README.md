@@ -1,0 +1,116 @@
+# Claude Code Routines + Skills で AI 技術トレンドの定期レポートを GitHub Issue に自動作成する
+
+最新 / 週次 / 月次 / トピック別の AI 技術動向レポートを定期的に作成し、**GitHub Issue** に投稿する仕組みを、[Claude Code Routines](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/8) ＋ [Skills](https://code.claude.com/docs/en/skills) で実現する方法を紹介する。
+レポートには **Claude Code Routines 経由で作られたことを示すラベル（`claude-code-routine`）を付与**する。
+
+この方式は、GitHub Actions ＋ Python（＋ Claude/Gemini API）で同様の仕組みを組む場合と比べて、Python コードや CI を保守する必要がなく、API キーを GitHub Secrets で管理する必要もない（claude.ai のサブスクリプションでクラウド実行される）。
+
+## 全体像
+
+```mermaid
+flowchart TB
+    subgraph routines["Claude Code Routines（Anthropic クラウドでスケジュール実行）"]
+        direction TB
+        R1[最新レポート<br>毎日]
+        R2[週次レポート<br>毎週金曜]
+        R3[月次レポート<br>毎月1日]
+        R4[トピック別レポート<br>オンデマンド]
+    end
+
+    subgraph skill["Skill: ai-tech-catchup（SKILL.md・対象リポジトリの .claude/skills/ にコミット）"]
+        direction TB
+        INV["調査<br>WebSearch / WebFetch / deep-research<br>GitHub・Hugging Face MCP など活用"]
+        REP["日本語レポート生成<br>（重要ニュース / トレンド / OSS / 展望 …）"]
+        ISS["GitHub Issue 作成<br>label: report / weekly-report / monthly-report / topic-report<br>＋ claude-code-routine"]
+        INV --> REP
+        REP --> ISS
+    end
+
+    routines -->|スキルを呼び出す| skill
+```
+
+## AI技術トレンドのレポート作成スキル（`ai-tech-catchup`）の作成
+
+レポート作成用の `ai-tech-catchup` スキルを `/skill-creator` で作成し、対象リポジトリ直下の [`.claude/skills/ai-tech-catchup/SKILL.md`](../../.claude/skills/ai-tech-catchup/SKILL.md) に install する。
+
+> 注: 本環境では `ai-tech-catchup` スキルは既に作成し、対象リポジトリ直下に install 済みのため、ここでの追加作業は不要。
+
+`SKILL.md` は手書きしてもよいが、`skill-creator` plugin（[dev_optimize/7（plugin 機能の Tip）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/7) 参照）の `/skill-creator` を使うと、雛形作成・テスト・改善・description（発火条件）の最適化までガイドしてもらえる。
+
+1. `/plugin` から `skill-creator` をインストールし、`/reload-plugins` で反映する。
+
+1. `/skill-creator` を起動し、作りたいスキルを伝える。
+
+1. ガイドに沿ってドラフト作成 → テスト → 改善を行う。
+
+1. 完成したスキルを、対象リポジトリ直下の [`.claude/skills/ai-tech-catchup/SKILL.md`](../../.claude/skills/ai-tech-catchup/SKILL.md) にコミット・push（install）する。
+    Routine は実行のたびにデフォルトブランチを clone するため、コミット済みのスキルを利用できる。
+
+## 登録手順
+
+レポート自動作成の仕組みをセットアップする手順。
+
+1. レポート投稿先のリポジトリを決める<br>
+    AI 技術レポートの Issue を作成する対象リポジトリ（例: `<owner>/<repo>`）を決める。
+    上記で作成した `ai-tech-catchup` スキルは、このリポジトリ直下の `.claude/skills/` に install しておく。
+
+1. 必要な MCP コネクタを接続する<br>
+    Routine（クラウド実行）が使えるのは **claude.ai のコネクタ**であり、ローカルで `claude mcp add` した MCP サーバーは使えない。
+    [claude.ai/customize/connectors](https://claude.ai/customize/connectors) で、調査に使うコネクタを接続する。
+    - **Hugging Face**: モデル / データセット / Space / 論文の検索（調査に使用）。※ 本環境では接続済み。
+    - **GitHub**: Issue 作成は実行セッション内の `gh issue create`、OSS 動向調査は WebSearch / WebFetch で行えるため、GitHub コネクタは必須ではない（本環境では未接続のままで動作する）。
+
+    Routine 作成時に、含めるコネクタを選択する（不要なものは外して最小限にする）。
+    > 補足: リポジトリにコミットした [`.mcp.json`](https://code.claude.com/docs/en/mcp) があれば、その定義の MCP サーバーも clone 経由で利用できる。
+
+1. 種別ごとに Routine を登録する<br>
+    `/schedule`（CLI）または [claude.ai/code/routines](https://claude.ai/code/routines)（Web）から登録する。
+    プロンプトには「`ai-tech-catchup` スキルを使い、種別・投稿先リポジトリを指定して Issue を作成する」ことを自己完結的に書く。
+    スケジュールは用途に合わせて設定する（最新＝毎日 / 週次＝毎週 / 月次＝毎月 など）。
+
+    - 最新レポート（毎日 0:00 UTC、cron `0 0 * * *`）
+        ```text
+        /schedule every day at 00:00 UTC, use the ai-tech-catchup skill (mode=latest) and create a GitHub Issue (labels: report, claude-code-routine) on <owner>/<repo>
+        ```
+
+    - 週次レポート（毎週金曜 0:00 UTC、cron `0 0 * * 5`）
+        ```text
+        /schedule every Friday at 00:00 UTC, use the ai-tech-catchup skill (mode=weekly) and create a weekly report Issue (labels: weekly-report, claude-code-routine)
+        ```
+
+    - 月次レポート（毎月1日 0:00 UTC、cron `0 0 1 * *`）
+        ```text
+        /schedule on the 1st of every month at 00:00 UTC, use the ai-tech-catchup skill (mode=monthly) and create a monthly report Issue (labels: monthly-report, claude-code-routine)
+        ```
+
+    - トピック別レポート（オンデマンド。定期実行せず、必要なときに実行する）
+        ```text
+        /schedule in 1 hour, use the ai-tech-catchup skill (mode=topic, topic="AI Agent") and create a topic report Issue (labels: topic-report, claude-code-routine)
+        ```
+
+## 利用手順
+
+登録後の利用の流れ。
+
+1. スケジュールに従って自動でレポートが作成される<br>
+    最新＝毎日 / 週次＝毎週金 / 月次＝毎月1日 に Routine が実行され、対象リポジトリに GitHub Issue が `claude-code-routine` ラベル付きで自動作成される。
+
+1. トピック別レポートは必要なときに実行する<br>
+    `/schedule` のワンショット、または API トリガー（`text` フィールドにトピック名を渡す。[dev_optimize/8 の API トリガー](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/8) を参照）でオンデマンド実行する。
+
+1. すぐ確認したいときは「Run now」で即時実行する<br>
+    [claude.ai/code/routines](https://claude.ai/code/routines) の Routine 詳細画面で「Run now」を押し、対象リポジトリに Issue が作成され、`claude-code-routine` ラベルが付いているかを確認する。
+
+    <!-- TODO: 作成された Issue（claude-code-routine ラベル付き）の画面のスクショを貼り付け -->
+    <img width="1000" alt="Image" src="" />
+
+1. 作成されたレポートを Issue で閲覧する<br>
+    ラベル（`weekly-report` / `monthly-report` / `topic-report` / `claude-code-routine` など）でフィルタして、過去のレポートを一覧・閲覧できる。
+
+## 参考サイト
+
+- Claude Code Routines（公式ドキュメント）: https://code.claude.com/docs/en/routines
+
+- Claude Code Skills（公式ドキュメント）: https://code.claude.com/docs/en/skills
+
+- Claude Code Routines の基礎（本リポジトリの Tip）: https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/8

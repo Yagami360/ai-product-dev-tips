@@ -813,9 +813,6 @@ AIプロダクト開発のための Tips 集。<br>
 
 ## ■ LLM アプリケーション開発 / AI Agent 開発
 
-<details>
-<summary>LLM アプリケーション開発 / AI Agent 開発</summary>
-
 - LLM 基礎事項
     - [[In-progress] LLM学習方法の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/31)
 
@@ -840,8 +837,11 @@ AIプロダクト開発のための Tips 集。<br>
         - Claude Code GitHub Actions を使用して README 作成を自動化する（定期自動更新）
         - [[In-progress] Claude Code GitHub Actions + Reusable Workflows を使用して複数レポジトリで PR 自動レビューを導入する際でもメンテナンスが容易にできるようにする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/4)
         - [Vertex AI 経由で Claude Code GitHub Actions を利用し Claude API の請求先を GCP にする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/6)
+    - Claude Code plugin
         - [Claude Code の plugin 機能を使用して開発作業を効率化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/7)
+    - Claude Code Routines
         - [Claude Code Routines を使用して開発作業を定期実行・自動化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/8)
+        - [Claude Code Routines + Skills で AI 技術トレンドの定期レポートを GitHub Issue に自動作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/9)
 
 - Microsoft (Azure) の LLM / AI Agent 系サービス
     - Azure OpenAI Service
@@ -966,8 +966,6 @@ AIプロダクト開発のための Tips 集。<br>
 - Agent Skills
     - [Claude Code CLI の Agent Skills を使用して簡単なスキルを作成＆利用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/55)
     - [Cusor で Agent Skills を使用して簡単なスキルを作成＆利用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/56)
-
-</details>
 
 ## ■ Pysical AI / Robotics
 
