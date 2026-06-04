@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "arxiv-mcp-server": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "arxiv-mcp-server"
+      ],
+      "env": {}
+    }
+  }
+}
