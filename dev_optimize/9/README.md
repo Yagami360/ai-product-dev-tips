@@ -55,7 +55,7 @@ flowchart TB
     [claude.ai/customize/connectors](https://claude.ai/customize/connectors) で、調査に使うコネクタを接続する。
     - **Hugging Face**: モデル / データセット / Space / 論文の検索（調査に使用）。※ 本環境では接続済み。
     - **GitHub**: Issue 作成は実行セッション内の `gh issue create`、OSS 動向調査は WebSearch / WebFetch で行えるため、GitHub コネクタは必須ではない（本環境では未接続のままで動作する）。
-    - **arXiv**: 現時点では claude.ai のコネクタが提供されていないため、ここでは接続できない。論文検索を MCP で強化したい場合は、コネクタではなくリポジトリ同梱の `.mcp.json`（＋環境セットアップ・ツール事前許可）で対応する（[後述の「（任意）arXiv MCP サーバーを Routine でも使う」](#任意arxiv-mcp-サーバーを-routine-でも使う)を参照）。なお必須ではなく、未対応でもスキルは `WebSearch` / `WebFetch` で arXiv を調べる。
+    - **arXiv**: 現時点では claude.ai のコネクタが提供されていないため、ここでは接続できない。MCP で論文検索を強化したい場合は、コネクタではなくリポジトリ同梱の `.mcp.json` で対応する（次の「（任意）arXiv MCP サーバーも使う」ステップ参照）。必須ではなく、未対応でもスキルは `WebSearch` / `WebFetch` で arXiv を調べる。
 
     Routine 作成時に、含めるコネクタを選択する（不要なものは外して最小限にする）。
     > 補足: リポジトリにコミットした [`.mcp.json`](https://code.claude.com/docs/en/mcp) があれば、claude.ai コネクタに無い MCP サーバー（arXiv MCP など）も clone 経由で利用できる。
@@ -86,46 +86,12 @@ flowchart TB
         /schedule in 1 hour, use the ai-tech-catchup skill (mode=topic, topic="AI Agent") and create a topic report Issue (labels: topic-report, claude-code-routine)
         ```
 
-### （任意）arXiv MCP サーバーを Routine でも使う
-
-スキルは arXiv 論文を `WebSearch` / `WebFetch` で調べるので必須ではないが、より精密な論文検索・全文取得をしたい場合は arXiv MCP サーバー（[blazickjp/arxiv-mcp-server](https://github.com/blazickjp/arxiv-mcp-server)）を Routine でも使える。
-claude.ai のコネクタには無いため、リポジトリ同梱（`.mcp.json`）＋環境セットアップで対応する。
-
-1. リポジトリ直下に `.mcp.json` を置いてコミットする<br>
-    Routine は clone 時にこの定義を読み込む。
-    ```json
-    {
-      "mcpServers": {
-        "arxiv-mcp-server": { "type": "stdio", "command": "uvx", "args": ["arxiv-mcp-server"] }
-      }
-    }
-    ```
-
-1. Routine の環境セットアップスクリプトで `uv` ＋ パッケージを入れる<br>
-    [claude.ai/code/routines](https://claude.ai/code/routines) で Routine の[環境](https://code.claude.com/docs/en/claude-code-on-the-web#the-cloud-environment)を編集し、**Setup script** に次を設定する（クラウド環境にはデフォルトで入っていないため）。
-    ```sh
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-    export PATH="$HOME/.local/bin:$PATH"
-    uv tool install arxiv-mcp-server
-    ```
-
-1. ネットワーク許可を確認する<br>
-    Default 環境（Trusted）で arXiv へのアクセスが弾かれる場合は、環境の **Allowed domains** に `arxiv.org` / `export.arxiv.org` を追加する。
-
-1. 無人実行向けに MCP ツールを事前許可する<br>
-    `.mcp.json` 由来の MCP は claude.ai コネクタではないため、何もしないと Routine の無人実行中に**ツール承認ダイアログ（「search papers (arxiv-mcp-server) を使用を許可しますか？」）で止まる**（claude.ai コネクタの Hugging Face は接続済みのため自動承認され、arXiv だけ引っかかる）。次のどちらかで事前許可しておく。
-    - **リポジトリ同梱（推奨・恒久）**: リポジトリ直下の [`.claude/settings.json`](https://code.claude.com/docs/en/settings) に `permissions.allow` を追加してコミットする。Routine は毎回 clone するので、clone 時点で許可済みになり、Routine 設定に依らず効く。
-        ```json
-        {
-          "permissions": { "allow": ["mcp__arxiv-mcp-server"] }
-        }
-        ```
-        `mcp__<サーバー名>` で、その MCP の全ツール（`search_papers` / `download_paper` / `list_papers` / `read_paper`）をまとめて許可する。
-    - **Routine 設定側**: Routine の `session_context.allowed_tools` に `mcp__arxiv-mcp-server` を加える（`/schedule` 作成時の `allowed_tools` には MCP ツールが入らないため、後から追記する）。
-    > トークン不要・サードパーティ実行を許容できる arXiv MCP だからこそ committed 許可にできる。トークンが要る MCP（GitHub / Hugging Face）は `settings.json` に書かず claude.ai コネクタで管理する。
-
-> ⚠️ 公開リポジトリの `.mcp.json` は、その repo を Claude Code で開いた利用者にも MCP の承認プロンプトが出る。トークン不要・サードパーティ実行を許容できる場合のみ同梱する。
-> なお、GitHub / Hugging Face のように**トークンが要る MCP は `.mcp.json` に直書きせず**、claude.ai コネクタ（アカウント連携）にする。
+1. （任意）arXiv MCP サーバーも使う<br>
+    論文検索を MCP で強化したい場合のみ。必須ではなく、未対応でもスキルは `WebSearch` / `WebFetch` で arXiv を調べる。claude.ai コネクタが無い（[blazickjp/arxiv-mcp-server](https://github.com/blazickjp/arxiv-mcp-server)）ため、リポジトリ同梱で対応する。
+    - **`.mcp.json` を同梱**: リポジトリ直下に `{"mcpServers":{"arxiv-mcp-server":{"type":"stdio","command":"uvx","args":["arxiv-mcp-server"]}}}` を置いてコミット（Routine が clone 時に読む）。
+    - **環境セットアップ**: Routine の **Setup script** で `curl -LsSf https://astral.sh/uv/install.sh | sh` → `uv tool install arxiv-mcp-server`。arXiv が弾かれる場合は **Allowed domains** に `arxiv.org` / `export.arxiv.org` を追加。
+    - **無人実行向けの事前許可**: そのままだと承認ダイアログで止まるため、`.claude/settings.json` に `{"permissions":{"allow":["mcp__arxiv-mcp-server"]}}` を commit（推奨・恒久）するか、Routine の `allowed_tools` に `mcp__arxiv-mcp-server` を追加する。
+    > ⚠️ 公開リポジトリの `.mcp.json` は repo を開いた利用者にも承認プロンプトが出る。トークン不要・サードパーティ実行を許容できる arXiv だから同梱可。トークンが要る GitHub / Hugging Face は `.mcp.json` に書かず claude.ai コネクタで管理する。
 
 ## 利用手順
 
