@@ -192,10 +192,8 @@
 - レポート日時: `YYYY-MM-DD HH:MM`
 - 調査期間: `YYYY-MM-DD ~ YYYY-MM-DD`   ← 週次・月次のみ。最新・トピックでは省略
 - 使用モデル: `<このセッションのモデル名>`
+- thinking / effort level: `<このセッションの thinking / effort level>`
 - トピック: `<topic>`                    ← トピック別のみ
-
-> **💡 質疑応答について**
-> このレポート内容について質問したい場合は、コメントで `@claude` または `@gemini-cli` とメンションすると、AI が自動的に回答します。
 
 ---
 
