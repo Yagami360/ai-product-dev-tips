@@ -193,6 +193,7 @@
 - 調査期間: `YYYY-MM-DD ~ YYYY-MM-DD`   ← 週次・月次のみ。最新・トピックでは省略
 - 使用モデル: `<このセッションのモデル名>`
 - thinking / effort level: `<このセッションの thinking / effort level>`
+- 調査方法: `<この調査で実際に使ったツールを列挙。例: WebSearch, WebFetch, GitHub MCP, Hugging Face MCP, arXiv MCP, /deep-research>`
 - トピック: `<topic>`                    ← トピック別のみ
 
 ---
