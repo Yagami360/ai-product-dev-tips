@@ -65,23 +65,24 @@ flowchart TB
 
 1. 種別ごとに Routine を登録する<br>
     1つの Routine は「1つの cron ＋ 1つのプロンプト」なので、**種別ごとに別の Routine を作る**（スキルは共有し、プロンプトの `mode` で切り替える）。
-    `/schedule`（CLI）または [claude.ai/code/routines](https://claude.ai/code/routines)（Web）から登録する。
+    `/schedule`（CLI）または [claude.ai/code/routines](https://claude.ai/code/routines)（Web）から登録する。時刻はローカルタイム（JST）で指定すれば、自動で UTC に変換される（cron は UTC で保存される）。
     プロンプトには「`ai-tech-catchup` スキルを使い、種別・投稿先リポジトリを指定して Issue を作成する」ことを自己完結的に書く。
 
-    - 最新レポート（Routine 名 `ai-tech-catchup-latest`、毎日 04:00 UTC、cron `0 4 * * *`）
+    - 最新レポート（Routine 名 `ai-tech-catchup-latest`、毎日 04:00 JST ＝ 前日 19:00 UTC、cron `0 19 * * *`）
         ```text
-        /schedule every day at 04:00 UTC, use the ai-tech-catchup skill (mode=latest) and create a GitHub Issue (labels: report, claude-code-routine) on <owner>/<repo>
+        /schedule every day at 04:00 JST, use the ai-tech-catchup skill (mode=latest) and create a GitHub Issue (labels: report, claude-code-routine) on <owner>/<repo>
         ```
 
-    - 週次レポート（Routine 名 `ai-tech-catchup-weekly`、毎週金曜 04:00 UTC、cron `0 4 * * 5`）
+    - 週次レポート（Routine 名 `ai-tech-catchup-weekly`、毎週金曜 04:00 JST ＝ 木曜 19:00 UTC、cron `0 19 * * 4`）
         ```text
-        /schedule every Friday at 04:00 UTC, use the ai-tech-catchup skill (mode=weekly) and create a weekly report Issue (labels: weekly-report, claude-code-routine)
+        /schedule every Friday at 04:00 JST, use the ai-tech-catchup skill (mode=weekly) and create a weekly report Issue (labels: weekly-report, claude-code-routine)
         ```
 
-    - 月次レポート（Routine 名 `ai-tech-catchup-monthly`、毎月1日 04:00 UTC、cron `0 4 1 * *`）
+    - 月次レポート（Routine 名 `ai-tech-catchup-monthly`、毎月1日 04:00 JST）
         ```text
-        /schedule on the 1st of every month at 04:00 UTC, use the ai-tech-catchup skill (mode=monthly) and create a monthly report Issue (labels: monthly-report, claude-code-routine)
+        /schedule on the 1st of every month at 04:00 JST, use the ai-tech-catchup skill (mode=monthly) and create a monthly report Issue (labels: monthly-report, claude-code-routine)
         ```
+        > 月次は「1日 04:00 JST ＝ 前月末日 19:00 UTC」になる。標準 cron では月末を直接表現できないため、Web / `/schedule` でローカル時刻（JST）を指定して登録するのが確実。
 
     - トピック別レポート（Routine 名 `ai-tech-catchup-topic`、オンデマンド。定期実行せず、必要なときに実行する）
         ```text
@@ -106,6 +107,35 @@ flowchart TB
 
 1. 作成されたレポートを Issue で閲覧する<br>
     ラベル（`weekly-report` / `monthly-report` / `topic-report` / `claude-code-routine` など）でフィルタして、過去のレポートを一覧・閲覧できる。
+
+## （任意）arXiv MCP サーバーを Routine でも使う
+
+スキルは arXiv 論文を `WebSearch` / `WebFetch` で調べるので必須ではないが、より精密な論文検索・全文取得をしたい場合は arXiv MCP サーバー（[blazickjp/arxiv-mcp-server](https://github.com/blazickjp/arxiv-mcp-server)）を Routine でも使える。
+claude.ai のコネクタには無いため、リポジトリ同梱（`.mcp.json`）＋環境セットアップで対応する。
+
+1. リポジトリ直下に `.mcp.json` を置いてコミットする<br>
+    Routine は clone 時にこの定義を読み込む。
+    ```json
+    {
+      "mcpServers": {
+        "arxiv-mcp-server": { "type": "stdio", "command": "uvx", "args": ["arxiv-mcp-server"] }
+      }
+    }
+    ```
+
+1. Routine の環境セットアップスクリプトで `uv` ＋ パッケージを入れる<br>
+    [claude.ai/code/routines](https://claude.ai/code/routines) で Routine の[環境](https://code.claude.com/docs/en/claude-code-on-the-web#the-cloud-environment)を編集し、**Setup script** に次を設定する（クラウド環境にはデフォルトで入っていないため）。
+    ```sh
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    export PATH="$HOME/.local/bin:$PATH"
+    uv tool install arxiv-mcp-server
+    ```
+
+1. ネットワーク許可を確認する<br>
+    Default 環境（Trusted）で arXiv へのアクセスが弾かれる場合は、環境の **Allowed domains** に `arxiv.org` / `export.arxiv.org` を追加する。
+
+> ⚠️ 公開リポジトリの `.mcp.json` は、その repo を Claude Code で開いた利用者にも MCP の承認プロンプトが出る。トークン不要・サードパーティ実行を許容できる場合のみ同梱する。
+> なお、GitHub / Hugging Face のように**トークンが要る MCP は `.mcp.json` に直書きせず**、claude.ai コネクタ（アカウント連携）にする。
 
 ## 参考サイト
 
