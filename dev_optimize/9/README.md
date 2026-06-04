@@ -75,7 +75,7 @@ flowchart TB
         export PATH="$HOME/.local/bin:$PATH"
         uv tool install arxiv-mcp-server
         ```
-    - **ネットワークアクセス**で `astral.sh`（uv 取得）/ `arxiv.org` / `export.arxiv.org` への通信を許可する。
+    - **ネットワークアクセス**は**フルアクセス**にするのが簡単（uv インストーラ・PyPI・arXiv など複数ドメインを使うため）。最小権限にしたい場合は `astral.sh`（uv 取得）/ `pypi.org` ・ `files.pythonhosted.org`（パッケージ取得）/ `arxiv.org` ・ `export.arxiv.org`（論文取得）を allowlist する。
     - 作成したカスタム環境を **Routine の「環境」に適用**する（Routine 編集画面で選択）。Default のままだと arXiv へ到達できず 403 になり、スキルは Web 検索にフォールバックする。
 
 1. 種別ごとに Routine を登録する<br>
