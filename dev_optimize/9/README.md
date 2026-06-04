@@ -59,9 +59,10 @@ flowchart TB
     [claude.ai/customize/connectors](https://claude.ai/customize/connectors) で、調査に使うコネクタを接続する。
     - **Hugging Face**: モデル / データセット / Space / 論文の検索（調査に使用）。※ 本環境では接続済み。
     - **GitHub**: Issue 作成は実行セッション内の `gh issue create`、OSS 動向調査は WebSearch / WebFetch で行えるため、GitHub コネクタは必須ではない（本環境では未接続のままで動作する）。
+    - **arXiv**: 現時点では claude.ai のコネクタが提供されていないため、ここでは接続できない。論文検索を MCP で強化したい場合は、コネクタではなくリポジトリ同梱の `.mcp.json`（＋環境セットアップ・ツール事前許可）で対応する（[後述の「（任意）arXiv MCP サーバーを Routine でも使う」](#任意arxiv-mcp-サーバーを-routine-でも使う)を参照）。なお必須ではなく、未対応でもスキルは `WebSearch` / `WebFetch` で arXiv を調べる。
 
     Routine 作成時に、含めるコネクタを選択する（不要なものは外して最小限にする）。
-    > 補足: リポジトリにコミットした [`.mcp.json`](https://code.claude.com/docs/en/mcp) があれば、その定義の MCP サーバーも clone 経由で利用できる。
+    > 補足: リポジトリにコミットした [`.mcp.json`](https://code.claude.com/docs/en/mcp) があれば、claude.ai コネクタに無い MCP サーバー（arXiv MCP など）も clone 経由で利用できる。
 
 1. 種別ごとに Routine を登録する<br>
     1つの Routine は「1つの cron ＋ 1つのプロンプト」なので、**種別ごとに別の Routine を作る**（スキルは共有し、プロンプトの `mode` で切り替える）。
