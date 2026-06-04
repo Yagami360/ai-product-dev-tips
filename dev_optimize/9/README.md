@@ -68,7 +68,7 @@ flowchart TB
     `/schedule`（CLI）または [claude.ai/code/routines](https://claude.ai/code/routines)（Web）から登録する。時刻はローカルタイム（JST）で指定すれば、自動で UTC に変換される（cron は UTC で保存される）。
     プロンプトには「`ai-tech-catchup` スキルを使い、種別・投稿先リポジトリを指定して Issue を作成する」ことを自己完結的に書く。
 
-    - 最新レポート（Routine 名 `ai-tech-catchup-latest`、毎日 04:00 JST ＝ 前日 19:00 UTC、cron `0 19 * * *`）
+    - 最新レポート（Routine 名 `ai-tech-catchup`、毎日 04:00 JST ＝ 前日 19:00 UTC、cron `0 19 * * *`）
         ```text
         /schedule every day at 04:00 JST, use the ai-tech-catchup skill (mode=latest) and create a GitHub Issue (labels: report, claude-code-routine) on <owner>/<repo>
         ```
@@ -133,6 +133,18 @@ claude.ai のコネクタには無いため、リポジトリ同梱（`.mcp.json
 
 1. ネットワーク許可を確認する<br>
     Default 環境（Trusted）で arXiv へのアクセスが弾かれる場合は、環境の **Allowed domains** に `arxiv.org` / `export.arxiv.org` を追加する。
+
+1. 無人実行向けに MCP ツールを事前許可する<br>
+    `.mcp.json` 由来の MCP は claude.ai コネクタではないため、何もしないと Routine の無人実行中に**ツール承認ダイアログ（「search papers (arxiv-mcp-server) を使用を許可しますか？」）で止まる**（claude.ai コネクタの Hugging Face は接続済みのため自動承認され、arXiv だけ引っかかる）。次のどちらかで事前許可しておく。
+    - **リポジトリ同梱（推奨・恒久）**: リポジトリ直下の [`.claude/settings.json`](https://code.claude.com/docs/en/settings) に `permissions.allow` を追加してコミットする。Routine は毎回 clone するので、clone 時点で許可済みになり、Routine 設定に依らず効く。
+        ```json
+        {
+          "permissions": { "allow": ["mcp__arxiv-mcp-server"] }
+        }
+        ```
+        `mcp__<サーバー名>` で、その MCP の全ツール（`search_papers` / `download_paper` / `list_papers` / `read_paper`）をまとめて許可する。
+    - **Routine 設定側**: Routine の `session_context.allowed_tools` に `mcp__arxiv-mcp-server` を加える（`/schedule` 作成時の `allowed_tools` には MCP ツールが入らないため、後から追記する）。
+    > トークン不要・サードパーティ実行を許容できる arXiv MCP だからこそ committed 許可にできる。トークンが要る MCP（GitHub / Hugging Face）は `settings.json` に書かず claude.ai コネクタで管理する。
 
 > ⚠️ 公開リポジトリの `.mcp.json` は、その repo を Claude Code で開いた利用者にも MCP の承認プロンプトが出る。トークン不要・サードパーティ実行を許容できる場合のみ同梱する。
 > なお、GitHub / Hugging Face のように**トークンが要る MCP は `.mcp.json` に直書きせず**、claude.ai コネクタ（アカウント連携）にする。
