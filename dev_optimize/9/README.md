@@ -64,26 +64,26 @@ flowchart TB
     > 補足: リポジトリにコミットした [`.mcp.json`](https://code.claude.com/docs/en/mcp) があれば、その定義の MCP サーバーも clone 経由で利用できる。
 
 1. 種別ごとに Routine を登録する<br>
+    1つの Routine は「1つの cron ＋ 1つのプロンプト」なので、**種別ごとに別の Routine を作る**（スキルは共有し、プロンプトの `mode` で切り替える）。
     `/schedule`（CLI）または [claude.ai/code/routines](https://claude.ai/code/routines)（Web）から登録する。
     プロンプトには「`ai-tech-catchup` スキルを使い、種別・投稿先リポジトリを指定して Issue を作成する」ことを自己完結的に書く。
-    スケジュールは用途に合わせて設定する（最新＝毎日 / 週次＝毎週 / 月次＝毎月 など）。
 
-    - 最新レポート（毎日 0:00 UTC、cron `0 0 * * *`）
+    - 最新レポート（Routine 名 `ai-tech-catchup-latest`、毎日 04:00 UTC、cron `0 4 * * *`）
         ```text
-        /schedule every day at 00:00 UTC, use the ai-tech-catchup skill (mode=latest) and create a GitHub Issue (labels: report, claude-code-routine) on <owner>/<repo>
+        /schedule every day at 04:00 UTC, use the ai-tech-catchup skill (mode=latest) and create a GitHub Issue (labels: report, claude-code-routine) on <owner>/<repo>
         ```
 
-    - 週次レポート（毎週金曜 0:00 UTC、cron `0 0 * * 5`）
+    - 週次レポート（Routine 名 `ai-tech-catchup-weekly`、毎週金曜 04:00 UTC、cron `0 4 * * 5`）
         ```text
-        /schedule every Friday at 00:00 UTC, use the ai-tech-catchup skill (mode=weekly) and create a weekly report Issue (labels: weekly-report, claude-code-routine)
+        /schedule every Friday at 04:00 UTC, use the ai-tech-catchup skill (mode=weekly) and create a weekly report Issue (labels: weekly-report, claude-code-routine)
         ```
 
-    - 月次レポート（毎月1日 0:00 UTC、cron `0 0 1 * *`）
+    - 月次レポート（Routine 名 `ai-tech-catchup-monthly`、毎月1日 04:00 UTC、cron `0 4 1 * *`）
         ```text
-        /schedule on the 1st of every month at 00:00 UTC, use the ai-tech-catchup skill (mode=monthly) and create a monthly report Issue (labels: monthly-report, claude-code-routine)
+        /schedule on the 1st of every month at 04:00 UTC, use the ai-tech-catchup skill (mode=monthly) and create a monthly report Issue (labels: monthly-report, claude-code-routine)
         ```
 
-    - トピック別レポート（オンデマンド。定期実行せず、必要なときに実行する）
+    - トピック別レポート（Routine 名 `ai-tech-catchup-topic`、オンデマンド。定期実行せず、必要なときに実行する）
         ```text
         /schedule in 1 hour, use the ai-tech-catchup skill (mode=topic, topic="AI Agent") and create a topic report Issue (labels: topic-report, claude-code-routine)
         ```
