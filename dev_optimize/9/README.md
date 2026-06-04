@@ -60,12 +60,23 @@ flowchart TB
     Routine 作成時に、含めるコネクタを選択する（不要なものは外して最小限にする）。
     > 補足: リポジトリにコミットした [`.mcp.json`](https://code.claude.com/docs/en/mcp) があれば、claude.ai コネクタに無い MCP サーバー（arXiv MCP など）も clone 経由で利用できる。
 
-1. （任意）arXiv MCP サーバーを設定する<br>
-    arXiv MCP サーバーは、claude.ai コネクタが無い（[blazickjp/arxiv-mcp-server](https://github.com/blazickjp/arxiv-mcp-server)）ため、リポジトリ同梱で対応する。
+1. （任意）arXiv MCP サーバーを同梱・許可する<br>
+    論文検索を MCP で強化したい場合のみ。必須ではなく、未対応でもスキルは `WebSearch` / `WebFetch` で arXiv を調べる。claude.ai コネクタが無い（[blazickjp/arxiv-mcp-server](https://github.com/blazickjp/arxiv-mcp-server)）ため、リポジトリ同梱で対応する。
     - **`.mcp.json` を同梱**: リポジトリ直下に `{"mcpServers":{"arxiv-mcp-server":{"type":"stdio","command":"uvx","args":["arxiv-mcp-server"]}}}` を置いてコミット（Routine が clone 時に読む）。
-    - **環境セットアップ**: Routine の **Setup script** で `curl -LsSf https://astral.sh/uv/install.sh | sh` → `uv tool install arxiv-mcp-server`。arXiv が弾かれる場合は **Allowed domains** に `arxiv.org` / `export.arxiv.org` を追加。
     - **無人実行向けの事前許可**: そのままだと承認ダイアログで止まるため、`.claude/settings.json` に `{"permissions":{"allow":["mcp__arxiv-mcp-server"]}}` を commit（推奨・恒久）するか、Routine の `allowed_tools` に `mcp__arxiv-mcp-server` を追加する。
     > ⚠️ 公開リポジトリの `.mcp.json` は repo を開いた利用者にも承認プロンプトが出る。トークン不要・サードパーティ実行を許容できる arXiv だから同梱可。トークンが要る GitHub / Hugging Face は `.mcp.json` に書かず claude.ai コネクタで管理する。
+
+1. （任意・arXiv MCP を使う場合）専用のカスタム環境を作成して適用する<br>
+    arXiv MCP は `uvx` で起動し arXiv へ通信するため、クラウド環境に `uv` の導入と通信許可が要る。**Default 環境は Anthropic 管理で Setup script / ネットワーク許可を編集できない**ので、[claude.ai/code](https://claude.ai/code) の環境設定で**カスタム環境を新規作成**する。
+    - **セットアップスクリプト**（Claude Code 起動前に実行される）に次を設定する。
+        ```bash
+        #!/bin/bash
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        export PATH="$HOME/.local/bin:$PATH"
+        uv tool install arxiv-mcp-server
+        ```
+    - **ネットワークアクセス**で `astral.sh`（uv 取得）/ `arxiv.org` / `export.arxiv.org` への通信を許可する。
+    - 作成したカスタム環境を **Routine の「環境」に適用**する（Routine 編集画面で選択）。Default のままだと arXiv へ到達できず 403 になり、スキルは Web 検索にフォールバックする。
 
 1. 種別ごとに Routine を登録する<br>
     1つの Routine は「1つの cron ＋ 1つのプロンプト」なので、**種別ごとに別の Routine を作る**（スキルは共有し、プロンプトの `mode` で切り替える）。
@@ -106,11 +117,13 @@ flowchart TB
 1. すぐ確認したいときは「Run now」で即時実行する<br>
     [claude.ai/code/routines](https://claude.ai/code/routines) の Routine 詳細画面で「Run now」を押し、対象リポジトリに Issue が作成され、`claude-code-routine` ラベルが付いているかを確認する。
 
-    <!-- TODO: 作成された Issue（claude-code-routine ラベル付き）の画面のスクショを貼り付け -->
-    <img width="1000" alt="Image" src="" />
+    <img width="1437" height="733" alt="Image" src="https://github.com/user-attachments/assets/f55ca1ba-4f6c-4156-bd4e-dd8637dc9765" />
 
 1. 作成されたレポートを Issue で閲覧する<br>
     ラベル（`weekly-report` / `monthly-report` / `topic-report` / `claude-code-routine` など）でフィルタして、過去のレポートを一覧・閲覧できる。
+
+    レポート例: 
+    - 週次レポート: https://github.com/Yagami360/ai-product-dev-tips/issues/42
 
 ## 参考サイト
 
