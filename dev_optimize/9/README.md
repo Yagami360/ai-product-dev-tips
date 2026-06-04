@@ -48,11 +48,7 @@ flowchart TB
 
 ## 登録手順
 
-レポート自動作成の仕組みをセットアップする手順。
-
-1. レポート投稿先のリポジトリを決める<br>
-    AI 技術レポートの Issue を作成する対象リポジトリ（例: `<owner>/<repo>`）を決める。
-    上記で作成した `ai-tech-catchup` スキルは、このリポジトリ直下の `.claude/skills/` に install しておく。
+レポート自動作成の仕組みをセットアップする手順（投稿先リポジトリは skill / Routine のプロンプトで指定し、`ai-tech-catchup` スキルはそのリポジトリ直下の `.claude/skills/` に install 済みであること（上記「スキルの作成」参照））。
 
 1. 必要な MCP コネクタを接続する<br>
     Routine（クラウド実行）が使えるのは **claude.ai のコネクタ**であり、ローカルで `claude mcp add` した MCP サーバーは使えない。
@@ -90,26 +86,7 @@ flowchart TB
         /schedule in 1 hour, use the ai-tech-catchup skill (mode=topic, topic="AI Agent") and create a topic report Issue (labels: topic-report, claude-code-routine)
         ```
 
-## 利用手順
-
-登録後の利用の流れ。
-
-1. スケジュールに従って自動でレポートが作成される<br>
-    最新＝毎日 / 週次＝毎週金 / 月次＝毎月1日 に Routine が実行され、対象リポジトリに GitHub Issue が `claude-code-routine` ラベル付きで自動作成される。
-
-1. トピック別レポートは必要なときに実行する<br>
-    `/schedule` のワンショット、または API トリガー（`text` フィールドにトピック名を渡す。[dev_optimize/8 の API トリガー](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/8) を参照）でオンデマンド実行する。
-
-1. すぐ確認したいときは「Run now」で即時実行する<br>
-    [claude.ai/code/routines](https://claude.ai/code/routines) の Routine 詳細画面で「Run now」を押し、対象リポジトリに Issue が作成され、`claude-code-routine` ラベルが付いているかを確認する。
-
-    <!-- TODO: 作成された Issue（claude-code-routine ラベル付き）の画面のスクショを貼り付け -->
-    <img width="1000" alt="Image" src="" />
-
-1. 作成されたレポートを Issue で閲覧する<br>
-    ラベル（`weekly-report` / `monthly-report` / `topic-report` / `claude-code-routine` など）でフィルタして、過去のレポートを一覧・閲覧できる。
-
-## （任意）arXiv MCP サーバーを Routine でも使う
+### （任意）arXiv MCP サーバーを Routine でも使う
 
 スキルは arXiv 論文を `WebSearch` / `WebFetch` で調べるので必須ではないが、より精密な論文検索・全文取得をしたい場合は arXiv MCP サーバー（[blazickjp/arxiv-mcp-server](https://github.com/blazickjp/arxiv-mcp-server)）を Routine でも使える。
 claude.ai のコネクタには無いため、リポジトリ同梱（`.mcp.json`）＋環境セットアップで対応する。
@@ -149,6 +126,25 @@ claude.ai のコネクタには無いため、リポジトリ同梱（`.mcp.json
 
 > ⚠️ 公開リポジトリの `.mcp.json` は、その repo を Claude Code で開いた利用者にも MCP の承認プロンプトが出る。トークン不要・サードパーティ実行を許容できる場合のみ同梱する。
 > なお、GitHub / Hugging Face のように**トークンが要る MCP は `.mcp.json` に直書きせず**、claude.ai コネクタ（アカウント連携）にする。
+
+## 利用手順
+
+登録後の利用の流れ。
+
+1. スケジュールに従って自動でレポートが作成される<br>
+    最新＝毎日 / 週次＝毎週金 / 月次＝毎月1日 に Routine が実行され、対象リポジトリに GitHub Issue が `claude-code-routine` ラベル付きで自動作成される。
+
+1. トピック別レポートは必要なときに実行する<br>
+    `/schedule` のワンショット、または API トリガー（`text` フィールドにトピック名を渡す。[dev_optimize/8 の API トリガー](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/8) を参照）でオンデマンド実行する。
+
+1. すぐ確認したいときは「Run now」で即時実行する<br>
+    [claude.ai/code/routines](https://claude.ai/code/routines) の Routine 詳細画面で「Run now」を押し、対象リポジトリに Issue が作成され、`claude-code-routine` ラベルが付いているかを確認する。
+
+    <!-- TODO: 作成された Issue（claude-code-routine ラベル付き）の画面のスクショを貼り付け -->
+    <img width="1000" alt="Image" src="" />
+
+1. 作成されたレポートを Issue で閲覧する<br>
+    ラベル（`weekly-report` / `monthly-report` / `topic-report` / `claude-code-routine` など）でフィルタして、過去のレポートを一覧・閲覧できる。
 
 ## 参考サイト
 
