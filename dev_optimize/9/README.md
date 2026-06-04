@@ -55,7 +55,7 @@ flowchart TB
     [claude.ai/customize/connectors](https://claude.ai/customize/connectors) で、調査に使うコネクタを接続する。
     - **Hugging Face**: モデル / データセット / Space / 論文の検索（調査に使用）。※ 本環境では接続済み。
     - **GitHub**: Issue 作成は実行セッション内の `gh issue create`、OSS 動向調査は WebSearch / WebFetch で行えるため、GitHub コネクタは必須ではない（本環境では未接続のままで動作する）。
-    - **arXiv**: 現時点では claude.ai のコネクタが提供されていないため、ここでは接続できない。MCP で論文検索を強化したい場合は、コネクタではなくリポジトリ同梱の `.mcp.json` で対応する（次の「（任意）arXiv MCP サーバーを設定する」ステップ参照）。必須ではなく、未対応でもスキルは `WebSearch` / `WebFetch` で arXiv を調べる。
+    - **arXiv**: 現時点では claude.ai のコネクタが提供されていないため、ここでは接続できない。MCP で論文検索を強化したい場合は、コネクタではなくリポジトリ同梱の `.mcp.json` で対応する（次の「（任意）arXiv MCP サーバーを同梱・許可する」ステップ参照）。必須ではなく、未対応でもスキルは `WebSearch` / `WebFetch` で arXiv を調べる。
 
     Routine 作成時に、含めるコネクタを選択する（不要なものは外して最小限にする）。
     > 補足: リポジトリにコミットした [`.mcp.json`](https://code.claude.com/docs/en/mcp) があれば、claude.ai コネクタに無い MCP サーバー（arXiv MCP など）も clone 経由で利用できる。
@@ -123,7 +123,8 @@ flowchart TB
     ラベル（`weekly-report` / `monthly-report` / `topic-report` / `claude-code-routine` など）でフィルタして、過去のレポートを一覧・閲覧できる。
 
     レポート例: 
-    - 週次レポート: https://github.com/Yagami360/ai-product-dev-tips/issues/42
+    - 週次レポート: https://github.com/Yagami360/ai-product-dev-tips/issues/44
+    - 月次レポート: https://github.com/Yagami360/ai-product-dev-tips/issues/45
 
 ## 参考サイト
 
