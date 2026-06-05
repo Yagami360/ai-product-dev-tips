@@ -844,6 +844,8 @@ AIプロダクト開発のための Tips 集。<br>
         - [Claude Code Routines + Skills で AI 技術トレンドの定期レポートを GitHub Issue に自動作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/9)
     - Claude Design
         - [[In-progress] Claude Design を使用してデザイン・プロトタイプ・スライドを自動生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/10)
+    - Claude Code Dynamic Workflows
+        - [[In-progress] Claude Code の Dynamic Workflows（ultracode）を使用して大規模タスクをマルチエージェントで並列実行する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/11)
 
 - Microsoft (Azure) の LLM / AI Agent 系サービス
     - Azure OpenAI Service
