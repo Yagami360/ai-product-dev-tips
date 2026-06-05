@@ -87,11 +87,7 @@ flowchart TB
     プロジェクトを作り始める前に、ワークスペースに対して一度だけ Design System を用意しておくと、生成物が自社ブランドと一貫したものになる（用意しないと「動くが汎用的な」見た目になりやすい）。
     `Set up your design system` 画面で、会社情報とブランド・プロダクトの参考素材（コードリポジトリ、既存のデザインファイルやスライド、ロゴ・カラーパレットなどの個別アセット）を読み込ませ、右上の `Continue to generation` で生成を開始する。
 
-    > 補足: Figma の `.fig` ファイルはアップロードして取り込める（後述の通り、ブラウザ内でローカル解析され、サーバーにはアップロードされない）。<br>
-
     <img width="1000" alt="Image" src="https://github.com/user-attachments/assets/ce2b9d05-3e87-4a59-a60a-3aa86cf71686" />
-
-    <img width="1000" alt="Image" src="https://github.com/user-attachments/assets/18e411c7-e266-4c1a-9d28-049287a8c6b6" />
 
     上の Design System 設定（`Set up your design system`）画面の各項目は次の通り。
 
