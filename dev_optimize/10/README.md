@@ -102,7 +102,7 @@ flowchart TB
 
     作成ボタン（`Continue to generation`）をクリックすると、Claude が連携した GitHub リポジトリを自動で探索し（ファイル構成の把握・主要ファイルの読み取り）、Design System を生成していく。完了後は、上部の `Design System` / `Design Files` タブで生成結果を確認・編集できる。
 
-    <img width="1000" alt="Image" src="https://github.com/user-attachments/assets/5d0808a5-45cd-4853-b1e8-1fbd34578112" />
+    <img width="1000" alt="Image" src="https://github.com/user-attachments/assets/128caa6c-bfbb-4c15-be0a-02bc92e5af21" />
 
 1. 生成された Design System をレビュー・公開する<br>
     生成が一段落すると、`Review draft design system`（生成された Design System のレビュー画面）に切り替わる。Claude が抽出したブランドカラーやタイポグラフィなどを項目ごとに確認・承認し、問題なければ `Published` トグルで公開する（`Claude is still working` とある通り、レビューしながら裏で生成が継続する）。
