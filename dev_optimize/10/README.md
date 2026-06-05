@@ -199,6 +199,52 @@ flowchart TB
 
     すると、Claude Design で作成したデザインに従って、Claude Code が自動的に UI を実装してくれる
 
+    ```bash
+    ❯ Fetch this design file, read its readme, and implement the relevant aspects of the design. https://api.anthropic.com/v1/design/h/xxx?open_file=xxx.html                                                                   
+    Implement: サポート管理ダッシュボード.html                                                                                                                                      
+
+    ● これは README で説明している「Hand off to Claude Code」の実際のワークフローですね。デザインファイルを取得して README を読み、サポート管理ダッシュボード.html
+    を実装します。まずデザインファイルを取得します。
+
+    ● Fetch(https://api.anthropic.com/v1/design/h/xxx)
+    ⎿  Received 157.6KB (200 OK)
+
+    ● バンドルは gzip 圧縮ファイル（157.6KB）として保存されました。展開して中身を確認します。
+
+    ● Bash(xxx)
+    ⎿  Shell cwd was reset to xxx
+
+    ● The handoff bundle extracted successfully. Let me read the README and the key files.
+
+    Read 1 file (ctrl+o to expand)
+
+    ● README の指示に従い、まずチャット履歴を読み、次に主デザインファイル サポート管理ダッシュボード.html とそのインポートを読みます。
+
+    Read 2 files (ctrl+o to expand)
+
+    ● 全体像を把握しました。xxx Design System に沿った日本語サポート管理ダッシュボードで、サポート管理ダッシュボード.html が React(Babel standalone) で dashboard.css /
+    icons.jsx / data.jsx / chrome.jsx / widgets.jsx / tickets.jsx / app.jsx を読み込む構成です。README の指示通り、ピクセル忠実に再現します。各ソースを読みます。
+
+    Read 2 files (ctrl+o to expand)
+
+    ● CSS とトークンを把握しました。残りの JSX（コンポーネント・データ）を読みます。
+
+    Read 3 files (ctrl+o to expand)
+
+    ● 残りのコンポーネント（chrome / widgets / tickets）を読みます。
+
+    Read 3 files (ctrl+o to expand)
+
+    ● ソース一式を読み切りました。xxx Design System に沿った日本語サポート管理ダッシュボード（サイドバー・KPI
+    4枚・チケットテーブル＋絞り込み・推移グラフ・優先度内訳・担当者負荷・行クリック→詳細ドロワー）です。
+
+    README の指示（「プロトタイプの内部構造をそのままコピーせず、ターゲットに合う技術でピクセル忠実に再現。CSS
+    が合うなら流用」）に従い、このリポジトリ（ビルド無しの静的サイト）に合う形＝Babel/React ランタイム CDN に依存しない素の HTML/CSS/JS
+    で実装します。CSS・デザイントークン・フォント・アセット・データは合致するので流用し、React コンポーネントは vanilla JS で同じ DOM・同じインタラクションを再構築します。
+
+    まず実装先ディレクトリを作り、流用する静的アセット（CSS・フォント・画像）をそのままコピーします。
+    ```
+
     1. handoff バンドルを取得する。バンドルは次の構成になっている。
         - `README.md`（`CODING AGENTS: READ THIS FIRST`）: コーディングエージェント向けの読み順・実装方針。
         - `chats/`: ユーザーとデザインアシスタントの会話履歴。「何を作りたかったか」「反復してどこに着地したか」という**意図**が入っている。
@@ -208,7 +254,6 @@ flowchart TB
         - 次に主デザインファイル（例: `サポート管理ダッシュボード.html`）を上から読み、import をたどって全体構成（共有コンポーネント・CSS・スクリプト）を理解する。
         - 曖昧な点があれば、実装前にユーザーへ確認する。
         - ターゲットのコードベースに合う技術（React / Vue / ネイティブなど）で**ピクセル忠実に再現**する。プロトタイプはあくまで「本実装の設計図」なので、内部構造をそのままコピーするのではなく、見た目（寸法・色・レイアウト）を一致させる。
-    <!-- TODO: Claude Code で handoff バンドルを取得・実装している画面のスクショを貼り付け -->
 
 ## 参考サイト
 
