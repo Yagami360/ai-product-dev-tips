@@ -816,9 +816,6 @@ AIプロダクト開発のための Tips 集。<br>
 - LLM 基礎事項
     - [[In-progress] LLM学習方法の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/31)
 
-- プロンプトエンジニアリング / ハルシネーション対策
-    - [CoVe [Chain-of-Verification] を使用して LLM のハルシネーションを低減する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/57)
-
 - OpenAI の LLM / AI Agent 系サービス
     - [【CLI/Python】OpenAI API の使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/102)
     - [[In-progress]【Python】ChatGPT plugins を利用＆作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/108)
@@ -849,6 +846,8 @@ AIプロダクト開発のための Tips 集。<br>
         - [[In-progress] Claude Design を使用してデザイン・プロトタイプ・スライドを自動生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/10)
     - Claude Code Dynamic Workflows
         - [[In-progress] Claude Code の Dynamic Workflows（ultracode）を使用して大規模タスクをマルチエージェントで並列実行する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/11)
+    - Claude Code Subagent
+        - [[In-progress] Claude Code の Subagent（サブエージェント）機能を使用して脇道タスクを専門エージェントに委任する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/12)
 
 - Microsoft (Azure) の LLM / AI Agent 系サービス
     - Azure OpenAI Service
@@ -917,7 +916,6 @@ AIプロダクト開発のための Tips 集。<br>
         - [[In-progress] HuggingFace Transformers を使用して LLM のファインチューニングを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/29)
         - HuggingFace Transformers を使用して Llama での推論を行う（ローカル LLM）
         - HuggingFace Transformers を使用して Mistral での推論を行う（ローカル LLM）
-        - [[In-progress] HuggingFace Transformers を使用して Qwen での推論を行う（ローカル LLM）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/30)
         - [HuggingFace Transformers の カスタム Trainer を使用して LLM の蒸留モデル（Logit蒸留）を作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/53)
     - Hugging Face Spaces
         - [【Python】Hugging Face Spaces を利用して簡単な機械学習デモアプリを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/107)
@@ -935,6 +933,10 @@ AIプロダクト開発のための Tips 集。<br>
         - NeMo Evaluator
     - NVIDIA NIM
         - [[In-progress] NVIDIA NIM を使用してオンプレミス環境にLLM APIをデプロイする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/34)
+
+- ローカル LLM
+    - [[In-progress] HuggingFace Transformers を使用して Qwen での推論を行う（ローカル LLM）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/30)
+    - [CoVe [Chain-of-Verification] を使用して Ollama の Qwen モデルのハルシネーションを低減する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/57)
 
 - Dify
     - [Dify の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/18)
