@@ -816,6 +816,9 @@ AIプロダクト開発のための Tips 集。<br>
 - LLM 基礎事項
     - [[In-progress] LLM学習方法の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/31)
 
+- プロンプトエンジニアリング / ハルシネーション対策
+    - [CoVe [Chain-of-Verification] を使用して LLM のハルシネーションを低減する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/57)
+
 - OpenAI の LLM / AI Agent 系サービス
     - [【CLI/Python】OpenAI API の使用方法](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/102)
     - [[In-progress]【Python】ChatGPT plugins を利用＆作成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/108)
