@@ -1,1 +1,1 @@
-ollama>=0.5.1
+deepeval>=4.0.0
