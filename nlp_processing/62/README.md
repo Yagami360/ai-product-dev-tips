@@ -149,7 +149,7 @@ flowchart LR
 
 judge に `qwen3.5:4b`（CPU）を使い、4 問の自由形式 QA（各問に正しい回答 `good` と誤り・曖昧な回答 `bad`）で実行した結果。
 
-<!-- TODO: 実機の数値・出力を反映（GEval の平均スコア、ArenaGEval の勝利数、judge の理由文の例） -->
+> 補足: `GEval` / `ArenaGEval` の**理由文（reason）は英語で返る**。DeepEval の内部プロンプトが英語のため、criteria を日本語で書いても理由は英語になりやすい（スコア自体は正しく機能する）。
 
 **単一採点（`--mode single`）:**
 
@@ -158,26 +158,48 @@ $ python3 run_judge.py --mode single
 === 単一採点（DeepEval GEval, 0.0-1.0）  judge = qwen3.5:4b ===
 
 Q: 光合成とは何か、簡潔に説明してください。
-  [良い回答] score=X.XX  理由: <!-- TODO: judge の理由 -->
-  [悪い回答] score=X.XX  理由: <!-- TODO: judge の理由 -->
-...
+  [良い回答] score=1.00  理由: The response accurately defines photosynthesis ... aligning perfectly with the expected output. It is concise, avoids ambiguity ...
+  [悪い回答] score=0.20  理由: The actual output incorrectly defines photosynthesis as plants 'eating rice' to grow, which is a significant factual error ...
+
+Q: HTTP の GET と POST の主な違いを説明してください。
+  [良い回答] score=1.00  理由: The response accurately identifies the core differences between GET and POST (URL parameters vs. body, read vs. write/update) ...
+  [悪い回答] score=0.00  理由: The AI's response incorrectly states that GET and POST are the same and interchangeable, which directly contradicts the expected output ...
+
+Q: プログラミングにおける再帰関数とは何ですか。
+  [良い回答] score=0.80  理由: ... correctly identifies the core definition (calling itself) and mentions the base case ... but lacks the detail about 'dividing the problem into smaller instances' ...
+  [悪い回答] score=0.00  理由: The actual output incorrectly defines a recursive function as a special 'for' loop for speeding up processing, which is a factual error ...
+
+Q: TCP と UDP の主な違いは何ですか。
+  [良い回答] score=1.00  理由: The response accurately identifies the core differences between TCP and UDP ... It is concise and avoids unnecessary verbosity ...
+  [悪い回答] score=0.00  理由: ... It incorrectly claims TCP is a new protocol and UDP is old and rarely used ...
+
 ============================================================
-平均スコア: 良い回答 = X.XX,  悪い回答 = X.XX
+平均スコア: 良い回答 = 0.95,  悪い回答 = 0.05
 → judge が良い回答に高スコア・悪い回答に低スコアを付けられていれば採点が機能している
 ```
+
+良い回答（平均 **0.95**）と悪い回答（平均 **0.05**）にはっきり差がつき、judge が自由形式の出力品質を定量化できている。
 
 **ペア比較（`--mode pairwise`）:**
 
 ```text
 $ python3 run_judge.py --mode pairwise
 === ペア比較（DeepEval ArenaGEval, 位置/冗長性バイアスは内部で抑制）  judge = qwen3.5:4b ===
-...
+
+🎉 Arena completed! (time taken: 1269.38s | token cost: 0.0 USD)
+🏆 Results (4 total test cases):
+    » 良い回答: 4 wins
+
 ============================================================
-勝利数: {'良い回答': X, '悪い回答': X}
-→ 全 4 問中、良い回答が X 勝できていれば judge が機能している
+勝利数: {'良い回答': 4}
+→ 全 4 問中、良い回答が 4 勝できていれば judge が機能している
 ```
 
+提示順を入れ替えても（`ArenaGEval` がブラインド＋順序シャッフルで内部処理）、**全 4 問で良い回答が勝った**。
+
 ここで重要なのは、**完全一致では採点できない自由形式の出力でも、LLM-as-judge なら良し悪しを定量化できる**点、そして **DeepEval を使うことで rubric の言語化に集中でき、位置/冗長性バイアス対策はメトリクス側に任せられる**点。これが「評価ハーネスの採点層を、ルール検証だけでなく LLM-as-judge で補強する」という主張の最小実証になっている。
+
+> 実行時間の目安（CPU・`qwen3.5:4b`）: 単一採点（8 measure）で約 9 分、ペア比較（4 ケース）で約 21 分。`GEval` は 1 measure あたり内部で複数回モデルを呼ぶため、CPU では時間がかかる。本番では judge に API モデルを使うと速い。
 
 ## 注意点・課題
 

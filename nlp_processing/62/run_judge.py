@@ -4,6 +4,7 @@ from deepeval.models import OllamaModel
 from deepeval.metrics import GEval, ArenaGEval
 from deepeval.test_case import LLMTestCase, ArenaTestCase, Contestant, SingleTurnParams
 from deepeval import compare
+from deepeval.evaluate.configs import AsyncConfig
 
 
 # =============================================================================
@@ -42,10 +43,39 @@ DATA = [
 ]
 
 
+class NoThinkOllamaModel(OllamaModel):
+    """DeepEval の OllamaModel を継承し、chat 呼び出しに think=False を渡して
+    Qwen3.5 の思考（thinking）生成を無効化する judge。
+    Qwen3.5 は既定で思考を行い、CPU では 1 採点あたり数百秒かかって DeepEval の
+    タイムアウト（既定 88.5s/attempt）を超えてしまう。think=False にすると CPU でも
+    実用速度（1 採点あたり 20 秒台）で採点できる。"""
+
+    def generate(self, prompt, schema=None):
+        client = self.load_model(async_mode=False)
+        resp = client.chat(
+            model=self.name, messages=[{"role": "user", "content": prompt}],
+            format=schema.model_json_schema() if schema else None,
+            options={"temperature": self.temperature, **self.generation_kwargs}, think=False,
+        )
+        content = resp.message.content
+        return (schema.model_validate_json(content) if schema else content), 0.0
+
+    async def a_generate(self, prompt, schema=None):
+        client = self.load_model(async_mode=True)
+        resp = await client.chat(
+            model=self.name, messages=[{"role": "user", "content": prompt}],
+            format=schema.model_json_schema() if schema else None,
+            options={"temperature": self.temperature, **self.generation_kwargs}, think=False,
+        )
+        content = resp.message.content
+        return (schema.model_validate_json(content) if schema else content), 0.0
+
+
 def build_judge(model_name):
     """Ollama 上のローカル LLM を DeepEval の judge（評価モデル）として使う。
-    temperature=0 で採点を決定的にする。API キー不要・GPU 不要で動く。"""
-    return OllamaModel(model=model_name, base_url="http://localhost:11434", temperature=0)
+    temperature=0 で採点を決定的にする。API キー不要・GPU 不要で動く。
+    思考を無効化する NoThinkOllamaModel を使い、CPU でも現実的な速度で採点する。"""
+    return NoThinkOllamaModel(model=model_name, base_url="http://localhost:11434", temperature=0)
 
 
 def run_single(judge_model_name):
@@ -57,7 +87,7 @@ def run_single(judge_model_name):
         criteria=(
             "AI の回答（actual output）が、参照解答（expected output）に照らして正確・有用で"
             "簡潔かを評価する。回答の長さや言い回しではなく内容の正しさを最重視し、"
-            "事実誤認や曖昧な回答は強く減点する。"
+            "事実誤認や曖昧な回答は強く減点する。採点理由は日本語で簡潔に述べる。"
         ),
         # criteria に登場する入力・出力・参照解答を評価対象パラメータとして渡す
         evaluation_params=[SingleTurnParams.INPUT, SingleTurnParams.ACTUAL_OUTPUT, SingleTurnParams.EXPECTED_OUTPUT],
@@ -93,7 +123,7 @@ def run_pairwise(judge_model_name):
         name="回答品質",
         criteria=(
             "質問（input）に対して、参照解答に照らしてより正確・有用で簡潔な回答（actual output）を"
-            "返したコンテスタントを勝者に選ぶ。回答の提示順や長さに惑わされないこと。"
+            "返したコンテスタントを勝者に選ぶ。回答の提示順や長さに惑わされないこと。判定理由は日本語で述べる。"
         ),
         evaluation_params=[SingleTurnParams.INPUT, SingleTurnParams.ACTUAL_OUTPUT],
         model=judge,
@@ -109,7 +139,9 @@ def run_pairwise(judge_model_name):
     ]
 
     print(f"=== ペア比較（DeepEval ArenaGEval, 位置/冗長性バイアスは内部で抑制）  judge = {judge_model_name} ===")
-    wins = compare(test_cases=test_cases, metric=metric)  # {"良い回答": 勝利数, "悪い回答": 勝利数}
+    # CPU では並列実行すると 1 採点が遅くなりタイムアウトしやすいので同期実行にする
+    wins = compare(test_cases=test_cases, metric=metric,
+                   async_config=AsyncConfig(run_async=False))  # {"良い回答": 勝利数, "悪い回答": 勝利数}
     print("\n" + "=" * 60)
     print(f"勝利数: {wins}")
     print(f"→ 全 {len(DATA)} 問中、良い回答が {wins.get('良い回答', 0)} 勝できていれば judge が機能している")
