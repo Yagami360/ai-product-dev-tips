@@ -119,28 +119,28 @@ flowchart LR
         --question "中国の人口からインドの人口を引くといくつ？"
     ```
 
-## 実行例
+## 実行結果（実機）
 
-`python3 run_agent.py` の出力イメージ。エージェントが `get_population` を 2 回・`calculator` を 1 回連鎖させて答えを導く。`trajectory` のキー（`thought_N` / `tool_name_N` / `tool_args_N` / `observation_N`）と `finish` の観察（`Completed.`）は DSPy の実際の出力形式に合わせている。ツールの観察値（`124000000` など）はコード上の決定論的な戻り値、`thought_N` の文面は LLM が生成するため実行ごとに変わる。
+`qwen3.5:4b`（CPU）で `python3 run_agent.py` を実行した結果。エージェントが `get_population` を 2 回・`calculator` を 1 回連鎖させて答えを導いている。`trajectory` のキー（`thought_N` / `tool_name_N` / `tool_args_N` / `observation_N`）と `finish` の観察（`Completed.`）は DSPy の出力形式。ツールの観察値（`124000000` など）はコード上の決定論的な戻り値で、`thought_N` の文面は LLM が生成するため実行ごとに変わる。
 
 ```text
 $ python3 run_agent.py
 ============================================================
 Q: 日本とドイツの人口の合計を 2 で割るといくつ？
 
-thought_0: 日本とドイツの人口を調べ、合計して 2 で割る必要がある。
+thought_0: まず、日本とドイツの人口を取得する必要があります。その後、これらの人口の合計を2で割る計算を行います。最初に日本の人口を取得します。
 tool_name_0: get_population
 tool_args_0: {'country': '日本'}
 observation_0: 124000000
-thought_1: 次にドイツの人口を調べる。
+thought_1: 日本の人口が取得できました。次にドイツの人口を取得する必要があります。
 tool_name_1: get_population
 tool_args_1: {'country': 'ドイツ'}
 observation_1: 84000000
-thought_2: 合計して 2 で割るため calculator を使う。
+thought_2: 日本の人口が124,000,000人、ドイツの人口が84,000,000人であることを確認しました。次に、これらの合計を2で割る計算を行う必要があります。計算式は (124000000 + 84000000) / 2 です。
 tool_name_2: calculator
 tool_args_2: {'expression': '(124000000 + 84000000) / 2'}
 observation_2: 104000000.0
-thought_3: 最終的な答えが得られた。
+thought_3: 計算結果が104,000,000.0であることを確認しました。これで質問に答えるための必要な情報が揃いました。
 tool_name_3: finish
 tool_args_3: {}
 observation_3: Completed.

@@ -909,7 +909,8 @@ AIプロダクト開発のための Tips 集。<br>
 - DSPy [Declarative Self-improving Python] / AI Agent のハーネス設計
     - [DSPy の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/60)
     - [DSPy の GEPA オプティマイザを使用して Ollama の Qwen を使用した AI Agent のハーネス（簡単のためプロンプトのみ）を自己進化させる（Self-Harness）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/58)
-    - [[In-progress] DSPy の ReAct モジュールを使用して Ollama の Qwen でツールを使う AI エージェントを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/59)
+    - [DSPy の ReAct モジュールを使用して Ollama の Qwen でツールを使う AI エージェントを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/59)
+    - [DSPy の MIPROv2 オプティマイザを使用して Ollama の Qwen のプロンプト（instruction と few-shot）をベイズ最適化で自動最適化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/61)
 
 - Hugging Face
     - [Hugging Face の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/103)
