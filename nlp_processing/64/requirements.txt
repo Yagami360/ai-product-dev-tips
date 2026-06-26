@@ -1,0 +1,3 @@
+langchain>=1.0.0
+langchain-ollama>=1.0.0
+langgraph>=1.0.0

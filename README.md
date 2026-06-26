@@ -905,13 +905,13 @@ AIプロダクト開発のための Tips 集。<br>
         - データセット管理機能
             - [[In-progress]【Python】LangSmith の Evaluation 機能を使用して、データセット化した入出力履歴の評価スコアを表示する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/9)
             - [[In-progress]【Python】LangSmith を使用してデータセットから LLM モデルのファインチューニングを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/10)
-    - [[In-progress] LangChain の SummarizationMiddleware で会話履歴を閾値要約（compaction）し、長期エージェントの context bloat を抑える](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/64)
 
 - DSPy [Declarative Self-improving Python] / AI Agent のハーネス設計
     - [DSPy の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/60)
     - [DSPy の GEPA オプティマイザを使用して Ollama の Qwen を使用した AI Agent のハーネス（簡単のためプロンプトのみ）を自己進化させる（Self-Harness）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/58)
     - [DSPy の ReAct モジュールを使用して Ollama の Qwen でツールを使う AI エージェントを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/59)
     - [DSPy の MIPROv2 オプティマイザを使用して Ollama の Qwen のプロンプト（instruction と few-shot）をベイズ最適化で自動最適化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/61)
+    - [LangChain の SummarizationMiddleware で会話履歴を閾値要約（compaction）し、長期エージェントの context bloat を抑える](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/64)
 
 - Hugging Face
     - [Hugging Face の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/103)
