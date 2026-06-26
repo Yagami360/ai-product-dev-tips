@@ -1,0 +1,2 @@
+dspy>=3.0.0
+optuna>=3.4.0   # MIPROv2 の STEP3（ベイズ最適化）に必須。`pip install dspy[optuna]` でも可
