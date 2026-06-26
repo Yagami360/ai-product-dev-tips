@@ -937,6 +937,7 @@ AIプロダクト開発のための Tips 集。<br>
 - ローカル LLM
     - [[In-progress] HuggingFace Transformers を使用して Qwen での推論を行う（ローカル LLM）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/30)
     - [CoVe [Chain-of-Verification] を使用して Ollama の Qwen モデルのハルシネーションを低減する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/57)
+    - [DSPy の GEPA オプティマイザを使用して Ollama の Qwen のプロンプト（ハーネス）を自己進化させる（Self-Harness）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/58)
 
 - Dify
     - [Dify の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/18)
