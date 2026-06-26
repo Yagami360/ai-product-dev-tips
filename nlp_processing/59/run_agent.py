@@ -12,28 +12,28 @@ import dspy
 
 # 人口のローカル DB（API キー不要でオフライン実行できるよう、辞書で代用）
 _POPULATION = {
-    "japan": 124_000_000,
-    "usa": 335_000_000,
-    "china": 1_410_000_000,
-    "india": 1_430_000_000,
-    "germany": 84_000_000,
+    "日本": 124_000_000,
+    "アメリカ": 335_000_000,
+    "中国": 1_410_000_000,
+    "インド": 1_430_000_000,
+    "ドイツ": 84_000_000,
 }
 
 
 def get_population(country: str) -> int:
-    """Return the population (number of people) of the given country.
+    """指定された国の人口（人数）を返す。
 
     Args:
-        country: English country name, e.g. "Japan", "USA".
+        country: 日本語の国名（例: "日本", "ドイツ"）。
     """
-    return _POPULATION.get(country.strip().lower(), -1)
+    return _POPULATION.get(country.strip(), -1)
 
 
 def calculator(expression: str) -> float:
-    """Evaluate a basic arithmetic expression and return the numeric result.
+    """四則演算の式を評価して数値の結果を返す。
 
     Args:
-        expression: A math expression using + - * / ( ) and numbers, e.g. "(124000000 + 84000000) / 2".
+        expression: + - * / ( ) と数字からなる式（例: "(124000000 + 84000000) / 2"）。
     """
     # 安全のため組み込み関数を一切渡さずに評価する（任意コード実行を防ぐ）
     return eval(expression, {"__builtins__": {}}, {})
@@ -43,9 +43,9 @@ def calculator(expression: str) -> float:
 # シグネチャ（エージェントの入出力契約 ＝ プロンプトを文字列ではなく型で宣言する）
 # =============================================================================
 class AgentTask(dspy.Signature):
-    """You are a helpful agent. Use the available tools to answer the user's question with a concrete number."""
+    """あなたは有能なエージェントです。利用可能なツールを使って、ユーザーの質問に具体的な数値で答えてください。"""
     question: str = dspy.InputField()
-    answer: str = dspy.OutputField(desc="The final answer, as a concrete number.")
+    answer: str = dspy.OutputField(desc="最終的な答え（具体的な数値）。")
 
 
 if __name__ == "__main__":
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     parser.add_argument("--model", type=str, default="qwen3.5:4b",
                         help="ツール呼び出しを行う Ollama モデル（小さすぎるとツール選択を誤りやすい）")
     parser.add_argument("--question", type=str,
-                        default="What is the combined population of Japan and Germany, divided by 2?",
+                        default="日本とドイツの人口の合計を 2 で割るといくつ？",
                         help="エージェントへの質問")
     parser.add_argument("--max-iters", type=int, default=6,
                         help="ReAct ループ（Thought→Action→Observation）の最大反復回数")

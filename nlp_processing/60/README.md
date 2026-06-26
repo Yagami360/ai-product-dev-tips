@@ -110,12 +110,12 @@ dspy.configure(lm=dspy.LM("ollama_chat/qwen3.5:4b", api_base="http://localhost:1
 
 # ① Programming: 入出力の型（Signature）を宣言し、Module で実行
 qa = dspy.Predict("question -> answer")          # 最小単位
-pred = qa(question="What is the capital of Australia?")
+pred = qa(question="オーストラリアの首都はどこ？")
 print(pred.answer)
 
 # Module を差し替えるだけで戦略が変わる（思考の連鎖を挟む）
 cot = dspy.ChainOfThought("question -> answer")
-print(cot(question="If a train travels 60km in 1.5h, what is its speed?").answer)
+print(cot(question="列車が 1.5 時間で 60km 進むとき、時速は何 km？").answer)
 ```
 
 ## 参考サイト

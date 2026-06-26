@@ -36,8 +36,8 @@ flowchart LR
 
 例えば「日本とドイツの人口の合計を 2 で割るといくつ？」という質問では、エージェントは次のように**複数ツールを連鎖**させる必要がある。
 
-1. `get_population("Japan")` を呼ぶ → 観察: `124000000`
-1. `get_population("Germany")` を呼ぶ → 観察: `84000000`
+1. `get_population("日本")` を呼ぶ → 観察: `124000000`
+1. `get_population("ドイツ")` を呼ぶ → 観察: `84000000`
 1. `calculator("(124000000 + 84000000) / 2")` を呼ぶ → 観察: `104000000`
 1. `finish` → 最終回答 `104000000`
 
@@ -90,20 +90,20 @@ flowchart LR
 
     ```python
     def get_population(country: str) -> int:
-        """Return the population (number of people) of the given country."""
-        return _POPULATION.get(country.strip().lower(), -1)
+        """指定された国の人口（人数）を返す。"""
+        return _POPULATION.get(country.strip(), -1)
 
     def calculator(expression: str) -> float:
-        """Evaluate a basic arithmetic expression and return the numeric result."""
+        """四則演算の式を評価して数値の結果を返す。"""
         return eval(expression, {"__builtins__": {}}, {})
 
     class AgentTask(dspy.Signature):
-        """You are a helpful agent. Use the available tools to answer the user's question with a concrete number."""
+        """あなたは有能なエージェントです。利用可能なツールを使って、ユーザーの質問に具体的な数値で答えてください。"""
         question: str = dspy.InputField()
-        answer: str = dspy.OutputField(desc="The final answer, as a concrete number.")
+        answer: str = dspy.OutputField(desc="最終的な答え（具体的な数値）。")
 
     agent = dspy.ReAct(AgentTask, tools=[get_population, calculator], max_iters=6)
-    pred = agent(question="What is the combined population of Japan and Germany, divided by 2?")
+    pred = agent(question="日本とドイツの人口の合計を 2 で割るといくつ？")
     print(pred.answer)        # 最終回答
     print(pred.trajectory)    # Thought / Action / Observation の履歴
     ```
@@ -116,7 +116,7 @@ flowchart LR
 
     # 質問やモデルを指定する
     python3 run_agent.py --model qwen3.5:4b \
-        --question "What is the population of China minus the population of India?"
+        --question "中国の人口からインドの人口を引くといくつ？"
     ```
 
 ## 実行例
@@ -126,21 +126,21 @@ flowchart LR
 ```text
 $ python3 run_agent.py
 ============================================================
-Q: What is the combined population of Japan and Germany, divided by 2?
+Q: 日本とドイツの人口の合計を 2 で割るといくつ？
 
-thought_0: I need to find the population of Japan and Germany, add them, then divide by 2.
+thought_0: 日本とドイツの人口を調べ、合計して 2 で割る必要がある。
 tool_name_0: get_population
-tool_args_0: {'country': 'Japan'}
+tool_args_0: {'country': '日本'}
 observation_0: 124000000
-thought_1: Now I need the population of Germany.
+thought_1: 次にドイツの人口を調べる。
 tool_name_1: get_population
-tool_args_1: {'country': 'Germany'}
+tool_args_1: {'country': 'ドイツ'}
 observation_1: 84000000
-thought_2: Add them and divide by 2 using the calculator.
+thought_2: 合計して 2 で割るため calculator を使う。
 tool_name_2: calculator
 tool_args_2: {'expression': '(124000000 + 84000000) / 2'}
 observation_2: 104000000.0
-thought_3: I now have the final answer.
+thought_3: 最終的な答えが得られた。
 tool_name_3: finish
 tool_args_3: {}
 observation_3: Completed.
