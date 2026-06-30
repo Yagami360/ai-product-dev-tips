@@ -880,6 +880,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 - LangChain
     - [LangChain の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/1)
+    - [LangChain の SummarizationMiddleware で会話履歴を閾値要約（compaction）し、長期エージェントの context bloat を抑える](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/64)
     - LangChain Model I/O
         - [【Python】LangChain Language models を使用して OpenAI API の LLM モデルから応答文を得る](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/2)
         - [【Python】LangChain Prompt の Prompt templates 使用してプロンプトを生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/6)
@@ -911,7 +912,6 @@ AIプロダクト開発のための Tips 集。<br>
     - [DSPy の GEPA オプティマイザを使用して Ollama の Qwen を使用した AI Agent のハーネス（簡単のためプロンプトのみ）を自己進化させる（Self-Harness）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/58)
     - [DSPy の ReAct モジュールを使用して Ollama の Qwen でツールを使う AI エージェントを構築する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/59)
     - [DSPy の MIPROv2 オプティマイザを使用して Ollama の Qwen のプロンプト（instruction と few-shot）をベイズ最適化で自動最適化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/61)
-    - [LangChain の SummarizationMiddleware で会話履歴を閾値要約（compaction）し、長期エージェントの context bloat を抑える](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/64)
 
 - Hugging Face
     - [Hugging Face の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/103)
@@ -984,6 +984,9 @@ AIプロダクト開発のための Tips 集。<br>
 - Agent Skills
     - [Claude Code CLI の Agent Skills を使用して簡単なスキルを作成＆利用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/55)
     - [Cusor で Agent Skills を使用して簡単なスキルを作成＆利用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/56)
+
+- Generative UI（LLM による UI 動的生成）
+    - [【Next.js】Vercel AI SDK の tool-calling 型 Generative UI を使用して Ollama の Qwen がユーザーメッセージに応じて UI コンポーネントを動的生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/52)
 
 ## ■ Pysical AI / Robotics
 
