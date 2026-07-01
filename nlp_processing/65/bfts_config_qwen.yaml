@@ -1,0 +1,75 @@
+# AI Scientist-v2 の bfts_config.yaml を「ローカル Qwen（Ollama）」用に書き換えたもの。
+# 使い方: このファイルを AI-Scientist-v2 リポジトリ直下の bfts_config.yaml に上書きコピーする
+#   （launch_scientist_bfts.py は設定パスを "bfts_config.yaml" 固定で読むため、--config 引数は無い）。
+# 変更点は各所の `model:` を ollama/... にした点のみ。それ以外は本家 main の既定値。
+
+# path to the task data directory
+data_dir: "data"
+preprocess_data: False
+
+goal: null
+eval: null
+
+log_dir: logs
+workspace_dir: workspaces
+
+copy_data: True
+
+exp_name: run
+
+# settings for code execution
+exec:
+  timeout: 3600
+  agent_file_name: runfile.py
+  format_tb_ipython: False
+
+generate_report: True
+# LLM settings for final report from journal
+report:
+  model: ollama/qwen3:32b        # 変更: gpt-4o-2024-11-20 → ローカル Qwen
+  temp: 1.0
+
+experiment:
+  num_syn_datasets: 1
+
+debug:
+  stage4: False
+
+# agent hyperparams
+agent:
+  type: parallel
+  num_workers: 4                 # GPU/CPU が非力なら 1〜2 に下げる
+  stages:
+    stage1_max_iters: 20
+    stage2_max_iters: 12
+    stage3_max_iters: 12
+    stage4_max_iters: 18
+  steps: 5
+  k_fold_validation: 1
+  multi_seed_eval:
+    num_seeds: 3
+  expose_prediction: False
+  data_preview: False
+
+  # LLM settings for coding（実験コード生成の中核）
+  code:
+    model: ollama/qwen3:32b      # 変更: anthropic.claude-3-5-sonnet-... → ローカル Qwen
+    temp: 1.0
+    max_tokens: 12000
+
+  # LLM settings for evaluating program output / tracebacks
+  feedback:
+    model: ollama/qwen3:32b      # 変更: gpt-4o-2024-11-20 → ローカル Qwen
+    temp: 0.5
+    max_tokens: 8192
+
+  # 図の視覚評価は VLM が必要なので視覚対応モデルを割り当てる
+  vlm_feedback:
+    model: ollama/qwen2.5vl:32b  # 変更: gpt-4o-2024-11-20 → ローカル VLM（Qwen2.5-VL）
+    temp: 0.5
+    max_tokens: null
+
+  search:
+    max_debug_depth: 3
+    debug_prob: 0.5
+    num_drafts: 3
