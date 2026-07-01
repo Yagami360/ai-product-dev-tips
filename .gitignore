@@ -24,3 +24,6 @@ _old/
 .debug/
 .netlify
 .env
+
+# 外部リポジトリ（Tip 65 の作業用 clone。コミットしない）
+nlp_processing/65/AI-Scientist-v2/

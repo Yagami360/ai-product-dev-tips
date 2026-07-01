@@ -1,0 +1,46 @@
+[
+    {
+        "Name": "landscape_shaping_for_continual_learning",
+        "Title": "Don't Sharpen Your Past: Shaping the Loss Landscape to Mitigate Catastrophic Forgetting",
+        "Short Hypothesis": "Catastrophic forgetting in continual learning is caused not just by parameter drift, but by the learning of new tasks increasing the sharpness (curvature) of the loss minima for old tasks. We hypothesize that by explicitly regularizing the model to maintain low curvature for previous tasks while learning a new one, we can preserve the accessibility of old solutions and significantly reduce forgetting. This is a novel mechanism-based approach, distinct from penalizing parameter changes (like EWC) or seeking flat minima for the current task (like SAM), as it directly targets the distortion of the old tasks' loss landscapes.",
+        "Related Work": "Current approaches to continual learning (CL) primarily fall into three categories: rehearsal-based methods that store old data, architectural methods that assign different parameters to different tasks, and regularization-based methods. Our work belongs to the latter. The most related regularization methods are Elastic Weight Consolidation (EWC) and Sharpness-Aware Minimization (SAM). EWC approximates the loss curvature with the Fisher Information Matrix to penalize changes to 'important' weights for old tasks. However, it focuses on preventing parameter drift rather than preserving the landscape's shape. SAM and its variants seek flat minima to improve generalization, and have been applied to CL by finding solutions that are flat for the current task. Our proposal is fundamentally different: we do not regularize based on the current task's loss. Instead, while learning task T_k, we introduce a regularization term that explicitly penalizes an increase in the curvature (e.g., the trace of the Hessian) of the loss function for *previous* tasks T_1, ..., T_{k-1}. This directly addresses the hypothesis that learning new tasks 'sharpens' the minima of old ones, making them harder to find again.",
+        "Abstract": "Catastrophic forgetting remains a central challenge in continual learning, where a model's performance on previously learned tasks degrades severely upon learning new ones. While existing methods often focus on restricting parameter updates or rehearsing old data, we investigate a more fundamental cause: the distortion of the loss landscape. We hypothesize that learning a new task warps the landscape by increasing the sharpness of the minima associated with previous tasks, effectively 'hiding' old solutions from the optimizer. To counteract this, we propose a novel and computationally efficient regularizer, Curvature-Preserving Regularization (CPR). During training on a new task, CPR penalizes any increase in the trace of the Hessian of the loss for a small, representative subset of data from past tasks. This encourages the model to find solutions for the new task that lie in regions where the landscape for old tasks remains flat. Unlike Sharpness-Aware Minimization (SAM), CPR targets the curvature of old tasks, not the current one. Unlike Elastic Weight Consolidation (EWC), it preserves the geometry of the solution space rather than freezing specific weights. We demonstrate through experiments on standard continual learning benchmarks like Split-MNIST and Split-CIFAR10 that this simple and direct approach to landscape shaping significantly mitigates forgetting and offers a new perspective on the stability-plasticity dilemma.",
+        "Experiments": [
+            {
+                "name": "Validation on Split-MNIST",
+                "description": "The primary experiment to validate the core hypothesis in a controlled setting. We will train a simple MLP on Split-MNIST, a standard CL benchmark where each task is to classify a pair of digits (0/1, 2/3, etc.).",
+                "algorithmic_change": "When training on task T_k (for k>1), the loss function will be L_k(w) + lambda * Tr(Hessian(L_{k-1}(w))), where L_k is the cross-entropy loss for the current task and the Hessian is computed with respect to a small, fixed buffer of data from the previous task. The trace of the Hessian will be estimated efficiently using Hutchinson's method, which requires only a few Hessian-vector products.",
+                "baselines": "Plain SGD (lower bound), Elastic Weight Consolidation (EWC), and Sharpness-Aware Minimization (SAM) applied to the current task's loss.",
+                "metrics": "Average accuracy across all tasks after training is complete. We will also plot the accuracy on each previous task after each new task is learned to visualize the rate of forgetting."
+            },
+            {
+                "name": "Generalization to Split-CIFAR10",
+                "description": "To test if the findings generalize to more complex image data, we will repeat the experiment using a small CNN (e.g., a shallow ResNet) on the Split-CIFAR10 benchmark, where the 10 classes are split into 5 binary classification tasks.",
+                "algorithmic_change": "Same as the Split-MNIST experiment: add the curvature-preserving regularizer to the standard training loss.",
+                "baselines": "EWC, SAM.",
+                "metrics": "Average accuracy across all tasks and forgetting rate."
+            },
+            {
+                "name": "Analysis of the Loss Landscape",
+                "description": "To directly verify that our method preserves flatter minima, we will visualize the loss landscape. After training on the final task, we will take the final model weights (w_final) and the weights saved after learning the first task (w_task1). We will then plot the loss for Task 1 along the linear interpolation between these two points: L_1(alpha*w_final + (1-alpha)*w_task1).",
+                "algorithmic_change": "No algorithmic change, this is a post-hoc analysis.",
+                "baselines": "We will generate these plots for our method and for the baselines.",
+                "metrics": "Visual inspection of the plots. We expect the loss basin around w_task1 to be wider and less sharp for our method compared to baselines, indicating the minimum is better preserved."
+            }
+        ],
+        "Risk Factors and Limitations": [
+            {
+                "risk": "Computational Cost: Although Hutchinson's method is efficient, computing Hessian-vector products still adds overhead to each training step. This might slow down training significantly.",
+                "mitigation": "The regularization term can be applied intermittently (e.g., every few steps) instead of every step. We can also use a very small number of vectors for the stochastic trace estimation."
+            },
+            {
+                "risk": "Hyperparameter Sensitivity: The method introduces a new hyperparameter, lambda, which balances the current task's loss with the curvature regularization. The method's performance might be highly sensitive to the choice of lambda.",
+                "mitigation": "We will perform a sensitivity analysis on a small validation set to understand the impact of lambda."
+            },
+            {
+                "risk": "Need for a Data Buffer: The proposed regularizer requires access to a small amount of data from previous tasks to compute the old loss and its curvature. This places it in the 'rehearsal-based' category, albeit with a very small buffer used in a novel way.",
+                "mitigation": "This is an inherent limitation. We will be transparent about it and compare against other rehearsal-based methods that use a buffer of the same size for fairness. The novelty lies in *how* the buffer is used (for landscape shaping) rather than *that* it is used."
+            }
+        ]
+    }
+]
