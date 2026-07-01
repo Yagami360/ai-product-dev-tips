@@ -159,7 +159,8 @@ text, _ = get_response_from_llm(
 ```
 
 - 確認できたこと: `create_client("ollama/...")` が `base_url=http://localhost:11434/v1` の OpenAI 互換クライアントを返し、`get_response_from_llm` がローカル Qwen から正しく応答を得る（＝ README・手順の記述どおりモデル文字列だけでバックエンドが切り替わる）。`AVAILABLE_LLMS` に `ollama/qwen3:8b|32b|235b`・`ollama/qwen2.5vl:8b|32b` 等が登録されていることも `main` の実物で確認。
-- **未検証（フル完走）**: `ideation → experiment(BFTS) → writeup` の**全工程を完走して論文 PDF まで出せるか・その品質**は、この検証環境では未確認。理由は **GPU が無く、実験フェーズ（ML 学習）と大型 Qwen 推論を回せない**ため（CPU の `qwen3:8b` では ideation 1 回すら現実的な時間で終わらなかった）。フル実行には GPU 環境が必要で、Qwen のサイズ・量子化や `bfts_config.yaml` の探索深さ（`max_debug_depth` 等）次第で途中失敗もありうる。まず `qwen3:8b` + 小さめの探索設定で「一通り流れるか」を確認し、そこから品質を上げるのが現実的。
+- **ideation（手順 3）も CPU で実行できることを確認**（ただし品質は小型モデル依存）: CPU のみで `perform_ideation_temp_free.py --model ollama/qwen3:1.7b --max-num-generations 1 --num-reflections 1` を実行したところ、**Qwen は CPU 上でアイデア提案（"Risk Factors and Limitations" 等を含む構造化テキスト）を約 3 分で生成**した。一方で **`qwen3:1.7b` の出力が期待の JSON フォーマットに合わず `extract_json_between_markers` のパースに失敗 → `Stored 0 ideas`** となった。これは「**小型/ローカル Qwen だと完走率・品質が下がる**」という上の警告そのものの実例で、実運用ではより大きなモデル（`qwen3:32b` 等）が要る。なお `ollama/qwen3:1.7b` は `AVAILABLE_LLMS` 未登録のため一度 argparse に弾かれ、**`AVAILABLE_LLMS` に 1 行追記**して通した（「一覧に無いタグは 1 行追記が必要」も実証）。
+- **CPU での「フル完走」は非現実的**: `ideation → experiment(BFTS) → writeup` の**全工程を完走して論文 PDF まで出す**には GPU 環境が実質必須。理由は、(1) experiment フェーズが**実際に ML 学習コードを生成・実行**し、`num_workers × steps × 各 stage 12〜20 iters` で**数百〜数千回の LLM 呼び出し＋ ML 学習**を回すため、CPU の Qwen 速度では現実的な時間で終わらない（`qwen3:8b` では ideation 1 回すら長時間かかった）、(2) 大型 Qwen（32b 等）の CPU 推論も遅い、ため。**CPU は「配線・各工程が動くかの smoke test」までは可能**だが、**フル完走・品質評価には GPU が必要**。Qwen のサイズ・量子化や `bfts_config.yaml` の探索深さ（`max_debug_depth` 等）次第では途中失敗もありうるので、まず `qwen3:8b`〜`32b` + 小さめの探索設定で「一通り流れるか」を確認し、そこから品質を上げるのが現実的。
 
 ## 高品質に回したい場合（Claude / OpenAI の正規 API）
 
