@@ -205,6 +205,28 @@ GPU 無しでオープンウェイト版を手元で動かすパターン。**Mi
 
 > **もっと軽く試したいなら**: 428B の M3 は CPU でも重い。純粋に「ローカル LLM を CPU で動かす配線」を軽く試したいだけなら、本リポジトリの [nlp_processing/57](../57) 等の Ollama + Qwen 系 Tip（数 GB 級）の方が手軽。M3 の GGUF は「大容量 RAM のマシンでオープンウェイト M3 を手元実行する」用途向け。
 
+### 動作確認（実機検証）
+
+パターン B の**クライアント配線（`predict_local.py` が OpenAI 互換のローカルサーバーに接続し、`api_key="EMPTY"` / サンプリング（`temperature` / `top_p`）／`top_k` を `extra_body` で渡して応答をパースする）**を、CPU のみの環境で実機検証した。
+
+> **⚠️ 実 M3 GGUF そのものは本検証環境では動かせない**: MiniMax-M3 GGUF は最小の `UD-IQ1_M` でも **約 133GB の RAM** が要る（本検証機は 29GB）。そこで「`predict_local.py` が OpenAI 互換ローカルサーバーと正しく喋れるか」の**配線検証**として、同じ OpenAI 互換エンドポイントを話す [Ollama](https://ollama.com/)（`http://localhost:11434/v1`）＋小型 Qwen をスタンドインに用いた。`predict_local.py` のコード経路（`base_url` 差し替え・`EMPTY` キー・`extra_body` の `top_k`・stream/非 stream のパース）は llama-server と同一なので、この配線は llama-server 相手でもそのまま成り立つ。
+
+```sh
+# 非ストリーミング（top_k を extra_body で送る配線の確認）
+$ python predict_local.py --base-url http://localhost:11434/v1 --model qwen3:1.7b \
+    --max-tokens 400 --prompt "再帰関数とは何か、1文で簡潔に。 /no_think"
+再帰関数は、自身を呼び出すことで問題を小さな部分問題に分解し、ベースケースまで進化させる関数。
+
+# ストリーミング（--stream, delta のパース確認）
+$ python predict_local.py --stream --base-url http://localhost:11434/v1 --model qwen3:1.7b \
+    --max-tokens 400 --prompt "HTTP の GET と POST の違いを1文で。 /no_think"
+GET将参数附加在URL中，POST将数据放在请求体中。
+```
+
+- 確認できたこと: `OpenAI(api_key="EMPTY", base_url=".../v1")` でローカルサーバーに接続し、**`extra_body={"top_k": 40}` がエラーなく受理**され、**非ストリーミング／ストリーミングの両方で応答本文が正しく取得・パース**できた（＝ 手順どおり `base_url` を llama-server に向ければそのまま動く配線であることを実証）。
+- 補足: スタンドインに使った Qwen3 系は reasoning（thinking）モデルのため、トークン枠が小さいと思考だけで枠を使い切り `content` が空になる（`reasoning` フィールドに出る）。上記は `/no_think` ＋十分な `--max-tokens` で最終応答本文を得ている。実際の M3 GGUF ではこの挙動は異なる。
+- 未検証（本環境の制約）: **実 M3 GGUF のロード〜生成**（要 133GB RAM）と **llama.cpp の minimax-m3 ブランチの実ビルド**は未実施。これらは大容量 RAM のマシンで別途確認が必要。
+
 ---
 
 ## 参考: GPU で本格自ホストする場合の要件（vLLM / SGLang）
