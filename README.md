@@ -943,6 +943,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 - ローカル LLM
     - [[In-progress] HuggingFace Transformers を使用して Qwen での推論を行う（ローカル LLM）](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/30)
+    - [MiniMax-M3（MiniMax Sparse Attention 搭載の 1M コンテキスト・マルチモーダル MoE）での推論を行なう](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/66)
     - [CoVe [Chain-of-Verification] を使用して Ollama の Qwen モデルのハルシネーションを低減する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/57)
 
 - Dify
