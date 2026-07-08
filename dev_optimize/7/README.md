@@ -6,14 +6,14 @@ Claude Code は、Anthropic 社が提供するターミナル上で動作する 
 plugin は marketplace（マーケットプレイス）を介して配布され、`/plugin` コマンドからインストールする。
 インストール後は、スラッシュコマンド（`/<plugin名>:<コマンド名>`）やスキルとして呼び出せるようになる。
 
-ここでは、開発作業の効率化に役立つ代表的な plugin（`skill-creator`, `feature-dev`, `commit-commands`, `playwright`, `code-review`, `pr-review-toolkit`）の概要と使用方法を紹介する。
+ここでは、開発作業の効率化に役立つ代表的な plugin（`skill-creator`, `feature-dev`, `commit-commands`, `playwright`, `code-review`, `pr-review-toolkit`, `context7`）の概要と使用方法を紹介する。
 
 ## plugin の全体像
 
 plugin は marketplace を通じて多数公開されており、Anthropic 公式の `claude-plugins-official` だけでも多くの plugin が利用できる（例: 本 Tip で紹介する開発支援系のほか、`slack` 連携や各言語の LSP [Language Server Protocol] plugin など）。
 利用可能な plugin の全一覧は、Claude Code 上で `/plugin` コマンドを実行すると確認できる。
 
-ここで紹介するのはその一部（代表的な開発支援系の6つ）である。
+ここで紹介するのはその一部（代表的な開発支援系の7つ）である。
 plugin は marketplace（plugin の配布元・カタログ）からインストールして使い、1つの plugin は Skill・スラッシュコマンド・サブエージェント・MCP サーバー・hook などの構成要素をまとめたものになっている。
 これらの関係と、紹介する6つを目的別に整理すると以下のようになる。
 
@@ -38,6 +38,9 @@ flowchart TB
         subgraph browser[ブラウザ操作]
             PW[playwright]
         end
+        subgraph docs[ドキュメント参照]
+            C7[context7]
+        end
         subgraph other["その他多数（/plugin で確認）"]
             ETC["slack / 各言語の LSP / ..."]
         end
@@ -50,7 +53,7 @@ flowchart TB
     plugins -->|提供| COMP
 ```
 
-本 Tip では、上記のうち開発支援に役立つ代表的な6つ（`skill-creator`, `feature-dev`, `commit-commands`, `playwright`, `code-review`, `pr-review-toolkit`）の使用方法を紹介する。
+本 Tip では、上記のうち開発支援に役立つ代表的な7つ（`skill-creator`, `feature-dev`, `commit-commands`, `playwright`, `code-review`, `pr-review-toolkit`, `context7`）の使用方法を紹介する。
 
 ## 導入方法
 
@@ -248,6 +251,43 @@ Pull Request（PR）やローカルの差分に対して **コードレビュー
         指定後、該当 PR を取得し、観点ごとの専門エージェントで並列レビューします。
         ```
 
+### context7
+
+外部ライブラリ・フレームワーク・API の **最新かつバージョン対応のドキュメント／コード例** を、MCP サーバー経由で Claude Code の context に取り込む plugin（[Context7](https://context7.com/)、開発元 Upstash）。
+LLM の学習データは古くなりがちで、実在しない API を生成（ハルシネーション）することがあるが、Context7 はドキュメントを公式ソースから直接取得することでこれを防ぐ。
+
+この plugin をインストールすると、以下の構成要素が使えるようになる（plugin が Skill・サブエージェント・スラッシュコマンド・MCP サーバーをまとめて提供する好例）。
+
+- MCP サーバー: `resolve-library-id`（ライブラリ名から Context7 のライブラリ ID を解決）と `query-docs`（ライブラリ ID + クエリでドキュメントを取得）の2つのツール
+- Skill: ライブラリ／API に言及すると、自動でドキュメント取得を発火する
+- サブエージェント `docs-researcher`: ドキュメント検索を分離したコンテキストで実行し、メインの context を圧迫しないようにする
+- スラッシュコマンド `/context7:docs`: 手動でドキュメントを問い合わせる
+
+- 導入方法（plugin）<br>
+    この plugin は公式 marketplace（`claude-plugins-official`）には含まれないため、先に Context7 の marketplace を追加してからインストールする。
+    ```text
+    /plugin marketplace add upstash/context7
+    /plugin install context7@context7-marketplace
+    ```
+
+- 使用方法<br>
+    ライブラリのドキュメントを要する作業を依頼すると Skill が自動で発火する。
+    明示的に使わせたい場合は、プロンプトに `use context7` を付けるか、ライブラリ ID を直接指定する。
+
+    ```text
+    Next.js の App Router でミドルウェアを実装したい。use context7
+    ```
+
+    ```text
+    Supabase で認証を実装したい。use library /supabase/supabase for API and docs.
+    ```
+
+- 補足（MCP サーバーとして直接追加する場合）<br>
+    plugin を使わず MCP サーバーとして追加することもできる。
+    `npx ctx7 setup --claude` を実行すると、OAuth 認証・API キー発行・設定までを対話的に行える（CLI + Skills / MCP のいずれかを選択）。
+    手動設定では、MCP サーバー URL `https://mcp.context7.com/mcp` を使い、API キーを `CONTEXT7_API_KEY` ヘッダーで渡す。
+    無料の API キーは [context7.com/dashboard](https://context7.com/dashboard) で取得でき、取得するとレート制限が緩和される。
+
 ## 参考サイト
 
 - Claude Code 公式ドキュメント: https://code.claude.com/docs/en/overview
@@ -257,3 +297,7 @@ Pull Request（PR）やローカルの差分に対して **コードレビュー
 - plugin の探索・インストール（Discover and install plugins）: https://code.claude.com/docs/en/discover-plugins
 
 - plugin marketplace の作成・配布: https://code.claude.com/docs/en/plugin-marketplaces
+
+- Context7 公式サイト: https://context7.com/
+
+- Context7 リポジトリ（Upstash）: https://github.com/upstash/context7
