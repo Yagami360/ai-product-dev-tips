@@ -829,6 +829,7 @@ AIプロダクト開発のための Tips 集。<br>
         - [[In-progress] Claude の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/25)
         - [Claude 3.5 Sonnet の Artifacts を使用してアプリのコードとデモを自動生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/26)
     - Claude Code
+        - [[In-progress] Claude Code の便利なコマンド集](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/13)
         - [CLAUDE.md により Claude Code でのコード生成品質を向上させる](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/3)
         - [Claude Code GitHub Actions を使用して PR レビューを自動化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/1)
         - [Claude Code GitHub Actions を使用して PR 説明文作成を自動化する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/2)
