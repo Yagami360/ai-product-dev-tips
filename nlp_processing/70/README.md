@@ -1,4 +1,4 @@
-# 【系統(b) 画像化→VLM】折れ線グラフ画像を VLM に見せてセンサー異常検知を行い、系統 (a)(c) と精度比較する
+# 折れ線グラフ画像を VLM に見せてセンサーの異常検知を行い、数値直接入力 / TSFM+LLM 方式と精度比較する
 
 センサー時系列の異常検知に LLM を絡める 3 系統のうち、**系統 (b) 画像化 → マルチモーダル LLM（VLM）**（TAMA / AnomLLM 系）を実際に動かす。センサー値を**折れ線グラフ画像**にして VLM に見せ、**VLM が視覚的に異常な時間帯を読み取る**。検知精度を **[NAB](https://github.com/numenta/NAB) の既知異常区間ラベル**で評価し、**系統 (a) 数値直接入力（[nlp_processing/69](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/69)）**・**系統 (c) TSFM+LLM（[nlp_processing/67](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/67)）**と**同一データ・同一指標で公正に比較**する。
 

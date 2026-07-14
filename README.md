@@ -1000,8 +1000,8 @@ AIプロダクト開発のための Tips 集。<br>
 
 - センサーデータでのマルチモーダル
     - [時系列基盤モデル（Chronos）＋ LLM の 2 段構成で、センサーデータの異常検知から自然言語レポート化までを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/67)
-    - [【系統(a) 数値直接入力】LLM に数値時系列を直接読ませてセンサー異常検知を行い、系統 (b)(c) と精度比較する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/69)
-    - [【系統(b) 画像化→VLM】折れ線グラフ画像を VLM に見せてセンサー異常検知を行い、系統 (a)(c) と精度比較する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/70)
+    - [LLM に数値時系列を直接読ませてセンサーの異常検知を行い、画像化→VLM / TSFM+LLM 方式と精度比較する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/69)
+    - [折れ線グラフ画像を VLM に見せてセンサーの異常検知を行い、数値直接入力 / TSFM+LLM 方式と精度比較する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/70)
     - [[In-progress] SensorLLM（モーションセンサー時系列 × LLM）を実際に動かして、センサー信号からの行動認識（HAR）を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/68)
 
 ## ■ 特許

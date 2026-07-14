@@ -1,4 +1,4 @@
-# 【系統(a) 数値直接入力】LLM に数値時系列を直接読ませてセンサー異常検知を行い、系統 (b)(c) と精度比較する
+# LLM に数値時系列を直接読ませてセンサーの異常検知を行い、画像化→VLM / TSFM+LLM 方式と精度比較する
 
 センサー時系列の異常検知に LLM を絡める 3 系統のうち、**最も軽量な系統 (a) 数値直接入力**（SigLLM / LLMAD / LLMTime 系）を実際に動かす。数値系列をそのままテキスト化して LLM に渡し、**LLM 自身がゼロショットで異常点を検出**する。検知精度を **[NAB](https://github.com/numenta/NAB) の既知異常区間ラベル**で評価し、**系統 (b) 画像化→VLM（[nlp_processing/70](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/70)）**・**系統 (c) TSFM+LLM（[nlp_processing/67](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/67)）**と**同一データ・同一指標で公正に比較**する。
 
