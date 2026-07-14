@@ -947,10 +947,6 @@ AIプロダクト開発のための Tips 集。<br>
     - [MiniMax-M3（MiniMax Sparse Attention 搭載の 1M コンテキスト・マルチモーダル MoE）での推論を行なう](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/66)
     - [CoVe [Chain-of-Verification] を使用して Ollama の Qwen モデルのハルシネーションを低減する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/57)
 
-- マルチモーダル
-    - 時系列データ
-        - [時系列基盤モデル（Chronos）＋ LLM の 2 段構成で、センサーデータの異常検知から自然言語レポート化までを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/67)
-
 - Dify
     - [Dify の概要](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/18)
     - Dify の基本的な使い方（テンプレートを使用した LLM アプリケーションを作成する）
@@ -997,9 +993,14 @@ AIプロダクト開発のための Tips 集。<br>
 - 研究開発 AI Agent
     - [[In-progress] Sakana AI の The AI Scientist-v2 を使用して、AI 研究開発のアイデア生成 → 実験（Agentic Tree Search）→ 論文執筆までを自律実行する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/65)
 
-## ■ Pysical AI / Robotics
+## ■ Pysical AI
 
-- https://github.com/Yagami360/ai-robotics-exercises
+- Robotics
+    - https://github.com/Yagami360/ai-robotics-exercises
+
+- センサーデータでのマルチモーダル
+    - [時系列基盤モデル（Chronos）＋ LLM の 2 段構成で、センサーデータの異常検知から自然言語レポート化までを行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/67)
+    - [[In-progress] SensorLLM（モーションセンサー時系列 × LLM）を実際に動かして、センサー信号からの行動認識（HAR）を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/68)
 
 ## ■ 特許
 
