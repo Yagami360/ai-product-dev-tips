@@ -1,0 +1,19 @@
+[project]
+name = "chronos-llm-anomaly-report"
+version = "0.1.0"
+description = "時系列基盤モデル(Chronos)+LLM の2段構成でセンサー異常検知→自然言語レポート化"
+requires-python = ">=3.11"
+# バージョンは ~= で互換範囲を固定（記事作成時点 2026-07 の最新安定版に合わせる）。
+# ~=2.3 は >=2.3,<3.0 の意味（互換リリース指定）。numpy は chronos が <2.5 を要求するため 2.4 系。
+dependencies = [
+    "chronos-forecasting~=2.3",  # 検知層 TSFM（Chronos / Chronos-Bolt 公式）
+    "torch~=2.13",               # chronos の依存（torch>=2.2 が必要）
+    "numpy~=2.4",                # chronos が numpy<2.5 を要求するため 2.4 系
+    "matplotlib~=3.11",          # 可視化
+    "openai~=2.45",              # 説明層 LLM（OpenAI 互換クライアント。reasoning_effort 対応）
+    "pyyaml~=6.0",               # プロンプト定義(prompts.yaml)の読み込み
+]
+
+# パッケージ（配布物）ではなくアプリなので、uv にビルド対象外だと伝える
+[tool.uv]
+package = false
