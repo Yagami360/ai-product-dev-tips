@@ -1,0 +1,15 @@
+[project]
+name = "tsad-vlm-image"
+version = "0.1.0"
+description = "系統(b) 画像化→VLM: 折れ線グラフ画像を VLM に見せてセンサー異常を検知する"
+requires-python = ">=3.11"
+# バージョンは ~= で互換範囲を固定（記事作成時点 2026-07 の最新安定版に合わせる）。
+dependencies = [
+    "numpy~=2.4",
+    "matplotlib~=3.11",  # 可視化
+    "openai~=2.45",      # LLM（OpenAI 互換クライアント。reasoning_effort 対応）
+    "pyyaml~=6.0",       # プロンプト定義(prompts.yaml)の読み込み
+]
+
+[tool.uv]
+package = false
