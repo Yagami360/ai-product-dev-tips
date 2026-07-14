@@ -83,7 +83,7 @@ make evaluate NAB_KEY=machine-temp
 
 ## 検知のしくみ（予測残差ベースの異常スコア）
 
-Chronos は本来「予測（forecasting）」モデルなので、次の手順で異常検知に転用する。
+この「予測して、予測と実測の差（residual＝残差）を異常スコアにする」方式は、時系列異常検知（TSAD）で標準的な手法カテゴリ **forecasting-based（予測ベース）anomaly detection** に該当する（サーベイでは forecasting / reconstruction / representation / hybrid に分類され、その筆頭。古典の ARIMA/Prophet から深層の LSTM/Transformer まで共通）。Chronos は本来「予測（forecasting）」モデルなので、次の手順で異常検知に転用する。
 
 1. スライディング窓で、各時刻 `t` について直前 `W` 点（既定 96）を文脈に **次の 1 点を確率予測**し、分位点 `q0.1 / q0.5 / q0.9` を得る。
 2. 実測値 `x_t` が予測区間 `[q0.1, q0.9]` の外に出た分を、区間幅（band）で正規化して **異常スコア**とする（区間内なら 0）。
