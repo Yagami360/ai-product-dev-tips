@@ -68,8 +68,16 @@ make run NAB_KEY=cpu         # 別センサー
 | (b) 画像化→VLM（[70](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/70)） | VLM（画像） | **4/4** | **1.00** | 9 | **0.954** | 86 |
 | (c) TSFM+LLM（[67](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/67)） | Chronos（TSFM） | 2/4 | 0.50 | 5 | 0.639 | 9 |
 
-- この設定では **(b) 画像化→VLM が全 4 区間を検出し最高**（ただし検出範囲が広く誤検知も多い）。(a) は誤検知 0 と精密だが recall が低い。(c) は中間。
-- **注意（結果を過度に一般化しない）**: これは**単一データ・単一設定・1 回実行**の例示であり、厳密なベンチマークではない。`--downsample`・しきい値・プロンプト・モデルで結果は大きく変わる（例えば (c) は間引きを細かく（[67](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/67) の既定 downsample 6）すると検出力が上がる）。また **PA-F1 は point-adjust による水増し傾向**があり、本来は VUS-PR / PATE 等の閾値フリー指標や複数データ・複数試行での評価が望ましい。
+### 考察（この結果の読み方 — 重要）
+
+上表を「(b) が (c) より優れている」と一般化してはいけない。以下の理由で、この比較は検知単独・粗い設定・甘い指標の一例にすぎない。
+
+- **学術的にも「どの手法も万能に最良」ではない**: ベンチマーク mTSBench は「どの検出器も全データセットで優位に立てない」、TSB-AD（NeurIPS 2024）は「単純な統計手法がしばしば深層学習を上回り、基盤モデル系（Chronos 等）は**点異常で有望**」と報告。TSFM は有望株だが全ベンチで常勝ではない。
+- **この設定は (c) TSFM に不利**: 3 系統を公平に回すため系列を粗く間引いた（`--downsample 24` / 946 点）。これは Chronos が得意な**細かい時間構造を潰す**ため検出力を下げる。実際 [67](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/67) の細かい設定（downsample 6 / 3783 点）では (c) の検出はより強い。しきい値も未調整。
+- **指標が「広く当てる」方式に有利**: `window_recall` と `PA-F1` は区間内に 1 点でも当たれば高得点になるため、広い時間帯を返す (b) が有利、精密に少数点を返す (a)/(c) が不利に出る（PA-F1 は point-adjust による水増し傾向。本来は VUS-PR / PATE 等の閾値フリー指標が望ましい）。
+- **この比較は「検知精度」だけを見ている**: (c) TSFM+LLM 本来の価値は「数値に強い TSFM で検知 → 言語に強い LLM で説明」の**役割分担**と、**検知＋説明＋コスト＋商用実証の両立**にある。ここでは説明品質（[67](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/67) の LLM-as-judge で 5/5）・コスト・頑健性は測っていないため、検知 F1 だけで (c) を評価すると過小評価になる。
+
+→ まとめると、**(c) TSFM+LLM が「検知＋説明のバランス」で実務的に有力**という位置づけは変わらない。本表は「検知単独・単一データ・粗い設定・甘い指標での一例」として読むこと（`--downsample`・しきい値・プロンプト・モデル・複数データ／試行で結果は変わる）。
 
 ## 注意点・課題
 
