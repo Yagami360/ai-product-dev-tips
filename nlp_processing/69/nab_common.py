@@ -6,10 +6,69 @@
 import csv
 import json
 import os
+import re
 import urllib.request
 from datetime import datetime
 
 import numpy as np
+import yaml
+
+
+def summary_from_flags(series, timestamps, flags):
+    """検知された異常点（時刻・値）の要約テキストを組み立てる（説明層 LLM への入力）。"""
+    idx = [i for i, f in enumerate(flags) if f]
+    lines = [f"検知された異常点数: {len(idx)}", "異常点（時刻, 値）:"]
+    lines += [f"- {timestamps[i]:%Y-%m-%d %H:%M}: 値={series[i]:.2f}" for i in idx]
+    return "\n".join(lines)
+
+
+def generate_report(summary, data_label, prompts_path, base_url, model, api_key, reasoning_effort=None):
+    """検知結果の要約を LLM に渡し、運用向けの自然言語レポートを生成する（プロンプトは prompts.yaml）。"""
+    from openai import OpenAI
+    with open(prompts_path) as f:
+        prompts = yaml.safe_load(f)
+    kwargs = {"reasoning_effort": reasoning_effort} if reasoning_effort else {}
+    client = OpenAI(api_key=api_key, base_url=base_url)
+    resp = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "system", "content": prompts["report_system"]},
+                  {"role": "user", "content": prompts["report_user_template"].format(
+                      data_label=data_label, summary=summary)}],
+        temperature=0.3, **kwargs,
+    )
+    return resp.choices[0].message.content or ""
+
+
+def extract_json_list(content):
+    """LLM/VLM 応答から JSON 配列を頑健に取り出す。
+
+    コードフェンス・前後の散文・{"anomalies": [...]} のような dict ラッパーに対応し、
+    スキーマ逸脱時もクラッシュせず空配列を返す（無言の 0 検出を避けるため呼び出し側で警告する）。
+    """
+    if not content:
+        return []
+    m = re.search(r"\[.*\]", content, re.S)  # 最初の [ ... ] を抽出
+    try:
+        data = json.loads(m.group(0) if m else content)
+    except json.JSONDecodeError:
+        return None  # パース失敗（呼び出し側で警告）
+    if isinstance(data, dict):  # {"anomalies": [...]} 等のラッパー
+        for v in data.values():
+            if isinstance(v, list):
+                return v
+        return []
+    return data if isinstance(data, list) else []
+
+
+def parse_dt_flexible(s):
+    """VLM が返す時刻文字列を柔軟にパース（ISO の T 区切りや秒付きにも対応）。失敗時 None。"""
+    s = str(s).strip().replace("T", " ")
+    for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(s, fmt)
+        except ValueError:
+            continue
+    return None
 
 NAB_BASE = "https://raw.githubusercontent.com/numenta/NAB/master"
 NAB_LABELS_URL = f"{NAB_BASE}/labels/combined_windows.json"
@@ -116,5 +175,5 @@ def save_plot(series, timestamps, pred_flags, gt_windows, path, title=""):
     if title:
         ax.set_title(title)
     ax.legend(loc="upper right", fontsize=8)
-    fig.autofmt_xdate(); fig.tight_layout(); fig.savefig(path, dpi=110)
+    fig.autofmt_xdate(); fig.tight_layout(); fig.savefig(path, dpi=110); plt.close(fig)
     print(f"[plot] saved: {path}")

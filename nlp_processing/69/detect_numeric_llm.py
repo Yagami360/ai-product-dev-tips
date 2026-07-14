@@ -1,7 +1,5 @@
 import argparse
-import json
 import os
-import re
 
 import numpy as np
 import yaml
@@ -21,7 +19,8 @@ PROMPTS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prompts
 
 
 def detect_numeric_llm(series, timestamps, data_label, base_url, model, api_key, reasoning_effort):
-    prompts = yaml.safe_load(open(PROMPTS_PATH))
+    with open(PROMPTS_PATH) as f:
+        prompts = yaml.safe_load(f)
     lines = "\n".join(f"{i},{timestamps[i]:%Y-%m-%d %H:%M},{series[i]:.2f}" for i in range(len(series)))
     user = prompts["detect_user_template"].format(data_label=data_label, n=len(series), series_text=lines)
     kwargs = {"reasoning_effort": reasoning_effort} if reasoning_effort else {}
@@ -33,17 +32,23 @@ def detect_numeric_llm(series, timestamps, data_label, base_url, model, api_key,
                   {"role": "user", "content": user}],
         temperature=0.0, **kwargs,
     )
-    content = (resp.choices[0].message.content or "").strip()
-    content = re.sub(r"^```(?:json)?|```$", "", content, flags=re.M).strip()
-    try:
-        items = json.loads(content)
-    except json.JSONDecodeError:
-        items = []
+    raw = nab.extract_json_list((resp.choices[0].message.content or "").strip())
+    if raw is None:
+        print("[warn] LLM 応答を JSON として解釈できませんでした（0 検出扱い）")
+        raw = []
+
+    # 応答のゆれに頑健に対応（要素が dict でも素の数値/文字列でも index を取り出し、float/str も int 化）
     flags = np.zeros(len(series), dtype=bool)
-    for it in items:
-        i = it.get("index")
-        if isinstance(i, int) and 0 <= i < len(series):
+    items = []
+    for it in raw:
+        idx = it.get("index") if isinstance(it, dict) else it
+        try:
+            i = int(idx)
+        except (TypeError, ValueError):
+            continue
+        if 0 <= i < len(series):
             flags[i] = True
+            items.append({"index": i, "reason": it.get("reason", "") if isinstance(it, dict) else ""})
     return flags, items
 
 
@@ -70,14 +75,28 @@ if __name__ == "__main__":
     print(f"[eval] {metrics}")
 
     nab.save_plot(series, timestamps, flags, gt_windows,
-                  f"images/{args.nab_key}_numeric_llm.png", title="(a) numeric-input LLM")
+                  f"images/{args.nab_key}_numeric_llm.png", title="numeric-input LLM")
+
+    # 説明層: 検知結果から運用レポートを生成（異常があれば）
+    report = ""
+    if int(flags.sum()) > 0:
+        summary = nab.summary_from_flags(series, timestamps, flags)
+        try:
+            report = nab.generate_report(summary, label, PROMPTS_PATH, args.base_url, args.llm_model,
+                                         api_key, args.reasoning_effort)
+            print("\n===== 自然言語レポート（LLM）=====")
+            print(report)
+        except Exception as e:
+            print(f"[warn] レポート生成に失敗: {e}")
+
     os.makedirs("reports", exist_ok=True)
     with open(f"reports/{args.nab_key}.md", "w") as f:
-        f.write(f"# 系統(a) 数値直接入力 検知レポート\n\n- データ: {label}（{len(series)} 点）\n")
+        f.write(f"# 数値直接入力によるセンサー異常検知レポート\n\n- データ: {label}（{len(series)} 点）\n")
         f.write(f"- 検知モデル: {args.llm_model}\n- 評価（NAB 既知異常区間ラベル基準）: {metrics}\n\n")
         f.write("## 検出した異常点\n\n")
         for it in items:
-            i = it.get("index")
-            if isinstance(i, int) and 0 <= i < len(series):
-                f.write(f"- index={i} ({timestamps[i]:%Y-%m-%d %H:%M}, 値={series[i]:.2f}): {it.get('reason','')}\n")
+            i = it["index"]
+            f.write(f"- {timestamps[i]:%Y-%m-%d %H:%M}（値={series[i]:.2f}）: {it.get('reason','')}\n")
+        if report:
+            f.write(f"\n## 自然言語レポート（LLM: {args.llm_model}）\n\n{report}\n")
     print(f"[report] saved: reports/{args.nab_key}.md")

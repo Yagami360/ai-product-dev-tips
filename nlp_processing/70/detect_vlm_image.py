@@ -1,9 +1,6 @@
 import argparse
 import base64
-import json
 import os
-import re
-from datetime import datetime
 
 import numpy as np
 import yaml
@@ -35,7 +32,8 @@ def render_series_png(series, timestamps, path):
 
 
 def detect_vlm_image(series, timestamps, img_path, data_label, base_url, model, api_key, reasoning_effort):
-    prompts = yaml.safe_load(open(PROMPTS_PATH))
+    with open(PROMPTS_PATH) as f:
+        prompts = yaml.safe_load(f)
     user_text = prompts["detect_user_template"].format(
         data_label=data_label, t_start=f"{timestamps[0]:%Y-%m-%d %H:%M}", t_end=f"{timestamps[-1]:%Y-%m-%d %H:%M}")
     with open(img_path, "rb") as f:
@@ -54,20 +52,18 @@ def detect_vlm_image(series, timestamps, img_path, data_label, base_url, model, 
         ],
         temperature=0.0, **kwargs,
     )
-    content = (resp.choices[0].message.content or "").strip()
-    content = re.sub(r"^```(?:json)?|```$", "", content, flags=re.M).strip()
-    try:
-        ranges = json.loads(content)
-    except json.JSONDecodeError:
+    ranges = nab.extract_json_list((resp.choices[0].message.content or "").strip())
+    if ranges is None:
+        print("[warn] VLM 応答を JSON として解釈できませんでした（0 検出扱い）")
         ranges = []
 
     flags = np.zeros(len(series), dtype=bool)
     parsed = []
     for r in ranges:
-        try:
-            s = datetime.strptime(r["start"][:16], "%Y-%m-%d %H:%M")
-            e = datetime.strptime(r["end"][:16], "%Y-%m-%d %H:%M")
-        except (KeyError, ValueError, TypeError):
+        if not isinstance(r, dict):
+            continue
+        s, e = nab.parse_dt_flexible(r.get("start")), nab.parse_dt_flexible(r.get("end"))
+        if s is None or e is None:
             continue
         parsed.append((s, e, r.get("reason", "")))
         for i, t in enumerate(timestamps):
@@ -101,14 +97,29 @@ if __name__ == "__main__":
     print(f"[detect] 系統(b) 画像化→VLM: 異常時間帯 {len(parsed)} 個 / 異常 {int(flags.sum())} 点")
     print(f"[eval] {metrics}")
 
-    # 3. 検知結果を重畳した図と、レポートを保存
+    # 3. 検知結果を重畳した図を保存
     nab.save_plot(series, timestamps, flags, gt_windows,
-                  f"images/{args.nab_key}_vlm_image.png", title="(b) image -> VLM")
+                  f"images/{args.nab_key}_vlm_image.png", title="image -> VLM")
+
+    # 4. 説明層: 検知結果から運用レポートを生成（異常があれば）
+    report = ""
+    if int(flags.sum()) > 0:
+        summary = nab.summary_from_flags(series, timestamps, flags)
+        try:
+            report = nab.generate_report(summary, label, PROMPTS_PATH, args.base_url, args.llm_model,
+                                         api_key, args.reasoning_effort)
+            print("\n===== 自然言語レポート（LLM）=====")
+            print(report)
+        except Exception as e:
+            print(f"[warn] レポート生成に失敗: {e}")
+
     os.makedirs("reports", exist_ok=True)
     with open(f"reports/{args.nab_key}.md", "w") as f:
-        f.write(f"# 系統(b) 画像化→VLM 検知レポート\n\n- データ: {label}（{len(series)} 点）\n")
+        f.write(f"# 画像化→VLM によるセンサー異常検知レポート\n\n- データ: {label}（{len(series)} 点）\n")
         f.write(f"- 検知モデル(VLM): {args.llm_model}\n- 評価（NAB 既知異常区間ラベル基準）: {metrics}\n\n")
         f.write("## 検出した異常時間帯\n\n")
         for s, e, reason in parsed:
             f.write(f"- {s:%Y-%m-%d %H:%M} 〜 {e:%Y-%m-%d %H:%M}: {reason}\n")
+        if report:
+            f.write(f"\n## 自然言語レポート（LLM: {args.llm_model}）\n\n{report}\n")
     print(f"[report] saved: reports/{args.nab_key}.md")
