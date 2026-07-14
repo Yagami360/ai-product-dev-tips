@@ -1,6 +1,6 @@
 ---
 name: ai-tech-catchup
-description: 最新AI技術動向のレポート（最新 / 週次 / 月次 / 特定トピック別）を Web 検索・WebFetch・GitHub/Hugging Face MCP で調査して生成し、Yagami360/ai-product-dev-tips リポジトリの GitHub Issue として投稿するスキル。ユーザーが「AI技術のキャッチアップ」「最新AIニュースまとめ」「週次/月次のAI動向レポート」「〇〇（例: AI Agent, RAG, VLM, Physical AI, Claude Code）についての技術調査レポート」「AI Tech Catchup レポートを作って」などを求めたとき、たとえ "skill" や "Issue" という単語が無くても必ずこのスキルを使うこと。直近のAI業界の最新情報を調べてまとめてほしい・GitHub Issue 化してほしいという依頼全般で発動する。AI とは無関係な一般的な技術調査や、このリポジトリへの Tip 追加（ai-product-dev-tips-create スキルの領分）には使わない。
+description: '最新AI技術動向のレポート（最新 / 週次 / 月次 / 特定トピック別）を Web 検索・WebFetch・GitHub/Hugging Face MCP で調査して生成し、Yagami360/ai-product-dev-tips リポジトリの GitHub Issue として投稿するスキル。ユーザーが「AI技術のキャッチアップ」「最新AIニュースまとめ」「週次/月次のAI動向レポート」「〇〇（例: AI Agent, RAG, VLM, Physical AI, Claude Code）についての技術調査レポート」「AI Tech Catchup レポートを作って」などを求めたとき、たとえ "skill" や "Issue" という単語が無くても必ずこのスキルを使うこと。直近のAI業界の最新情報を調べてまとめてほしい・GitHub Issue 化してほしいという依頼全般で発動する。AI とは無関係な一般的な技術調査や、このリポジトリへの Tip 追加（ai-product-dev-tips-create スキルの領分）には使わない。'
 ---
 
 # AI Tech Catchup
