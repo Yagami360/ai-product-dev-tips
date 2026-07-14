@@ -135,11 +135,13 @@ def build_prompt(args, model, tokenizer, chronos_tokenizer, series):
     context = series.unsqueeze(0)  # (1, L)
     ts_token_ids, ts_attention_mask, _ = chronos_tokenizer.context_input_transform(context)
 
-    # <ts> プレースホルダ数は Chronos が実際に出力したトークン長 + 1(last_token=True)。
-    # 生系列長ではなく tokenized 長を使うことで、Chronos の context_length(既定 512)による
-    # 切り詰めが起きても埋め込み数とプレースホルダ数が一致する。start/end トークンで挟む。
+    # <ts> プレースホルダ数は Chronos の実出力トークン長に一致させる。
+    # context_input_transform の出力長は EOS を含む min(系列長, context_length)+1 なので、
+    # last_token=True なら EOS 込みのトークン長そのもの、False なら EOS を除いた長さを使う。
+    # 生系列長ではなく tokenized 長を使うことで、context_length(既定 512)による切り詰めが
+    # 起きても、Chronos エンコーダが出力する埋め込み数とプレースホルダ数が一致する。
     ts_token = data_args["default_ts_token"]
-    n_ts = ts_token_ids.shape[-1] + (1 if last_token else 0)
+    n_ts = ts_token_ids.shape[-1] - (0 if last_token else 1)
     modified_q = start_tokens[channel] + ts_token * n_ts + end_tokens[channel] + args.question
 
     prompt = generate_chat_template(

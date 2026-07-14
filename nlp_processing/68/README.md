@@ -174,7 +174,7 @@ flowchart LR
 - 追加した Python コードの主なポイント
     - [`predict.py`](predict.py): 公式リポジトリの `sensorllm` パッケージを import して使う（`PYTHONPATH` に clone 先を通す）。
         - `load_model()`: `eval.py` の `init_model()` と同じ手順で、Stage1 重み＋Chronos バックボーン（既定 `amazon/chronos-t5-large`）をロードし、特殊トークン／チャネル設定をデータセットに合わせて初期化。
-        - `build_prompt()`: `stage1_dataset.py` の `preprocess_time_series2` と同じ規則で、`start_token + <ts>×(Chronos トークン長+1) + end_token + 質問` のプロンプトと、`chronos_tokenizer.context_input_transform()` による ts トークンを構築。プレースホルダ数は生系列長ではなく Chronos の実出力トークン長から数えるため、context_length（既定 512）超の入力でも埋め込み数と一致する。
+        - `build_prompt()`: `stage1_dataset.py` の `preprocess_time_series2` と同じ規則で、`start_token + <ts>×(Chronos トークン長) + end_token + 質問` のプロンプトと、`chronos_tokenizer.context_input_transform()` による ts トークンを構築。`<ts>` 数は生系列長ではなく **Chronos の実出力トークン長（EOS 込み `min(系列長, 512)+1`）に一致**させるため、context_length（既定 512）超の入力でも Chronos エンコーダの埋め込み数と一致する（CPU 実機で L=200/512/600/1000 について検証済み）。
         - `--dtype {bfloat16,float16,float32}`: T4/V100 では `float16` を指定。`--input <1次元 .npy>` で自前のセンサー系列も使える（未指定なら合成波形）。
     - 実行スクリプト: [`run_predict.sh`](run_predict.sh)（公式リポジトリの clone → 依存インストール → 推論）。
 
