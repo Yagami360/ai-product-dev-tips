@@ -42,6 +42,32 @@ train = [
     "statsmodels~=0.14", # Stage2 QA 生成の自己相関(acf)計算
 ]
 
+# 開発ツール（lint / format）。make install で入る。
+dev = [
+    "flake8~=7.1",
+    "mypy~=1.11",
+    "black~=24.8",
+    "isort~=5.13",
+    "types-PyYAML~=6.0",  # yaml の型スタブ（mypy 用）
+]
+
+[tool.black]
+line-length = 150
+
+[tool.isort]
+profile = "black"
+line_length = 150
+
+[tool.mypy]
+# torch / sensorllm 等は型スタブ未提供・ローカル未導入なので import エラーは無視
+ignore_missing_imports = true
+
+# 自動生成（公式ノート由来）の prep スクリプトは動的な dict/list/ファイル操作が多く、
+# 静的型推論と相性が悪い。型チェック対象には含めるが、当該の偽陽性コードのみ緩和する。
+[[tool.mypy.overrides]]
+module = ["mhealth_stage1_prep", "mhealth_stage2_prep"]
+disable_error_code = ["attr-defined", "assignment", "arg-type", "index"]
+
 # アプリ本体をパッケージ化しない（依存だけを .venv に入れる仮想プロジェクト）
 [tool.uv]
 package = false

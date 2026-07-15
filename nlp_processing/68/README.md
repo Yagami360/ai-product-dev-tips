@@ -72,7 +72,7 @@ flowchart LR
 
 ## 必要リソース（事前チェックリスト）
 
-1. **GPU**: **2 段学習は Ampere 以降が推奨**。公式の学習エントリ `train_mem.py` は flash-attn 2 を強制 import する（flash-attn 2 は Turing/Volta 非対応）が、本 Tip は flash-attn を使わない [`train_entry.py`](train_entry.py)（標準 attention）で回避している。ただし**学習は bf16 前提のため、bf16 が使える Ampere 以降でないと実質動かない**（T4・V100 は bf16 非対応）。一方**推論（`eval.py` / 後述の `stage1_predict.py`）は flash-attn を import しない**ので、`--dtype float16` にすれば T4・V100 でも動く（下表参照）。VRAM はベース LLaMA サイズに依存。<br><br>
+1. **GPU**: **2 段学習は Ampere 以降が必須**（A100 等）。公式の学習エントリ `train_mem.py` は flash-attn 2 を使う。本 Tip は **flash-attn 2 のプリビルド wheel（torch2.4 / CUDA12 / cp311 一致）を `Dockerfile` で焼き込み**、公式の `train_mem.py` をそのまま使う。プリビルド wheel なので **ソースビルド（nvcc＝CUDA dev toolkit・数十分のコンパイル）は不要**で、軽量な `-runtime` イメージのまま入る。**flash-attn 2 は Turing/Volta（T4・V100）非対応・bf16 も非対応**なので、学習は Ampere 以降が必要。一方**推論（`eval.py` / 後述の `stage1_predict.py`）は flash-attn を import しない**ので、`--dtype float16` にすれば T4・V100 でも動く（下表参照）。VRAM はベース LLaMA サイズに依存。<br><br>
 
     | 用途 | 最低ライン | 目安 |
     |---|---|---|
@@ -221,12 +221,13 @@ Q: Detect anomalies in this sensor reading and report when they occur.
 <details>
 <summary>参考: make が内部で実行している生コマンド（torchrun）</summary>
 
-学習は公式の `train_mem.py` ではなく [`train_entry.py`](train_entry.py) を使う（`train_mem.py` は先頭で **flash-attn 2 を強制 import** するため未導入だと落ちる。`train_entry.py` は `train.train()` を直接呼び、標準 attention で学習する）。`train.py` は相対で `./sensorllm/model/ts_backbone.yaml` と `../metrics/*` を開くため、`cwd=/opt/SensorLLM` で実行する。
+学習は公式の `train_mem.py`（flash-attn 2 使用。wheel をイメージに焼き込み済み）を使う。`train.py` は相対で `./sensorllm/model/ts_backbone.yaml` と `../metrics/*` を開くため **`cwd=/opt/SensorLLM` で実行**し、`uv` には `--project /app`（`pyproject.toml`/venv の場所）を渡す。
 
 Stage 1（アラインメント）:
 
 ```bash
-cd /opt/SensorLLM && torchrun --nproc_per_node=1 /app/train_entry.py \
+cd /opt/SensorLLM && uv run --project /app torchrun --nproc_per_node=1 \
+  /opt/SensorLLM/sensorllm/train/train_mem.py \
   --model_name_or_path TinyLlama/TinyLlama-1.1B-Chat-v1.0 --pt_encoder_backbone_ckpt /app/chronos_t5_base \
   --tokenize_method 'StanNormalizeUniformBins' --dataset mhealth \
   --data_path /app/data/train/mhealth_train_data_stage1.pkl \
@@ -240,7 +241,8 @@ cd /opt/SensorLLM && torchrun --nproc_per_node=1 /app/train_entry.py \
 Stage 2（HAR 分類）:
 
 ```bash
-cd /opt/SensorLLM && torchrun --nproc_per_node=1 /app/train_entry.py \
+cd /opt/SensorLLM && uv run --project /app torchrun --nproc_per_node=1 \
+  /opt/SensorLLM/sensorllm/train/train_mem.py \
   --model_name_or_path /app/out_stage1 --pt_encoder_backbone_ckpt /app/chronos_t5_base \
   --model_type "SequenceClassification" --num_labels 12 --use_weighted_loss True \
   --tokenize_method 'StanNormalizeUniformBins' --dataset mhealth \

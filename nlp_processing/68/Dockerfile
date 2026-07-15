@@ -47,4 +47,11 @@ WORKDIR /app
 COPY pyproject.toml ./
 RUN uv sync --extra cu121 --extra train
 
+# flash-attn（公式の学習エントリ train_mem.py が要求）をプリビルド wheel で焼き込む。
+# torch 2.4 / CUDA 12 / cp311 / cxx11abiFALSE 一致の wheel を Dao-AILab リリースから取得するため、
+# ソースビルド（nvcc/CUDA dev toolkit・数十分）が不要で、軽量な -runtime ベースのまま入る。
+# 別バージョンの torch/python に変えた場合はこの URL も合わせて差し替えること。
+ARG FLASH_ATTN_WHEEL=https://github.com/Dao-AILab/flash-attention/releases/download/v2.6.3/flash_attn-2.6.3+cu123torch2.4cxx11abiFALSE-cp311-cp311-linux_x86_64.whl
+RUN uv pip install --python /opt/uv-venv/bin/python ${FLASH_ATTN_WHEEL}
+
 CMD ["bash"]

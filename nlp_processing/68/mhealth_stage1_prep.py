@@ -1,30 +1,36 @@
 """公式ノート mhealth_stageN.ipynb 相当の学習データ生成スクリプト(自動生成)。
 MHealth を取得して ./MHEALTHDATASET/ に展開し、./data 配下に pkl + QA-JSON を出力する。"""
-import os, io, zipfile, urllib.request
+
+import io
+import json
+import os
+import pickle
+import random
+import re
+import urllib.request
+import zipfile
+from datetime import datetime
+
+import numpy as np
+import pandas as pd
+
 if not os.path.isdir("MHEALTHDATASET"):
     print("[prep] downloading MHealth ...", flush=True)
     with urllib.request.urlopen("https://archive.ics.uci.edu/static/public/319/mhealth+dataset.zip", timeout=180) as r:
         zipfile.ZipFile(io.BytesIO(r.read())).extractall(".")
-os.makedirs("data/train", exist_ok=True); os.makedirs("data/test", exist_ok=True)
+os.makedirs("data/train", exist_ok=True)
+os.makedirs("data/test", exist_ok=True)
 
-import pandas as pd
-import numpy as np
-from scipy.io import loadmat
-import random
-import os
-import re
-import pickle
-import torch
 
 def check_label_continuity(df):
     continuity_segments = {}
 
-    for subject in df['subject'].unique():
-        subject_data = df[df['subject'] == subject]
-        assert subject_data.index[0]==0
+    for subject in df["subject"].unique():
+        subject_data = df[df["subject"] == subject]
+        assert subject_data.index[0] == 0
 
-        for label in subject_data['activity'].unique():
-            label_data = subject_data[subject_data['activity'] == label]
+        for label in subject_data["activity"].unique():
+            label_data = subject_data[subject_data["activity"] == label]
 
             indices = label_data.index
             segments = []
@@ -42,6 +48,7 @@ def check_label_continuity(df):
                 continuity_segments[(subject, label)] = segments
 
     return continuity_segments
+
 
 def generate_window_sizes(sequence_length, window_size_list):
     min_window_size, max_window_size = window_size_list[0], window_size_list[1]
@@ -64,7 +71,7 @@ def generate_window_sizes(sequence_length, window_size_list):
 def split_sequences(sequences, window_size_list, n=1):
     assert len(sequences[0]) == 15
     # 检查是否存在空值
-    has_null = any(any(pd.isnull(item) or item == '' for item in sublist) for sublist in sequences)
+    has_null = any(any(pd.isnull(item) or item == "" for item in sublist) for sublist in sequences)
 
     # 输出结果
     if has_null:
@@ -88,22 +95,23 @@ def split_sequences(sequences, window_size_list, n=1):
             start = end
     return segments, labels
 
+
 activity_map = {
-    1: 'Standing still (1 min)',
-    2: 'Sitting and relaxing (1 min)',
-    3: 'Lying down (1 min)',
-    4: 'Walking (1 min)',
-    5: 'Climbing stairs (1 min)',
-    6: 'Waist bends forward (20x)',
-    7: 'Frontal elevation of arms (20x)',
-    8: 'Knees bending (crouching) (20x)',
-    9: 'Cycling (1 min)',
-    10: 'Jogging (1 min)',
-    11: 'Running (1 min)',
-    12: 'Jump front & back (20x)'
+    1: "Standing still (1 min)",
+    2: "Sitting and relaxing (1 min)",
+    3: "Lying down (1 min)",
+    4: "Walking (1 min)",
+    5: "Climbing stairs (1 min)",
+    6: "Waist bends forward (20x)",
+    7: "Frontal elevation of arms (20x)",
+    8: "Knees bending (crouching) (20x)",
+    9: "Cycling (1 min)",
+    10: "Jogging (1 min)",
+    11: "Running (1 min)",
+    12: "Jump front & back (20x)",
 }
-test_id = ['subject1', 'subject3', 'subject6']
-window_size=[5, 100]
+test_id = ["subject1", "subject3", "subject6"]
+window_size = [5, 100]
 
 all_train_segments = []
 all_test_segments = []
@@ -111,41 +119,45 @@ all_train_labels = []
 all_test_labels = []
 
 for i in range(1, 11):
-    df = pd.read_csv(f'./MHEALTHDATASET/mHealth_subject{i}.log', header=None, sep='\t')
+    df = pd.read_csv(f"./MHEALTHDATASET/mHealth_subject{i}.log", header=None, sep="\t")
     # Note: Excluding the ECG data collected with the chest sensor
-    df = df.loc[:, [0, 1, 2, 5, 6, 7, 8, 9, 10, 14, 15, 16, 17, 18, 19, 23]].rename(columns= {
-        0: 'acc_ch_x',
-        1: 'acc_ch_y',
-        2: 'acc_ch_z',
-        5: 'acc_la_x',
-        6: 'acc_la_y',
-        7: 'acc_la_z',
-        8: 'gyr_la_x',
-        9: 'gyr_la_y',
-        10: 'gyr_la_z',
-        14: 'acc_rw_x',
-        15: 'acc_rw_y',
-        16: 'acc_rw_z',
-        17: 'gyr_rw_x',
-        18: 'gyr_rw_y',
-        19: 'gyr_rw_z',
-        23: 'activity'
-    })
-    df['subject'] = f'subject{i}'
+    df = df.loc[:, [0, 1, 2, 5, 6, 7, 8, 9, 10, 14, 15, 16, 17, 18, 19, 23]].rename(
+        columns={
+            0: "acc_ch_x",
+            1: "acc_ch_y",
+            2: "acc_ch_z",
+            5: "acc_la_x",
+            6: "acc_la_y",
+            7: "acc_la_z",
+            8: "gyr_la_x",
+            9: "gyr_la_y",
+            10: "gyr_la_z",
+            14: "acc_rw_x",
+            15: "acc_rw_y",
+            16: "acc_rw_z",
+            17: "gyr_rw_x",
+            18: "gyr_rw_y",
+            19: "gyr_rw_z",
+            23: "activity",
+        }
+    )
+    df["subject"] = f"subject{i}"
     continuity_segments = check_label_continuity(df)
     for key, value in continuity_segments.items():
-        if key[1] == 0: # class != 1
+        if key[1] == 0:  # class != 1
             continue
         for segment in value:
             # 划分时间序列数据为片段
-            rows = df.loc[segment[0]:segment[1]]
+            rows = df.loc[segment[0] : segment[1]]
 
-            assert len(rows['subject'].unique()) == 1
-            assert rows['subject'].unique()[0] == key[0]
-            assert len(rows['activity'].unique()) == 1, f"Subject {key[0]}, activity {key[1]} but has {rows['activity'].unique()},  {segment[0]} 到 {segment[1]}"
-            assert rows['activity'].unique()[0] == key[1]
+            assert len(rows["subject"].unique()) == 1
+            assert rows["subject"].unique()[0] == key[0]
+            assert (
+                len(rows["activity"].unique()) == 1
+            ), f"Subject {key[0]}, activity {key[1]} but has {rows['activity'].unique()},  {segment[0]} 到 {segment[1]}"
+            assert rows["activity"].unique()[0] == key[1]
 
-            subject_activity_df = rows.iloc[:, ~rows.columns.isin(['subject', 'activity'])]
+            subject_activity_df = rows.iloc[:, ~rows.columns.isin(["subject", "activity"])]
             subject_activity_series = subject_activity_df.values.tolist()
 
             if key[0] not in test_id:
@@ -156,12 +168,7 @@ for i in range(1, 11):
                 all_test_segments.extend(segments)
 
             for label in labels:
-                label_dict = {
-                    "subject": key[0],
-                    "activity_name": activity_map[key[1]],
-                    "activity": key[1]-1,
-                    "segments": label
-                }
+                label_dict = {"subject": key[0], "activity_name": activity_map[key[1]], "activity": key[1] - 1, "segments": label}
                 if key[0] not in test_id:
                     all_train_labels.append(label_dict)
                 else:
@@ -174,34 +181,23 @@ print(f"all_test_labels: {len(all_test_labels)}")
 
 output_path = "./data"
 
-with open(os.path.join(output_path, 'train', 'mhealth_train_data_stage1.pkl'), 'wb') as f:
+with open(os.path.join(output_path, "train", "mhealth_train_data_stage1.pkl"), "wb") as f:
     pickle.dump(all_train_segments, f)
 
-with open(os.path.join(output_path, 'test', 'mhealth_test_data_stage1.pkl'), 'wb') as f:
+with open(os.path.join(output_path, "test", "mhealth_test_data_stage1.pkl"), "wb") as f:
     pickle.dump(all_test_segments, f)
 
-with open(os.path.join(output_path, 'train', 'mhealth_train_labels_stage1.pkl'), 'wb') as f:
+with open(os.path.join(output_path, "train", "mhealth_train_labels_stage1.pkl"), "wb") as f:
     pickle.dump(all_train_labels, f)
 
-with open(os.path.join(output_path, 'test', 'mhealth_test_labels_stage1.pkl'), 'wb') as f:
+with open(os.path.join(output_path, "test", "mhealth_test_labels_stage1.pkl"), "wb") as f:
     pickle.dump(all_test_labels, f)
 
 print(all_test_labels[0])
 
 PROMPT_DICT = {
-    "trend_synonyms": {
-        "upward": "downward",
-        "ascending": "descending",
-        "rising": "falling",
-        "increasing": "decreasing",
-        "growing": "declining"
-    },
-    "steady_synonyms": [
-        "steady",
-        "constant",
-        "stable",
-        "consistent"
-    ],
+    "trend_synonyms": {"upward": "downward", "ascending": "descending", "rising": "falling", "increasing": "decreasing", "growing": "declining"},
+    "steady_synonyms": ["steady", "constant", "stable", "consistent"],
     "gen_smry_q": [
         "Could you provide a summary of the main features of the input {data} and the distribution of the trends?",
         "Please give an overview of the essential attributes of the input {data} and the spread of the trends.",
@@ -238,7 +234,7 @@ PROMPT_DICT = {
         "Summarize the {data}'s core features and trend dissemination.",
         "What are the fundamental traits and trend arrangement in the {data}?",
         "Give a summary of the {data}'s main elements and trend apportionment.",
-        "Describe the salient features and trend distribution within the {data}."
+        "Describe the salient features and trend distribution within the {data}.",
     ],
     "gen_summary_1": [
         "The given {data_name} representing the {sensor_name} sensor readings from {start_time}s to {end_time}s.",
@@ -248,7 +244,8 @@ PROMPT_DICT = {
         "The {data_name} encapsulates {sensor_name} sensor readings from {start_time}s to {end_time}s.",
         "Readings from an {sensor_name} sensor, captured from {start_time} seconds to {end_time} seconds, are depicted in the given {data_name}.",
         "The {data_name} illustrates measurements from an {sensor_name} sensor between {start_time} and {end_time} seconds.",
-        "Presented is a span of {data_name}, indicating readings from an {sensor_name} sensor taken within the {start_time} to {end_time} second timeframe.",
+        "Presented is a span of {data_name}, indicating readings from an {sensor_name} sensor taken within the {start_time} to {end_time} second "
+        "timeframe.",
         "This {data_name} reflects the output from an {sensor_name} sensor, measured from {start_time} seconds to {end_time} seconds.",
         "The presented {data_name} depicts the measurements obtained from an {sensor_name} sensor between {start_time} and {end_time} seconds.",
         "The {data_name} provided represents the output of an {sensor_name} sensor recorded between {start_time}s and {end_time}s.",
@@ -268,7 +265,8 @@ PROMPT_DICT = {
         "Readings from an {sensor_name} sensor between {start_time}s and {end_time}s are chronicled in the given {data_name}.",
         "The {data_name} illustrates {sensor_name} sensor readings between {start_time} and {end_time} seconds.",
         "Recordings from an {sensor_name} sensor, between {start_time} and {end_time} seconds, are conveyed in this {data_name}.",
-        "The {data_name} provided is a representation of the {sensor_name} sensor's output recorded continuously within the {start_time} to {end_time} second timeframe.",
+        "The {data_name} provided is a representation of the {sensor_name} sensor's output recorded continuously within the {start_time} to "
+        "{end_time} second timeframe.",
         "The presented {data_name} encapsulates the {sensor_name} sensor's readings collected sequentially between {start_time}s and {end_time}s.",
         "The {data_name} under consideration contains the {sensor_name} sensor's output captured from {start_time} seconds to {end_time} seconds.",
         "The provided {data_name} shows readings from the {sensor_name} sensor from {start_time}s to {end_time}s.",
@@ -281,7 +279,7 @@ PROMPT_DICT = {
         "{sensor_name} readings between {start_time}s and {end_time}s are displayed in {data_name}.",
         "{sensor_name} sensor readings are captured in {data_name} within the {start_time} to {end_time} second timeframe.",
         "From {start_time}s to {end_time}s, {sensor_name} data is showcased in the {data_name}.",
-        "The {data_name} exhibits {sensor_name} readings from {start_time} seconds to {end_time} seconds."
+        "The {data_name} exhibits {sensor_name} readings from {start_time} seconds to {end_time} seconds.",
     ],
     "gen_summary_2": [
         "The data exhibits {trend_num} distinct trends, with a total of {change_num} changes in trend observed.",
@@ -299,10 +297,13 @@ PROMPT_DICT = {
         "Overall, the data reflects {trend_num} different development trends, which have experienced {change_num} changes in total.",
         "The data demonstrates {trend_num} major trend types, with the trend undergoing {change_num} turning points during the entire period.",
         "Examining the data, we notice {trend_num} clear trend characteristics, with the trend fluctuating a total of {change_num} times.",
-        "The data mirrors {trend_num} different development tendencies, while also illustrating that the trend has changed {change_num} times in total.",
-        "From a holistic perspective, the data presents {trend_num} unique trend forms, which have undergone {change_num} changes throughout the process.",
+        "The data mirrors {trend_num} different development tendencies, while also illustrating that the trend has changed {change_num} times in "
+        "total.",
+        "From a holistic perspective, the data presents {trend_num} unique trend forms, which have undergone {change_num} changes throughout the "
+        "process.",
         "The data indicates {trend_num} primary shifting trends, with these trends transforming a total of {change_num} times.",
-        "Parsing through the data, we discover {trend_num} distinct trend features, with the trend varying {change_num} times over the entire period.",
+        "Parsing through the data, we discover {trend_num} distinct trend features, with the trend varying {change_num} times over the entire "
+        "period.",
         "There are {trend_num} unique trends and {change_num} total trend changes observed in the data.",
         "The data shows {trend_num} different trends, with {change_num} changes in these trends.",
         "Analysis reveals {trend_num} separate trends and a total of {change_num} shifts in trend direction.",
@@ -316,7 +317,7 @@ PROMPT_DICT = {
         "{change_num} trend changes are observed across {trend_num} trends in the input data.",
         "The data contains {trend_num} trends, exhibiting {change_num} trend modifications.",
         "{trend_num} trends are present in the data, with {change_num} instances of trend changes.",
-        "Across {trend_num} trends, the data shows {change_num} occurrences of trend shifts."
+        "Across {trend_num} trends, the data shows {change_num} occurrences of trend shifts.",
     ],
     "gen_summary_2_2": [
         "The data exhibits {trend_num} distinct trend.",
@@ -350,7 +351,7 @@ PROMPT_DICT = {
         "The data displays {trend_num} individual trend.",
         "{trend_num} trend is observed in the input data.",
         "The data contains {trend_num} trend.",
-        "{trend_num} trend is present in the data."
+        "{trend_num} trend is present in the data.",
     ],
     "gen_summary_3": [
         "To sum up, the data exhibited a {trend_type} trend for a cumulative period of {total_time} seconds",
@@ -380,7 +381,7 @@ PROMPT_DICT = {
         "The input data exhibited a {trend_type} trend during the {total_time} second period",
         "Upon review, the data's trend was {trend_type} throughout the {total_time} seconds",
         "The analysis highlighted a {trend_type} trend over the span of {total_time} seconds",
-        "Summarily, a {trend_type} direction was evident across {total_time} seconds of data"
+        "Summarily, a {trend_type} direction was evident across {total_time} seconds of data",
     ],
     "gen_summary_4": [
         "a {trend_type} pattern for {total_time} seconds",
@@ -403,7 +404,7 @@ PROMPT_DICT = {
         "a {trend_type} pattern observed over {total_time} seconds",
         "a {trend_type} trend within a span of {total_time} seconds",
         "a {trend_type} pattern within a span of {total_time} seconds",
-        "a sequence of {trend_type} occurring over {total_time} seconds"
+        "a sequence of {trend_type} occurring over {total_time} seconds",
     ],
     "gen_summary_6": [
         "The overall trend is {overall_trend}.",
@@ -430,7 +431,7 @@ PROMPT_DICT = {
         "The overarching trend is characterized as {overall_trend}.",
         "The trend direction is {overall_trend}.",
         "Looking at the big picture, the trend is {overall_trend}.",
-        "Trend overview: {overall_trend}."
+        "Trend overview: {overall_trend}.",
     ],
     "gen_trend_q": [
         "Kindly provide a detailed analysis of the trend changes observed in the {data}.",
@@ -465,7 +466,7 @@ PROMPT_DICT = {
         "Explain the trend developments in the {data}.",
         "Provide an overview of the trend patterns in the {data}.",
         "Detail the significant trend modifications in the {data}.",
-        "Analyze the main trend alterations observed in the {data}."
+        "Analyze the main trend alterations observed in the {data}.",
     ],
     "gen_trend_1": [
         "Between {start_time} and {end_time} seconds, the data exhibited a {trend} trend.",
@@ -497,7 +498,7 @@ PROMPT_DICT = {
         "Observations from {start_time} to {end_time} seconds indicated a {trend} trend in the data.",
         "Data between {start_time} seconds and {end_time} seconds revealed a {trend} trend.",
         "From {start_time}s to {end_time}s, the trend in the data was {trend}.",
-        "The period from {start_time} to {end_time} seconds showed a {trend} trend in the data."
+        "The period from {start_time} to {end_time} seconds showed a {trend} trend in the data.",
     ],
     "gen_trend_2": [
         "Subsequently, a {trend} trend was observed until {end_time}s.",
@@ -570,7 +571,7 @@ PROMPT_DICT = {
         "Until {end_time} seconds, we observed a {trend} trend.",
         "As of {end_time}s, the trend was {trend}.",
         "By {end_time} seconds, there was a noticeable {trend} trend.",
-        "By the time it reached {end_time}s, a {trend} trend was evident."
+        "By the time it reached {end_time}s, a {trend} trend was evident.",
     ],
     "gen_trend_3": [
         "Ultimately, a {trend} trend was seen in the data up until {end_time} seconds.",
@@ -601,7 +602,7 @@ PROMPT_DICT = {
         "The data's final trend, {trend}, persisted up to {end_time} seconds.",
         "The data ended with a {trend} trend up to {end_time}s.",
         "The data's end saw a {trend} trend, enduring to {end_time} seconds.",
-        "The data's end was {trend}, a trend that held to {end_time} seconds."
+        "The data's end was {trend}, a trend that held to {end_time} seconds.",
     ],
     "gen_trend_4": [
         "In summary, the data contains a total of {upward_num} segments with continuous {upward_trend} trends",
@@ -616,7 +617,7 @@ PROMPT_DICT = {
         "In short, the data reveals {upward_num} segments with {upward_trend} trends",
         "According to the data, there are {upward_num} segments showing continuous {upward_trend} trends",
         "In summary, the analysis found {upward_num} {upward_trend} trends",
-        "The summary reveals {upward_num} segments with {upward_trend} trends"
+        "The summary reveals {upward_num} segments with {upward_trend} trends",
     ],
     "gen_trend_5": [
         "{downward_num} segments with continuous {downward_trend} trends",
@@ -631,7 +632,7 @@ PROMPT_DICT = {
         "{downward_num} segments with {downward_trend} trends",
         "{downward_num} segments showing continuous {downward_trend} trends",
         "{downward_num} {downward_trend} trends",
-        "{downward_num} segments with {downward_trend} trends"
+        "{downward_num} segments with {downward_trend} trends",
     ],
     "gen_trend_6": [
         "and {stable_num} segments with {stable_trend} trends",
@@ -646,13 +647,14 @@ PROMPT_DICT = {
         "and {stable_num} segments with {stable_trend} trends",
         "and {stable_num} segments showing {stable_trend} trends",
         "and {stable_num} {stable_trend} trends",
-        "and {stable_num} segments with {stable_trend} trends"
+        "and {stable_num} segments with {stable_trend} trends",
     ],
     "gen_subtrend_q": [
         "Please describe how the input {data}'s trends changed from {start_time}s to {end_time}s.",
         "Kindly analyze the {data} trend variations between {start_time} and {end_time} seconds.",
         "Please provide an overview of how the {data} trends evolved from {start_time} seconds to {end_time} seconds.",
-        "I would appreciate if you could describe the {data} trend fluctuations that occurred within the {start_time} to {end_time} second timeframe.",
+        "I would appreciate if you could describe the {data} trend fluctuations that occurred within the {start_time} to {end_time} second "
+        "timeframe.",
         "Could you please examine the {data} and explain the trend shifts observed from {start_time}s until {end_time}s?",
         "I kindly request an analysis of the {data} trend changes spanning the period between {start_time} and {end_time} seconds.",
         "Please evaluate the {data} trends and describe how they developed from {start_time} seconds to {end_time} seconds.",
@@ -682,9 +684,10 @@ PROMPT_DICT = {
         "Detail the {data}'s trend fluctuations from {start_time} to {end_time} seconds.",
         "Examine the {data}'s trend patterns between {start_time}s and {end_time}s.",
         "Describe how the {data}'s trends altered from {start_time} to {end_time} seconds.",
-        "Provide an overview of the {data}'s trend changes between {start_time} seconds and {end_time} seconds."
+        "Provide an overview of the {data}'s trend changes between {start_time} seconds and {end_time} seconds.",
     ],
 }
+
 
 def capitalize_first_letter(string):
     if len(string) == 0:
@@ -694,24 +697,25 @@ def capitalize_first_letter(string):
 
 
 def check_a_an(sentence):
-    words = re.findall(r'\b\w+\b', sentence)
-    vowels = 'aeiouAEIOU'
+    words = re.findall(r"\b\w+\b", sentence)
+    vowels = "aeiouAEIOU"
     corrected_sentence = sentence
 
     for i in range(len(words)):
-        if words[i] in ['a', 'an', 'A', 'An']:
+        if words[i] in ["a", "an", "A", "An"]:
             if i + 1 < len(words):
                 next_word = words[i + 1]
-                if words[i] == 'a' and next_word[0] in vowels:
-                    corrected_sentence = corrected_sentence.replace(f' a {next_word}', f' an {next_word}', 1)
-                elif words[i] == 'A' and next_word[0] in vowels:
-                    corrected_sentence = corrected_sentence.replace(f' A {next_word}', f' An {next_word}', 1)
-                elif words[i] == 'an' and next_word[0] not in vowels:
-                    corrected_sentence = corrected_sentence.replace(f' an {next_word}', f' a {next_word}', 1)
-                elif words[i] == 'An' and next_word[0] not in vowels:
-                    corrected_sentence = corrected_sentence.replace(f' An {next_word}', f' A {next_word}', 1)
+                if words[i] == "a" and next_word[0] in vowels:
+                    corrected_sentence = corrected_sentence.replace(f" a {next_word}", f" an {next_word}", 1)
+                elif words[i] == "A" and next_word[0] in vowels:
+                    corrected_sentence = corrected_sentence.replace(f" A {next_word}", f" An {next_word}", 1)
+                elif words[i] == "an" and next_word[0] not in vowels:
+                    corrected_sentence = corrected_sentence.replace(f" an {next_word}", f" a {next_word}", 1)
+                elif words[i] == "An" and next_word[0] not in vowels:
+                    corrected_sentence = corrected_sentence.replace(f" An {next_word}", f" A {next_word}", 1)
 
     return corrected_sentence
+
 
 def analyze_trend(time_series, sample_rate, start_point=0):
     # Calculate the time interval between data points
@@ -729,11 +733,11 @@ def analyze_trend(time_series, sample_rate, start_point=0):
 
         # Determine the trend
         if start_val == end_val:
-            trend_type = 'steady'
+            trend_type = "steady"
         elif start_val < end_val:
-            trend_type = 'increase'
+            trend_type = "increase"
         else:
-            trend_type = 'decrease'
+            trend_type = "decrease"
 
         # Append the results to the lists
         from_time.append(start_time)
@@ -743,54 +747,53 @@ def analyze_trend(time_series, sample_rate, start_point=0):
         trend.append(trend_type)
 
     # Create a DataFrame from the results
-    result_df = pd.DataFrame({
-        'from_time': from_time,
-        'to_time': to_time,
-        'from_value': from_value,
-        'to_value': to_value,
-        'trend': trend
-    })
+    result_df = pd.DataFrame({"from_time": from_time, "to_time": to_time, "from_value": from_value, "to_value": to_value, "trend": trend})
 
     return result_df
+
 
 def merge_adjacent_rows(df):
     # List to store the merged rows
     merged_rows = []
 
     # Variables to store the start of the current segment
-    current_start_time = df.iloc[0]['from_time']
-    current_start_value = df.iloc[0]['from_value']
-    current_trend = df.iloc[0]['trend']
+    current_start_time = df.iloc[0]["from_time"]
+    current_start_value = df.iloc[0]["from_value"]
+    current_trend = df.iloc[0]["trend"]
     current_values = [current_start_value]
 
     for index, row in df.iterrows():
-        if row['trend'] == current_trend:
+        if row["trend"] == current_trend:
             # Continue accumulating values
-            current_values.append(row['to_value'])
+            current_values.append(row["to_value"])
         else:
             # Close the current segment and start a new one
-            merged_rows.append({
-                'start_time': current_start_time,
-                'end_time': df.iloc[index - 1]['to_time'],
-                'start_value': current_start_value,
-                'end_value': df.iloc[index - 1]['to_value'],
-                'trend': current_trend,
-                'values': current_values.copy()
-            })
-            current_start_time = row['from_time']
-            current_start_value = row['from_value']
-            current_trend = row['trend']
-            current_values = [current_start_value, row['to_value']]
+            merged_rows.append(
+                {
+                    "start_time": current_start_time,
+                    "end_time": df.iloc[index - 1]["to_time"],
+                    "start_value": current_start_value,
+                    "end_value": df.iloc[index - 1]["to_value"],
+                    "trend": current_trend,
+                    "values": current_values.copy(),
+                }
+            )
+            current_start_time = row["from_time"]
+            current_start_value = row["from_value"]
+            current_trend = row["trend"]
+            current_values = [current_start_value, row["to_value"]]
 
     # Append the last segment
-    merged_rows.append({
-        'start_time': current_start_time,
-        'end_time': df.iloc[-1]['to_time'],
-        'start_value': current_start_value,
-        'end_value': df.iloc[-1]['to_value'],
-        'trend': current_trend,
-        'values': current_values
-    })
+    merged_rows.append(
+        {
+            "start_time": current_start_time,
+            "end_time": df.iloc[-1]["to_time"],
+            "start_value": current_start_value,
+            "end_value": df.iloc[-1]["to_value"],
+            "trend": current_trend,
+            "values": current_values,
+        }
+    )
 
     # Create a DataFrame from the merged rows
     merged_df = pd.DataFrame(merged_rows)
@@ -822,19 +825,16 @@ def calculate_total_time(df):
     - DataFrame: A DataFrame with columns: trend, total_time.
     """
     # Group by the trend and sum the duration for each trend
-    total_time_by_trend = df.groupby('trend').apply(
-        lambda x: round((x['end_time'] - x['start_time']).sum(), 2)).reset_index(
-        name='total_time')
+    total_time_by_trend = df.groupby("trend").apply(lambda x: round((x["end_time"] - x["start_time"]).sum(), 2)).reset_index(name="total_time")
 
     return total_time_by_trend
 
 
 def num_to_words(num):
-    units = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
-    teens = ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen',
-             'nineteen']
-    tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety']
-    scales = ['', 'thousand', 'million', 'billion']
+    units = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+    teens = ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
+    tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+    scales = ["", "thousand", "million", "billion"]
 
     if num < 0:
         return "minus " + num_to_words(abs(num))
@@ -853,14 +853,13 @@ def num_to_words(num):
 
     for i, scale in enumerate(scales[1:], 1):
         if num < 1000 ** (i + 1):
-            return num_to_words(num // (1000 ** i)) + " " + scale + (
-                " " + num_to_words(num % (1000 ** i)) if num % (1000 ** i) != 0 else "")
+            return num_to_words(num // (1000**i)) + " " + scale + (" " + num_to_words(num % (1000**i)) if num % (1000**i) != 0 else "")
 
 
 def convert_number(num):
-    if '.' in str(num):
-        whole, decimal = str(num).split('.')
-        if decimal == '0':
+    if "." in str(num):
+        whole, decimal = str(num).split(".")
+        if decimal == "0":
             return num_to_words(int(num))
         else:
             return num_to_words(int(whole)) + " point " + " ".join([num_to_words(int(digit)) for digit in decimal])
@@ -905,8 +904,7 @@ def generate_smry_text(reading, data_df, sensor_type, pair_list):
     """
     total_time_df = calculate_total_time(data_df)
     total_time_mkd = df2mkd(total_time_df)
-    connect_words = ["followed by ", "came after ", "and then ", "trailed by ", "which was followed by ",
-                     "succeeded by "]
+    connect_words = ["followed by ", "came after ", "and then ", "trailed by ", "which was followed by ", "succeeded by "]
     # Initialize a list to store the text description
     prompts_templates1 = PROMPT_DICT["gen_summary_1"]
     prompts_templates2 = PROMPT_DICT["gen_summary_2"]
@@ -928,36 +926,53 @@ def generate_smry_text(reading, data_df, sensor_type, pair_list):
     selected_template5 = random.choice(prompts_templates4)
 
     text = []
-    text.append(capitalize_first_letter(
-        selected_template1.format(data_name=selected_data_type, sensor_name=sensor_type,
-                                  start_time=data_df['start_time'].iloc[0], end_time=data_df['end_time'].iloc[-1],)))
+    text.append(
+        capitalize_first_letter(
+            selected_template1.format(
+                data_name=selected_data_type,
+                sensor_name=sensor_type,
+                start_time=data_df["start_time"].iloc[0],
+                end_time=data_df["end_time"].iloc[-1],
+            )
+        )
+    )
     if trend_num == 1:
-        text.append(capitalize_first_letter(
-            selected_template2_2.format(trend_num=random.choice([trend_num, convert_number(trend_num)]))))
+        text.append(capitalize_first_letter(selected_template2_2.format(trend_num=random.choice([trend_num, convert_number(trend_num)]))))
     else:
-        text.append(capitalize_first_letter(
-            selected_template2.format(trend_num=random.choice([trend_num, convert_number(trend_num)]),
-                                      change_num=random.choice([change_num, convert_number(change_num)]))))
+        text.append(
+            capitalize_first_letter(
+                selected_template2.format(
+                    trend_num=random.choice([trend_num, convert_number(trend_num)]),
+                    change_num=random.choice([change_num, convert_number(change_num)]),
+                )
+            )
+        )
 
     i_t = 0
     for index, t in total_time_df.iterrows():
         if i_t == 0:
             if len(total_time_df) == 1:
-                text.append(capitalize_first_letter(
-                    selected_template3.format(trend_type=choose_word(t["trend"], pair_list),
-                                              total_time=f"{t['total_time']:.2f}")) + ".")
+                text.append(
+                    capitalize_first_letter(
+                        selected_template3.format(trend_type=choose_word(t["trend"], pair_list), total_time=f"{t['total_time']:.2f}")
+                    )
+                    + "."
+                )
             else:
-                text.append(capitalize_first_letter(
-                    selected_template3.format(trend_type=choose_word(t["trend"], pair_list),
-                                              total_time=f"{t['total_time']:.2f}")) + ",")
+                text.append(
+                    capitalize_first_letter(
+                        selected_template3.format(trend_type=choose_word(t["trend"], pair_list), total_time=f"{t['total_time']:.2f}")
+                    )
+                    + ","
+                )
         elif i_t < len(total_time_df) - 1:
             text.append(
-                random.choice(connect_words) + selected_template4.format(trend_type=choose_word(t["trend"], pair_list),
-                                                                         total_time=f"{t['total_time']:.2f}") + ",")
+                random.choice(connect_words)
+                + selected_template4.format(trend_type=choose_word(t["trend"], pair_list), total_time=f"{t['total_time']:.2f}")
+                + ","
+            )
         else:
-            text.append(
-                "and " + selected_template5.format(trend_type=choose_word(t["trend"], pair_list),
-                                                   total_time=f"{t['total_time']:.2f}") + ".")
+            text.append("and " + selected_template5.format(trend_type=choose_word(t["trend"], pair_list), total_time=f"{t['total_time']:.2f}") + ".")
         i_t += 1
 
     differences = np.diff(reading)
@@ -973,10 +988,9 @@ def generate_smry_text(reading, data_df, sensor_type, pair_list):
         prompts_templates7 = PROMPT_DICT["gen_summary_6"]
         selected_template7 = random.choice(prompts_templates7)
 
-        text.append(capitalize_first_letter(
-            selected_template7.format(overall_trend=overall_trend)))
+        text.append(capitalize_first_letter(selected_template7.format(overall_trend=overall_trend)))
 
-    return check_a_an(' '.join(text)), total_time_mkd
+    return check_a_an(" ".join(text)), total_time_mkd
 
 
 def generate_trend_text(data_df, pair_list):
@@ -990,23 +1004,17 @@ def generate_trend_text(data_df, pair_list):
     for index, d in data_df.iterrows():
         if i_d == 0:
             selected_template1 = random.choice(prompts_templates1)
-            text_detailed.append(capitalize_first_letter(
-                selected_template1.format(start_time=d['start_time'],
-                                          end_time=d['end_time'],
-                                          trend=choose_word(d["trend"],
-                                                            pair_list))))
+            text_detailed.append(
+                capitalize_first_letter(
+                    selected_template1.format(start_time=d["start_time"], end_time=d["end_time"], trend=choose_word(d["trend"], pair_list))
+                )
+            )
         elif i_d < len(data_df) - 1:
             selected_template2 = random.choice(prompts_templates2)
-            text_detailed.append(capitalize_first_letter(
-                selected_template2.format(end_time=d['end_time'],
-                                          trend=choose_word(d["trend"],
-                                                            pair_list))))
+            text_detailed.append(capitalize_first_letter(selected_template2.format(end_time=d["end_time"], trend=choose_word(d["trend"], pair_list))))
         else:
             selected_template3 = random.choice(prompts_templates3)
-            text_detailed.append(capitalize_first_letter(
-                selected_template3.format(end_time=d['end_time'],
-                                          trend=choose_word(d["trend"],
-                                                            pair_list))))
+            text_detailed.append(capitalize_first_letter(selected_template3.format(end_time=d["end_time"], trend=choose_word(d["trend"], pair_list))))
         i_d += 1
 
     prompts_templates4 = PROMPT_DICT["gen_trend_4"]
@@ -1020,25 +1028,28 @@ def generate_trend_text(data_df, pair_list):
     selected_template5 = prompts_templates5[selected_num]
     selected_template6 = prompts_templates6[selected_num]
 
-    trend_counts = data_df['trend'].value_counts()
+    trend_counts = data_df["trend"].value_counts()
     num_trends = len(trend_counts)
 
     for i_n in range(num_trends):
         if i_n == 0:
             if num_trends > 1:
-                text_detailed.append(capitalize_first_letter(
-                    selected_template4.format(upward_num=trend_counts.values[i_n],
-                                              upward_trend=choose_word(trend_counts.index[i_n], pair_list))) + ',')
+                text_detailed.append(
+                    capitalize_first_letter(
+                        selected_template4.format(upward_num=trend_counts.values[i_n], upward_trend=choose_word(trend_counts.index[i_n], pair_list))
+                    )
+                    + ","
+                )
         elif i_n < num_trends - 1:
             text_detailed.append(
-                selected_template5.format(downward_num=trend_counts.values[i_n],
-                                          downward_trend=choose_word(trend_counts.index[i_n], pair_list)) + ',')
+                selected_template5.format(downward_num=trend_counts.values[i_n], downward_trend=choose_word(trend_counts.index[i_n], pair_list)) + ","
+            )
         else:
             text_detailed.append(
-                selected_template6.format(stable_num=trend_counts.values[i_n],
-                                          stable_trend=choose_word(trend_counts.index[i_n], pair_list)) + '.')
+                selected_template6.format(stable_num=trend_counts.values[i_n], stable_trend=choose_word(trend_counts.index[i_n], pair_list)) + "."
+            )
 
-    return check_a_an(' '.join(text_detailed))
+    return check_a_an(" ".join(text_detailed))
 
 
 def generate_simple_trend_text(data_df, pair_list):
@@ -1050,7 +1061,7 @@ def generate_simple_trend_text(data_df, pair_list):
         "{start_time} to {end_time} seconds: {trend}",
         "{start_time}-{end_time} seconds: {trend}",
         "{start_time}-{end_time}s: {trend}",
-        "{start_time}s-{end_time}s: {trend}"
+        "{start_time}s-{end_time}s: {trend}",
     ]
 
     prompts_templates_2 = [
@@ -1059,49 +1070,40 @@ def generate_simple_trend_text(data_df, pair_list):
         "Total {trend} trends: {num}",
         "Number of {trend} segments: {num}",
         "Count of {trend} segments: {num}",
-        "Total {trend} segments: {num}"
+        "Total {trend} segments: {num}",
     ]
 
     selected_template = random.choice(prompts_templates)
     selected_template2 = random.choice(prompts_templates_2)
 
     for index, df in data_df.iterrows():
-        text_detailed.append(selected_template.format(start_time=df['start_time'],
-                                                      end_time=df['end_time'],
-                                                      trend=choose_word(df["trend"],
-                                                                        pair_list)))
+        text_detailed.append(
+            selected_template.format(start_time=df["start_time"], end_time=df["end_time"], trend=choose_word(df["trend"], pair_list))
+        )
 
-    trend_counts = data_df['trend'].value_counts()
+    trend_counts = data_df["trend"].value_counts()
     num_trends = len(trend_counts)
     if num_trends > 1:
         for i_n in range(num_trends):
-            text_detailed.append(selected_template2.format(trend=choose_word(trend_counts.index[i_n], pair_list),
-                                                           num=trend_counts.values[i_n]))
+            text_detailed.append(selected_template2.format(trend=choose_word(trend_counts.index[i_n], pair_list), num=trend_counts.values[i_n]))
 
-    return check_a_an('\n'.join(text_detailed))
+    return check_a_an("\n".join(text_detailed))
 
 
-def dscb_trend(df, sensor_type, pair_list, whether_gpt=False, model_type='3.5'):
+def dscb_trend(df, sensor_type, pair_list, whether_gpt=False, model_type="3.5"):
     data_types = ["time series data", "sensor data"]
     prompts_templates = PROMPT_DICT["gen_subtrend_q"]
 
     selected_data_type = random.choice(data_types)
     selected_template = random.choice(prompts_templates)
 
-    question = selected_template.format(data=selected_data_type,
-                                        start_time=df["start_time"].iloc[0],
-                                        end_time=df['end_time'].iloc[-1]
-                                        )
+    question = selected_template.format(data=selected_data_type, start_time=df["start_time"].iloc[0], end_time=df["end_time"].iloc[-1])
     answer = generate_trend_text(df, pair_list)
 
-    return {
-        "Q": question,
-        "A": answer,
-        "type": "trend"
-    }
+    return {"Q": question, "A": answer, "type": "trend"}
 
 
-def dscb_simple_trend(df, sensor_type, pair_list, whether_gpt=False, model_type='3.5'):
+def dscb_simple_trend(df, sensor_type, pair_list, whether_gpt=False, model_type="3.5"):
     data_types = ["time series data", "sensor data"]
     prompts_templates = PROMPT_DICT["gen_trend_q"]
 
@@ -1112,44 +1114,29 @@ def dscb_simple_trend(df, sensor_type, pair_list, whether_gpt=False, model_type=
 
     answer = generate_simple_trend_text(df, pair_list)
 
-    return {
-        "Q": question,
-        "A": answer,
-        "type": "simple_trend"
-    }
+    return {"Q": question, "A": answer, "type": "simple_trend"}
 
-def QA_summary(reading, trend_df, sensor_type, pair_list, whether_gpt=False, model_type='3.5'):
+
+def QA_summary(reading, trend_df, sensor_type, pair_list, whether_gpt=False, model_type="3.5"):
     data_types = ["time series data", "sensor data"]
     prompts_templates = PROMPT_DICT["gen_subtrend_q"]
 
     selected_data_type = random.choice(data_types)
     selected_template = random.choice(prompts_templates)
 
-    question = selected_template.format(data=selected_data_type,
-                                        start_time=trend_df["start_time"].iloc[0],
-                                        end_time=trend_df['end_time'].iloc[-1]
-                                        )
+    question = selected_template.format(data=selected_data_type, start_time=trend_df["start_time"].iloc[0], end_time=trend_df["end_time"].iloc[-1])
 
     answer, smry_mkd_df = generate_smry_text(reading, trend_df, sensor_type, pair_list)
-    return {
-        "Q": question,
-        "A": answer,
-        "smry_table": smry_mkd_df,
-        "type": "summary"
-    }
+    return {"Q": question, "A": answer, "smry_table": smry_mkd_df, "type": "summary"}
 
-from datetime import datetime
+
 sr = 50
-qa_dict = {"author": "",
-    "version": "",
-    "date": str(datetime.now().date()),
-    "dataset": []
-}
+qa_dict = {"author": "", "version": "", "date": str(datetime.now().date()), "dataset": []}
 
 
 i = 0
 for d in all_train_segments:
-    assert len(d[0])==15
+    assert len(d[0]) == 15
     c_acc_x = d[:, 0]
     c_acc_y = d[:, 1]
     c_acc_z = d[:, 2]
@@ -1165,18 +1152,42 @@ for d in all_train_segments:
     rla_gs_x = d[:, 12]
     rla_gs_y = d[:, 13]
     rla_gs_z = d[:, 14]
-    reading_list = [c_acc_x, c_acc_y, c_acc_z, la_acc_x, la_acc_y, la_acc_z, la_gs_x, la_gs_y, la_gs_z, rla_acc_x, rla_acc_y, rla_acc_z, rla_gs_x, rla_gs_y, rla_gs_z]
-    reading_name = ["chest x-axis accelerometer", "chest y-axis accelerometer", "chest z-axis accelerometer",
-                    "left-ankle x-axis accelerometer", "left-ankle y-axis accelerometer", "left-ankle z-axis accelerometer",
-                    "left-ankle x-axis gyroscope", "left-ankle y-axis gyroscope", "left-ankle z-axis gyroscope",
-                    "right-lower-arm x-axis accelerometer", "right-lower-arm y-axis accelerometer", "right-lower-arm z-axis accelerometer",
-                    "right-lower-arm x-axis gyroscope", "right-lower-arm y-axis gyroscope", "right-lower-arm z-axis gyroscope"]
+    reading_list = [
+        c_acc_x,
+        c_acc_y,
+        c_acc_z,
+        la_acc_x,
+        la_acc_y,
+        la_acc_z,
+        la_gs_x,
+        la_gs_y,
+        la_gs_z,
+        rla_acc_x,
+        rla_acc_y,
+        rla_acc_z,
+        rla_gs_x,
+        rla_gs_y,
+        rla_gs_z,
+    ]
+    reading_name = [
+        "chest x-axis accelerometer",
+        "chest y-axis accelerometer",
+        "chest z-axis accelerometer",
+        "left-ankle x-axis accelerometer",
+        "left-ankle y-axis accelerometer",
+        "left-ankle z-axis accelerometer",
+        "left-ankle x-axis gyroscope",
+        "left-ankle y-axis gyroscope",
+        "left-ankle z-axis gyroscope",
+        "right-lower-arm x-axis accelerometer",
+        "right-lower-arm y-axis accelerometer",
+        "right-lower-arm z-axis accelerometer",
+        "right-lower-arm x-axis gyroscope",
+        "right-lower-arm y-axis gyroscope",
+        "right-lower-arm z-axis gyroscope",
+    ]
 
-    data_dict = {
-        "index": i,
-        "summaries": {},
-        "qa_pairs": {name: [] for name in reading_name}
-    }
+    data_dict = {"index": i, "summaries": {}, "qa_pairs": {name: [] for name in reading_name}}
 
     for r, n in zip(reading_list, reading_name):
         normalized_n = "normalized " + n
@@ -1185,28 +1196,21 @@ for d in all_train_segments:
 
         trend_pair_list = select_random_pair()
 
-        data_dict["summaries"][n] = QA_summary(r, trend_dataframe, normalized_n, trend_pair_list,
-                                               whether_gpt=False, model_type='3.5')
-        data_dict["qa_pairs"][n].append(dscb_simple_trend(trend_dataframe, normalized_n, trend_pair_list,
-                                                          whether_gpt=False, model_type='4'))
+        data_dict["summaries"][n] = QA_summary(r, trend_dataframe, normalized_n, trend_pair_list, whether_gpt=False, model_type="3.5")
+        data_dict["qa_pairs"][n].append(dscb_simple_trend(trend_dataframe, normalized_n, trend_pair_list, whether_gpt=False, model_type="4"))
     qa_dict["dataset"].append(data_dict)
     print(f"{i} finished")
     i += 1
 
 
-import json
-with open(os.path.join(output_path, 'train', f"mhealth_train_qa_stage1.json"), 'w') as f:
+with open(os.path.join(output_path, "train", "mhealth_train_qa_stage1.json"), "w") as f:
     json.dump(qa_dict, f, indent=2)
 print(len(qa_dict["dataset"]))
 
-qa_dict = {"author": "",
-    "version": "",
-    "date": str(datetime.now().date()),
-    "dataset": []
-}
+qa_dict = {"author": "", "version": "", "date": str(datetime.now().date()), "dataset": []}
 i = 0
 for d in all_test_segments:
-    assert len(d[0])==15
+    assert len(d[0]) == 15
     c_acc_x = d[:, 0]
     c_acc_y = d[:, 1]
     c_acc_z = d[:, 2]
@@ -1222,18 +1226,42 @@ for d in all_test_segments:
     rla_gs_x = d[:, 12]
     rla_gs_y = d[:, 13]
     rla_gs_z = d[:, 14]
-    reading_list = [c_acc_x, c_acc_y, c_acc_z, la_acc_x, la_acc_y, la_acc_z, la_gs_x, la_gs_y, la_gs_z, rla_acc_x, rla_acc_y, rla_acc_z, rla_gs_x, rla_gs_y, rla_gs_z]
-    reading_name = ["chest x-axis accelerometer", "chest y-axis accelerometer", "chest z-axis accelerometer",
-                    "left-ankle x-axis accelerometer", "left-ankle y-axis accelerometer", "left-ankle z-axis accelerometer",
-                    "left-ankle x-axis gyroscope", "left-ankle y-axis gyroscope", "left-ankle z-axis gyroscope",
-                    "right-lower-arm x-axis accelerometer", "right-lower-arm y-axis accelerometer", "right-lower-arm z-axis accelerometer",
-                    "right-lower-arm x-axis gyroscope", "right-lower-arm y-axis gyroscope", "right-lower-arm z-axis gyroscope"]
+    reading_list = [
+        c_acc_x,
+        c_acc_y,
+        c_acc_z,
+        la_acc_x,
+        la_acc_y,
+        la_acc_z,
+        la_gs_x,
+        la_gs_y,
+        la_gs_z,
+        rla_acc_x,
+        rla_acc_y,
+        rla_acc_z,
+        rla_gs_x,
+        rla_gs_y,
+        rla_gs_z,
+    ]
+    reading_name = [
+        "chest x-axis accelerometer",
+        "chest y-axis accelerometer",
+        "chest z-axis accelerometer",
+        "left-ankle x-axis accelerometer",
+        "left-ankle y-axis accelerometer",
+        "left-ankle z-axis accelerometer",
+        "left-ankle x-axis gyroscope",
+        "left-ankle y-axis gyroscope",
+        "left-ankle z-axis gyroscope",
+        "right-lower-arm x-axis accelerometer",
+        "right-lower-arm y-axis accelerometer",
+        "right-lower-arm z-axis accelerometer",
+        "right-lower-arm x-axis gyroscope",
+        "right-lower-arm y-axis gyroscope",
+        "right-lower-arm z-axis gyroscope",
+    ]
 
-    data_dict = {
-        "index": i,
-        "summaries": {},
-        "qa_pairs": {name: [] for name in reading_name}
-    }
+    data_dict = {"index": i, "summaries": {}, "qa_pairs": {name: [] for name in reading_name}}
 
     for r, n in zip(reading_list, reading_name):
         normalized_n = "normalized " + n
@@ -1242,19 +1270,12 @@ for d in all_test_segments:
 
         trend_pair_list = select_random_pair()
 
-        data_dict["summaries"][n] = QA_summary(r, trend_dataframe, normalized_n, trend_pair_list,
-                                               whether_gpt=False, model_type='3.5')
-        data_dict["qa_pairs"][n].append(dscb_simple_trend(trend_dataframe, normalized_n, trend_pair_list,
-                                                          whether_gpt=False, model_type='4'))
+        data_dict["summaries"][n] = QA_summary(r, trend_dataframe, normalized_n, trend_pair_list, whether_gpt=False, model_type="3.5")
+        data_dict["qa_pairs"][n].append(dscb_simple_trend(trend_dataframe, normalized_n, trend_pair_list, whether_gpt=False, model_type="4"))
     qa_dict["dataset"].append(data_dict)
     print(f"{i} finished")
     i += 1
 
-import json
-with open(os.path.join(output_path, 'test', f"mhealth_test_qa_stage1.json"), 'w') as f:
+with open(os.path.join(output_path, "test", "mhealth_test_qa_stage1.json"), "w") as f:
     json.dump(qa_dict, f, indent=2)
 print(len(qa_dict["dataset"]))
-
-
-
-
