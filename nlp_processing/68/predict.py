@@ -14,7 +14,8 @@ Chronos エンコーダで埋め込み、LLaMA 側に align された Stage1 モ
     非公式チェックポイント `1EE1/SensorLLM-Stage1-Backup`（MHealth で学習された
     Stage1 重み・TinyLlama-1.1B 系ベース）をロードする。非公式のため出力の
     信頼性は担保されない。自分で 2 段学習した重みがあれば --model-path で差し替える。
-  - 時系列エンコーダは Chronos（--chronos-path、既定 amazon/chronos-t5-large）。
+  - 時系列エンコーダは Chronos（--chronos-path）。既定 ckpt(1EE1)は chronos-t5-base(768)で
+    学習されているため既定は amazon/chronos-t5-base。使う ckpt の学習時サイズに合わせること。
   - GPU: 学習は Ampere 以降必須（flash-attn 2 + bf16）だが、本推論スクリプトは
     flash-attn を import しないため、--dtype float16 にすれば T4 / V100 でも動作可能
     （本 ckpt は約 2GB + Chronos 約 1.5GB で 16GB に収まる）。A100 等では bf16 でよい。
@@ -54,8 +55,11 @@ def parse_args():
     parser = argparse.ArgumentParser(description="SensorLLM Stage1 単一サンプル推論")
     parser.add_argument("--model-path", type=str, default="1EE1/SensorLLM-Stage1-Backup",
                         help="Stage1 チェックポイント(既定は非公式の MHealth 学習済み重み)")
-    parser.add_argument("--chronos-path", type=str, default="amazon/chronos-t5-large",
-                        help="時系列エンコーダ(Chronos)のチェックポイント")
+    parser.add_argument("--chronos-path", type=str, default="amazon/chronos-t5-base",
+                        help="時系列エンコーダ(Chronos)のチェックポイント。"
+                             "既定 ckpt(1EE1)は chronos-t5-base(d_model=768)で学習されている。"
+                             "この場合 sensorllm/model/ts_backbone.yaml の encoder_output_dim を 768 に、"
+                             "name を chronos-t5-base に合わせること(不一致だと ts_proj で size mismatch)")
     parser.add_argument("--dataset", type=str, default="mhealth",
                         help="ts_backbone.yaml のデータセット名(既定 ckpt は mhealth で学習)")
     parser.add_argument("--channel", type=str, default=None,

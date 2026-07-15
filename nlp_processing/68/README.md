@@ -173,20 +173,42 @@ flowchart LR
 
 - 追加した Python コードの主なポイント
     - [`predict.py`](predict.py): 公式リポジトリの `sensorllm` パッケージを import して使う（`PYTHONPATH` に clone 先を通す）。
-        - `load_model()`: `eval.py` の `init_model()` と同じ手順で、Stage1 重み＋Chronos バックボーン（既定 `amazon/chronos-t5-large`）をロードし、特殊トークン／チャネル設定をデータセットに合わせて初期化。
+        - `load_model()`: `eval.py` の `init_model()` と同じ手順で、Stage1 重み＋Chronos バックボーンをロードし、特殊トークン／チャネル設定をデータセットに合わせて初期化。
         - `build_prompt()`: `stage1_dataset.py` の `preprocess_time_series2` と同じ規則で、`start_token + <ts>×(Chronos トークン長) + end_token + 質問` のプロンプトと、`chronos_tokenizer.context_input_transform()` による ts トークンを構築。`<ts>` 数は生系列長ではなく **Chronos の実出力トークン長（EOS 込み `min(系列長, 512)+1`）に一致**させるため、context_length（既定 512）超の入力でも Chronos エンコーダの埋め込み数と一致する（CPU 実機で L=200/512/600/1000 について検証済み）。
-        - `--dtype {bfloat16,float16,float32}`: T4/V100 では `float16` を指定。`--input <1次元 .npy>` で自前のセンサー系列も使える（未指定なら合成波形）。
-    - 実行スクリプト: [`run_predict.sh`](run_predict.sh)（公式リポジトリの clone → 依存インストール → 推論）。
+        - `--dtype {bfloat16,float16,float32}`: **CPU なら `--device cpu --dtype float32`**、T4/V100 は `float16`、A100 等は `bfloat16`。`--input <1次元 .npy>` で自前のセンサー系列も使える（未指定なら合成波形）。
+    - 実行スクリプト: [`run_predict.sh`](run_predict.sh)（clone → 依存インストール → yaml 調整 → 推論）。
 
-1. GPU 環境で実行する（推論は T4/V100 でも `--dtype float16` で可、A100 等は `bfloat16`）
+> **⚠️ 実行時の 2 つの注意点（実機で判明）**
+>
+> 1. **1EE1 ckpt は `chronos-t5-base`（d_model=768）で学習されている**。公式 `ts_backbone.yaml` の既定は `chronos-t5-large`（1024）なので、そのままだと `ts_proj` で size mismatch になる。実行前に `sensorllm/model/ts_backbone.yaml` の `name` を `chronos-t5-base`、`encoder_output_dim` を `768` に変更する（`run_predict.sh` は自動で行う）。自分で 2 段学習した重みなら、その学習時の Chronos サイズに合わせる。
+> 2. **HF Xet ダウンロードが 403 で失敗する場合がある**。1EE1 のような Xet 配信リポジトリは、HF の CDN エッジ `us.gcp.cdn.hf.co` が署名鍵を `403 SignatureError: invalid key pair id` で拒否することがあり（HF 側の一過性インフラ問題）、`hf_hub` の取得がハングする。回避策は `run_predict.sh` 末尾のコメント参照（正常な `cas-bridge.xethub.hf.co` に当たるまで resolve をリトライ／時間を置いて再試行）。
+
+1. 実行する（CPU で動作確認済み。GPU があれば `--device cuda`）
 
     ```sh
     sh run_predict.sh
-    # もしくは、公式リポジトリを clone 済みなら直接:
-    #   PYTHONPATH=./SensorLLM python predict.py --dataset mhealth --dtype bfloat16 --device cuda
+    # もしくは、公式リポジトリ clone・yaml 調整済みなら直接:
+    #   PYTHONPATH=./SensorLLM python predict.py --model-path 1EE1/SensorLLM-Stage1-Backup \
+    #     --chronos-path amazon/chronos-t5-base --dataset mhealth --device cpu --dtype float32
     ```
 
-<!-- TODO: A100 等で predict.py を実行した際の出力（センサー信号のトレンド説明テキスト）が得られたら、ここに「実行結果」として貼り付ける。作成環境（GPU 無し・Python 3.7）では実行検証できていない -->
+## 実行結果（CPU 実機で検証）
+
+合成した 1 チャネル（MHealth 胸部加速度 `c_acc_x` 相当）の波形を Chronos-t5-base で埋め込み、1EE1（非公式 Stage1）で推論すると、**センサー信号のトレンドを区間ごとに自然言語で説明**する Stage1 らしい出力が得られる（CPU / float32、非公式重みのため内容の妥当性は保証されない）。
+
+```text
+===== 質問 =====
+What is the overall trend of this sensor reading?
+
+===== SensorLLM の出力(センサー信号のトレンド説明) =====
+0.0 seconds to 0.2 seconds: rising
+0.2 seconds to 0.22 seconds: falling
+0.22 seconds to 0.24 seconds: rising
+0.24 seconds to 0.26 seconds: falling
+0.26 seconds to ...
+```
+
+これにより、**HF からのモデル取得 → Chronos エンコード → 特殊トークン付きプロンプト構築 → LLaMA 生成**という推論経路全体が動作することを確認した（`<ts>` プレースホルダ数と埋め込み数の一致も実 forward で確認）。
 
 ## 注意点・課題
 
