@@ -1,4 +1,4 @@
-# SensorLLM（モーションセンサー時系列 × LLM）を実際に動かして、センサー信号からの行動認識（HAR）を行う
+# SensorLLM を使用して、モーションセンサー信号からの行動認識（HAR）を行う
 
 IMU（加速度・ジャイロ）などのモーションセンサー時系列を LLM に接続し、**人間が読める行動認識（HAR: Human Activity Recognition）**を行う代表的手法 [**SensorLLM**](https://github.com/cruiseresearchgroup/SensorLLM)（UNSW ほか, EMNLP 2025 Main）を、公式実装で実際に動かす手順をまとめる。
 
@@ -72,7 +72,7 @@ flowchart LR
 
 ## 必要リソース（事前チェックリスト）
 
-1. **GPU**: **2 段学習は Ampere 以降が必須**（`train_mem.py` が flash-attn 2 のモンキーパッチを強制 import。flash-attn 2 は Turing/Volta 非対応、bf16 も非対応のため T4・V100 では学習不可）。一方**推論（`eval.py` / 後述の `stage1_predict.py`）は flash-attn を import しない**ので、`--dtype float16` にすれば T4・V100 でも動く（下表参照）。VRAM はベース LLaMA サイズに依存。<br><br>
+1. **GPU**: **2 段学習は Ampere 以降が推奨**。公式の学習エントリ `train_mem.py` は flash-attn 2 を強制 import する（flash-attn 2 は Turing/Volta 非対応）が、本 Tip は flash-attn を使わない [`train_entry.py`](train_entry.py)（標準 attention）で回避している。ただし**学習は bf16 前提のため、bf16 が使える Ampere 以降でないと実質動かない**（T4・V100 は bf16 非対応）。一方**推論（`eval.py` / 後述の `stage1_predict.py`）は flash-attn を import しない**ので、`--dtype float16` にすれば T4・V100 でも動く（下表参照）。VRAM はベース LLaMA サイズに依存。<br><br>
 
     | 用途 | 最低ライン | 目安 |
     |---|---|---|
@@ -171,59 +171,90 @@ Q: Detect anomalies in this sensor reading and report when they occur.
 
 ## Stage 2 の推論手順（HAR 分類・要 2 段学習）
 
-> **最終的な目的が HAR 分類（行動ラベル予測）＝ Stage 2 の推論**なら、公開の Stage 2 重みが無いため、Stage 1（センサー–言語アラインメント）→ Stage 2（タスク適応チューニング）の 2 段学習で自分で Stage 2 モデルを作る必要がある。Stage 1 のトレンド説明だけでよければ本節は不要（前述の「[Stage 1 の推論手順](#stage-1-の推論手順)」で完結）。以下は 2 段学習の手順。依存・SensorLLM 本体はイメージに焼き込み済みなので、手動の `git clone` / `pip install` は不要。
+> **最終的な目的が HAR 分類（行動ラベル予測）＝ Stage 2 の推論**なら、公開の Stage 2 重みが無いため、Stage 1（センサー–言語アラインメント）→ Stage 2（タスク適応チューニング）の 2 段学習で自分で Stage 2 モデルを作る必要がある。Stage 1 のトレンド説明だけでよければ本節は不要（前述の「[Stage 1 の推論手順](#stage-1-の推論手順)」で完結）。
+>
+> 公式リポジトリはデータ整形を Jupyter ノートブック（`mhealth_stage1.ipynb` / `mhealth_stage2.ipynb`）で行う想定だが、**手作業を無くすため本 Tip ではノートブック相当の Python スクリプト（[`mhealth_stage1_prep.py`](mhealth_stage1_prep.py) / [`mhealth_stage2_prep.py`](mhealth_stage2_prep.py)）と make ターゲットを用意し、データ生成 → 2 段学習 → HAR 推論までを自動化**した。依存・SensorLLM 本体・評価メトリクスはイメージに焼き込み済みなので、手動の `git clone` / `pip install` は不要。
 
-1. データと QA ペアを用意する（**学習の主な前提**）
+**以下は A100 40GB での実機検証済みフロー**（`make docker-build` → `make docker-model-download` 済み前提）。
 
-    HAR データセット（例: MHealth）を DL し、公式ノートブックで学習/評価が要求する形式（前処理済み時系列 pkl ＋ チャネル別に Q/A/summary を持つ QA-JSON）を生成する。
-    - `mhealth_stage1.ipynb`: Stage 1 用 QA ペア（単一チャネル × トレンド説明）
-    - `mhealth_stage2.ipynb`: Stage 2 用テキスト（複数チャネル × HAR 分類）
-
-    生成した時系列(`TS_TRAIN`/`TS_EVAL`)・QA(`QA_TRAIN`/`QA_EVAL`) のパスを make 変数で渡す。
-
-1. Stage 1（センサー–言語アラインメント）を学習する
+1. **学習用データ + QA ペアを生成**（GPU 不要・CPU で数分）
 
     ```sh
-    make docker-stage1-train \
-      LLM_PATH=TinyLlama/TinyLlama-1.1B-Chat-v1.0 \
-      TS_TRAIN=... TS_EVAL=... QA_TRAIN=... QA_EVAL=... OUT1=./out_stage1
+    make docker-prepare-train-data
     ```
 
-    base LLM は open な TinyLlama 等（gated な meta-llama を使う場合は `.env` の `HF_TOKEN` に利用同意済みトークンを設定）。
+    MHealth（UCI 319）を DL し、公式ノートと同じ前処理で以下を出力する（`mhealth_stage1_prep.py` / `mhealth_stage2_prep.py` を順に実行）。パスは make 側に既定値を埋めてあるので、以降のコマンドで指定不要。
+    - `./data/{train,test}/mhealth_*_stage1.{pkl,json}`: Stage 1 用（単一チャネル × トレンド説明 QA）
+    - `./whole_data/{train,test}/mhealth_*_stage2*.{pkl,json}`: Stage 2 用（15 チャネル × HAR 分類ラベル）
 
-1. Stage 2（タスク適応チューニング・HAR 分類）を学習する
+1. **Stage 1（センサー–言語アラインメント）を学習**
 
     ```sh
-    make docker-stage2-train \
-      STAGE1_CKPT=./out_stage1 NUM_LABELS=12 \
-      TS_TRAIN=... TS_EVAL=... QA_TRAIN=... QA_EVAL=... OUT2=./out_stage2
+    make docker-stage1-train LLM_PATH=TinyLlama/TinyLlama-1.1B-Chat-v1.0 OUT1=/app/out_stage1
     ```
 
-> Stage 2 の推論（HAR 分類）は、公開の Stage2 重みが無く実機検証できないため、本 Tip では学習ターゲットのみ提供する（自分で Stage 2 を学習後、`sensorllm/eval` 等で評価する）。
+    base LLM は open な TinyLlama 等（gated な meta-llama を使う場合は `.env` の `HF_TOKEN` に利用同意済みトークンを設定）。学習済み重みは `out_stage1/` に保存される。
+
+1. **Stage 2（タスク適応チューニング・HAR 分類）を学習**
+
+    ```sh
+    make docker-stage2-train STAGE1_CKPT=/app/out_stage1 NUM_LABELS=12 OUT2=/app/out_stage2
+    ```
+
+    Stage 1 モデルを初期値に `SequenceClassification`（分類ヘッド）を学習。`out_stage2/`（`model.safetensors` ほか）に保存される。
+
+1. **Stage 2 の推論（HAR を 12 クラス分類）**
+
+    ```sh
+    make docker-stage2-predict STAGE2_MODEL=./out_stage2 NUM_SAMPLES=16
+    ```
+
+    学習済み Stage 2 モデルに MHealth の test 窓（15ch × 100 点）を入力し、行動ラベルを予測して正解と突き合わせる（[`stage2_predict.py`](stage2_predict.py)）。上記フローを A100 40GB で実行した実測出力:
+
+    ```
+    Stage2 HAR 分類推論: test から 16 サンプル（全 698 件）
+    [ 2] OK  pred= 4 (Climbing stairs (1 min))          true= 4 (Climbing stairs (1 min))
+    [ 6] OK  pred= 6 (Frontal elevation of arms (20x))  true= 6 (Frontal elevation of arms (20x))
+    [10] OK  pred=10 (Running (1 min))                  true=10 (Running (1 min))
+    ...
+    Accuracy (先頭 16 件): 7/16 = 0.438
+    ```
+
+    Stage 2 学習の途中評価（`make docker-stage2-train` が焼き込みメトリクスで自動計測）では、**test 全 698 件で `eval_accuracy=0.347` / `eval_f1_macro=0.18`** が得られた（**ランダム＝1/12≒8.3% を大きく上回る**）。
+
+> **⚠️ この実機フローは最小構成での検証**。データ生成（`mhealth_*_prep.py`）は被験者 2 名・学習は 1 epoch と小規模なため、上記のとおり精度は論文値には届かない（≒35%）。**データ生成 → 2 段学習 → 分類 → 正解比較の推論経路が最後まで通り、ランダムを明確に超えて学習できること自体は実機で確認済み**。論文相当の精度には、被験者数（既定は `mhealth_*_prep.py` の `range(1, 3)` を全 10 名へ）・エポック数・データ量を論文設定までスケールさせる必要がある（本 Tip はそこまでは追わない）。
 
 <details>
-<summary>参考: make が内部で実行している公式の生コマンド（torchrun）</summary>
+<summary>参考: make が内部で実行している生コマンド（torchrun）</summary>
+
+学習は公式の `train_mem.py` ではなく [`train_entry.py`](train_entry.py) を使う（`train_mem.py` は先頭で **flash-attn 2 を強制 import** するため未導入だと落ちる。`train_entry.py` は `train.train()` を直接呼び、標準 attention で学習する）。`train.py` は相対で `./sensorllm/model/ts_backbone.yaml` と `../metrics/*` を開くため、`cwd=/opt/SensorLLM` で実行する。
 
 Stage 1（アラインメント）:
 
 ```bash
-torchrun --nproc_per_node=1 /opt/SensorLLM/sensorllm/train/train_mem.py \
-  --model_name_or_path [LLM_PATH] --pt_encoder_backbone_ckpt ./chronos_t5_base \
+cd /opt/SensorLLM && torchrun --nproc_per_node=1 /app/train_entry.py \
+  --model_name_or_path TinyLlama/TinyLlama-1.1B-Chat-v1.0 --pt_encoder_backbone_ckpt /app/chronos_t5_base \
   --tokenize_method 'StanNormalizeUniformBins' --dataset mhealth \
-  --data_path [TS_TRAIN] --eval_data_path [TS_EVAL] --qa_path [QA_TRAIN] --eval_qa_path [QA_EVAL] \
-  --output_dir ./out_stage1 --bf16 True --fix_llm True --fix_ts_encoder True \
+  --data_path /app/data/train/mhealth_train_data_stage1.pkl \
+  --eval_data_path /app/data/test/mhealth_test_data_stage1.pkl \
+  --qa_path /app/data/train/mhealth_train_qa_stage1.json \
+  --eval_qa_path /app/data/test/mhealth_test_qa_stage1.json \
+  --output_dir /app/out_stage1 --bf16 True --fix_llm True --fix_ts_encoder True \
   --model_type CasualLM --load_best_model_at_end True
 ```
 
 Stage 2（HAR 分類）:
 
 ```bash
-torchrun --nproc_per_node=1 /opt/SensorLLM/sensorllm/train/train_mem.py \
-  --model_name_or_path ./out_stage1 --pt_encoder_backbone_ckpt ./chronos_t5_base \
+cd /opt/SensorLLM && torchrun --nproc_per_node=1 /app/train_entry.py \
+  --model_name_or_path /app/out_stage1 --pt_encoder_backbone_ckpt /app/chronos_t5_base \
   --model_type "SequenceClassification" --num_labels 12 --use_weighted_loss True \
   --tokenize_method 'StanNormalizeUniformBins' --dataset mhealth \
-  --data_path [TS_TRAIN] --eval_data_path [TS_EVAL] --qa_path [QA_TRAIN] --eval_qa_path [QA_EVAL] \
-  --output_dir ./out_stage2 --bf16 True --fix_llm True --fix_ts_encoder True --fix_cls_head False \
+  --data_path /app/whole_data/train/mhealth_train_data_stage2.pkl \
+  --eval_data_path /app/whole_data/test/mhealth_test_data_stage2.pkl \
+  --qa_path /app/whole_data/train/mhealth_train_qa_stage2_cls.json \
+  --eval_qa_path /app/whole_data/test/mhealth_test_qa_stage2_cls.json \
+  --output_dir /app/out_stage2 --bf16 True --fix_llm True --fix_ts_encoder True --fix_cls_head False \
   --metric_for_best_model "f1_macro" --preprocess_type "smry+Q" --stage_2 True --shuffle True
 ```
 

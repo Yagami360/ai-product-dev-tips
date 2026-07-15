@@ -31,6 +31,17 @@ dependencies = [
 cu121 = ["torch~=2.4.1"]
 cpu = ["torch~=2.4.1"]
 
+# 学習（Stage1/Stage2）とデータ生成に必要な追加依存。
+# 推論だけなら不要。train.py が import する評価系（nltk/evaluate）と、
+# 学習データ生成スクリプト(mhealth_*_prep.py)が使う統計系(statsmodels)。
+train = [
+    "nltk~=3.9",         # train.py の BLEU 計算 import
+    "evaluate~=0.4",     # train.py の f1/accuracy/precision/recall ロード
+    "pyarrow~=14.0",     # evaluate→datasets が新 pyarrow(PyExtensionType 削除)と非互換なため固定
+    "jinja2~=3.1",       # transformers のチャットテンプレート適用
+    "statsmodels~=0.14", # Stage2 QA 生成の自己相関(acf)計算
+]
+
 # アプリ本体をパッケージ化しない（依存だけを .venv に入れる仮想プロジェクト）
 [tool.uv]
 package = false

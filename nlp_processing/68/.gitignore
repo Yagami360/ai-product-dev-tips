@@ -11,6 +11,7 @@ SensorLLM/
 ckpt_1EE1/
 chronos_t5_base/
 out_stage1/
+out_stage2/
 *.part
 
 # Python キャッシュ
@@ -24,3 +25,7 @@ nab/
 run_multi.py
 anomaly_test.py
 anomaly_indomain.py
+MHEALTHDATASET/
+data/
+mh*.ipynb
+whole_data/
