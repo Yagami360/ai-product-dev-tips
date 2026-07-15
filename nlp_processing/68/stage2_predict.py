@@ -10,6 +10,7 @@ Stage2 は 2 段学習（Stage1 アラインメント → Stage2 分類チュー
 学習済み Stage2 チェックポイント（--model-path、既定 ./out_stage2）が必要。
 """
 import os
+import re
 import types
 import argparse
 
@@ -108,6 +109,8 @@ def main():
     ap.add_argument("--no-shuffle", dest="shuffle", action="store_false")
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--dtype", default="bfloat16", choices=list(DTYPE_MAP))
+    ap.add_argument("--plot", default=None,
+                    help="指定パスに、各サンプルのセンサー窓＋true/pred を並べたグリッド図を保存")
     args = ap.parse_args()
 
     dtype = DTYPE_MAP[args.dtype]
@@ -125,6 +128,7 @@ def main():
     print(f"\nStage2 HAR 分類推論: test から {n} サンプル（全 {len(eval_dataset)} 件）\n")
 
     correct = 0
+    results = []  # (i, pred_id, true_id, ok) — --plot 用
     for i in range(n):
         batch = collator([eval_dataset[i]])
         true_id = int(batch["labels"][0])
@@ -144,8 +148,55 @@ def main():
         mark = "OK " if ok else "NG "
         print(f"[{i:2d}] {mark} pred={pred_id:2d} ({id2label[pred_id]})")
         print(f"          true={true_id:2d} ({id2label[true_id]})")
+        results.append((i, pred_id, true_id, ok))
 
     print(f"\nAccuracy (先頭 {n} 件): {correct}/{n} = {correct / n:.3f}")
+
+    if args.plot:
+        save_grid_plot(eval_dataset, results, id2label, correct, n, args.plot)
+        print(f"[plot] saved: {args.plot}")
+
+
+def _short(label):
+    """id2label のラベルから末尾の "(1 min)"/"(20x)" 等を落として短縮。"""
+    return re.sub(r"\s*\(.*\)\s*$", "", label)
+
+
+def save_grid_plot(eval_dataset, results, id2label, correct, n, path):
+    """各サンプルの 15ch センサー窓を薄線で重ね描きし、true/pred をタイトルに表示したグリッド図。
+
+    枠色＝正誤（緑=正解 / 赤=誤り）。生の窓は eval_dataset.ts_data[i]（C 本の長さ 100 系列）。
+    """
+    import math
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    ncols = 4
+    nrows = math.ceil(n / ncols)
+    fig, axes = plt.subplots(nrows, ncols, figsize=(4 * ncols, 2.4 * nrows))
+    axes = axes.flatten() if n > 1 else [axes]
+
+    for ax, (i, pred_id, true_id, ok) in zip(axes, results):
+        window = eval_dataset.ts_data[i]  # list of C tensors (len=window_length)
+        for ch in window:
+            ax.plot(ch.numpy().astype("float32"), lw=0.6, alpha=0.55)
+        color = "#1a7f37" if ok else "#cf222e"
+        ax.set_title(f"[{i}] pred: {_short(id2label[pred_id])}\ntrue: {_short(id2label[true_id])}",
+                     fontsize=8, color=color)
+        ax.set_xticks([]); ax.set_yticks([])
+        for spine in ax.spines.values():
+            spine.set_edgecolor(color); spine.set_linewidth(1.8)
+    for ax in axes[len(results):]:
+        ax.axis("off")
+
+    # matplotlib に日本語フォントが無い環境でも化けないよう suptitle は英語
+    fig.suptitle(f"SensorLLM Stage2 HAR classification "
+                 f"(15ch sensor window / green=correct, red=wrong)  "
+                 f"Accuracy {correct}/{n}={correct / n:.3f}", fontsize=11)
+    fig.tight_layout(rect=[0, 0, 1, 0.97])
+    fig.savefig(path, dpi=110, bbox_inches="tight")
+    plt.close(fig)
 
 
 if __name__ == "__main__":

@@ -173,7 +173,7 @@ Q: Detect anomalies in this sensor reading and report when they occur.
 
 > **最終的な目的が HAR 分類（行動ラベル予測）＝ Stage 2 の推論**なら、公開の Stage 2 重みが無いため、Stage 1（センサー–言語アラインメント）→ Stage 2（タスク適応チューニング）の 2 段学習で自分で Stage 2 モデルを作る必要がある。Stage 1 のトレンド説明だけでよければ本節は不要（前述の「[Stage 1 の推論手順](#stage-1-の推論手順)」で完結）。
 >
-> 公式リポジトリはデータ整形を Jupyter ノートブック（`mhealth_stage1.ipynb` / `mhealth_stage2.ipynb`）で行う想定だが、**手作業を無くすため本 Tip ではノートブック相当の Python スクリプト（[`mhealth_stage1_prep.py`](mhealth_stage1_prep.py) / [`mhealth_stage2_prep.py`](mhealth_stage2_prep.py)）と make ターゲットを用意し、データ生成 → 2 段学習 → HAR 推論までを自動化**した。依存・SensorLLM 本体・評価メトリクスはイメージに焼き込み済みなので、手動の `git clone` / `pip install` は不要。
+> 公式リポジトリはデータ整形を Jupyter ノートブック（`mhealth_stage1.ipynb` / `mhealth_stage2.ipynb`）で行う想定だが、**手作業を無くすため本 Tip ではノートブック相当の Python スクリプト（[`mhealth_stage1_prep.py`](mhealth_stage1_prep.py) / [`mhealth_stage2_prep.py`](mhealth_stage2_prep.py)）と make ターゲットを用意し、データ生成 → 2 段学習 → HAR 推論までを自動化**した。依存・SensorLLM 本体・評価メトリクス（f1/accuracy 等）はイメージに同梱済みなので、手動の `git clone` / `pip install` は不要。
 
 **以下は A100 40GB での実機検証済みフロー**（`make docker-build` → `make docker-model-download` 済み前提）。
 
@@ -183,25 +183,32 @@ Q: Detect anomalies in this sensor reading and report when they occur.
     make docker-prepare-train-data
     ```
 
-    MHealth（UCI 319）を DL し、公式ノートと同じ前処理で以下を出力する（`mhealth_stage1_prep.py` / `mhealth_stage2_prep.py` を順に実行）。パスは make 側に既定値を埋めてあるので、以降のコマンドで指定不要。
-    - `./data/{train,test}/mhealth_*_stage1.{pkl,json}`: Stage 1 用（単一チャネル × トレンド説明 QA）
-    - `./whole_data/{train,test}/mhealth_*_stage2*.{pkl,json}`: Stage 2 用（15 チャネル × HAR 分類ラベル）
+    MHealth（UCI 319, 全 10 被験者）を DL し、公式ノートと同じ前処理で以下を出力する（`mhealth_stage1_prep.py` / `mhealth_stage2_prep.py` を順に実行）。パスは make 側に既定値を埋めてあるので、以降のコマンドで指定不要。
+    - `./whole_data/{train,test}/mhealth_*_stage2*.{pkl,json}`: **Stage 2 用**（15 チャネル × HAR 分類ラベル）※本フローで必須
+    - `./data/{train,test}/mhealth_*_stage1.{pkl,json}`: Stage 1 用（単一チャネル × トレンド説明 QA）※下記「自分で Stage 1 を学習する」場合のみ必要
 
-1. **Stage 1（センサー–言語アラインメント）を学習**
+1. **Stage 2 の初期値（Stage 1 モデル）を用意する**
 
-    ```sh
-    make docker-stage1-train LLM_PATH=TinyLlama/TinyLlama-1.1B-Chat-v1.0 OUT1=/app/out_stage1
-    ```
+    Stage 2 は Stage 1（アラインメント済み）モデルを初期値に学習する。**本フローでは、Stage 1 推論で使った学習済み ckpt `1EE1/SensorLLM-Stage1-Backup`（`make docker-model-download` で取得済みの `ckpt_1EE1/`）をそのまま Stage 1 初期値に流用する**（MHealth 学習済みの Stage 1 モデルなので、Stage 1 学習を丸ごとスキップできる）。
 
-    base LLM は open な TinyLlama 等（gated な meta-llama を使う場合は `.env` の `HF_TOKEN` に利用同意済みトークンを設定）。学習済み重みは `out_stage1/` に保存される。
-
-1. **Stage 2（タスク適応チューニング・HAR 分類）を学習**
+    <details>
+    <summary>自分で Stage 1 から学習する場合（任意・数時間〜）</summary>
 
     ```sh
-    make docker-stage2-train STAGE1_CKPT=/app/out_stage1 NUM_LABELS=12 OUT2=/app/out_stage2
+    make docker-stage1-train LLM_PATH=TinyLlama/TinyLlama-1.1B-Chat-v1.0 EPOCHS=1 OUT1=/app/out_stage1
     ```
 
-    Stage 1 モデルを初期値に `SequenceClassification`（分類ヘッド）を学習。`out_stage2/`（`model.safetensors` ほか）に保存される。
+    base LLM は open な TinyLlama 等（gated な meta-llama を使う場合は `.env` の `HF_TOKEN` に利用同意済みトークンを設定）。学習済み重みは `out_stage1/` に保存され、次段の `STAGE1_CKPT` に指定できる。Stage 1 は単一チャネル QA のため学習サンプルが多く、全 10 被験者・1 epoch でも A100 で数時間かかる。
+
+    </details>
+
+1. **Stage 2（タスク適応チューニング・HAR 分類）を学習**（全 10 被験者・8 epoch）
+
+    ```sh
+    make docker-stage2-train STAGE1_CKPT=/app/ckpt_1EE1 NUM_LABELS=12 EPOCHS=8 OUT2=/app/out_stage2
+    ```
+
+    Stage 1 モデル（既定は `ckpt_1EE1`。自分で学習した場合は `/app/out_stage1`）を初期値に `SequenceClassification`（分類ヘッド）を学習。`out_stage2/`（`model.safetensors` ほか）に保存される。`--save_total_limit`（既定 2）で ckpt 数を制限し、多エポックでも容量が溢れないようにしている。
 
 1. **Stage 2 の推論（HAR を 12 クラス分類）**
 
@@ -209,20 +216,7 @@ Q: Detect anomalies in this sensor reading and report when they occur.
     make docker-stage2-predict STAGE2_MODEL=./out_stage2 NUM_SAMPLES=16
     ```
 
-    学習済み Stage 2 モデルに MHealth の test 窓（15ch × 100 点）を入力し、行動ラベルを予測して正解と突き合わせる（[`stage2_predict.py`](stage2_predict.py)）。上記フローを A100 40GB で実行した実測出力:
-
-    ```
-    Stage2 HAR 分類推論: test から 16 サンプル（全 698 件）
-    [ 2] OK  pred= 4 (Climbing stairs (1 min))          true= 4 (Climbing stairs (1 min))
-    [ 6] OK  pred= 6 (Frontal elevation of arms (20x))  true= 6 (Frontal elevation of arms (20x))
-    [10] OK  pred=10 (Running (1 min))                  true=10 (Running (1 min))
-    ...
-    Accuracy (先頭 16 件): 7/16 = 0.438
-    ```
-
-    Stage 2 学習の途中評価（`make docker-stage2-train` が焼き込みメトリクスで自動計測）では、**test 全 698 件で `eval_accuracy=0.347` / `eval_f1_macro=0.18`** が得られた（**ランダム＝1/12≒8.3% を大きく上回る**）。
-
-> **⚠️ この実機フローは最小構成での検証**。データ生成（`mhealth_*_prep.py`）は被験者 2 名・学習は 1 epoch と小規模なため、上記のとおり精度は論文値には届かない（≒35%）。**データ生成 → 2 段学習 → 分類 → 正解比較の推論経路が最後まで通り、ランダムを明確に超えて学習できること自体は実機で確認済み**。論文相当の精度には、被験者数（既定は `mhealth_*_prep.py` の `range(1, 3)` を全 10 名へ）・エポック数・データ量を論文設定までスケールさせる必要がある（本 Tip はそこまでは追わない）。
+    学習済み Stage 2 モデルに MHealth の test 窓（15ch × 100 点）を入力し、行動ラベルを予測して正解と突き合わせる（[`stage2_predict.py`](stage2_predict.py)）。実測結果は次節「[Stage 2 の実行結果](#stage-2-の実行結果gpu--a100-40gb-で検証)」を参照。
 
 <details>
 <summary>参考: make が内部で実行している生コマンド（torchrun）</summary>
@@ -261,6 +255,61 @@ cd /opt/SensorLLM && torchrun --nproc_per_node=1 /app/train_entry.py \
 `--preprocess_type` の全オプションは [`./sensorllm/data/utils.py`](https://github.com/cruiseresearchgroup/SensorLLM/blob/main/sensorllm/data/utils.py) を参照。
 
 </details>
+
+## Stage 2 の実行結果（GPU / A100 40GB で検証）
+
+上記フロー（データ生成 → **1EE1 を Stage 1 初期値に流用** → Stage 2 学習 → Stage 2 推論）を A100 40GB で通しで実行した実測結果。**Stage 2 学習は全 10 被験者データで 8 epoch を完走**（38,168 ステップ・約 2.4 時間）し、チェックポイント（`out_stage2/model.safetensors` ほか）を保存した上での推論。
+
+### 学習時の評価（`make docker-stage2-train` がメトリクスで自動計測）
+
+test 全 2,039 件（被験者 subject1/3/6）に対する評価。**エポックを追うごとに精度が単調に上昇し、最終的に `eval_accuracy=0.863` / `eval_f1_macro=0.871` に到達**（ランダム＝1/12≒8.3% を大きく上回る。Stage 1 に学習済み 1EE1 を使ったことが効いている）。
+
+| epoch | eval_accuracy | eval_f1_macro |
+|---|---|---|
+| 1 | 0.687 | 0.602 |
+| 2 | 0.731 | 0.714 |
+| 3 | 0.755 | 0.737 |
+| 4 | 0.801 | 0.794 |
+| 5 | 0.843 | 0.849 |
+| 6 | 0.846 | 0.850 |
+| 7 | 0.863 | 0.869 |
+| **8** | **0.863** | **0.871** |
+
+クラス別 F1（最終 epoch）。**周期・振幅の特徴が明確な動作系はほぼ完璧**、静止・着座系（互いに信号が似る）が相対的に弱い:
+
+| クラス | F1 | | クラス | F1 |
+|---|---|---|---|---|
+| 6 Frontal elevation of arms | **1.000** | | 0 Standing still | 0.735 |
+| 3 Walking | 0.997 | | 10 Running | 0.829 |
+| 8 Cycling | 0.997 | | 9 Jogging | 0.761 |
+| 11 Jump front & back | 0.992 | | 2 Lying down | 0.678 |
+| 4 Climbing stairs | 0.978 | | 1 Sitting and relaxing | 0.575 |
+| 5 Waist bends forward | 0.963 | | | |
+| 7 Knees bending (crouching) | 0.945 | | | |
+
+### Stage 2 推論（`make docker-stage2-predict`, test から 16 サンプル）
+
+各サンプルの 15ch センサー窓を重ね描きし、予測ラベル（pred）と正解ラベル（true）を表示した図（緑枠＝正解 / 赤枠＝誤り。[`stage2_predict.py --plot`](stage2_predict.py) が出力）:
+
+![Stage2 HAR 分類結果（センサー窓＋pred/true）](images/stage2_predict.png)
+
+```text
+Stage2 HAR 分類推論: test から 16 サンプル（全 2039 件）
+[ 0] OK  pred= 0 (Standing still)             true= 0 (Standing still)
+[ 1] OK  pred= 6 (Frontal elevation of arms)  true= 6 (Frontal elevation of arms)
+[ 2] OK  pred= 4 (Climbing stairs)            true= 4 (Climbing stairs)
+[ 3] OK  pred= 5 (Waist bends forward)        true= 5 (Waist bends forward)
+[ 4] OK  pred= 7 (Knees bending (crouching))  true= 7 (Knees bending (crouching))
+[ 6] OK  pred= 9 (Jogging)                    true= 9 (Jogging)
+[ 7] OK  pred= 2 (Lying down)                 true= 2 (Lying down)
+[14] OK  pred=11 (Jump front & back)          true=11 (Jump front & back)
+[15] NG  pred= 0 (Standing still)             true= 1 (Sitting and relaxing)
+Accuracy (先頭 16 件): 15/16 = 0.938
+```
+
+唯一の誤り（sample 15）は **Sitting↔Standing** という、ともにほぼ平坦な静止姿勢どうしの取り違え（上図でも両者の波形は平坦で似ている）。動作系（歩行・階段・ジャンプ・ジョギング等）は明瞭な波形の違いから正しく分類できている。
+
+> **⚠️ 精度についての注意**: この結果は **Stage 1 に非公式 ckpt `1EE1`（TinyLlama-1.1B ベース）を流用**し、MHealth 全 10 被験者・8 epoch で Stage 2 を学習したもの。**データ生成 → 2 段学習 → 分類 → 正解比較のフローが実機で最後まで通り、HAR 分類が高精度（acc 0.863 / macro-F1 0.871）で機能することを確認済み**。ただし論文はより大きな LLaMA ベース・全データセットで学習しており、本 Tip の値がそのまま論文値と一致するわけではない（ベース LLM・Stage 1 の質・被験者分割に依存）。より高精度を狙う場合は、ベース LLM を大型化し Stage 1 も自前で十分に学習する。
 
 ## 注意点・課題
 

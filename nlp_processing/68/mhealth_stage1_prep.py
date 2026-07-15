@@ -110,7 +110,7 @@ all_test_segments = []
 all_train_labels = []
 all_test_labels = []
 
-for i in range(1, 3):
+for i in range(1, 11):
     df = pd.read_csv(f'./MHEALTHDATASET/mHealth_subject{i}.log', header=None, sep='\t')
     # Note: Excluding the ECG data collected with the chest sensor
     df = df.loc[:, [0, 1, 2, 5, 6, 7, 8, 9, 10, 14, 15, 16, 17, 18, 19, 23]].rename(columns= {
