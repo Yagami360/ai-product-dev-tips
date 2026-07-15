@@ -77,6 +77,8 @@ def parse_args():
                         help="モデルへの質問")
     parser.add_argument("--max-new-tokens", type=int, default=512)
     parser.add_argument("--temperature", type=float, default=0.6)
+    parser.add_argument("--seed", type=int, default=0, help="合成波形の乱数シード(再現性)")
+    parser.add_argument("--plot", type=str, default=None, help="入力センサー信号を保存する PNG パス")
     return parser.parse_args()
 
 
@@ -115,7 +117,8 @@ def build_sensor_series(args):
             )
         series = arr
     else:
-        # 周期成分 + トレンド + ノイズの合成加速度っぽい波形
+        # 周期成分 + トレンド + ノイズの合成加速度っぽい波形（--seed で再現性を固定）
+        np.random.seed(args.seed)
         t = np.linspace(0, 4 * np.pi, args.length)
         series = (np.sin(t) + 0.3 * np.sin(3 * t) + 0.02 * t
                   + 0.05 * np.random.randn(args.length)).astype(np.float32)
@@ -184,17 +187,39 @@ def generate(model, tokenizer, inputs, ts_token_ids, ts_attention_mask, args):
     return text.strip()
 
 
+def save_plot(series, path, title):
+    """入力センサー信号(1 チャネル)を折れ線で PNG 保存する。"""
+    import os
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    d = os.path.dirname(path)
+    if d:
+        os.makedirs(d, exist_ok=True)
+    plt.figure(figsize=(9, 3))
+    plt.plot(series.numpy(), color="#1f77b4", linewidth=1.2)
+    plt.title(title)
+    plt.xlabel("time step")
+    plt.ylabel("sensor value")
+    plt.tight_layout()
+    plt.savefig(path, dpi=120)
+    plt.close()
+    print(f"[INFO] 入力センサー信号を保存: {path}")
+
+
 if __name__ == "__main__":
     args = parse_args()
     dtype = DTYPE_MAP[args.dtype]
 
     model, tokenizer, chronos_tokenizer = load_model(args, dtype)
     series = build_sensor_series(args)
+    if args.plot:
+        save_plot(series, args.plot, f"input sensor signal (channel={args.channel or 'auto'})")
     inputs, ts_token_ids, ts_attention_mask = build_prompt(
         args, model, tokenizer, chronos_tokenizer, series
     )
 
-    print("\n===== 質問 =====")
+    print("\n===== 質問 (Question) =====")
     print(args.question)
     print("\n===== SensorLLM の出力(センサー信号のトレンド説明) =====")
     print(generate(model, tokenizer, inputs, ts_token_ids, ts_attention_mask, args))

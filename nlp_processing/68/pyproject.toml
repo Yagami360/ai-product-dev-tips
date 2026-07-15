@@ -1,0 +1,57 @@
+[project]
+name = "sensorllm-run"
+version = "0.1.0"
+description = "SensorLLM (Stage1) 推論を uv で再現実行するための環境定義"
+requires-python = ">=3.10,<3.12"
+
+# バージョンは互換リリース指定(~=)で固定する。
+# 【重要】SensorLLM の公式コードは transformers 4.45 系 / torch 2.4 系 / numpy 1.x 系を
+# 前提に書かれている（カスタム LlamaForCausalLM 実装が当該バージョンの内部 API に依存）。
+# 2026-07 時点の最新は transformers 5.x 系・torch 2.1x 系・numpy 2.x 系だが、これらでは
+# 動かないため、ML コアは「動作確認済みの互換レンジ」に固定し、周辺ツールのみ新しめにする。
+dependencies = [
+    "transformers~=4.45.1",   # 4.45.x（カスタムモデルが依存。5.x は非互換）
+    "numpy~=1.24.4",          # 1.24.x（numpy 2.x / pandas・scipy との非互換を回避）
+    "huggingface-hub~=0.30",  # >=0.30,<1.0（Xet 対応かつ transformers 4.45 互換）
+    "hf-xet~=1.1",            # HF Xet 取得（未導入だと Xet DL がハングしやすい）
+    "accelerate~=0.34",
+    "safetensors~=0.4",
+    "sentencepiece~=0.2",
+    "protobuf~=5.28",
+    "pyyaml~=6.0",
+    "requests~=2.32",
+    "pandas~=2.0.3",
+    "scikit-learn~=1.3.2",
+    "scipy~=1.10.1",
+    "matplotlib~=3.7",       # 入力センサー信号の可視化(--plot)用
+]
+
+[project.optional-dependencies]
+# torch は環境に合わせて片方を選ぶ（CUDA 12.x の GPU なら cu121、CPU のみなら cpu）
+cu121 = ["torch~=2.4.1"]
+cpu = ["torch~=2.4.1"]
+
+# アプリ本体をパッケージ化しない（依存だけを .venv に入れる仮想プロジェクト）
+[tool.uv]
+package = false
+# cpu / cu121 は相互排他（torch の index が異なる）。宣言しないと解決が競合エラーになる
+conflicts = [
+    [{ extra = "cpu" }, { extra = "cu121" }],
+]
+
+# torch は PyTorch 公式 index から取得する（extra に応じて cu121 / cpu を切替）
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cu121", extra = "cu121" },
+    { index = "pytorch-cpu", extra = "cpu" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu121"
+url = "https://download.pytorch.org/whl/cu121"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true

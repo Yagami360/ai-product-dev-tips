@@ -1,0 +1,26 @@
+# ローカル環境変数（HF トークン等の秘密情報を含みうるため git 管理外）
+.env
+
+# 公式リポジトリ（README の手順で clone する外部リポジトリ。この Tip では管理しない）
+SensorLLM/
+
+# uv 仮想環境
+.venv/
+
+# ダウンロードしたモデル・学習成果物（大容量）
+ckpt_1EE1/
+chronos_t5_base/
+out_stage1/
+*.part
+
+# Python キャッシュ
+__pycache__/
+*.pyc
+sample_c_acc_x.npy
+mHealth*.log
+
+# 検証用にコピーした NAB データ(nlp_processing/70 由来)
+nab/
+run_multi.py
+anomaly_test.py
+anomaly_indomain.py

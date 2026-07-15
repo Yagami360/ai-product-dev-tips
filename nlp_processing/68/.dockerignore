@@ -1,0 +1,9 @@
+# Docker ビルドコンテキストから除外（イメージには pyproject.toml のみ必要）
+.env
+.venv/
+ckpt_1EE1/
+chronos_t5_base/
+out_stage1/
+__pycache__/
+*.part
+SensorLLM/
