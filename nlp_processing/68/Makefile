@@ -112,11 +112,16 @@ docker-stage2-train:  ## [コンテナ/GPU] Stage2 学習（HAR 分類）。要 
 
 STAGE2_MODEL ?= ./out_stage2
 NUM_SAMPLES  ?= 16
-docker-stage2-predict:  ## [コンテナ/GPU] Stage2 推論（学習済み ckpt で HAR を 12 クラス分類）
+RESULTS      ?= outputs/stage2_predict_results.npz
+docker-stage2-predict:  ## [コンテナ/GPU] Stage2 推論（HAR 分類）＋結果保存＋サンプル別プロット
 	$(DOCKER_RUN) uv run --no-sync python stage2_predict.py \
 	  --model-path $(STAGE2_MODEL) --chronos-path $(CHRONOS) \
 	  --dataset $(DATASET) --num-labels $(NUM_LABELS) --num-samples $(NUM_SAMPLES) \
-	  --plot images/stage2_predict.png --device cuda --dtype bfloat16
+	  --save-results $(RESULTS) --plot-dir images/stage2_samples --device cuda --dtype bfloat16
+
+docker-stage2-plot:  ## [コンテナ/CPU] 保存済み結果($(RESULTS))から推論なしで図だけ再生成
+	$(DOCKER_RUN) uv run --no-sync python stage2_predict.py \
+	  --from-results $(RESULTS) --plot-dir images/stage2_samples
 
 clean:  ## 取得モデル・生成物を削除
 	rm -rf ckpt_1EE1 chronos_t5_base $(OUT1) $(OUT2) sample_c_acc_x.npy images \

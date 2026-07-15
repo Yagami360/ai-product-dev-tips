@@ -17,8 +17,16 @@ out_stage2/
 # Python キャッシュ
 __pycache__/
 *.pyc
-sample_c_acc_x.npy
 mHealth*.log
+
+# 推論結果などのバイナリ出力（大容量・再生成可能なので git 管理しない）。出力は outputs/ 以下へ
+outputs/
+*.npy
+*.npz
+
+# Stage2 サンプル別図は出力ディレクトリ扱い（全 16 枚は再生成可能）。
+# README 掲載の代表 2 枚のみ git add -f で明示追跡する。
+images/stage2_samples/
 
 # 検証用にコピーした NAB データ(nlp_processing/70 由来)
 nab/

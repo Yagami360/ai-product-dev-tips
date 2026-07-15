@@ -14,5 +14,7 @@ whole_data/
 MHEALTHDATASET/
 nab/
 images/
+outputs/
 *.npy
+*.npz
 *.log
