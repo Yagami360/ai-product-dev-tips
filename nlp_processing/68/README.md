@@ -63,9 +63,9 @@ flowchart LR
 
 | 非公式 ckpt | ベース | この Tip で使うか |
 |---|---|---|
-| **`1EE1/SensorLLM-Stage1-Backup`** | TinyLlama-1.1B 系（LLaMA） | ✅ 公式 Stage1 クラスに素直にロード可 |
-| `pixelworld17/sensorllm-lora` | Llama-3.2-1B（LoRA アダプタのみ） | △ base + PEFT マージが別途必要 |
-| `Ganlen233/sensorllm` | Qwen3 系 | ✗ 公式クラスは LLaMA 専用で非互換 |
+| **[`1EE1/SensorLLM-Stage1-Backup`](https://huggingface.co/1EE1/SensorLLM-Stage1-Backup)** | TinyLlama-1.1B 系（LLaMA） | ✅ 公式 Stage1 クラスに素直にロード可 |
+| [`pixelworld17/sensorllm-lora`](https://huggingface.co/pixelworld17/sensorllm-lora) | Llama-3.2-1B（LoRA アダプタのみ） | △ base + PEFT マージが別途必要 |
+| [`Ganlen233/sensorllm`](https://huggingface.co/Ganlen233/sensorllm) | Qwen3 系 | ✗ 公式クラスは LLaMA 専用で非互換 |
 
 > **⚠️ 非公式のため信頼性は担保されない**。あくまで「配線が動くか」を確認するデモ用途で、本番評価には自分で 2 段学習した重みを使うこと。
 
