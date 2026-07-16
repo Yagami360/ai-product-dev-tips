@@ -36,9 +36,9 @@ DOCKER_RUN = docker run --rm --gpus all $(ENVFILE) $(DOCKER_MOUNT) -w /app $(IMA
 # cwd=/opt/SensorLLM で実行し、uv には --project /app で pyproject/venv の場所を教える。
 DOCKER_TRAIN = docker run --rm --gpus all $(ENVFILE) $(DOCKER_MOUNT) -w /opt/SensorLLM $(IMAGE)
 
-.PHONY: help docker-build clean download-model create-sample-data create-train-data \
-        predict-stage1 train-stage1 train-stage2 predict-stage2 \
-        plot-stage2 install lint format format-check
+.PHONY: help docker-build clean download-model download-mhealth-dataset download-nab-dataset \
+        create-sample-data create-train-data predict-stage1 train-stage1 train-stage2 \
+        predict-stage2 plot-stage2 install lint format format-check
 
 help:  ## タスク一覧を表示
 	@grep -hE '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-20s\033[0m %s\n",$$1,$$2}'
@@ -69,7 +69,13 @@ download-model:  ## [コンテナ] Stage1 ckpt と Chronos を取得（要 HF_TO
 create-sample-data:  ## [コンテナ] 実センサーデータ(MHealth)から 1 チャネル分の推論用サンプルを作る
 	$(DOCKER_RUN) uv run --no-sync python create_sample_data.py
 
-create-train-data:  ## [コンテナ/CPU] 学習用データ+QA を生成（Stage1: ./data, Stage2: ./whole_data）
+download-mhealth-dataset:  ## [コンテナ] MHealth 生データを datasets/MHEALTHDATASET へ取得
+	$(DOCKER_RUN) uv run --no-sync python download_dataset.py mhealth
+
+download-nab-dataset:  ## [コンテナ] NAB の該当CSV(Stage1 デモC用)を datasets/nab へ取得
+	$(DOCKER_RUN) uv run --no-sync python download_dataset.py nab
+
+create-train-data:  ## [コンテナ/CPU] 学習用データ+QA を生成（Stage1/Stage2。MHealth 未取得なら自動DL）
 	$(DOCKER_RUN) sh -c "uv run --no-sync python create_dataset_stage1.py && \
 	  uv run --no-sync python create_dataset_stage2.py"
 
