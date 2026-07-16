@@ -1,5 +1,5 @@
 """公式ノート mhealth_stageN.ipynb 相当の学習データ生成スクリプト(自動生成)。
-MHealth を取得して ./MHEALTHDATASET/ に展開し、./data 配下に pkl + QA-JSON を出力する。"""
+MHealth を取得して datasets/MHEALTHDATASET/ に展開し、datasets/ 配下に pkl + QA-JSON を出力する。"""
 
 import io
 import json
@@ -13,6 +13,10 @@ from datetime import datetime
 
 import numpy as np
 import pandas as pd
+
+# 生成物は 68/datasets/ 以下に集約する（以降の相対パスはこのディレクトリ基準）
+os.makedirs("datasets", exist_ok=True)
+os.chdir("datasets")
 
 if not os.path.isdir("MHEALTHDATASET"):
     print("[prep] downloading MHealth ...", flush=True)

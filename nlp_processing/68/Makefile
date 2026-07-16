@@ -24,7 +24,7 @@ CHRONOS_REPO ?= amazon/chronos-t5-base
 DATASET      ?= mhealth
 # 学習は cwd=/opt/SensorLLM で公式 train_mem.py を回すため、データ/モデルは絶対(/app)で渡す。
 # /app は実行時にカレントをマウントする先。
-CHRONOS      ?= /app/chronos_t5_base
+CHRONOS      ?= /app/checkpoints/chronos_t5_base
 
 # コンテナ実行: GPU 有効・カレントを /app にマウント・HF キャッシュ永続化・.env 注入
 # （SensorLLM=/opt/SensorLLM・venv=/opt/uv-venv はイメージ内。/app 外なのでマウントに隠れない）
@@ -63,25 +63,25 @@ docker-build:  ## Docker イメージをビルド（SensorLLM clone + uv sync + 
 	docker build -t $(IMAGE) .
 
 download-model:  ## [コンテナ] Stage1 ckpt と Chronos を取得（要 HF_TOKEN）
-	$(DOCKER_RUN) sh -c "uv run --no-sync huggingface-cli download $(HF_REPO) --local-dir ckpt_1EE1 && \
-	  uv run --no-sync huggingface-cli download $(CHRONOS_REPO) --local-dir chronos_t5_base"
+	$(DOCKER_RUN) sh -c "uv run --no-sync huggingface-cli download $(HF_REPO) --local-dir checkpoints/ckpt_1EE1 && \
+	  uv run --no-sync huggingface-cli download $(CHRONOS_REPO) --local-dir checkpoints/chronos_t5_base"
 
 create-sample-data:  ## [コンテナ] 実センサーデータ(MHealth)から 1 チャネル分の推論用サンプルを作る
-	$(DOCKER_RUN) uv run --no-sync python prepare_sample.py
+	$(DOCKER_RUN) uv run --no-sync python create_sample_data.py
 
 create-train-data:  ## [コンテナ/CPU] 学習用データ+QA を生成（Stage1: ./data, Stage2: ./whole_data）
-	$(DOCKER_RUN) sh -c "uv run --no-sync python create_stage1_dataset.py && \
-	  uv run --no-sync python create_stage2_dataset.py"
+	$(DOCKER_RUN) sh -c "uv run --no-sync python create_dataset_stage1.py && \
+	  uv run --no-sync python create_dataset_stage2.py"
 
 # ---- Stage 1: センサー–言語アラインメント（トレンド説明） ----
-STAGE1_MODEL ?= ./ckpt_1EE1
+STAGE1_MODEL ?= ./checkpoints/ckpt_1EE1
 SAMPLE       ?= outputs/sample_c_acc_x.npy
 CHANNEL      ?= c_acc_x
 predict-stage1: create-sample-data  ## [コンテナ/GPU] Stage1 推論（センサー信号のトレンドを自然言語説明）
-	$(DOCKER_RUN) uv run --no-sync python stage1_predict.py \
+	$(DOCKER_RUN) uv run --no-sync python predict_stage1.py \
 	  --model-path $(STAGE1_MODEL) --chronos-path $(CHRONOS) \
 	  --dataset $(DATASET) --channel $(CHANNEL) --input $(SAMPLE) \
-	  --plot images/sensor_input.png --device cuda --dtype bfloat16
+	  --plot outputs/plots/sensor_input.png --device cuda --dtype bfloat16
 
 # base LLM は open な TinyLlama 等（gated を使うなら .env の HF_TOKEN に利用同意済みトークン）。
 # 学習は公式 train_mem.py（flash-attn 使用。wheel をイメージに焼き込み済み）で回す。
@@ -89,16 +89,16 @@ predict-stage1: create-sample-data  ## [コンテナ/GPU] Stage1 推論（セン
 EPOCHS     ?= 1
 SAVE_LIMIT ?= 2
 LLM_PATH ?= TinyLlama/TinyLlama-1.1B-Chat-v1.0
-OUT1     ?= /app/out_stage1
+OUT1     ?= /app/checkpoints/sensorllm_stage1
 train-stage1:  ## [コンテナ/GPU] Stage1 学習（アラインメント）。要 create-train-data
 	$(DOCKER_TRAIN) sh -c "uv run --no-sync --project /app torchrun --nproc_per_node=1 \
 	  /opt/SensorLLM/sensorllm/train/train_mem.py \
 	  --model_name_or_path $(LLM_PATH) --pt_encoder_backbone_ckpt $(CHRONOS) \
 	  --tokenize_method 'StanNormalizeUniformBins' --dataset $(DATASET) \
-	  --data_path /app/data/train/mhealth_train_data_stage1.pkl \
-	  --eval_data_path /app/data/test/mhealth_test_data_stage1.pkl \
-	  --qa_path /app/data/train/mhealth_train_qa_stage1.json \
-	  --eval_qa_path /app/data/test/mhealth_test_qa_stage1.json \
+	  --data_path /app/datasets/data/train/mhealth_train_data_stage1.pkl \
+	  --eval_data_path /app/datasets/data/test/mhealth_test_data_stage1.pkl \
+	  --qa_path /app/datasets/data/train/mhealth_train_qa_stage1.json \
+	  --eval_qa_path /app/datasets/data/test/mhealth_test_qa_stage1.json \
 	  --output_dir $(OUT1) --model_max_length 4096 --num_train_epochs $(EPOCHS) \
 	  --per_device_train_batch_size 1 --per_device_eval_batch_size 1 \
 	  --evaluation_strategy steps --save_strategy steps --save_total_limit $(SAVE_LIMIT) \
@@ -107,19 +107,19 @@ train-stage1:  ## [コンテナ/GPU] Stage1 学習（アラインメント）。
 	  --model_type CasualLM --load_best_model_at_end True"
 
 # ---- Stage 2: タスク適応チューニング（HAR 分類） ----
-STAGE1_CKPT ?= /app/out_stage1
+STAGE1_CKPT ?= /app/checkpoints/sensorllm_stage1
 NUM_LABELS  ?= 12
-OUT2        ?= /app/out_stage2
+OUT2        ?= /app/checkpoints/sensorllm_stage2
 train-stage2:  ## [コンテナ/GPU] Stage2 学習（HAR 分類）。要 Stage1 モデル + 学習用データ
 	$(DOCKER_TRAIN) sh -c "uv run --no-sync --project /app torchrun --nproc_per_node=1 \
 	  /opt/SensorLLM/sensorllm/train/train_mem.py \
 	  --model_name_or_path $(STAGE1_CKPT) --pt_encoder_backbone_ckpt $(CHRONOS) \
 	  --model_type 'SequenceClassification' --num_labels $(NUM_LABELS) --use_weighted_loss True \
 	  --tokenize_method 'StanNormalizeUniformBins' --dataset $(DATASET) \
-	  --data_path /app/whole_data/train/mhealth_train_data_stage2.pkl \
-	  --eval_data_path /app/whole_data/test/mhealth_test_data_stage2.pkl \
-	  --qa_path /app/whole_data/train/mhealth_train_qa_stage2_cls.json \
-	  --eval_qa_path /app/whole_data/test/mhealth_test_qa_stage2_cls.json \
+	  --data_path /app/datasets/whole_data/train/mhealth_train_data_stage2.pkl \
+	  --eval_data_path /app/datasets/whole_data/test/mhealth_test_data_stage2.pkl \
+	  --qa_path /app/datasets/whole_data/train/mhealth_train_qa_stage2_cls.json \
+	  --eval_qa_path /app/datasets/whole_data/test/mhealth_test_qa_stage2_cls.json \
 	  --output_dir $(OUT2) --model_max_length 4096 --num_train_epochs $(EPOCHS) \
 	  --per_device_train_batch_size 1 --per_device_eval_batch_size 1 \
 	  --evaluation_strategy epoch --save_strategy epoch --save_total_limit $(SAVE_LIMIT) \
@@ -128,19 +128,19 @@ train-stage2:  ## [コンテナ/GPU] Stage2 学習（HAR 分類）。要 Stage1 
 	  --metric_for_best_model f1_macro --greater_is_better True \
 	  --preprocess_type 'smry+Q' --stage_2 True --shuffle True"
 
-STAGE2_MODEL ?= ./out_stage2
+STAGE2_MODEL ?= ./checkpoints/sensorllm_stage2
 NUM_SAMPLES  ?= 16
-RESULTS      ?= outputs/stage2_predict_results.npz
+RESULTS      ?= outputs/predict_stage2_results.npz
 predict-stage2:  ## [コンテナ/GPU] Stage2 推論（HAR 分類）＋結果保存＋サンプル別プロット
-	$(DOCKER_RUN) uv run --no-sync python stage2_predict.py \
+	$(DOCKER_RUN) uv run --no-sync python predict_stage2.py \
 	  --model-path $(STAGE2_MODEL) --chronos-path $(CHRONOS) \
 	  --dataset $(DATASET) --num-labels $(NUM_LABELS) --num-samples $(NUM_SAMPLES) \
-	  --save-results $(RESULTS) --plot-dir images/stage2_samples --device cuda --dtype bfloat16
+	  --data-dir datasets/whole_data \
+	  --save-results $(RESULTS) --plot-dir outputs/plots/stage2_samples --device cuda --dtype bfloat16
 
 plot-stage2:  ## [コンテナ/CPU] 保存済み結果($(RESULTS))から推論なしで図だけ再生成
-	$(DOCKER_RUN) uv run --no-sync python stage2_predict.py \
-	  --from-results $(RESULTS) --plot-dir images/stage2_samples
+	$(DOCKER_RUN) uv run --no-sync python predict_stage2.py \
+	  --from-results $(RESULTS) --plot-dir outputs/plots/stage2_samples
 
 clean:  ## 取得モデル・生成物を削除
-	rm -rf ckpt_1EE1 chronos_t5_base $(OUT1) $(OUT2) outputs images/stage2_samples \
-	  data whole_data MHEALTHDATASET
+	rm -rf outputs checkpoints datasets

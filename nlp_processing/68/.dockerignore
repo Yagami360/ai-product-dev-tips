@@ -1,20 +1,16 @@
 # Docker ビルドコンテキストから除外（イメージには pyproject.toml のみ必要）
 .env
 .venv/
-ckpt_1EE1/
-chronos_t5_base/
-out_stage1/
-out_stage2/
-__pycache__/
-*.part
 SensorLLM/
-# 学習用の生成物・データセット（root 所有・大容量。ビルドには不要）
-data/
-whole_data/
+# 大容量の DL 物・データセット・出力・成果物（ビルドには不要）
+checkpoints/
+datasets/
+outputs/
+assets/
 MHEALTHDATASET/
 nab/
-images/
-outputs/
+__pycache__/
+*.part
 *.npy
 *.npz
 *.log

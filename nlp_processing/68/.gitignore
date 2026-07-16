@@ -7,33 +7,25 @@ SensorLLM/
 # uv 仮想環境
 .venv/
 
-# ダウンロードしたモデル・学習成果物（大容量）
-ckpt_1EE1/
-chronos_t5_base/
-out_stage1/
-out_stage2/
+# 大容量の DL 物・学習済み ckpt・データセット・出力（いずれも再生成可能なので git 管理外）
+#   checkpoints/ … download-model の DL 物 + train-* の学習済み ckpt
+#   datasets/    … MHealth 生データ + 学習用に生成した pkl/QA
+#   outputs/     … 推論サンプル(.npy)・結果(.npz)・plots/
+checkpoints/
+datasets/
+outputs/
 *.part
 
 # Python キャッシュ
 __pycache__/
 *.pyc
 mHealth*.log
-
-# 推論結果などのバイナリ出力（大容量・再生成可能なので git 管理しない）。出力は outputs/ 以下へ
-outputs/
 *.npy
 *.npz
 
-# Stage2 サンプル別図は出力ディレクトリ扱い（全 16 枚は再生成可能）。
-# README 掲載の代表 2 枚のみ git add -f で明示追跡する。
-images/stage2_samples/
-
-# 検証用にコピーした NAB データ(nlp_processing/70 由来)
+# 検証用の使い捨て（NAB データ・使い捨てスクリプト・ノート）
 nab/
 run_multi.py
 anomaly_test.py
 anomaly_indomain.py
-MHEALTHDATASET/
-data/
 mh*.ipynb
-whole_data/

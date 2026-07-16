@@ -7,7 +7,7 @@ Stage2 モデル（SensorLLMStage2LlamaForSequenceClassification）に、MHealth
 そのまま再利用する（＝独自実装によるズレを避ける）。
 
 Stage2 は 2 段学習（Stage1 アラインメント → Stage2 分類チューニング）が前提のため、
-学習済み Stage2 チェックポイント（--model-path、既定 ./out_stage2）が必要。
+学習済み Stage2 チェックポイント（--model-path、既定 ./checkpoints/sensorllm_stage2）が必要。
 """
 
 import argparse
@@ -97,9 +97,9 @@ def load_model(args, dtype):
 @torch.inference_mode()
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model-path", default="./out_stage2", help="学習済み Stage2 ckpt")
-    ap.add_argument("--chronos-path", default="./chronos_t5_base")
-    ap.add_argument("--data-dir", default="./whole_data", help="Stage2 データ生成先")
+    ap.add_argument("--model-path", default="./checkpoints/sensorllm_stage2", help="学習済み Stage2 ckpt")
+    ap.add_argument("--chronos-path", default="./checkpoints/chronos_t5_base")
+    ap.add_argument("--data-dir", default="./datasets/whole_data", help="Stage2 データ生成先")
     ap.add_argument("--dataset", default="mhealth")
     ap.add_argument("--tokenize-method", default="StanNormalizeUniformBins")
     ap.add_argument("--preprocess-type", default="smry+Q")
@@ -206,7 +206,7 @@ def _short(label):
 
 
 # 15ch すべてを描くと煩雑なので、身体 3 箇所の「加速度の大きさ |acc|=sqrt(x^2+y^2+z^2)」の
-# 3 本線だけを描いて分かりやすくする。チャネル順は create_stage2_dataset.py の pkl 列順に一致。
+# 3 本線だけを描いて分かりやすくする。チャネル順は create_dataset_stage2.py の pkl 列順に一致。
 # （胸 acc=0..2 / 左足首 acc=3..5・gyro=6..8 / 右前腕 acc=9..11・gyro=12..14）
 MHEALTH_ACC_MAG = [
     ("Chest |acc|", "#1f77b4", (0, 1, 2)),
@@ -226,7 +226,7 @@ def _acc_magnitudes(window, is_mhealth):
 
 
 # MHealth 15ch のレイアウト: 行=身体部位×センサー種別（5）× 列=軸 X/Y/Z（3）。
-# チャネル順は create_stage2_dataset.py の pkl 列順に一致。
+# チャネル順は create_dataset_stage2.py の pkl 列順に一致。
 MHEALTH_CH_ROWS = [
     ("Chest acc", "m/s^2", "#1f77b4", (0, 1, 2)),
     ("L-ankle acc", "m/s^2", "#2ca02c", (3, 4, 5)),
