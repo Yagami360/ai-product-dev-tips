@@ -65,7 +65,7 @@ ignore_missing_imports = true
 # 自動生成（公式ノート由来）の prep スクリプトは動的な dict/list/ファイル操作が多く、
 # 静的型推論と相性が悪い。型チェック対象には含めるが、当該の偽陽性コードのみ緩和する。
 [[tool.mypy.overrides]]
-module = ["mhealth_stage1_prep", "mhealth_stage2_prep"]
+module = ["create_stage1_dataset", "create_stage2_dataset"]
 disable_error_code = ["attr-defined", "assignment", "arg-type", "index"]
 
 # アプリ本体をパッケージ化しない（依存だけを .venv に入れる仮想プロジェクト）

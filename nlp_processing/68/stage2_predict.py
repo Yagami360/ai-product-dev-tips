@@ -206,7 +206,7 @@ def _short(label):
 
 
 # 15ch すべてを描くと煩雑なので、身体 3 箇所の「加速度の大きさ |acc|=sqrt(x^2+y^2+z^2)」の
-# 3 本線だけを描いて分かりやすくする。チャネル順は mhealth_stage2_prep.py の pkl 列順に一致。
+# 3 本線だけを描いて分かりやすくする。チャネル順は create_stage2_dataset.py の pkl 列順に一致。
 # （胸 acc=0..2 / 左足首 acc=3..5・gyro=6..8 / 右前腕 acc=9..11・gyro=12..14）
 MHEALTH_ACC_MAG = [
     ("Chest |acc|", "#1f77b4", (0, 1, 2)),
@@ -226,7 +226,7 @@ def _acc_magnitudes(window, is_mhealth):
 
 
 # MHealth 15ch のレイアウト: 行=身体部位×センサー種別（5）× 列=軸 X/Y/Z（3）。
-# チャネル順は mhealth_stage2_prep.py の pkl 列順に一致。
+# チャネル順は create_stage2_dataset.py の pkl 列順に一致。
 MHEALTH_CH_ROWS = [
     ("Chest acc", "m/s^2", "#1f77b4", (0, 1, 2)),
     ("L-ankle acc", "m/s^2", "#2ca02c", (3, 4, 5)),
