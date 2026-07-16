@@ -150,46 +150,6 @@ flowchart LR
 
     学習済み Stage 2 モデルに MHealth の test 窓（15ch × 100 点）を入力し、行動ラベルを予測して正解と突き合わせる（[`predict_stage2.py`](predict_stage2.py)）。実測結果は次節「[Stage 2 の実行結果](#stage-2-の実行結果)」を参照。
 
-<details>
-<summary>参考: make が内部で実行している生コマンド（torchrun）</summary>
-
-学習は公式の `train_mem.py`（flash-attn 2 使用。wheel をイメージに焼き込み済み）を使う。`train.py` は相対で `./sensorllm/model/ts_backbone.yaml` と `../metrics/*` を開くため **`cwd=/opt/SensorLLM` で実行**し、`uv` には `--project /app`（`pyproject.toml`/venv の場所）を渡す。
-
-Stage 1（アラインメント）:
-
-```bash
-cd /opt/SensorLLM && uv run --project /app torchrun --nproc_per_node=1 \
-  /opt/SensorLLM/sensorllm/train/train_mem.py \
-  --model_name_or_path TinyLlama/TinyLlama-1.1B-Chat-v1.0 --pt_encoder_backbone_ckpt /app/checkpoints/chronos_t5_base \
-  --tokenize_method 'StanNormalizeUniformBins' --dataset mhealth \
-  --data_path /app/datasets/mhealth_stage1/train/mhealth_train_data_stage1.pkl \
-  --eval_data_path /app/datasets/mhealth_stage1/test/mhealth_test_data_stage1.pkl \
-  --qa_path /app/datasets/mhealth_stage1/train/mhealth_train_qa_stage1.json \
-  --eval_qa_path /app/datasets/mhealth_stage1/test/mhealth_test_qa_stage1.json \
-  --output_dir /app/checkpoints/sensorllm_stage1 --bf16 True --fix_llm True --fix_ts_encoder True \
-  --model_type CasualLM --load_best_model_at_end True
-```
-
-Stage 2（HAR 分類）:
-
-```bash
-cd /opt/SensorLLM && uv run --project /app torchrun --nproc_per_node=1 \
-  /opt/SensorLLM/sensorllm/train/train_mem.py \
-  --model_name_or_path /app/checkpoints/sensorllm_stage1 --pt_encoder_backbone_ckpt /app/checkpoints/chronos_t5_base \
-  --model_type "SequenceClassification" --num_labels 12 --use_weighted_loss True \
-  --tokenize_method 'StanNormalizeUniformBins' --dataset mhealth \
-  --data_path /app/datasets/mhealth_stage2/train/mhealth_train_data_stage2.pkl \
-  --eval_data_path /app/datasets/mhealth_stage2/test/mhealth_test_data_stage2.pkl \
-  --qa_path /app/datasets/mhealth_stage2/train/mhealth_train_qa_stage2_cls.json \
-  --eval_qa_path /app/datasets/mhealth_stage2/test/mhealth_test_qa_stage2_cls.json \
-  --output_dir /app/checkpoints/sensorllm_stage2 --bf16 True --fix_llm True --fix_ts_encoder True --fix_cls_head False \
-  --metric_for_best_model "f1_macro" --preprocess_type "smry+Q" --stage_2 True --shuffle True
-```
-
-`--preprocess_type` の全オプションは [`./sensorllm/data/utils.py`](https://github.com/cruiseresearchgroup/SensorLLM/blob/main/sensorllm/data/utils.py) を参照。
-
-</details>
-
 ## 📊 実行結果
 
 ### Stage 1 の実行結果
