@@ -18,6 +18,9 @@ import pandas as pd
 os.makedirs("datasets", exist_ok=True)
 os.chdir("datasets")
 
+# 被験者数は環境変数 SUBJECTS で変更可（既定 10 = MHealth 全 10 名。少なくすると生成が速い）
+N_SUBJECTS = max(1, min(10, int(os.environ.get("SUBJECTS", "10"))))
+
 if not os.path.isdir("MHEALTHDATASET"):
     print("[prep] downloading MHealth ...", flush=True)
     with urllib.request.urlopen("https://archive.ics.uci.edu/static/public/319/mhealth+dataset.zip", timeout=180) as r:
@@ -122,7 +125,7 @@ all_test_segments = []
 all_train_labels = []
 all_test_labels = []
 
-for i in range(1, 11):
+for i in range(1, N_SUBJECTS + 1):
     df = pd.read_csv(f"./MHEALTHDATASET/mHealth_subject{i}.log", header=None, sep="\t")
     # Note: Excluding the ECG data collected with the chest sensor
     df = df.loc[:, [0, 1, 2, 5, 6, 7, 8, 9, 10, 14, 15, 16, 17, 18, 19, 23]].rename(

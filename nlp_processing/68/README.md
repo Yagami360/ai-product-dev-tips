@@ -69,7 +69,7 @@ flowchart LR
 
 > **⚠️ 非公式のため信頼性は担保されない**。あくまで「配線が動くか」を確認するデモ用途で、本番評価には自分で 2 段学習した重みを使うこと。
 
-1. HF トークンを設定する（**Xet DL の 403 回避に実質必須**、下記注意点参照）
+1. 環境変数を設定する（HF_TOKEN 等）
 
     ```sh
     cp .env.sample .env    # .env に HF_TOKEN=hf_... を記入
@@ -93,13 +93,7 @@ flowchart LR
     make predict-stage1
     ```
 
-> **⚠️ HF Xet ダウンロードの注意（実機で判明）**: 1EE1 のような Xet 配信リポジトリは、**匿名（トークン無し）だと** HF の CDN エッジ `us.gcp.cdn.hf.co` が署名鍵を `403 SignatureError: invalid key pair id` で拒否し、取得がハングすることがある（HF 側の一過性インフラ問題）。**`.env` に `HF_TOKEN` を設定すれば** resolve が正常な `cas-bridge.xethub.hf.co` に振られて回避できる（実測: 認証時は 10/10 成功、匿名時は約 9 割が 403）。
 
-- `predict_stage1.py` の主なポイント
-    - `load_model()`: `eval.py` の `init_model()` と同じ手順で Stage1 重み＋Chronos バックボーンをロードし、特殊トークン／チャネル設定をデータセットに合わせて初期化。
-    - `build_prompt()`: `stage1_dataset.py` の `preprocess_time_series2` と同じ規則で `start_token + <ts>×(Chronos トークン長) + end_token + 質問` を構築。`<ts>` 数は生系列長ではなく **Chronos の実出力トークン長（EOS 込み `min(系列長, 512)+1`）に一致**させるため、context_length（既定 512）超の入力でも埋め込み数と一致する（実機で L=200/512/600/1000 を検証）。
-    - `--dtype {bfloat16,float16,float32}` / `--device {cuda,cpu}`: A100 等は `bfloat16`、T4/V100 は `float16`、CPU なら `float32`。`--input <1次元 .npy>` で自前のセンサー系列も使える（未指定なら合成波形）。
-    - **1EE1 ckpt は `chronos-t5-base`（d_model=768）で学習**されている。公式 `ts_backbone.yaml` の既定は `chronos-t5-large`(1024) で、そのままだと `ts_proj` で size mismatch になるため、`Dockerfile` で base/768 に調整済み（自分で学習した重みは、その学習時の Chronos サイズに合わせる）。
 
 ### Stage 2 の推論手順（HAR 分類・要 2 段学習）
 
@@ -107,17 +101,13 @@ flowchart LR
 >
 > 公式リポジトリはデータ整形を Jupyter ノートブック（`mhealth_stage1.ipynb` / `mhealth_stage2.ipynb`）で行う想定だが、**手作業を無くすため本 Tip ではノートブック相当の Python スクリプト（[`create_dataset_stage1.py`](create_dataset_stage1.py) / [`create_dataset_stage2.py`](create_dataset_stage2.py)）と make ターゲットを用意し、データ生成 → 2 段学習 → HAR 推論までを自動化**した。依存・SensorLLM 本体・評価メトリクス（f1/accuracy 等）はイメージに同梱済みなので、手動の `git clone` / `pip install` は不要。
 
-**以下は A100 40GB での実機検証済みフロー**（`make docker-build` → `make download-stage1-model` 済み前提）。
-
-1. **学習用データ + QA ペアを生成**（GPU 不要・CPU で数分）
+1. **学習用データ + QA ペアを生成**
 
     ```sh
     make create-train-data
     ```
+    （被験者数は `export SUBJECTS=2`（既定 10）で変更可。少なくすると生成・学習が速い）
 
-    MHealth（UCI 319, 全 10 被験者）を DL し、公式ノートと同じ前処理で以下を出力する（`create_dataset_stage1.py` / `create_dataset_stage2.py` を順に実行）。パスは make 側に既定値を埋めてあるので、以降のコマンドで指定不要。
-    - `./datasets/mhealth_stage2/{train,test}/mhealth_*_stage2*.{pkl,json}`: **Stage 2 用**（15 チャネル × HAR 分類ラベル）※本フローで必須
-    - `./datasets/mhealth_stage1/{train,test}/mhealth_*_stage1.{pkl,json}`: Stage 1 用（単一チャネル × トレンド説明 QA）※下記「自分で Stage 1 を学習する」場合のみ必要
 
 1. **Stage 2 の初期値（Stage 1 モデル）を用意する**
 
@@ -127,25 +117,27 @@ flowchart LR
     <summary>自分で Stage 1 から学習する場合（任意・数時間〜）</summary>
 
     ```sh
-    make train-stage1 LLM_PATH=TinyLlama/TinyLlama-1.1B-Chat-v1.0 EPOCHS=1 STAGE1_OUT=/app/checkpoints/sensorllm_stage1
+    make train-stage1   # 変数は既定値。変える場合は export STAGE1_EPOCHS=... 等
     ```
 
-    base LLM は open な TinyLlama 等（gated な meta-llama を使う場合は `.env` の `HF_TOKEN` に利用同意済みトークンを設定）。学習済み重みは `checkpoints/sensorllm_stage1/` に保存され、次段の `STAGE2_INIT` に指定できる。Stage 1 は単一チャネル QA のため学習サンプルが多く、全 10 被験者・1 epoch でも A100 で数時間かかる。
+    base LLM は open な TinyLlama 等（gated な meta-llama を使う場合は `.env` の `HF_TOKEN` に利用同意済みトークンを設定）。学習済み重みは `checkpoints/sensorllm_stage1/` に保存され、次段の `STAGE1_CHECKPOINTS_DIR` に指定できる。Stage 1 は単一チャネル QA のため学習サンプルが多く、全 10 被験者・1 epoch でも A100 で数時間かかる。
 
     </details>
 
 1. **Stage 2（タスク適応チューニング・HAR 分類）を学習**（全 10 被験者・8 epoch）
 
     ```sh
-    make train-stage2 STAGE2_INIT=/app/checkpoints/ckpt_1EE1 NUM_LABELS=12 EPOCHS=8 STAGE2_OUT=/app/checkpoints/sensorllm_stage2
+    export STAGE1_CHECKPOINTS_DIR=/app/checkpoints/ckpt_1EE1   # Stage1 初期値に 1EE1 を流用（既定は自前学習の sensorllm_stage1）
+    make train-stage2
     ```
+    （`STAGE2_EPOCHS`(既定 8) / `NUM_LABELS`(12) / `STAGE2_OUT` は既定値なので省略。変更時は `export STAGE2_EPOCHS=3` 等）
 
     Stage 1 モデル（既定は `checkpoints/ckpt_1EE1`。自分で学習した場合は `/app/checkpoints/sensorllm_stage1`）を初期値に `SequenceClassification`（分類ヘッド）を学習。`checkpoints/sensorllm_stage2/`（`model.safetensors` ほか）に保存される。`--save_total_limit`（既定 2）で ckpt 数を制限し、多エポックでも容量が溢れないようにしている。
 
 1. **Stage 2 の推論（HAR を 12 クラス分類）**
 
     ```sh
-    make predict-stage2 STAGE2_MODEL=./checkpoints/sensorllm_stage2 NUM_SAMPLES=16
+    make predict-stage2   # 変数は既定値。件数変更は export NUM_SAMPLES=... 等
     ```
 
     学習済み Stage 2 モデルに MHealth の test 窓（15ch × 100 点）を入力し、行動ラベルを予測して正解と突き合わせる（[`predict_stage2.py`](predict_stage2.py)）。実測結果は次節「[Stage 2 の実行結果](#stage-2-の実行結果)」を参照。
@@ -289,7 +281,7 @@ nlp_processing/68/
 | `make install` / `make lint` / `make format` | dev ツール導入 / flake8・mypy / black・isort |
 | `make clean` | 生成物（checkpoints/datasets/outputs）を削除 |
 
-> 各 `make` 変数（`EPOCHS`・`STAGE2_INIT`・`STAGE1_OUT`/`STAGE2_OUT`・`NUM_SAMPLES` 等）は `make <target> VAR=値` またはコマンド前の `export VAR=値` で上書きできる。
+> 各 `make` 変数（`EPOCHS`・`STAGE1_CHECKPOINTS_DIR`・`STAGE1_OUT`/`STAGE2_OUT`・`NUM_SAMPLES` 等）は `make <target> VAR=値` またはコマンド前の `export VAR=値` で上書きできる。
 
 ## ⚠️ 注意点・課題
 

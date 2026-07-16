@@ -75,8 +75,11 @@ download-mhealth-dataset:  ## [コンテナ] MHealth 生データを datasets/MH
 download-nab-dataset:  ## [コンテナ] NAB の該当CSV(Stage1 デモC用)を datasets/nab へ取得
 	$(DOCKER_RUN) uv run --no-sync python download_dataset.py nab
 
-create-train-data:  ## [コンテナ/CPU] 学習用データ+QA を生成（Stage1/Stage2。MHealth 未取得なら自動DL）
-	$(DOCKER_RUN) sh -c "uv run --no-sync python create_dataset_stage1.py && \
+# 被験者数（1..10）を環境変数で変更可: make create-train-data SUBJECTS=2 / export SUBJECTS=2
+SUBJECTS ?= 10
+create-train-data:  ## [コンテナ/CPU] 学習用データ+QA を生成（Stage1/Stage2。SUBJECTS で被験者数を変更可）
+	docker run --rm --gpus all $(ENVFILE) $(DOCKER_MOUNT) -e SUBJECTS=$(SUBJECTS) -w /app $(IMAGE) \
+	  sh -c "uv run --no-sync python create_dataset_stage1.py && \
 	  uv run --no-sync python create_dataset_stage2.py"
 
 # ---- Stage 1: センサー–言語アラインメント（トレンド説明） ----
@@ -91,9 +94,9 @@ predict-stage1: create-sample-data  ## [コンテナ/GPU] Stage1 推論（セン
 
 # base LLM は open な TinyLlama 等（gated を使うなら .env の HF_TOKEN に利用同意済みトークン）。
 # 学習は公式 train_mem.py（flash-attn 使用。wheel をイメージに焼き込み済み）で回す。
-# EPOCHS: 学習エポック数。SAVE_LIMIT: 保持する ckpt 数（多エポックで容量が溢れないよう既定 2）。
-EPOCHS     ?= 1
-SAVE_LIMIT ?= 2
+# 学習エポック数・保持 ckpt 数は Stage 別に分離（export STAGE1_EPOCHS=... 等で個別に上書き可）。
+STAGE1_EPOCHS     ?= 1
+STAGE1_SAVE_LIMIT ?= 2
 LLM_PATH ?= TinyLlama/TinyLlama-1.1B-Chat-v1.0
 STAGE1_OUT     ?= /app/checkpoints/sensorllm_stage1
 train-stage1:  ## [コンテナ/GPU] Stage1 学習（アラインメント）。要 create-train-data
@@ -105,41 +108,43 @@ train-stage1:  ## [コンテナ/GPU] Stage1 学習（アラインメント）。
 	  --eval_data_path /app/datasets/mhealth_stage1/test/mhealth_test_data_stage1.pkl \
 	  --qa_path /app/datasets/mhealth_stage1/train/mhealth_train_qa_stage1.json \
 	  --eval_qa_path /app/datasets/mhealth_stage1/test/mhealth_test_qa_stage1.json \
-	  --output_dir $(STAGE1_OUT) --model_max_length 4096 --num_train_epochs $(EPOCHS) \
+	  --output_dir $(STAGE1_OUT) --model_max_length 4096 --num_train_epochs $(STAGE1_EPOCHS) \
 	  --per_device_train_batch_size 1 --per_device_eval_batch_size 1 \
-	  --evaluation_strategy steps --save_strategy steps --save_total_limit $(SAVE_LIMIT) \
+	  --evaluation_strategy steps --save_strategy steps --save_total_limit $(STAGE1_SAVE_LIMIT) \
 	  --learning_rate 2e-3 --weight_decay 0.0 --warmup_ratio 0.03 --lr_scheduler_type cosine \
 	  --gradient_checkpointing True --bf16 True --fix_llm True --fix_ts_encoder True \
 	  --model_type CasualLM --load_best_model_at_end True"
 
 # ---- Stage 2: タスク適応チューニング（HAR 分類） ----
-STAGE2_INIT ?= /app/checkpoints/sensorllm_stage1
+STAGE1_CHECKPOINTS_DIR ?= /app/checkpoints/sensorllm_stage1
+STAGE2_EPOCHS     ?= 8
+STAGE2_SAVE_LIMIT ?= 2
 NUM_LABELS  ?= 12
 STAGE2_OUT        ?= /app/checkpoints/sensorllm_stage2
 train-stage2:  ## [コンテナ/GPU] Stage2 学習（HAR 分類）。要 Stage1 モデル + 学習用データ
 	$(DOCKER_TRAIN) sh -c "uv run --no-sync --project /app torchrun --nproc_per_node=1 \
 	  /opt/SensorLLM/sensorllm/train/train_mem.py \
-	  --model_name_or_path $(STAGE2_INIT) --pt_encoder_backbone_ckpt $(CHRONOS) \
+	  --model_name_or_path $(STAGE1_CHECKPOINTS_DIR) --pt_encoder_backbone_ckpt $(CHRONOS) \
 	  --model_type 'SequenceClassification' --num_labels $(NUM_LABELS) --use_weighted_loss True \
 	  --tokenize_method 'StanNormalizeUniformBins' --dataset $(DATASET) \
 	  --data_path /app/datasets/mhealth_stage2/train/mhealth_train_data_stage2.pkl \
 	  --eval_data_path /app/datasets/mhealth_stage2/test/mhealth_test_data_stage2.pkl \
 	  --qa_path /app/datasets/mhealth_stage2/train/mhealth_train_qa_stage2_cls.json \
 	  --eval_qa_path /app/datasets/mhealth_stage2/test/mhealth_test_qa_stage2_cls.json \
-	  --output_dir $(STAGE2_OUT) --model_max_length 4096 --num_train_epochs $(EPOCHS) \
+	  --output_dir $(STAGE2_OUT) --model_max_length 4096 --num_train_epochs $(STAGE2_EPOCHS) \
 	  --per_device_train_batch_size 1 --per_device_eval_batch_size 1 \
-	  --evaluation_strategy epoch --save_strategy epoch --save_total_limit $(SAVE_LIMIT) \
+	  --evaluation_strategy epoch --save_strategy epoch --save_total_limit $(STAGE2_SAVE_LIMIT) \
 	  --learning_rate 2e-3 --weight_decay 0.0 --warmup_ratio 0.03 --lr_scheduler_type cosine \
 	  --gradient_checkpointing True --bf16 True --fix_llm True --fix_ts_encoder True --fix_cls_head False \
 	  --metric_for_best_model f1_macro --greater_is_better True \
 	  --preprocess_type 'smry+Q' --stage_2 True --shuffle True"
 
-STAGE2_MODEL ?= ./checkpoints/sensorllm_stage2
+STAGE2_CHECKPOINTS_DIR ?= ./checkpoints/sensorllm_stage2
 NUM_SAMPLES  ?= 16
 RESULTS      ?= outputs/predict_stage2_results.npz
 predict-stage2:  ## [コンテナ/GPU] Stage2 推論（HAR 分類）＋結果保存＋サンプル別プロット
 	$(DOCKER_RUN) uv run --no-sync python predict_stage2.py \
-	  --model-path $(STAGE2_MODEL) --chronos-path $(CHRONOS) \
+	  --model-path $(STAGE2_CHECKPOINTS_DIR) --chronos-path $(CHRONOS) \
 	  --dataset $(DATASET) --num-labels $(NUM_LABELS) --num-samples $(NUM_SAMPLES) \
 	  --data-dir datasets/mhealth_stage2 \
 	  --save-results $(RESULTS) --plot-dir outputs/plots/stage2_samples --device cuda --dtype bfloat16
