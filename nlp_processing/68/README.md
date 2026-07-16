@@ -1,6 +1,6 @@
 # SensorLLM を使用して、モーションセンサー信号からの行動認識（HAR）を行う
 
-IMU（加速度・ジャイロ）などのモーションセンサー時系列を LLM に接続し、**人間が読める行動認識（HAR: Human Activity Recognition）**を行う代表的手法 [**SensorLLM**](https://github.com/cruiseresearchgroup/SensorLLM)（UNSW ほか, EMNLP 2025 Main）を、公式実装で実際に動かす手順をまとめる。
+IMU（加速度・ジャイロ）などのモーションセンサー時系列を LLM に接続し、**人間が読める行動認識（HAR: Human Activity Recognition）**を行う代表的手法 [**SensorLLM**](https://github.com/cruiseresearchgroup/SensorLLM)（UNSW ほか, EMNLP 2025 Main）を、公式実装で実際に動かす手順をまとめる。動作には **NVIDIA A100（GPU メモリ 40GB）** を使用（学習コードが flash-attn 2 を使うため、学習時は Ampere 世代以降が必須）。
 
 SensorLLM は、[時系列基盤モデル（Chronos）＋ LLM の 2 段構成でセンサー異常検知を行う Tip](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/67) と同じく **Chronos を時系列エンコーダに使う**が、目的が異なる。67 が「Chronos で検知 → LLM で説明」という**推論時の役割分担**であるのに対し、SensorLLM は **センサーエンコーダ（Chronos）＋特殊トークンで LLM 側にセンサー表現を align する 2 段学習**（下表の系統 B）で、数値時系列そのものを LLM に「理解」させて HAR SOTA を狙う手法である。
 
@@ -11,7 +11,6 @@ SensorLLM は、[時系列基盤モデル（Chronos）＋ LLM の 2 段構成で
 ## 📑 目次
 
 - [SensorLLM の位置づけとアーキテクチャ](#-sensorllm-の位置づけとアーキテクチャ)
-- [必要リソース](#-必要リソース)
 - [使用方法](#-使用方法)
     - [Stage 1 の推論手順](#stage-1-の推論手順)
     - [Stage 2 の推論手順（HAR 分類・要 2 段学習）](#stage-2-の推論手順har-分類要-2-段学習)
@@ -23,19 +22,7 @@ SensorLLM は、[時系列基盤モデル（Chronos）＋ LLM の 2 段構成で
 
 ## 🏗️ SensorLLM の位置づけとアーキテクチャ
 
-### センサー信号を LLM に接続する 5 系統の中での位置づけ
-
-SensorLLM は、センサー専用エンコーダを LLM に align する**系統 B** の代表手法。
-
-| 系統 | 中身 | 代表 | この Tip |
-|------|------|------|---------|
-| A. プロンプト直入力（訓練なし） | 生センサー値をテキスト化して LLM に直接推論させる | HARGPT, IoT-LLM | ― |
-| **B. エンコーダ＋LLM アラインメント** | センサー専用エンコーダ＋特殊トークンで LLM へ接続し、2 段（align → task tuning）で学習 | **SensorLLM**, LLaSA | ★本 Tip |
-| C. センサー言語基盤モデル | 大規模なセンサー–言語ペアで対照＋生成事前学習 | SensorLM（Google） | ― |
-| D. マルチモーダル埋め込み統合 | センサー（IMU）を既存モダリティ空間へ bind し検索・対応付け | ImageBind, IMU2CLIP | ― |
-| E. 時系列基盤モデル | センサーを含む汎用時系列の予測基盤（言語結合は限定的） | Chronos, TimesFM（[nlp_processing/67](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/67) が該当） | ― |
-
-### SensorLLM の 2 段構成（アーキテクチャ）
+### SensorLLM のアーキテクチャ
 
 公式のモデル図（論文 [arXiv:2410.10624](https://arxiv.org/abs/2410.10624) / [公式リポジトリ](https://github.com/cruiseresearchgroup/SensorLLM) より）:
 
@@ -77,10 +64,6 @@ flowchart LR
 公式リポジトリは **学習・評価・推論コード / 依存定義 / QA 生成ノートブックをフル公開**（`train_mem.py`, `eval.py`, Chronos 実装, `mhealth_stage*.ipynb`）。ただし **著者の学習済みチェックポイントは非配布**（GitHub Releases 0 件）。対応データセット（USC-HAD / UCI-HAR / MHealth / Capture-24 / PAMAP2）とバックボーン（Chronos / LLaMA）は各自 DL。
 
 > **公式重みで「即推論」はできない**。HF 上の「SensorLLM」モデルは全て非公式（第三者の派生）。基本は自分で 2 段学習を回す（または非公式 Stage1 ckpt で推論だけ試す）。
-
-## 🖥️ 必要リソース
-
-**NVIDIA A100（GPU メモリ: 40GB）** が必要。学習コードでは flash-attn 2 を使うため、学習時は **Ampere 世代以降（A100 等）が必須**です。
 
 ## 🚀 使用方法
 
