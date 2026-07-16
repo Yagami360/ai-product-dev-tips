@@ -242,51 +242,39 @@ Q: Detect anomalies in this sensor reading and report when they occur.
 
 test 全 2,039 件（被験者 subject1/3/6）に対する評価。**エポックを追うごとに精度が単調に上昇し、最終的に `eval_accuracy=0.863` / `eval_f1_macro=0.871` に到達**（ランダム＝1/12≒8.3% を大きく上回る。Stage 1 に学習済み 1EE1 を使ったことが効いている）。
 
-| epoch | eval_accuracy | eval_f1_macro |
-|---|---|---|
-| 1 | 0.687 | 0.602 |
-| 2 | 0.731 | 0.714 |
-| 3 | 0.755 | 0.737 |
-| 4 | 0.801 | 0.794 |
-| 5 | 0.843 | 0.849 |
-| 6 | 0.846 | 0.850 |
-| 7 | 0.863 | 0.869 |
-| **8** | **0.863** | **0.871** |
+エポック別の全体スコア（正解率＝eval_accuracy、macro-F1＝eval_f1_macro）と、代表クラスの **正解率（recall = そのクラスの実サンプルを正しく分類できた割合）**:
 
-クラス別の **正解率（recall = そのクラスの実サンプルを正しく分類できた割合）** と F1（最終 epoch）。**周期・振幅の特徴が明確な動作系はほぼ完璧**、静止・着座系（互いに信号が似る）が相対的に弱い:
+| epoch | 正解率（平均） | macro-F1（平均） | Walking | Cycling | Jump | Climbing | Sitting | Lying | Standing |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | 0.687 | 0.602 | 1.000 | 1.000 | 0.000 | 0.514 | 0.033 | 0.995 | 0.011 |
+| 4 | 0.801 | 0.794 | 1.000 | 0.995 | 1.000 | 0.907 | 0.749 | 0.082 | 0.781 |
+| 6 | 0.846 | 0.850 | 1.000 | 0.973 | 0.967 | 0.934 | 0.393 | 0.880 | 0.749 |
+| **8** | **0.863** | **0.871** | 1.000 | 0.995 | 0.984 | 0.978 | 0.574 | 0.634 | 0.787 |
 
-| クラス | 正解率 | F1 |
-|---|---|---|
-| 6 Frontal elevation of arms | 1.000 | 1.000 |
-| 3 Walking | 1.000 | 0.997 |
-| 8 Cycling | 0.995 | 0.997 |
-| 11 Jump front & back | 0.984 | 0.992 |
-| 4 Climbing stairs | 0.978 | 0.978 |
-| 7 Knees bending (crouching) | 0.977 | 0.945 |
-| 5 Waist bends forward | 0.929 | 0.963 |
-| 10 Running | 0.967 | 0.829 |
-| 0 Standing still | 0.787 | 0.735 |
-| 2 Lying down | 0.634 | 0.678 |
-| 9 Jogging | 0.634 | 0.761 |
-| 1 Sitting and relaxing | 0.574 | 0.575 |
-
-（例: **Jogging は正解率 0.634 と低く、多くが Running と誤判定**される＝その分 Running の precision が下がる。静止系の Sitting/Lying/Standing も互いに混同しやすい。）
+**周期・振幅の特徴が明確な動作系（Walking / Cycling / Jump / Climbing）はほぼ完璧**、静止・着座系（Sitting / Lying / Standing）は互いに信号が似るため相対的に弱い（学習途中はクラスごとに上下しつつ、最終的に全体で収束）。
 
 #### Stage 2 推論（`make predict-stage2`, test から 16 サンプル）
 
-```text
-Stage2 HAR 分類推論: test から 16 サンプル（全 2039 件）
-[ 0] OK  pred= 0 (Standing still)             true= 0 (Standing still)
-[ 1] OK  pred= 6 (Frontal elevation of arms)  true= 6 (Frontal elevation of arms)
-[ 2] OK  pred= 4 (Climbing stairs)            true= 4 (Climbing stairs)
-[ 3] OK  pred= 5 (Waist bends forward)        true= 5 (Waist bends forward)
-[ 4] OK  pred= 7 (Knees bending (crouching))  true= 7 (Knees bending (crouching))
-[ 6] OK  pred= 9 (Jogging)                    true= 9 (Jogging)
-[ 7] OK  pred= 2 (Lying down)                 true= 2 (Lying down)
-[14] OK  pred=11 (Jump front & back)          true=11 (Jump front & back)
-[15] NG  pred= 0 (Standing still)             true= 1 (Sitting and relaxing)
-Accuracy (先頭 16 件): 15/16 = 0.938
-```
+test からシャッフルした 16 サンプルの分類結果（全 2,039 件中）。**15/16 = 0.938**:
+
+| # | 予測（pred） | 正解（true） | 判定 |
+|---|---|---|---|
+| 0 | 0 Standing still | 0 Standing still | ✅ |
+| 1 | 6 Frontal elevation of arms | 6 Frontal elevation of arms | ✅ |
+| 2 | 4 Climbing stairs | 4 Climbing stairs | ✅ |
+| 3 | 5 Waist bends forward | 5 Waist bends forward | ✅ |
+| 4 | 7 Knees bending | 7 Knees bending | ✅ |
+| 5 | 7 Knees bending | 7 Knees bending | ✅ |
+| 6 | 9 Jogging | 9 Jogging | ✅ |
+| 7 | 2 Lying down | 2 Lying down | ✅ |
+| 8 | 7 Knees bending | 7 Knees bending | ✅ |
+| 9 | 6 Frontal elevation of arms | 6 Frontal elevation of arms | ✅ |
+| 10 | 2 Lying down | 2 Lying down | ✅ |
+| 11 | 4 Climbing stairs | 4 Climbing stairs | ✅ |
+| 12 | 7 Knees bending | 7 Knees bending | ✅ |
+| 13 | 0 Standing still | 0 Standing still | ✅ |
+| 14 | 11 Jump front & back | 11 Jump front & back | ✅ |
+| 15 | 0 Standing still | 1 Sitting and relaxing | ❌ |
 
 > **Stage 2 の出力は 12 クラスの「行動ラベル」のみ**（`SequenceClassification`）。時系列の値を予測・生成するわけではない。下図の波形は**入力の実測センサーデータ**で、`pred:`/`true:` は予測ラベル／正解ラベル。
 
