@@ -1,5 +1,5 @@
 """公式ノート mhealth_stageN.ipynb 相当の学習データ生成スクリプト(自動生成)。
-MHealth を取得して datasets/MHEALTHDATASET/ に展開し、datasets/ 配下に pkl + QA-JSON を出力する。"""
+MHealth を取得して datasets/MHEALTHDATASET/ に展開し、datasets/mhealth_stage1/ に pkl + QA-JSON を出力する。"""
 
 import io
 import json
@@ -22,8 +22,8 @@ if not os.path.isdir("MHEALTHDATASET"):
     print("[prep] downloading MHealth ...", flush=True)
     with urllib.request.urlopen("https://archive.ics.uci.edu/static/public/319/mhealth+dataset.zip", timeout=180) as r:
         zipfile.ZipFile(io.BytesIO(r.read())).extractall(".")
-os.makedirs("data/train", exist_ok=True)
-os.makedirs("data/test", exist_ok=True)
+os.makedirs("mhealth_stage1/train", exist_ok=True)
+os.makedirs("mhealth_stage1/test", exist_ok=True)
 
 
 def check_label_continuity(df):
@@ -183,7 +183,7 @@ print(f"all_train_labels: {len(all_train_labels)}")
 print(f"all_test_segments: {len(all_test_segments)}")
 print(f"all_test_labels: {len(all_test_labels)}")
 
-output_path = "./data"
+output_path = "./mhealth_stage1"
 
 with open(os.path.join(output_path, "train", "mhealth_train_data_stage1.pkl"), "wb") as f:
     pickle.dump(all_train_segments, f)

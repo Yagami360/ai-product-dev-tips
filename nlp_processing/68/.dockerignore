@@ -8,7 +8,6 @@ datasets/
 outputs/
 assets/
 MHEALTHDATASET/
-nab/
 __pycache__/
 *.part
 *.npy

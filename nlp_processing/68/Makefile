@@ -89,17 +89,17 @@ predict-stage1: create-sample-data  ## [コンテナ/GPU] Stage1 推論（セン
 EPOCHS     ?= 1
 SAVE_LIMIT ?= 2
 LLM_PATH ?= TinyLlama/TinyLlama-1.1B-Chat-v1.0
-OUT1     ?= /app/checkpoints/sensorllm_stage1
+STAGE1_OUT     ?= /app/checkpoints/sensorllm_stage1
 train-stage1:  ## [コンテナ/GPU] Stage1 学習（アラインメント）。要 create-train-data
 	$(DOCKER_TRAIN) sh -c "uv run --no-sync --project /app torchrun --nproc_per_node=1 \
 	  /opt/SensorLLM/sensorllm/train/train_mem.py \
 	  --model_name_or_path $(LLM_PATH) --pt_encoder_backbone_ckpt $(CHRONOS) \
 	  --tokenize_method 'StanNormalizeUniformBins' --dataset $(DATASET) \
-	  --data_path /app/datasets/data/train/mhealth_train_data_stage1.pkl \
-	  --eval_data_path /app/datasets/data/test/mhealth_test_data_stage1.pkl \
-	  --qa_path /app/datasets/data/train/mhealth_train_qa_stage1.json \
-	  --eval_qa_path /app/datasets/data/test/mhealth_test_qa_stage1.json \
-	  --output_dir $(OUT1) --model_max_length 4096 --num_train_epochs $(EPOCHS) \
+	  --data_path /app/datasets/mhealth_stage1/train/mhealth_train_data_stage1.pkl \
+	  --eval_data_path /app/datasets/mhealth_stage1/test/mhealth_test_data_stage1.pkl \
+	  --qa_path /app/datasets/mhealth_stage1/train/mhealth_train_qa_stage1.json \
+	  --eval_qa_path /app/datasets/mhealth_stage1/test/mhealth_test_qa_stage1.json \
+	  --output_dir $(STAGE1_OUT) --model_max_length 4096 --num_train_epochs $(EPOCHS) \
 	  --per_device_train_batch_size 1 --per_device_eval_batch_size 1 \
 	  --evaluation_strategy steps --save_strategy steps --save_total_limit $(SAVE_LIMIT) \
 	  --learning_rate 2e-3 --weight_decay 0.0 --warmup_ratio 0.03 --lr_scheduler_type cosine \
@@ -107,20 +107,20 @@ train-stage1:  ## [コンテナ/GPU] Stage1 学習（アラインメント）。
 	  --model_type CasualLM --load_best_model_at_end True"
 
 # ---- Stage 2: タスク適応チューニング（HAR 分類） ----
-STAGE1_CKPT ?= /app/checkpoints/sensorllm_stage1
+STAGE2_INIT ?= /app/checkpoints/sensorllm_stage1
 NUM_LABELS  ?= 12
-OUT2        ?= /app/checkpoints/sensorllm_stage2
+STAGE2_OUT        ?= /app/checkpoints/sensorllm_stage2
 train-stage2:  ## [コンテナ/GPU] Stage2 学習（HAR 分類）。要 Stage1 モデル + 学習用データ
 	$(DOCKER_TRAIN) sh -c "uv run --no-sync --project /app torchrun --nproc_per_node=1 \
 	  /opt/SensorLLM/sensorllm/train/train_mem.py \
-	  --model_name_or_path $(STAGE1_CKPT) --pt_encoder_backbone_ckpt $(CHRONOS) \
+	  --model_name_or_path $(STAGE2_INIT) --pt_encoder_backbone_ckpt $(CHRONOS) \
 	  --model_type 'SequenceClassification' --num_labels $(NUM_LABELS) --use_weighted_loss True \
 	  --tokenize_method 'StanNormalizeUniformBins' --dataset $(DATASET) \
-	  --data_path /app/datasets/whole_data/train/mhealth_train_data_stage2.pkl \
-	  --eval_data_path /app/datasets/whole_data/test/mhealth_test_data_stage2.pkl \
-	  --qa_path /app/datasets/whole_data/train/mhealth_train_qa_stage2_cls.json \
-	  --eval_qa_path /app/datasets/whole_data/test/mhealth_test_qa_stage2_cls.json \
-	  --output_dir $(OUT2) --model_max_length 4096 --num_train_epochs $(EPOCHS) \
+	  --data_path /app/datasets/mhealth_stage2/train/mhealth_train_data_stage2.pkl \
+	  --eval_data_path /app/datasets/mhealth_stage2/test/mhealth_test_data_stage2.pkl \
+	  --qa_path /app/datasets/mhealth_stage2/train/mhealth_train_qa_stage2_cls.json \
+	  --eval_qa_path /app/datasets/mhealth_stage2/test/mhealth_test_qa_stage2_cls.json \
+	  --output_dir $(STAGE2_OUT) --model_max_length 4096 --num_train_epochs $(EPOCHS) \
 	  --per_device_train_batch_size 1 --per_device_eval_batch_size 1 \
 	  --evaluation_strategy epoch --save_strategy epoch --save_total_limit $(SAVE_LIMIT) \
 	  --learning_rate 2e-3 --weight_decay 0.0 --warmup_ratio 0.03 --lr_scheduler_type cosine \
@@ -135,7 +135,7 @@ predict-stage2:  ## [コンテナ/GPU] Stage2 推論（HAR 分類）＋結果保
 	$(DOCKER_RUN) uv run --no-sync python predict_stage2.py \
 	  --model-path $(STAGE2_MODEL) --chronos-path $(CHRONOS) \
 	  --dataset $(DATASET) --num-labels $(NUM_LABELS) --num-samples $(NUM_SAMPLES) \
-	  --data-dir datasets/whole_data \
+	  --data-dir datasets/mhealth_stage2 \
 	  --save-results $(RESULTS) --plot-dir outputs/plots/stage2_samples --device cuda --dtype bfloat16
 
 plot-stage2:  ## [コンテナ/CPU] 保存済み結果($(RESULTS))から推論なしで図だけ再生成

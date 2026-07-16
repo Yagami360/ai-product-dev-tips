@@ -24,7 +24,6 @@ mHealth*.log
 *.npz
 
 # 検証用の使い捨て（NAB データ・使い捨てスクリプト・ノート）
-nab/
 run_multi.py
 anomaly_test.py
 anomaly_indomain.py

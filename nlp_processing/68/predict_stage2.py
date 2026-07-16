@@ -99,7 +99,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model-path", default="./checkpoints/sensorllm_stage2", help="学習済み Stage2 ckpt")
     ap.add_argument("--chronos-path", default="./checkpoints/chronos_t5_base")
-    ap.add_argument("--data-dir", default="./datasets/whole_data", help="Stage2 データ生成先")
+    ap.add_argument("--data-dir", default="./datasets/mhealth_stage2", help="Stage2 データ生成先")
     ap.add_argument("--dataset", default="mhealth")
     ap.add_argument("--tokenize-method", default="StanNormalizeUniformBins")
     ap.add_argument("--preprocess-type", default="smry+Q")

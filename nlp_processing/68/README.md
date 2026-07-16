@@ -184,8 +184,8 @@ Q: Detect anomalies in this sensor reading and report when they occur.
     ```
 
     MHealth（UCI 319, 全 10 被験者）を DL し、公式ノートと同じ前処理で以下を出力する（`create_dataset_stage1.py` / `create_dataset_stage2.py` を順に実行）。パスは make 側に既定値を埋めてあるので、以降のコマンドで指定不要。
-    - `./datasets/whole_data/{train,test}/mhealth_*_stage2*.{pkl,json}`: **Stage 2 用**（15 チャネル × HAR 分類ラベル）※本フローで必須
-    - `./datasets/data/{train,test}/mhealth_*_stage1.{pkl,json}`: Stage 1 用（単一チャネル × トレンド説明 QA）※下記「自分で Stage 1 を学習する」場合のみ必要
+    - `./datasets/mhealth_stage2/{train,test}/mhealth_*_stage2*.{pkl,json}`: **Stage 2 用**（15 チャネル × HAR 分類ラベル）※本フローで必須
+    - `./datasets/mhealth_stage1/{train,test}/mhealth_*_stage1.{pkl,json}`: Stage 1 用（単一チャネル × トレンド説明 QA）※下記「自分で Stage 1 を学習する」場合のみ必要
 
 1. **Stage 2 の初期値（Stage 1 モデル）を用意する**
 
@@ -195,17 +195,17 @@ Q: Detect anomalies in this sensor reading and report when they occur.
     <summary>自分で Stage 1 から学習する場合（任意・数時間〜）</summary>
 
     ```sh
-    make train-stage1 LLM_PATH=TinyLlama/TinyLlama-1.1B-Chat-v1.0 EPOCHS=1 OUT1=/app/checkpoints/sensorllm_stage1
+    make train-stage1 LLM_PATH=TinyLlama/TinyLlama-1.1B-Chat-v1.0 EPOCHS=1 STAGE1_OUT=/app/checkpoints/sensorllm_stage1
     ```
 
-    base LLM は open な TinyLlama 等（gated な meta-llama を使う場合は `.env` の `HF_TOKEN` に利用同意済みトークンを設定）。学習済み重みは `checkpoints/sensorllm_stage1/` に保存され、次段の `STAGE1_CKPT` に指定できる。Stage 1 は単一チャネル QA のため学習サンプルが多く、全 10 被験者・1 epoch でも A100 で数時間かかる。
+    base LLM は open な TinyLlama 等（gated な meta-llama を使う場合は `.env` の `HF_TOKEN` に利用同意済みトークンを設定）。学習済み重みは `checkpoints/sensorllm_stage1/` に保存され、次段の `STAGE2_INIT` に指定できる。Stage 1 は単一チャネル QA のため学習サンプルが多く、全 10 被験者・1 epoch でも A100 で数時間かかる。
 
     </details>
 
 1. **Stage 2（タスク適応チューニング・HAR 分類）を学習**（全 10 被験者・8 epoch）
 
     ```sh
-    make train-stage2 STAGE1_CKPT=/app/checkpoints/ckpt_1EE1 NUM_LABELS=12 EPOCHS=8 OUT2=/app/checkpoints/sensorllm_stage2
+    make train-stage2 STAGE2_INIT=/app/checkpoints/ckpt_1EE1 NUM_LABELS=12 EPOCHS=8 STAGE2_OUT=/app/checkpoints/sensorllm_stage2
     ```
 
     Stage 1 モデル（既定は `checkpoints/ckpt_1EE1`。自分で学習した場合は `/app/checkpoints/sensorllm_stage1`）を初期値に `SequenceClassification`（分類ヘッド）を学習。`checkpoints/sensorllm_stage2/`（`model.safetensors` ほか）に保存される。`--save_total_limit`（既定 2）で ckpt 数を制限し、多エポックでも容量が溢れないようにしている。
@@ -230,10 +230,10 @@ cd /opt/SensorLLM && uv run --project /app torchrun --nproc_per_node=1 \
   /opt/SensorLLM/sensorllm/train/train_mem.py \
   --model_name_or_path TinyLlama/TinyLlama-1.1B-Chat-v1.0 --pt_encoder_backbone_ckpt /app/checkpoints/chronos_t5_base \
   --tokenize_method 'StanNormalizeUniformBins' --dataset mhealth \
-  --data_path /app/datasets/data/train/mhealth_train_data_stage1.pkl \
-  --eval_data_path /app/datasets/data/test/mhealth_test_data_stage1.pkl \
-  --qa_path /app/datasets/data/train/mhealth_train_qa_stage1.json \
-  --eval_qa_path /app/datasets/data/test/mhealth_test_qa_stage1.json \
+  --data_path /app/datasets/mhealth_stage1/train/mhealth_train_data_stage1.pkl \
+  --eval_data_path /app/datasets/mhealth_stage1/test/mhealth_test_data_stage1.pkl \
+  --qa_path /app/datasets/mhealth_stage1/train/mhealth_train_qa_stage1.json \
+  --eval_qa_path /app/datasets/mhealth_stage1/test/mhealth_test_qa_stage1.json \
   --output_dir /app/checkpoints/sensorllm_stage1 --bf16 True --fix_llm True --fix_ts_encoder True \
   --model_type CasualLM --load_best_model_at_end True
 ```
@@ -246,10 +246,10 @@ cd /opt/SensorLLM && uv run --project /app torchrun --nproc_per_node=1 \
   --model_name_or_path /app/checkpoints/sensorllm_stage1 --pt_encoder_backbone_ckpt /app/checkpoints/chronos_t5_base \
   --model_type "SequenceClassification" --num_labels 12 --use_weighted_loss True \
   --tokenize_method 'StanNormalizeUniformBins' --dataset mhealth \
-  --data_path /app/datasets/whole_data/train/mhealth_train_data_stage2.pkl \
-  --eval_data_path /app/datasets/whole_data/test/mhealth_test_data_stage2.pkl \
-  --qa_path /app/datasets/whole_data/train/mhealth_train_qa_stage2_cls.json \
-  --eval_qa_path /app/datasets/whole_data/test/mhealth_test_qa_stage2_cls.json \
+  --data_path /app/datasets/mhealth_stage2/train/mhealth_train_data_stage2.pkl \
+  --eval_data_path /app/datasets/mhealth_stage2/test/mhealth_test_data_stage2.pkl \
+  --qa_path /app/datasets/mhealth_stage2/train/mhealth_train_qa_stage2_cls.json \
+  --eval_qa_path /app/datasets/mhealth_stage2/test/mhealth_test_qa_stage2_cls.json \
   --output_dir /app/checkpoints/sensorllm_stage2 --bf16 True --fix_llm True --fix_ts_encoder True --fix_cls_head False \
   --metric_for_best_model "f1_macro" --preprocess_type "smry+Q" --stage_2 True --shuffle True
 ```
