@@ -147,15 +147,14 @@ train-stage2:  ## [コンテナ/GPU] Stage2 学習（HAR 分類）。要 Stage1 
 STAGE2_CHECKPOINTS_DIR ?= ./checkpoints/sensorllm_stage2
 NUM_SAMPLES  ?= 16
 RESULTS      ?= outputs/predict_stage2_results.npz
-predict-stage2:  ## [コンテナ/GPU] Stage2 推論（HAR 分類）＋結果保存(npz)＋作図(plot_stage2.py)
-	$(DOCKER_RUN) sh -c "uv run --no-sync python predict_stage2.py \
+predict-stage2:  ## [コンテナ/GPU] Stage2 推論（HAR 分類）＋結果を npz 保存（作図は plot-stage2）
+	$(DOCKER_RUN) uv run --no-sync python predict_stage2.py \
 	  --model-path $(STAGE2_CHECKPOINTS_DIR) --chronos-path $(CHRONOS) \
 	  --dataset $(DATASET) --num-labels $(NUM_LABELS) --num-samples $(NUM_SAMPLES) \
 	  --data-dir datasets/mhealth_stage2 \
-	  --save-results $(RESULTS) --device cuda --dtype bfloat16 && \
-	  uv run --no-sync python plot_stage2.py --from-results $(RESULTS) --plot-dir outputs/plots/stage2_samples"
+	  --save-results $(RESULTS) --device cuda --dtype bfloat16
 
-plot-stage2:  ## [コンテナ/CPU] 保存済み結果($(RESULTS))から推論なしで図だけ再生成（plot_stage2.py）
+plot-stage2:  ## [コンテナ/CPU] 保存済み結果($(RESULTS))から推論なしで図を生成（plot_stage2.py）
 	$(DOCKER_RUN) uv run --no-sync python plot_stage2.py \
 	  --from-results $(RESULTS) --plot-dir outputs/plots/stage2_samples
 

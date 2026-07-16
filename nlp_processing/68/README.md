@@ -105,7 +105,7 @@ flowchart LR
 1. **Stage 2 の学習用データ + QA ペアを生成**
 
     ```sh
-    export SUBJECTS=2   # 生成する被験者数（既定 10。少なくすると生成・学習が速い）
+    export SUBJECTS=10   # 生成する被験者数（既定 10。少なくすると生成・学習が速い）
     make create-train-data-stage2
     ```
 
@@ -138,14 +138,26 @@ flowchart LR
 
 ### Stage 2 の推論手順
 
-学習済み Stage 2 モデル（前節で `checkpoints/sensorllm_stage2/` に保存）に MHealth の test 窓（15ch × 100 点）を入力し、行動ラベルを 12 クラス分類して正解と突き合わせる。
+1. **HAR 分類を推論する**
 
-```sh
-export NUM_SAMPLES=16   # 推論する test サンプル数（既定 16）
-make predict-stage2
-```
+    学習済み Stage 2 モデル（前節で `checkpoints/sensorllm_stage2/` に保存）に MHealth の test 窓（15ch × 100 点）を入力し、行動ラベルを 12 クラス分類して正解と突き合わせる。
 
-推論（[`predict_stage2.py`](predict_stage2.py)）は結果を npz に保存し、続けて作図（[`plot_stage2.py`](plot_stage2.py)）まで行う。実測結果は次節「[Stage 2 の実行結果](#stage-2-の実行結果)」を参照。
+    ```sh
+    export NUM_SAMPLES=16   # 推論する test サンプル数（既定 16）
+    make predict-stage2
+    ```
+
+    推論（[`predict_stage2.py`](predict_stage2.py)）は分類結果をコンソールに出力し、pred/true とセンサー窓を npz（`outputs/predict_stage2_results.npz`）に保存する。作図は次の手順で行う。
+
+1. **推論結果を図で可視化する（任意）**
+
+    前手順で保存した npz から作図する（**モデル読込・GPU 不要**。`plot_stage2.py` は torch 非依存で CPU で数秒）。推論をやり直さず図のスタイルだけ調整したいときにも使える。
+
+    ```sh
+    make plot-stage2
+    ```
+
+    1 サンプル 1 枚の詳細図（15ch グリッド）を `outputs/plots/stage2_samples/` に、表用の波形サムネイルを同 `thumbs/` に出力する。実測結果は次節「[Stage 2 の実行結果](#stage-2-の実行結果)」を参照。
 
 ## 📊 実行結果
 
@@ -285,12 +297,10 @@ nlp_processing/68/
 | `make predict-stage1` | Stage1 推論（トレンド説明） |
 | `make train-stage1` | Stage1 学習（アラインメント） |
 | `make train-stage2` | Stage2 学習（HAR 分類） |
-| `make predict-stage2` | Stage2 推論（HAR 分類）＋作図（plot_stage2.py） |
-| `make plot-stage2` | 保存済み結果から図だけ再生成（推論不要） |
+| `make predict-stage2` | Stage2 推論（HAR 分類）＋結果を npz 保存 |
+| `make plot-stage2` | 保存済み結果から図を生成 |
 | `make install` / `make lint` / `make format` | dev ツール導入 / flake8・mypy / black・isort |
 | `make clean` | 生成物（checkpoints/datasets/outputs）を削除 |
-
-> 各 `make` 変数（`SUBJECTS`・`STAGE1_EPOCHS`/`STAGE2_EPOCHS`・`STAGE1_CHECKPOINTS_DIR`・`STAGE1_OUT`/`STAGE2_OUT`・`NUM_SAMPLES` 等）は `make <target> VAR=値` またはコマンド前の `export VAR=値` で上書きできる。
 
 ## ⚠️ 注意点・課題
 
