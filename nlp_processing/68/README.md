@@ -84,7 +84,7 @@ flowchart LR
 1. モデルを取得する（認証付きなら標準 CLI でそのまま取得できる）
 
     ```sh
-    make download-model
+    make download-stage1-model
     ```
 
 1. 推論を実行する（A100 等・bfloat16）
@@ -107,7 +107,7 @@ flowchart LR
 >
 > 公式リポジトリはデータ整形を Jupyter ノートブック（`mhealth_stage1.ipynb` / `mhealth_stage2.ipynb`）で行う想定だが、**手作業を無くすため本 Tip ではノートブック相当の Python スクリプト（[`create_dataset_stage1.py`](create_dataset_stage1.py) / [`create_dataset_stage2.py`](create_dataset_stage2.py)）と make ターゲットを用意し、データ生成 → 2 段学習 → HAR 推論までを自動化**した。依存・SensorLLM 本体・評価メトリクス（f1/accuracy 等）はイメージに同梱済みなので、手動の `git clone` / `pip install` は不要。
 
-**以下は A100 40GB での実機検証済みフロー**（`make docker-build` → `make download-model` 済み前提）。
+**以下は A100 40GB での実機検証済みフロー**（`make docker-build` → `make download-stage1-model` 済み前提）。
 
 1. **学習用データ + QA ペアを生成**（GPU 不要・CPU で数分）
 
@@ -121,7 +121,7 @@ flowchart LR
 
 1. **Stage 2 の初期値（Stage 1 モデル）を用意する**
 
-    Stage 2 は Stage 1（アラインメント済み）モデルを初期値に学習する。**本フローでは、Stage 1 推論で使った学習済み ckpt `1EE1/SensorLLM-Stage1-Backup`（`make download-model` で取得済みの `checkpoints/ckpt_1EE1/`）をそのまま Stage 1 初期値に流用する**（MHealth 学習済みの Stage 1 モデルなので、Stage 1 学習を丸ごとスキップできる）。
+    Stage 2 は Stage 1（アラインメント済み）モデルを初期値に学習する。**本フローでは、Stage 1 推論で使った学習済み ckpt `1EE1/SensorLLM-Stage1-Backup`（`make download-stage1-model` で取得済みの `checkpoints/ckpt_1EE1/`）をそのまま Stage 1 初期値に流用する**（MHealth 学習済みの Stage 1 モデルなので、Stage 1 学習を丸ごとスキップできる）。
 
     <details>
     <summary>自分で Stage 1 から学習する場合（任意・数時間〜）</summary>
@@ -276,7 +276,7 @@ nlp_processing/68/
 | コマンド | 説明 |
 |---|---|
 | `make docker-build` | Docker イメージをビルド（SensorLLM 焼き込み） |
-| `make download-model` | Stage1 ckpt(1EE1) と Chronos を取得 |
+| `make download-stage1-model` | Stage1 ckpt(1EE1) と Chronos を取得 |
 | `make download-mhealth-dataset` | MHealth 生データを取得 |
 | `make download-nab-dataset` | NAB の該当 CSV を取得 |
 | `make create-sample-data` | Stage1 推論用サンプル(.npy)を生成 |

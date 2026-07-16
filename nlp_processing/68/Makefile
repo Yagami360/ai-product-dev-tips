@@ -6,9 +6,9 @@
 #   - 公式リポジトリ(SensorLLM)・chronos-t5-base 調整・学習用メトリクスはイメージに焼き込み済み
 #
 # 典型フロー（Stage1 推論）:
-#   make docker-build → make download-model → make create-sample-data → make predict-stage1
+#   make docker-build → make download-stage1-model → make create-sample-data → make predict-stage1
 # 典型フロー（Stage2=HAR 分類。2 段学習が必要）:
-#   make docker-build → make download-model → make create-train-data \
+#   make docker-build → make download-stage1-model → make create-train-data \
 #     → make train-stage1 → make train-stage2 → make predict-stage2
 #
 # 命名規約: docker- prefix はイメージビルド(docker-build)のみ。他のコンテナ内タスクは「動詞-ステージ」
@@ -36,7 +36,7 @@ DOCKER_RUN = docker run --rm --gpus all $(ENVFILE) $(DOCKER_MOUNT) -w /app $(IMA
 # cwd=/opt/SensorLLM で実行し、uv には --project /app で pyproject/venv の場所を教える。
 DOCKER_TRAIN = docker run --rm --gpus all $(ENVFILE) $(DOCKER_MOUNT) -w /opt/SensorLLM $(IMAGE)
 
-.PHONY: help docker-build clean download-model download-mhealth-dataset download-nab-dataset \
+.PHONY: help docker-build clean download-stage1-model download-mhealth-dataset download-nab-dataset \
         create-sample-data create-train-data predict-stage1 train-stage1 train-stage2 \
         predict-stage2 plot-stage2 install lint format format-check
 
@@ -62,7 +62,7 @@ format-check: install  ## [ローカル] 整形済みか確認（CI 用・変更
 docker-build:  ## Docker イメージをビルド（SensorLLM clone + uv sync + metrics 焼き込み）
 	docker build -t $(IMAGE) .
 
-download-model:  ## [コンテナ] Stage1 ckpt と Chronos を取得（要 HF_TOKEN）
+download-stage1-model:  ## [コンテナ] Stage1 モデル一式(1EE1 ckpt + Chronos エンコーダ)を取得（要 HF_TOKEN）
 	$(DOCKER_RUN) sh -c "uv run --no-sync huggingface-cli download $(HF_REPO) --local-dir checkpoints/ckpt_1EE1 && \
 	  uv run --no-sync huggingface-cli download $(CHRONOS_REPO) --local-dir checkpoints/chronos_t5_base"
 
