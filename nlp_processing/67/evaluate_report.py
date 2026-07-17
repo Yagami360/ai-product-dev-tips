@@ -34,8 +34,7 @@ def evaluate_report(summary, report, base_url, model, api_key, reasoning_effort=
     client = OpenAI(api_key=api_key, base_url=base_url)
     resp = client.chat.completions.create(
         model=model,
-        messages=[{"role": "system", "content": prompts["judge_system"]},
-                  {"role": "user", "content": user}],
+        messages=[{"role": "system", "content": prompts["judge_system"]}, {"role": "user", "content": user}],
         temperature=0.0,
         **kwargs,
     )

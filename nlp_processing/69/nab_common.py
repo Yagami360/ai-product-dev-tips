@@ -3,6 +3,7 @@
 3 系統（(a) 数値直接入力 / (b) 画像化→VLM / (c) TSFM+LLM）を同一データ・同一指標で
 公正に比較できるよう、データ・正解・評価指標をこのモジュールに集約する。
 """
+
 import csv
 import json
 import os
@@ -25,16 +26,19 @@ def summary_from_flags(series, timestamps, flags):
 def generate_report(summary, data_label, prompts_path, base_url, model, api_key, reasoning_effort=None):
     """検知結果の要約を LLM に渡し、運用向けの自然言語レポートを生成する（プロンプトは prompts.yaml）。"""
     from openai import OpenAI
+
     with open(prompts_path) as f:
         prompts = yaml.safe_load(f)
     kwargs = {"reasoning_effort": reasoning_effort} if reasoning_effort else {}
     client = OpenAI(api_key=api_key, base_url=base_url)
     resp = client.chat.completions.create(
         model=model,
-        messages=[{"role": "system", "content": prompts["report_system"]},
-                  {"role": "user", "content": prompts["report_user_template"].format(
-                      data_label=data_label, summary=summary)}],
-        temperature=0.3, **kwargs,
+        messages=[
+            {"role": "system", "content": prompts["report_system"]},
+            {"role": "user", "content": prompts["report_user_template"].format(data_label=data_label, summary=summary)},
+        ],
+        temperature=0.3,
+        **kwargs,
     )
     return resp.choices[0].message.content or ""
 
@@ -69,6 +73,7 @@ def parse_dt_flexible(s):
         except ValueError:
             continue
     return None
+
 
 NAB_BASE = "https://raw.githubusercontent.com/numenta/NAB/master"
 NAB_LABELS_URL = f"{NAB_BASE}/labels/combined_windows.json"
@@ -114,8 +119,7 @@ def load_nab_dataset(key, data_dir="data", downsample=1):
 
     with open(labels_path) as f:
         windows = json.load(f).get(nab_key, [])
-    gt_windows = [(datetime.strptime(s[:19], "%Y-%m-%d %H:%M:%S"),
-                   datetime.strptime(e[:19], "%Y-%m-%d %H:%M:%S")) for s, e in windows]
+    gt_windows = [(datetime.strptime(s[:19], "%Y-%m-%d %H:%M:%S"), datetime.strptime(e[:19], "%Y-%m-%d %H:%M:%S")) for s, e in windows]
     return np.asarray(values, dtype=np.float32), timestamps, gt_windows
 
 
@@ -148,17 +152,25 @@ def evaluate(pred_flags, timestamps, gt_windows):
         if any(pred[i] for i in idx):
             for i in idx:
                 pa[i] = True
-    tp = int(np.sum(pa & gt)); fp = int(np.sum(pa & ~gt)); fn = int(np.sum(~pa & gt))
+    tp = int(np.sum(pa & gt))
+    fp = int(np.sum(pa & ~gt))
+    fn = int(np.sum(~pa & gt))
     prec = tp / (tp + fp) if tp + fp else 0.0
     rec = tp / (tp + fn) if tp + fn else 0.0
     pa_f1 = 2 * prec * rec / (prec + rec) if prec + rec else 0.0
-    return {"windows_total": len(gt_windows), "windows_detected": detected,
-            "window_recall": round(window_recall, 3), "false_alarms": false_alarms,
-            "pa_f1": round(pa_f1, 3), "n_pred": int(np.sum(pred))}
+    return {
+        "windows_total": len(gt_windows),
+        "windows_detected": detected,
+        "window_recall": round(window_recall, 3),
+        "false_alarms": false_alarms,
+        "pa_f1": round(pa_f1, 3),
+        "n_pred": int(np.sum(pred)),
+    }
 
 
 def save_plot(series, timestamps, pred_flags, gt_windows, path, title=""):
     import matplotlib
+
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
@@ -169,11 +181,14 @@ def save_plot(series, timestamps, pred_flags, gt_windows, path, title=""):
         ax.axvspan(s, e, color="#ff7f0e", alpha=0.12, label="labeled anomaly window" if i == 0 else None)
     idx = [i for i, f in enumerate(pred_flags) if f]
     if idx:
-        ax.scatter([timestamps[i] for i in idx], [series[i] for i in idx],
-                   color="#d62728", s=12, zorder=5, label="detected anomaly")
-    ax.set_xlabel("time"); ax.set_ylabel("value")
+        ax.scatter([timestamps[i] for i in idx], [series[i] for i in idx], color="#d62728", s=12, zorder=5, label="detected anomaly")
+    ax.set_xlabel("time")
+    ax.set_ylabel("value")
     if title:
         ax.set_title(title)
     ax.legend(loc="upper right", fontsize=8)
-    fig.autofmt_xdate(); fig.tight_layout(); fig.savefig(path, dpi=110); plt.close(fig)
+    fig.autofmt_xdate()
+    fig.tight_layout()
+    fig.savefig(path, dpi=110)
+    plt.close(fig)
     print(f"[plot] saved: {path}")

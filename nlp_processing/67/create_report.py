@@ -37,10 +37,10 @@ NAB_LABELS_URL = f"{NAB_BASE}/labels/combined_windows.json"
 NAB_PRESETS = {
     "machine-temp": "realKnownCause/machine_temperature_system_failure.csv",  # 産業機械の温度センサー
     "ambient-temp": "realKnownCause/ambient_temperature_system_failure.csv",  # 室温センサー
-    "cpu": "realAWSCloudwatch/ec2_cpu_utilization_5f5533.csv",                # サーバ CPU 使用率
-    "traffic-speed": "realTraffic/speed_7578.csv",                            # 道路の車速センサー
-    "traffic-occupancy": "realTraffic/occupancy_6005.csv",                    # 道路の占有率センサー
-    "network": "realAWSCloudwatch/ec2_network_in_5abac7.csv",                 # サーバ受信ネットワーク量
+    "cpu": "realAWSCloudwatch/ec2_cpu_utilization_5f5533.csv",  # サーバ CPU 使用率
+    "traffic-speed": "realTraffic/speed_7578.csv",  # 道路の車速センサー
+    "traffic-occupancy": "realTraffic/occupancy_6005.csv",  # 道路の占有率センサー
+    "network": "realAWSCloudwatch/ec2_network_in_5abac7.csv",  # サーバ受信ネットワーク量
 }
 
 
@@ -79,8 +79,7 @@ def load_nab_dataset(key, data_dir="data", downsample=1):
 
     with open(labels_path) as f:
         windows = json.load(f).get(nab_key, [])
-    gt_windows = [(datetime.strptime(s[:19], "%Y-%m-%d %H:%M:%S"),
-                   datetime.strptime(e[:19], "%Y-%m-%d %H:%M:%S")) for s, e in windows]
+    gt_windows = [(datetime.strptime(s[:19], "%Y-%m-%d %H:%M:%S"), datetime.strptime(e[:19], "%Y-%m-%d %H:%M:%S")) for s, e in windows]
 
     return np.asarray(values, dtype=np.float32), timestamps, gt_windows
 
@@ -100,24 +99,19 @@ def detect_anomalies_chronos(series, xs, model_id, device, context_length, thres
     """
     n = len(series)
     if n <= context_length:
-        raise ValueError(
-            f"系列長 {n} が context_length {context_length} 以下です。"
-            f"より長い系列を使うか --context-length を小さくしてください。"
-        )
+        raise ValueError(f"系列長 {n} が context_length {context_length} 以下です。より長い系列を使うか --context-length を小さくしてください。")
 
     dtype = torch.float32 if device == "cpu" else torch.bfloat16
     pipeline = BaseChronosPipeline.from_pretrained(model_id, device_map=device, torch_dtype=dtype)
 
     # 各対象点 t（context_length <= t < n）について context = series[t-W:t] を作る
-    contexts = [series[t - context_length:t] for t in range(context_length, n)]
+    contexts = [series[t - context_length : t] for t in range(context_length, n)]
 
     # 長い系列でもメモリを抑えるため、predict_quantiles をミニバッチに分けて呼ぶ
     q_list = []
     for i in range(0, len(contexts), batch_size):
-        batch = torch.tensor(np.stack(contexts[i:i + batch_size]), dtype=torch.float32)
-        quantiles, _ = pipeline.predict_quantiles(
-            batch, prediction_length=1, quantile_levels=[0.1, 0.5, 0.9]
-        )
+        batch = torch.tensor(np.stack(contexts[i : i + batch_size]), dtype=torch.float32)
+        quantiles, _ = pipeline.predict_quantiles(batch, prediction_length=1, quantile_levels=[0.1, 0.5, 0.9])
         q_list.append(quantiles[:, 0, :].float().cpu().numpy())  # (b, 3)
         print(f"[detect] {min(i + batch_size, len(contexts))}/{len(contexts)} 窓を推論", end="\r")
     print()
@@ -130,16 +124,22 @@ def detect_anomalies_chronos(series, xs, model_id, device, context_length, thres
     highs = np.full(n, np.nan, dtype=np.float32)
     band = np.maximum(high - low, 1e-6)  # ゼロ割回避
     actual = series[context_length:n]
-    dev = np.where(actual > high, (actual - high) / band,
-                   np.where(actual < low, (low - actual) / band, 0.0))
+    dev = np.where(actual > high, (actual - high) / band, np.where(actual < low, (low - actual) / band, 0.0))
     scores[context_length:n] = dev
     lows[context_length:n], meds[context_length:n], highs[context_length:n] = low, med, high
 
     anomalies = [
-        {"index": int(i), "x": str(xs[i]), "value": float(series[i]),
-         "expected_low": float(lows[i]), "expected_med": float(meds[i]),
-         "expected_high": float(highs[i]), "score": float(scores[i])}
-        for i in range(context_length, n) if scores[i] > threshold
+        {
+            "index": int(i),
+            "x": str(xs[i]),
+            "value": float(series[i]),
+            "expected_low": float(lows[i]),
+            "expected_med": float(meds[i]),
+            "expected_high": float(highs[i]),
+            "score": float(scores[i]),
+        }
+        for i in range(context_length, n)
+        if scores[i] > threshold
     ]
     return scores, lows, meds, highs, anomalies
 
@@ -193,6 +193,7 @@ def generate_report_llm(summary, data_label, base_url, model, api_key, max_token
 def save_plot(series, xs, lows, highs, anomalies, gt_windows, path):
     """系列・予測区間・既知異常区間・検知した異常点を可視化して PNG 保存する。"""
     import matplotlib
+
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
@@ -205,8 +206,7 @@ def save_plot(series, xs, lows, highs, anomalies, gt_windows, path):
         ax.axvspan(s, e, color="#ff7f0e", alpha=0.12, label="labeled anomaly window" if i == 0 else None)
     if anomalies:
         idx = [a["index"] for a in anomalies]
-        ax.scatter([xs[i] for i in idx], [series[i] for i in idx],
-                   color="#d62728", s=10, zorder=5, label="detected anomaly")
+        ax.scatter([xs[i] for i in idx], [series[i] for i in idx], color="#d62728", s=10, zorder=5, label="detected anomaly")
     ax.set_xlabel("time")
     ax.set_ylabel("value")
     ax.legend(loc="upper right", fontsize=8)
@@ -220,32 +220,33 @@ def save_plot(series, xs, lows, highs, anomalies, gt_windows, path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--device", type=str, default="cpu", choices=["cpu", "cuda"])
-    parser.add_argument("--model-id", type=str, default="amazon/chronos-bolt-base",
-                        help="検知層の TSFM（Chronos-Bolt）")
+    parser.add_argument("--model-id", type=str, default="amazon/chronos-bolt-base", help="検知層の TSFM（Chronos-Bolt）")
     # 入力: 既定は NAB の実センサーデータ（機械温度）。--nab-key で別のセンサー、--input で任意 CSV
-    parser.add_argument("--nab-key", type=str, default="machine-temp",
-                        help="NAB データ選択。プリセット: " + ", ".join(NAB_PRESETS)
-                             + " または '<category>/<file>.csv' 形式の生キー")
+    parser.add_argument(
+        "--nab-key",
+        type=str,
+        default="machine-temp",
+        help="NAB データ選択。プリセット: " + ", ".join(NAB_PRESETS) + " または '<category>/<file>.csv' 形式の生キー",
+    )
     parser.add_argument("--input", type=str, default=None, help="1 変量時系列の CSV パス（指定時はこれを使う）")
-    parser.add_argument("--downsample", type=int, default=6,
-                        help="実データの間引き間隔（既定 6 = 5分値を30分値に。CPU を軽くする）")
+    parser.add_argument("--downsample", type=int, default=6, help="実データの間引き間隔（既定 6 = 5分値を30分値に。CPU を軽くする）")
     parser.add_argument("--context-length", type=int, default=96, help="スライディング窓のコンテキスト長")
     parser.add_argument("--threshold", type=float, default=1.5, help="異常判定スコアのしきい値")
     parser.add_argument("--batch-size", type=int, default=256, help="Chronos 推論のミニバッチサイズ")
-    parser.add_argument("--plot", type=str, default=None,
-                        help="可視化 PNG の保存先（未指定なら images/<センサー>_anomaly.png）")
-    parser.add_argument("--report-out", type=str, default=None,
-                        help="検知結果＋レポートの保存先（未指定なら reports/<センサー>.md）")
+    parser.add_argument("--plot", type=str, default=None, help="可視化 PNG の保存先（未指定なら images/<センサー>_anomaly.png）")
+    parser.add_argument("--report-out", type=str, default=None, help="検知結果＋レポートの保存先（未指定なら reports/<センサー>.md）")
     # 説明層（OpenAI 互換 LLM）。base_url 差し替えで任意の LLM を使える（既定は Gemini）
-    parser.add_argument("--base-url", type=str,
-                        default="https://generativelanguage.googleapis.com/v1beta/openai/")
+    parser.add_argument("--base-url", type=str, default="https://generativelanguage.googleapis.com/v1beta/openai/")
     parser.add_argument("--llm-model", type=str, default="gemini-3.5-flash")
     # 既定では max_tokens を送らない（送るとレポートが途中で切れやすい）。必要時のみ上限指定
-    parser.add_argument("--max-tokens", type=int, default=None,
-                        help="生成トークン上限。未指定ならプロバイダ側の上限まで生成（推奨）")
-    parser.add_argument("--reasoning-effort", type=str, default=None,
-                        choices=["low", "medium", "high"],
-                        help="reasoning 系モデルの思考量（対応 API のみ）。低くすると本文が切れにくい")
+    parser.add_argument("--max-tokens", type=int, default=None, help="生成トークン上限。未指定ならプロバイダ側の上限まで生成（推奨）")
+    parser.add_argument(
+        "--reasoning-effort",
+        type=str,
+        default=None,
+        choices=["low", "medium", "high"],
+        help="reasoning 系モデルの思考量（対応 API のみ）。低くすると本文が切れにくい",
+    )
     args = parser.parse_args()
 
     # 1. 時系列を用意する（既定: NAB の実センサーデータ / --input で任意 CSV）
@@ -279,8 +280,7 @@ if __name__ == "__main__":
     if anomalies:
         api_key = os.environ.get("OPENAI_API_KEY", "EMPTY")  # ローカル LLM は認証不要
         try:
-            report = generate_report_llm(summary, label, args.base_url, args.llm_model, api_key,
-                                         args.max_tokens, args.reasoning_effort)
+            report = generate_report_llm(summary, label, args.base_url, args.llm_model, api_key, args.max_tokens, args.reasoning_effort)
             print("\n===== 自然言語レポート（LLM）=====")
             print(report)
         except Exception as e:  # LLM 失敗時も検知結果は保存する（せっかくの検知結果を捨てない）

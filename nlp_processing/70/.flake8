@@ -1,0 +1,6 @@
+[flake8]
+max-line-length = 150
+# black と競合する規則は無効化（E203: スライスの空白, W503: 演算子前改行）
+extend-ignore = E203, W503
+# 生成物・仮想環境・キャッシュは対象外
+extend-exclude = .venv, data, images, reports, __pycache__

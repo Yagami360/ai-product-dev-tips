@@ -57,6 +57,10 @@ make run NAB_KEY=traffic-speed
 
 # 4. 生成レポートを LLM-as-judge で品質評価
 make evaluate NAB_KEY=machine-temp
+
+# （開発用）lint / format
+make lint                   # flake8 / mypy で静的チェック
+make format                 # black / isort で自動整形
 ```
 
 | ファイル | 役割 |

@@ -40,6 +40,9 @@ make install                 # 依存を uv で同期（pyproject.toml）
 cp .env.sample .env          # OPENAI_API_KEY を設定（VLM は画像対応モデルが必要。既定は Gemini）
 make run                     # 画像化 → VLM 検知 → NAB ラベルで評価（既定=機械温度センサー）
 make run NAB_KEY=cpu         # 別センサー
+
+make lint                    # flake8 / mypy で静的チェック
+make format                  # black / isort で自動整形
 ```
 
 ## 実行結果（機械温度センサー, NAB machine-temp, 946 点）

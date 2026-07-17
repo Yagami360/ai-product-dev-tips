@@ -14,6 +14,27 @@ dependencies = [
     "pyyaml~=6.0",               # プロンプト定義(prompts.yaml)の読み込み
 ]
 
+# 開発ツール（lint / format）。make install-dev で入る。
+[project.optional-dependencies]
+dev = [
+    "flake8~=7.1",
+    "mypy~=1.11",
+    "black~=24.8",
+    "isort~=5.13",
+    "types-PyYAML~=6.0",  # yaml の型スタブ（mypy 用）
+]
+
+[tool.black]
+line-length = 150
+
+[tool.isort]
+profile = "black"
+line_length = 150
+
+[tool.mypy]
+# torch / chronos / openai 等は型スタブ未提供のものがあるため import エラーは無視
+ignore_missing_imports = true
+
 # パッケージ（配布物）ではなくアプリなので、uv にビルド対象外だと伝える
 [tool.uv]
 package = false
