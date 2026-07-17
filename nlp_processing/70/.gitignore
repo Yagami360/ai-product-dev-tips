@@ -1,5 +1,5 @@
 # 実行時にダウンロードされるデータ（コミット対象外）
-data/
+datasets/
 
 # API キー等（非 git 管理。.env.sample を .env にコピーして使う）
 .env

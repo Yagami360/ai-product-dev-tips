@@ -26,12 +26,16 @@ dev = [
 
 [tool.black]
 line-length = 150
+# NAB 公式実装をそのまま流用しているファイルは整形しない
+extend-exclude = "nab_sweeper.py"
 
 [tool.isort]
 profile = "black"
 line_length = 150
+extend_skip = ["nab_sweeper.py"]
 
 [tool.mypy]
+exclude = ["nab_sweeper.py"]
 # torch / chronos / openai 等は型スタブ未提供のものがあるため import エラーは無視
 ignore_missing_imports = true
 

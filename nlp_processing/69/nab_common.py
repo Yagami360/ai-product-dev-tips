@@ -14,6 +14,8 @@ from datetime import datetime
 import numpy as np
 import yaml
 
+from nab_score import nab_score
+
 
 def summary_from_flags(series, timestamps, flags):
     """検知された異常点（時刻・値）の要約テキストを組み立てる（説明層 LLM への入力）。"""
@@ -37,7 +39,7 @@ def generate_report(summary, data_label, prompts_path, base_url, model, api_key,
             {"role": "system", "content": prompts["report_system"]},
             {"role": "user", "content": prompts["report_user_template"].format(data_label=data_label, summary=summary)},
         ],
-        temperature=0.3,
+        temperature=0.0,  # 事実に忠実なレポートを狙い決定的に生成する
         **kwargs,
     )
     return resp.choices[0].message.content or ""
@@ -96,7 +98,7 @@ def _download(url, path):
         os.replace(tmp, path)
 
 
-def load_nab_dataset(key, data_dir="data", downsample=1):
+def load_nab_dataset(key, data_dir="datasets/nab", downsample=1):
     """NAB のセンサーデータと既知異常区間ラベルを読み込む。
 
     Returns: values(np.float32), timestamps(list[datetime]), gt_windows(list[(start,end)])
@@ -165,6 +167,9 @@ def evaluate(pred_flags, timestamps, gt_windows):
         "false_alarms": false_alarms,
         "pa_f1": round(pa_f1, 3),
         "n_pred": int(np.sum(pred)),
+        # 業界標準の NAB 公式スコア（0〜100・3 プロファイル）。上記の簡易指標と違い
+        # 「検出の早さ」を評価し、誤検知にペナルティを課すため 0 未満にもなり得る。
+        "nab_official": nab_score(pred, timestamps, gt_windows),
     }
 
 

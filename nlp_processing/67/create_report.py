@@ -11,6 +11,8 @@ import yaml
 from chronos import BaseChronosPipeline
 from openai import OpenAI
 
+from nab_score import nab_score
+
 PROMPTS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prompts.yaml")
 
 
@@ -54,7 +56,7 @@ def _download(url, path):
         os.replace(tmp, path)
 
 
-def load_nab_dataset(key, data_dir="data", downsample=1):
+def load_nab_dataset(key, data_dir="datasets/nab", downsample=1):
     """NAB の実センサーデータと既知異常区間ラベルをダウンロードして読み込む。
 
     key は NAB_PRESETS のキー、または "<category>/<file>.csv" 形式の生キー。
@@ -82,6 +84,52 @@ def load_nab_dataset(key, data_dir="data", downsample=1):
     gt_windows = [(datetime.strptime(s[:19], "%Y-%m-%d %H:%M:%S"), datetime.strptime(e[:19], "%Y-%m-%d %H:%M:%S")) for s, e in windows]
 
     return np.asarray(values, dtype=np.float32), timestamps, gt_windows
+
+
+# ---- 正解ラベルでの検知精度評価（3 系統 (a)/(b)/(c) で同一実装。nlp_processing/69・70 の nab_common.py と同じロジック）----
+def gt_flags_from_windows(timestamps, gt_windows):
+    """各点が既知異常区間内かどうかの正解ブールを返す。"""
+    flags = np.zeros(len(timestamps), dtype=bool)
+    for i, t in enumerate(timestamps):
+        flags[i] = any(s <= t <= e for s, e in gt_windows)
+    return flags
+
+
+def evaluate(pred_flags, timestamps, gt_windows):
+    """予測フラグを正解ラベルで公正に評価する。
+
+    - window_recall: 既知異常区間のうち「区間内に予測点が1つ以上ある」割合（＝異常を見つけられたか）
+    - false_alarms: 正解区間の外で異常と予測した点数（誤検知）
+    - pa_f1: point-adjust F1（区間内に1点でも当たれば区間全点を検出扱い。TSAD の慣習指標。甘めなので注意）
+    """
+    gt = gt_flags_from_windows(timestamps, gt_windows)
+    pred = np.asarray(pred_flags, dtype=bool)
+
+    detected = sum(any(pred[i] for i, t in enumerate(timestamps) if s <= t <= e) for s, e in gt_windows)
+    window_recall = detected / len(gt_windows) if gt_windows else float("nan")
+    false_alarms = int(np.sum(pred & ~gt))
+
+    # point-adjust: 検出された区間は全点 TP 扱い
+    pa = pred.copy()
+    for s, e in gt_windows:
+        idx = [i for i, t in enumerate(timestamps) if s <= t <= e]
+        if any(pred[i] for i in idx):
+            for i in idx:
+                pa[i] = True
+    tp = int(np.sum(pa & gt))
+    fp = int(np.sum(pa & ~gt))
+    fn = int(np.sum(~pa & gt))
+    prec = tp / (tp + fp) if tp + fp else 0.0
+    rec = tp / (tp + fn) if tp + fn else 0.0
+    pa_f1 = 2 * prec * rec / (prec + rec) if prec + rec else 0.0
+    return {
+        "windows_total": len(gt_windows),
+        "windows_detected": detected,
+        "window_recall": round(window_recall, 3),
+        "false_alarms": false_alarms,
+        "pa_f1": round(pa_f1, 3),
+        "n_pred": int(np.sum(pred)),
+    }
 
 
 def load_series_csv(path):
@@ -183,7 +231,7 @@ def generate_report_llm(summary, data_label, base_url, model, api_key, max_token
     resp = client.chat.completions.create(
         model=model,
         messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
-        temperature=0.3,
+        temperature=0.0,  # 事実に忠実なレポートを狙い決定的に生成する
         **kwargs,
     )
     # 一部の OpenAI 互換バックエンドは content=None を返すため空文字にフォールバック
@@ -273,6 +321,16 @@ if __name__ == "__main__":
     print("\n===== 検知結果（Chronos-Bolt）=====")
     print(summary)
 
+    # NAB の正解ラベルがある場合は検知精度を評価する（系統 (a)/(b) と同一指標で比較するため）
+    metrics = None
+    if gt_windows:
+        pred_flags = np.zeros(len(series), dtype=bool)
+        for a in anomalies:
+            pred_flags[a["index"]] = True
+        metrics = evaluate(pred_flags, xs, gt_windows)
+        metrics["nab_official"] = nab_score(pred_flags, xs, gt_windows)  # 業界標準スコア
+        print(f"[eval] {metrics}")
+
     save_plot(series, xs, lows, highs, anomalies, gt_windows, plot_path)
 
     # 3. 説明層: LLM が自然言語レポート化（異常が無ければスキップ）
@@ -289,7 +347,10 @@ if __name__ == "__main__":
     # 4. 検知結果＋レポートを出力ファイル（Markdown）に保存
     os.makedirs(os.path.dirname(report_path) or ".", exist_ok=True)
     with open(report_path, "w") as f:
-        f.write(f"# 異常検知レポート\n\n- データ: {label}\n- 検知モデル: {args.model_id}\n\n")
+        f.write(f"# 異常検知レポート\n\n- データ: {label}\n- 検知モデル: {args.model_id}\n")
+        if metrics:
+            f.write(f"- 評価（NAB 既知異常区間ラベル基準）: {metrics}\n")
+        f.write("\n")
         f.write(f"## 検知結果（Chronos-Bolt）\n\n```\n{summary}\n```\n\n")
         if report:
             f.write(f"## 自然言語レポート（LLM: {args.llm_model}）\n\n{report}\n")
