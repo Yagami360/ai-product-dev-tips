@@ -109,6 +109,13 @@ flowchart LR
     make create-train-data-stage2
     ```
 
+    使うのは **[MHealth データセット](https://archive.ics.uci.edu/dataset/319/mhealth+dataset)**（UCI 公開。10 被験者が**胸・左足首・右前腕**の 3 箇所に IMU を装着し、日常動作を計測した HAR データ）。`create_dataset_stage2.py` がこれを次の形に整形し、Stage 2 学習用の pkl + QA-JSON を `datasets/mhealth_stage2/{train,test}/` に出力する:
+
+    - **入力**: **15 チャネル**（胸 acc / 左足首 acc・gyro / 右前腕 acc・gyro ＝各 XYZ）× **100 点**（50Hz で 2 秒窓、stride 50 ＝ 50% オーバーラップ）
+    - **ラベル**: **12 クラス**の行動（Standing / Sitting / Lying / Walking / Climbing / Waist bend / Arms elev. / Knees bend / Cycling / Jogging / Running / Jump）
+    - **分割**: test ＝ subject1/3/6、train ＝ 残りの被験者（`SUBJECTS` で使う被験者数を変更可）
+    - **QA 形式**: 各窓に「この時系列はどの行動か」を問う QA を付与し、`SequenceClassification`（分類ヘッド）の教師データにする
+
 
 1. **Stage 2 の初期値（Stage 1 モデル）を用意する**
 
@@ -211,16 +218,16 @@ Q: Detect anomalies in this sensor reading and report when they occur.
 
 test 全 2,039 件（被験者 subject1/3/6）に対する評価。**エポックを追うごとに精度が単調に上昇し、最終的に `eval_accuracy=0.863` / `eval_f1_macro=0.871` に到達**（ランダム＝1/12≒8.3% を大きく上回る。Stage 1 に学習済み 1EE1 を使ったことが効いている）。
 
-エポック別の全体スコア（正解率＝eval_accuracy、macro-F1＝eval_f1_macro）と、代表クラスの **正解率（recall = そのクラスの実サンプルを正しく分類できた割合）**:
+エポック別の全体スコア（正解率＝eval_accuracy、macro-F1＝eval_f1_macro）と、**全 12 クラスの正解率（recall = そのクラスの実サンプルを正しく分類できた割合）**。列名は短縮（Waist bend＝Waist bends forward、Arms elev.＝Frontal elevation of arms、Knees bend＝Knees bending、Jump＝Jump front & back）:
 
-| epoch | 正解率（平均） | macro-F1（平均） | Walking | Cycling | Jump | Climbing | Sitting | Lying | Standing |
-|---|---|---|---|---|---|---|---|---|---|
-| 1 | 0.687 | 0.602 | 1.000 | 1.000 | 0.000 | 0.514 | 0.033 | 0.995 | 0.011 |
-| 4 | 0.801 | 0.794 | 1.000 | 0.995 | 1.000 | 0.907 | 0.749 | 0.082 | 0.781 |
-| 6 | 0.846 | 0.850 | 1.000 | 0.973 | 0.967 | 0.934 | 0.393 | 0.880 | 0.749 |
-| **8** | **0.863** | **0.871** | 1.000 | 0.995 | 0.984 | 0.978 | 0.574 | 0.634 | 0.787 |
+| epoch | 正解率（平均） | macro-F1（平均） | Standing | Sitting | Lying | Walking | Climbing | Waist bend | Arms elev. | Knees bend | Cycling | Jogging | Running | Jump |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 0.687 | 0.602 | 0.011 | 0.033 | 0.995 | 1.000 | 0.514 | 0.675 | 0.988 | 0.955 | 1.000 | 0.863 | 0.781 | 0.000 |
+| 4 | 0.801 | 0.794 | 0.781 | 0.749 | 0.082 | 1.000 | 0.907 | 0.917 | 1.000 | 0.983 | 0.995 | 0.366 | 1.000 | 1.000 |
+| 6 | 0.846 | 0.850 | 0.749 | 0.393 | 0.880 | 1.000 | 0.934 | 0.817 | 1.000 | 0.994 | 0.973 | 0.552 | 0.989 | 0.967 |
+| **8** | **0.863** | **0.871** | 0.787 | 0.574 | 0.634 | 1.000 | 0.978 | 0.929 | 1.000 | 0.977 | 0.995 | 0.634 | 0.967 | 0.984 |
 
-**周期・振幅の特徴が明確な動作系（Walking / Cycling / Jump / Climbing）はほぼ完璧**、静止・着座系（Sitting / Lying / Standing）は互いに信号が似るため相対的に弱い（学習途中はクラスごとに上下しつつ、最終的に全体で収束）。
+**周期・振幅の特徴が明確な動作系（Walking / Cycling / Climbing / Jump / Arms elev. 等）はほぼ完璧**。一方、静止・着座系（Standing / Sitting / Lying）は互いに信号が似るため相対的に弱く、Jogging も Running と混同して伸び悩む。学習途中はクラスごとに正解率が上下しつつ、最終的に全体（正解率・macro-F1）で収束する。
 
 #### Stage 2 推論（`make predict-stage2`, test から 16 サンプル）
 
