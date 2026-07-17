@@ -14,8 +14,6 @@ from datetime import datetime
 import numpy as np
 import yaml
 
-from nab_score import nab_score
-
 
 def summary_from_flags(series, timestamps, flags):
     """検知された異常点（時刻・値）の要約テキストを組み立てる（説明層 LLM への入力）。"""
@@ -134,42 +132,57 @@ def gt_flags_from_windows(timestamps, gt_windows):
 
 
 def evaluate(pred_flags, timestamps, gt_windows):
-    """予測フラグを正解ラベルで公正に評価する。
+    """異常「区間」単位で Precision / Recall / F1 を算出する。
 
-    - window_recall: 既知異常区間のうち「区間内に予測点が1つ以上ある」割合（＝異常を見つけられたか）
-    - false_alarms: 正解区間の外で異常と予測した点数（誤検知）
-    - pa_f1: point-adjust F1（区間内に1点でも当たれば区間全点を検出扱い。TSAD の慣習指標。甘めなので注意）
+    本 Tip の 3 系統はいずれも系列全体を一度に見る**バッチ処理**なので、
+    検出の早さを評価する NAB 公式スコア（ストリーミング検出器向け）は前提が合わない。
+    ここでは「異常区間をいくつ当てたか」「誤検知をいくつ出したか」を素直に測る。
+
+    - TP: 正解の異常区間のうち、区間内に 1 点以上の検知があったもの（区間数）
+    - FN: 検知が 1 点も無かった正解区間（区間数）
+    - FP: 正解区間の外にある検知点を、連続していれば 1 件にまとめた「誤検知イベント」数
+      （点数で数えると「広く塗る」方式が過度に罰されるため、イベント単位で数える）
+
+    Returns: dict(precision, recall, f1, tp, fp, fn)
     """
-    gt = gt_flags_from_windows(timestamps, gt_windows)
-    pred = np.asarray(pred_flags, dtype=bool)
+    pred = list(bool(x) for x in pred_flags)
 
-    detected = sum(any(pred[i] for i, t in enumerate(timestamps) if s <= t <= e) for s, e in gt_windows)
-    window_recall = detected / len(gt_windows) if gt_windows else float("nan")
-    false_alarms = int(np.sum(pred & ~gt))
-
-    # point-adjust: 検出された区間は全点 TP 扱い
-    pa = pred.copy()
+    # TP / FN: 正解区間ごとに検知の有無を見る
+    tp = 0
     for s, e in gt_windows:
-        idx = [i for i, t in enumerate(timestamps) if s <= t <= e]
-        if any(pred[i] for i in idx):
-            for i in idx:
-                pa[i] = True
-    tp = int(np.sum(pa & gt))
-    fp = int(np.sum(pa & ~gt))
-    fn = int(np.sum(~pa & gt))
-    prec = tp / (tp + fp) if tp + fp else 0.0
-    rec = tp / (tp + fn) if tp + fn else 0.0
-    pa_f1 = 2 * prec * rec / (prec + rec) if prec + rec else 0.0
+        if any(pred[i] for i, t in enumerate(timestamps) if s <= t <= e):
+            tp += 1
+    fn = len(gt_windows) - tp
+
+    # FP: 正解区間外の検知点を、連続していれば 1 イベントとしてまとめる
+    in_gt = [any(s <= t <= e for s, e in gt_windows) for t in timestamps]
+    fp, prev_is_fp = 0, False
+    for i, p in enumerate(pred):
+        cur_is_fp = p and not in_gt[i]
+        if cur_is_fp and not prev_is_fp:
+            fp += 1
+        prev_is_fp = cur_is_fp
+
+    precision = tp / (tp + fp) if tp + fp else 0.0
+    recall = tp / (tp + fn) if tp + fn else float("nan")
+    f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
+
+    # 誤検知の「点数」と「率」。点数は系列長・間引き設定に依存して比較できないため、
+    # 正常点（正解区間の外）あたりの率に正規化した false_alarm_rate を主に使う。
+    false_alarm_points = sum(1 for i, p in enumerate(pred) if p and not in_gt[i])
+    normal_points = sum(1 for g in in_gt if not g)
+    far = false_alarm_points / normal_points if normal_points else float("nan")
     return {
         "windows_total": len(gt_windows),
-        "windows_detected": detected,
-        "window_recall": round(window_recall, 3),
-        "false_alarms": false_alarms,
-        "pa_f1": round(pa_f1, 3),
-        "n_pred": int(np.sum(pred)),
-        # NAB 公式スコア（0〜100・3 プロファイル）。上記の簡易指標と違い「検出の早さ」を
-        # 評価し、誤検知にペナルティを課すため 0 未満（＝無検出より悪い）にもなり得る。
-        "nab_official": nab_score(pred, timestamps, gt_windows),
+        "window_recall": round(recall, 3),  # 異常区間の検出率（= recall）
+        "precision": round(precision, 3),
+        "f1": round(f1, 3),
+        "tp": tp,
+        "fp": fp,  # 誤検知イベント数（連続する誤検知点を 1 件にまとめたもの）
+        "fn": fn,
+        "false_alarm_rate": round(far, 4),  # 誤検知率 = 誤検知点 / 正常点
+        "false_alarms": false_alarm_points,  # 誤検知点数（参考。間引き設定で変わるので比較不可）
+        "n_pred": sum(1 for p in pred if p),
     }
 
 
