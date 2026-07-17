@@ -1,14 +1,14 @@
-"""NAB 公式スコア（業界標準）で検知結果を採点する。
+"""NAB 公式スコアで検知結果を採点する。
 
 NAB 公式スコアの考え方（[NAB 公式](https://github.com/numenta/NAB) の採点方式）:
 
-- 異常窓の**早い位置**で検知するほど高得点（scaled sigmoid で重み付け。運用では
+- 正解の**異常区間の早い時点**で検知するほど高得点（scaled sigmoid で重み付け。運用では
   「異常をいち早く捕まえる」ことに価値があるため、検出の遅さがペナルティになる）
-- 窓を 1 つも検知できなければ FN ペナルティ、窓外の検知は FP ペナルティ
-  （窓終端からの距離で減衰）
+- 異常区間を 1 つも検知できなければ FN ペナルティ、異常区間の外での検知は FP ペナルティ
+  （区間の終端からの距離で減衰）
 - 生スコアを **0〜100 に正規化**する:
       score = 100 * (raw - null) / (perfect - null)
-  null = 無検出の検出器（0 点相当）、perfect = 全窓を最速で当てた検出器（100 点相当）
+  null = 無検出の検出器（0 点相当）、perfect = 全ての異常区間を最速で当てた検出器（100 点相当）
 
 アプリケーションプロファイル（誤検知と見逃しのどちらを重く見るか）:
 
@@ -32,11 +32,11 @@ PROFILES = {
 
 
 def _snap_windows(timestamps, gt_windows):
-    """窓の端点を、実在するタイムスタンプに寄せる。
+    """異常区間の端点を、実在するタイムスタンプに寄せる。
 
-    NAB 公式 Sweeper は窓の端点が timestamps に含まれる前提（timestamps.index で引く）。
+    NAB 公式 Sweeper は区間の端点が timestamps に含まれる前提（timestamps.index で引く）。
     本 Tip は --downsample で間引くため端点が消えることがあるので、
-    窓に含まれる最初/最後の点へ寄せる（窓が 1 点も含まなければ捨てる）。
+    区間に含まれる最初/最後の点へ寄せる（1 点も含まなければその区間は捨てる）。
     """
     snapped = []
     for s, e in gt_windows:
@@ -60,7 +60,7 @@ def nab_score(pred_flags, timestamps, gt_windows):
     検知点を 1.0 / 非検知を 0.0 とし、しきい値 0.5 で採点する（＝二値検知そのもの）。
 
     正規化は NAB 公式 runner.normalize() と同じ:
-        score = 100 * (raw - null) / (perfect - null),  perfect = 窓数 * tpWeight
+        score = 100 * (raw - null) / (perfect - null),  perfect = 異常区間数 * tpWeight
     """
     windows = _snap_windows(timestamps, gt_windows)
     if not windows:
@@ -73,7 +73,7 @@ def nab_score(pred_flags, timestamps, gt_windows):
     for name, cm in PROFILES.items():
         raw = _raw_score(timestamps, scores, windows, cm)
         null = _raw_score(timestamps, null_scores, windows, cm)
-        perfect = len(windows) * cm["tpWeight"]  # 公式定義: 検知可能な TP 数 × tp 重み
+        perfect = len(windows) * cm["tpWeight"]  # 公式定義: 検知可能な異常区間数 × tp 重み
         denom = perfect - null
         out[name] = round(100.0 * (raw - null) / denom, 1) if denom else float("nan")
     return out

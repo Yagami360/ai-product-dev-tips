@@ -328,7 +328,7 @@ if __name__ == "__main__":
         for a in anomalies:
             pred_flags[a["index"]] = True
         metrics = evaluate(pred_flags, xs, gt_windows)
-        metrics["nab_official"] = nab_score(pred_flags, xs, gt_windows)  # 業界標準スコア
+        metrics["nab_official"] = nab_score(pred_flags, xs, gt_windows)  # NAB 公式スコア
         print(f"[eval] {metrics}")
 
     save_plot(series, xs, lows, highs, anomalies, gt_windows, plot_path)

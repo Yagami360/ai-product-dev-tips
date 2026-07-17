@@ -167,8 +167,8 @@ def evaluate(pred_flags, timestamps, gt_windows):
         "false_alarms": false_alarms,
         "pa_f1": round(pa_f1, 3),
         "n_pred": int(np.sum(pred)),
-        # 業界標準の NAB 公式スコア（0〜100・3 プロファイル）。上記の簡易指標と違い
-        # 「検出の早さ」を評価し、誤検知にペナルティを課すため 0 未満にもなり得る。
+        # NAB 公式スコア（0〜100・3 プロファイル）。上記の簡易指標と違い「検出の早さ」を
+        # 評価し、誤検知にペナルティを課すため 0 未満（＝無検出より悪い）にもなり得る。
         "nab_official": nab_score(pred, timestamps, gt_windows),
     }
 
