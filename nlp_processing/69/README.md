@@ -119,14 +119,14 @@ flowchart LR
 
 同じパイプラインを全センサーで実行した結果（間引きは後述の 3 系統比較と同一）。
 
-| センサー（データ数） | 検知結果（<span style="color:#ff7f0e">■</span> 帯＝NAB が定義する異常区間／<span style="color:#d62728">●</span>＝LLM の検知点。クリックで原寸） | NAB スコア | 異常区間の検出率 | 誤検知点 |
-|---|---|---|---|---|
-| `machine-temp` (946) | <a href="images/machine-temp_numeric_llm.png"><img width="240" src="images/machine-temp_numeric_llm.png" /></a> | **52.0** | 2/4 = 0.50 | 1 |
-| `ambient-temp` (606) | <a href="images/ambient-temp_numeric_llm.png"><img width="240" src="images/ambient-temp_numeric_llm.png" /></a> | **93.5** | 2/2 = 1.00 | 0 |
-| `cpu` (672) | <a href="images/cpu_numeric_llm.png"><img width="240" src="images/cpu_numeric_llm.png" /></a> | **42.9** | 1/2 = 0.50 | 0 |
-| `traffic-speed` (564) | <a href="images/traffic-speed_numeric_llm.png"><img width="240" src="images/traffic-speed_numeric_llm.png" /></a> | **69.2** | 3/4 = 0.75 | 2 |
-| `traffic-occupancy` (1190) | <a href="images/traffic-occupancy_numeric_llm.png"><img width="240" src="images/traffic-occupancy_numeric_llm.png" /></a> | **82.1** | 1/1 = 1.00 | 3 |
-| `network` (789) | <a href="images/network_numeric_llm.png"><img width="240" src="images/network_numeric_llm.png" /></a> | **70.9** | 2/2 = 1.00 | 12 |
+| センサー（データ数） | 検知結果（<span style="color:#ff7f0e">■</span> 帯＝NAB が定義する異常区間／<span style="color:#d62728">●</span>＝LLM の検知点。クリックで原寸） | NAB スコア<br>10 回平均 | 10 回の分布 |
+|---|---|---|---|
+| `machine-temp` (946) | <a href="images/machine-temp_numeric_llm.png"><img width="240" src="images/machine-temp_numeric_llm.png" /></a> | **53.4** | 54.8 が 5 回 / 52.0 が 5 回 |
+| `ambient-temp` (606) | <a href="images/ambient-temp_numeric_llm.png"><img width="240" src="images/ambient-temp_numeric_llm.png" /></a> | **93.5** | **10 回とも 93.5** |
+| `cpu` (672) | <a href="images/cpu_numeric_llm.png"><img width="240" src="images/cpu_numeric_llm.png" /></a> | **42.3** | 42.0 が 7 回 / 42.9 が 3 回 |
+| `traffic-speed` (564) | <a href="images/traffic-speed_numeric_llm.png"><img width="240" src="images/traffic-speed_numeric_llm.png" /></a> | **68.8** | 68.5 が 6 回 / 69.2 が 4 回 |
+| `traffic-occupancy` (1190) | <a href="images/traffic-occupancy_numeric_llm.png"><img width="240" src="images/traffic-occupancy_numeric_llm.png" /></a> | **82.1** | **10 回とも 82.1** |
+| `network` (789) | <a href="images/network_numeric_llm.png"><img width="240" src="images/network_numeric_llm.png" /></a> | **81.0** | 89.6 が 6 回 / 68.2 が 4 回 |
 
 各列の**スコアの意味**（[`nab_common.py`](nab_common.py) の `evaluate` が算出。後述の 3 系統比較でも同じ指標を使う）:
 
@@ -146,7 +146,9 @@ flowchart LR
 >
 > **PA-F1 は載せない**。TSAD で慣習的に使われてきた指標だが、**一様乱数の異常スコアが SOTA を上回る**ことが示され過大評価が実証されている。実際 [70](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/70) の traffic-occupancy は PA-F1 で 0.891 と高得点だが、NAB スコアでは **-40.6**（無検出より悪い）だった。読者を誤導するため業界標準の NAB スコアに一本化している。
 
-**検出は総じて疎**（検出点数は 2〜15 点）で、そのぶん誤検知が少なく NAB スコアは全センサーでプラス。レベル変化が明確な ambient-temp は **93.5** と高得点だが、周期の中に異常が埋もれる cpu は **42.9** に留まる（2 窓中 1 窓しか当てられない）。**LLM は `temperature=0.0` でも非決定的**で、実行ごとに検知点が 3〜4 点で揺れ NAB スコアも数点変わる。
+**検出は総じて疎**（2〜15 点）で、そのぶん誤検知が少なく NAB スコアは全センサーでプラス。図は **10 回のうち平均に最も近い試行**を掲載。
+
+> **系統 (a) は再現性が高い**: ambient-temp と traffic-occupancy は **10 回とも完全に同一の結果**。他も振れ幅は数点に収まる。検知を LLM に委ねる点は (b) と同じだが、**数値を直接読ませる方が、グラフ画像を読ませる（[70](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/70) は cpu で 47.0 と -385.7 のコイン投げ）より遥かに安定する**。
 
 ### ② 検知結果から自然言語レポートを生成
 
@@ -185,31 +187,46 @@ flowchart LR
 
 > **表の「データ数」は検知層への入力数**であり、LLM が見る量とは異なる。**(a) は全点をテキストで LLM に渡す**（machine-temp なら 946 行）。**(b) は全点を描画した PNG 画像 1 枚**を VLM に渡す（数値は渡さない）。**(c) は全点を Chronos にのみ渡し、LLM には逸脱スコア上位 15 点の数値サマリだけ**を渡す。この違いが後述のレポート忠実性の差に直結する。
 >
-> **なぜ間引く（`--downsample`）のか**: 理由は系統で異なる。**(a) はトークン長の制約**（machine-temp の生データ 22,695 点をテキスト化すると約 68 万トークンに達する）、**(b) は視覚的分解能の制約**（22,695 点を横 1,300px に描くと 1px あたり 17 点が潰れ、VLM が読めない）で、いずれも**手法の構造的な制約**。一方 **(c) は CPU 実行時間の都合**（22,599 窓の Chronos 推論に数時間かかる）で、**GPU なら間引き不要**。
+> **なぜ間引く（`--downsample`）のか**: **間引きが必然なのは (a) だけ**。(a) はトークン長の制約で、machine-temp の生データ 22,695 点をテキスト化すると約 68 万トークンに達する。**(b)(c) は手法として間引きを必要としない**——3 系統を同一入力で比較するために揃えているだけで、実測でも次のとおり間引きは (b)(c) の性能を上げていない。
 >
-> **間引きは (c) に不利に働く**点に注意。実測で、67 の ambient-temp は `--downsample 6`（1,212 点）なら 8 点検知できるが、この比較表の `--downsample 12`（606 点）では**検知 0 件（NAB スコア 0.0）**になった。**間引きが Chronos の得意な細かい構造を潰している**。
+> - **(c) は間引きが不利**: ambient-temp は `--downsample 6`（1,212 点）なら 8 点検知できるが、この比較表の `--downsample 12`（606 点）では**検知 0 件（NAB スコア 0.0）**。**間引きが Chronos の得意な細かい構造を潰している**。単独で使うなら GPU で間引きなしが望ましい（CPU だと 22,599 窓の推論に数時間かかるのが唯一の理由）。
+> - **(b) は間引きなしの方が「見えて」いる**: machine-temp を `--downsample 1`（22,695 点）で実測すると**異常区間の検出率は 0.50 → 0.75 に向上**した（VLM は生解像度のグラフでもちゃんと読める）。ただし **NAB スコアは -5.1 → -2003.0 に悪化**する。VLM が返す「時間帯」は同じでも、点密度が 24 倍になるとその時間帯に含まれる点が 96 → 3,459 に膨れ、誤検知が 50 → 1,818 になるため。**(b) の間引きは VLM のためではなく、粗く返す方式を点単位で採点する副作用を抑えるためのもの**。
 
 各セルは上記 3 指標（異常区間の検出率 / 誤検知点 / PA-F1）を併記したもの（各行の最良 PA-F1 を太字）:
 
-| センサー（データ数） | 数値直接入力（本 Tip） | 画像→VLM（[70](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/70)） | TSFM Chronos（[67](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/67)） |
+**LLM/VLM は `temperature=0.0` でも決定的にならない**ため、**(a)(b) は 10 回実行した平均**を載せている（下段は最小〜最大）。(c) の検知層 Chronos は決定的で、10 回とも完全同一だったため 1 回の値。
+
+> **なぜ温度を下げても揺れるのか**: Gemini の OpenAI 互換エンドポイントは**再現性のための `seed` を受け付けない**（実測で 400 `Unknown name "seed"`）。`top_k` も非対応、`system_fingerprint` も返らない。加えてホスト型 LLM 推論では、同時実行される他リクエストでバッチ構成が変わり、浮動小数点演算の非結合性から数値がわずかにブレる。**パラメータでは抑制できないため、統計的に扱うしかない**。
+
+| センサー（データ数） | 数値直接入力（本 Tip）<br>10 回平均 | 画像→VLM（[70](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/70)）<br>10 回平均 | TSFM Chronos（[67](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/67)） |
 |---|---|---|---|
-| machine-temp (946) | NAB スコア=**52.0**<br><sub>検出率=0.50 / 誤検知=1</sub> | NAB スコア=-5.1<br><sub>検出率=0.50 / 誤検知=50</sub> | NAB スコア=36.5<br><sub>検出率=0.50 / 誤検知=5</sub> |
-| ambient-temp (606) | NAB スコア=93.5<br><sub>検出率=1.00 / 誤検知=0</sub> | NAB スコア=**94.6**<br><sub>検出率=1.00 / 誤検知=0</sub> | NAB スコア=0.0<br><sub>検出率=0.00 / 誤検知=0</sub> |
-| cpu (672) | NAB スコア=42.9<br><sub>検出率=0.50 / 誤検知=0</sub> | NAB スコア=**47.0**<br><sub>検出率=0.50 / 誤検知=0</sub> | NAB スコア=37.4<br><sub>検出率=0.50 / 誤検知=2</sub> |
-| traffic-speed (564) | NAB スコア=**69.2**<br><sub>検出率=0.75 / 誤検知=2</sub> | NAB スコア=23.6<br><sub>検出率=0.75 / 誤検知=43</sub> | NAB スコア=47.6<br><sub>検出率=0.50 / 誤検知=1</sub> |
-| traffic-occupancy (1190) | NAB スコア=**82.1**<br><sub>検出率=1.00 / 誤検知=3</sub> | NAB スコア=-40.6<br><sub>検出率=1.00 / 誤検知=29</sub> | NAB スコア=-30.3<br><sub>検出率=1.00 / 誤検知=25</sub> |
-| network (789) | NAB スコア=**70.9**<br><sub>検出率=1.00 / 誤検知=12</sub> | NAB スコア=-149.1<br><sub>検出率=0.50 / 誤検知=74</sub> | NAB スコア=15.0<br><sub>検出率=1.00 / 誤検知=33</sub> |
-| **平均** | **68.4** | -4.9 | 17.7 |
+| machine-temp (946) | **53.4**<br><sub>52.0 〜 54.8</sub> | 42.6<br><sub>-5.1 〜 74.4</sub> | 36.5<br><sub>決定的（変動なし）</sub> |
+| ambient-temp (606) | 93.5<br><sub>変動なし</sub> | **95.3**<br><sub>94.6 〜 95.7</sub> | 0.0<br><sub>決定的（変動なし）</sub> |
+| cpu (672) | **42.3**<br><sub>42.0 〜 42.9</sub> | -169.3<br><sub>-385.7 〜 47.0</sub> | 37.4<br><sub>決定的（変動なし）</sub> |
+| traffic-speed (564) | **68.8**<br><sub>68.5 〜 69.2</sub> | 30.8<br><sub>23.6 〜 47.7</sub> | 47.6<br><sub>決定的（変動なし）</sub> |
+| traffic-occupancy (1190) | **82.1**<br><sub>変動なし</sub> | -36.3<br><sub>-40.6 〜 -29.8</sub> | -30.3<br><sub>決定的（変動なし）</sub> |
+| network (789) | **81.0**<br><sub>68.2 〜 89.6</sub> | -163.1<br><sub>-172.5 〜 -149.1</sub> | 15.0<br><sub>決定的（変動なし）</sub> |
+| **全体平均** | **70.2** | -33.3 | 17.7 |
 
 > **考察（この結果の読み方 — 重要）**
 >
-> - **検知精度では系統 (a)（本 Tip）が最も安定**（平均 68.4、全センサーでプラス）。意外に思えるが理由は明快で、**LLM の検知が疎だから**（2〜15 点しか返さない）。NAB スコアは誤検知を強く罰するため、「自信のある少数だけを挙げる」戦略が有利に働く。
-> - **画像→VLM（(b)）は 6 センサー中 4 つでマイナス**（平均 -4.9）。マイナスは「**無検出（0 点）より悪い**」ことを意味する。VLM は「この辺り」と広い時間帯を返すため誤検知が爆発し（network で 74 点、machine-temp で 50 点）、FP ペナルティが TP 報酬を食い潰す。
-> - **TSFM（(c)）も平均 17.7 と振るわない**。ambient-temp は間引き後の系列で予測区間を超えられず検知 0 件（0.0）、traffic-occupancy は誤検知 25 点で -30.3。**「TSFM だから検知精度が高い」とは言えない**。学術的にも mTSBench の「どの検出器も全データで優位に立てない」と整合する。
-> - **ただし検知精度だけで系統を選ぶべきではない**。上記 ③ のとおり、**レポート品質（LLM-as-judge）は (c) が全 6 センサー満点（5.00）**で、(a) は 4.63、(b) は 4.08。**同じモデル・同じプロンプト・同じ `temperature=0.0`** での差なので、違いは**LLM に渡す事実の粒度**だけに起因する。(c) だけが期待区間・逸脱スコアという検証可能な事実を渡すため、幻覚が起きない。
-> - **単発測定である点に注意**。LLM/VLM は `temperature=0.0` でも非決定的で、本 Tip の machine-temp は実行ごとに検知 3〜4 点で揺れた。順位の一般化には複数試行が要る。
+> - **検知精度は (a) 数値直接入力が最良**（全体平均 70.2、全センサーでプラス）。理由は「**LLM の検知が疎だから**」で、2〜15 点しか返さない。NAB スコアは誤検知を強く罰するため、「自信のある少数だけを挙げる」戦略が有利に働く。
+> - **(b) 画像→VLM は全体平均 -33.3**。マイナスは「**無検出（0 点）より悪い**」ことを意味する。VLM は「この辺り」と広い時間帯を返すため誤検知が爆発する。
+> - **(c) TSFM も全体平均 17.7 と振るわない**。ambient-temp は間引き後の系列で予測区間を超えられず**検知 0 件（0.0）**。**「TSFM だから検知精度が高い」とは言えない**。学術的にも mTSBench の「どの検出器も全データで優位に立てない」と整合する。
+>
+> **⚠️ 再現性が系統で決定的に違う（10 回測定で判明）**
+>
+> | 系統 | 10 回の挙動 |
+> |---|---|
+> | (a) 数値直接入力 | **ほぼ安定**。ambient-temp / traffic-occupancy は 10 回とも完全同一。他も振れ幅は数点 |
+> | (b) 画像→VLM | **二峰性で極端に不安定**。cpu は **47.0 と -385.7 のコイン投げ**（振れ幅 432 点）、machine-temp は -5.1 と 74.4（80 点） |
+> | (c) TSFM | **完全に決定的**。10 回とも同一値 |
+>
+> **(b) はランダムに揺れているのではなく、2 つの解釈を行き来する**（例: スパイクを異常と見るか周期の一部と見るか）。そのため 2 回連続で同じ値が出ることも多く、**少数回の測定では「安定している」と誤認しやすい**。実際この Tip の執筆時も 2 回同じ値が出た時点で「再現する」と誤判断し、3 回目で 80 点違う値が出て誤りに気づいた。**運用では「昨日と同じデータなら同じアラートが出る」ことが前提**なので、この不安定さは (b) の致命的な弱点。
+>
+> - **検知精度だけで系統を選ぶべきではない**。**レポート品質（LLM-as-judge）は (c) が全 6 センサー満点（5.00）**、(a) は 4.63、(b) は 4.08（忠実性は平均 2.5）。**同一モデル・同一プロンプト・同一 temperature での差**なので、違いは**LLM に渡す事実の粒度**だけに起因する。
 
-→ **結論: 「検知が得意な系統」と「説明が得意な系統」は一致しない。** 検知の素の精度では疎に当てる (a) が有利だが、**運用で使えるレポートを幻覚なしに書けるのは (c) だけ**（忠実性が全て 5）。実務では「(c) の TSFM で検証可能な事実を作り、それを LLM に言語化させる」構成が、検知と説明の両立という点で依然有力。
+→ **結論: 「検知が得意な系統」「再現性がある系統」「説明が得意な系統」は一致しない。** 検知の素の精度では疎に当てる (a) が有利、**再現性と説明品質では (c) が唯一実用に耐える**（決定的かつ忠実性が全て 5）。実務では「(c) の TSFM で検証可能な事実を作り、それを LLM に言語化させる」構成が、**再現性と説明の両立**という点で有力。検知精度を上げたいなら (c) の検知層を差し替える（TSPulse 等の異常検知特化 TSFM、しきい値の自動調整）のが筋で、2 段構成そのものは維持する価値がある。
 
 ## 🛠️ 開発者向け情報
 
