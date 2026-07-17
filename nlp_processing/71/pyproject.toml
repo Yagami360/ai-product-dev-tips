@@ -1,0 +1,41 @@
+[project]
+name = "tspulse-llm-anomaly-report"
+version = "0.1.0"
+description = "異常検知を公式サポートする TSFM(TSPulse)+LLM の2段構成でセンサー異常検知→自然言語レポート化"
+# granite-tsfm が >=3.11,<3.14 を要求するため合わせる
+requires-python = ">=3.11,<3.14"
+# バージョンは ~= で互換範囲を固定（記事作成時点 2026-07 の最新安定版に合わせる）。
+dependencies = [
+    # 検知層。IBM 公式の TSFM ツールキット（TSPulse 本体と異常検知パイプラインを含む, Apache-2.0）
+    "granite-tsfm~=0.3.6",
+    "numpy~=2.4",
+    "pandas~=2.2",       # 検知パイプラインの入出力は DataFrame
+    "matplotlib~=3.11",  # 可視化
+    "openai~=2.45",      # 説明層 LLM（OpenAI 互換クライアント。reasoning_effort 対応）
+    "pyyaml~=6.0",       # プロンプト定義(prompts.yaml)の読み込み
+]
+
+# 開発ツール（lint / format）。make install で入る。
+[project.optional-dependencies]
+dev = [
+    "flake8~=7.1",
+    "mypy~=1.11",
+    "black~=24.8",
+    "isort~=5.13",
+    "types-PyYAML~=6.0",  # yaml の型スタブ（mypy 用）
+]
+
+[tool.black]
+line-length = 150
+
+[tool.isort]
+profile = "black"
+line_length = 150
+
+[tool.mypy]
+# tsfm_public / openai / matplotlib 等は型スタブ未提供のものがあるため import エラーは無視
+ignore_missing_imports = true
+
+# パッケージ（配布物）ではなくアプリなので、uv にビルド対象外だと伝える
+[tool.uv]
+package = false

@@ -1,0 +1,7 @@
+[flake8]
+max-line-length = 150
+# black と競合する規則は無効化（E203: スライスの空白, W503: 演算子前改行）
+extend-ignore = E203, W503
+# 生成物・仮想環境・キャッシュ・ベンダリングした外部コードは対象外
+# nab_sweeper.py は NAB 公式実装をそのまま流用しているため整形・チェックしない
+extend-exclude = .venv, datasets, images, reports, __pycache__, nab_sweeper.py
