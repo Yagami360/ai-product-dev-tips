@@ -119,20 +119,20 @@ flowchart LR
 
 同じパイプラインを全センサーで実行した結果（間引きは後述の 3 系統比較と同一）。
 
-| センサー（データ数） | 検知結果（<span style="color:#ff7f0e">■</span> 帯＝NAB が定義する異常区間／<span style="color:#d62728">●</span>＝LLM の検知点。クリックで原寸） | NAB スコア<br>10 回平均 | 10 回の分布 |
+| センサー（データ数） | 検知結果（<span style="color:#ff7f0e">■</span> 帯＝NAB が定義する異常区間／<span style="color:#d62728">●</span>＝LLM の検知点。クリックで原寸） | N=10 平均 | 10 回の分布（NAB スコア） |
 |---|---|---|---|
-| `machine-temp` (946) | <a href="images/machine-temp_numeric_llm.png"><img width="240" src="images/machine-temp_numeric_llm.png" /></a> | **53.4** | 54.8 が 5 回 / 52.0 が 5 回 |
-| `ambient-temp` (606) | <a href="images/ambient-temp_numeric_llm.png"><img width="240" src="images/ambient-temp_numeric_llm.png" /></a> | **93.5** | **10 回とも 93.5** |
-| `cpu` (672) | <a href="images/cpu_numeric_llm.png"><img width="240" src="images/cpu_numeric_llm.png" /></a> | **42.3** | 42.0 が 7 回 / 42.9 が 3 回 |
-| `traffic-speed` (564) | <a href="images/traffic-speed_numeric_llm.png"><img width="240" src="images/traffic-speed_numeric_llm.png" /></a> | **68.8** | 68.5 が 6 回 / 69.2 が 4 回 |
-| `traffic-occupancy` (1190) | <a href="images/traffic-occupancy_numeric_llm.png"><img width="240" src="images/traffic-occupancy_numeric_llm.png" /></a> | **82.1** | **10 回とも 82.1** |
-| `network` (789) | <a href="images/network_numeric_llm.png"><img width="240" src="images/network_numeric_llm.png" /></a> | **81.0** | 89.6 が 6 回 / 68.2 が 4 回 |
+| `machine-temp` (946) | <a href="images/machine-temp_numeric_llm.png"><img width="240" src="images/machine-temp_numeric_llm.png" /></a> | 異常区間の検出率=0.50<br>誤検知点=0.5<br>**NAB スコア=53.4** | 54.8 が 5 回 / 52.0 が 5 回 |
+| `ambient-temp` (606) | <a href="images/ambient-temp_numeric_llm.png"><img width="240" src="images/ambient-temp_numeric_llm.png" /></a> | 異常区間の検出率=1.00<br>誤検知点=0.0<br>**NAB スコア=93.5** | **10 回とも 93.5** |
+| `cpu` (672) | <a href="images/cpu_numeric_llm.png"><img width="240" src="images/cpu_numeric_llm.png" /></a> | 異常区間の検出率=0.50<br>誤検知点=0.0<br>**NAB スコア=42.3** | 42.0 が 7 回 / 42.9 が 3 回 |
+| `traffic-speed` (564) | <a href="images/traffic-speed_numeric_llm.png"><img width="240" src="images/traffic-speed_numeric_llm.png" /></a> | 異常区間の検出率=0.75<br>誤検知点=2.6<br>**NAB スコア=68.8** | 68.5 が 6 回 / 69.2 が 4 回 |
+| `traffic-occupancy` (1190) | <a href="images/traffic-occupancy_numeric_llm.png"><img width="240" src="images/traffic-occupancy_numeric_llm.png" /></a> | 異常区間の検出率=1.00<br>誤検知点=3.0<br>**NAB スコア=82.1** | **10 回とも 82.1** |
+| `network` (789) | <a href="images/network_numeric_llm.png"><img width="240" src="images/network_numeric_llm.png" /></a> | 異常区間の検出率=1.00<br>誤検知点=8.2<br>**NAB スコア=81.0** | 89.6 が 6 回 / 68.2 が 4 回 |
 
 各列の**スコアの意味**（[`nab_common.py`](nab_common.py) の `evaluate` が算出。後述の 3 系統比較でも同じ指標を使う）:
 
 | 指標 | 何を測るか | 良い方向 |
 |---|---|---|
-| **NAB スコア**（`nab_official`） | **業界標準**。NAB 公式スコアラー（[`nab_sweeper.py`](nab_sweeper.py)）による採点。異常窓の**早い位置**で検知するほど高得点、窓の見逃しは FN ペナルティ、窓外の検知は FP ペナルティ | **高いほど良い**（100 = 完璧、0 = 無検出と同等、**マイナス = 無検出より悪い**） |
+| **NAB スコア**（`nab_official`） | NAB 公式スコアラー（[`nab_sweeper.py`](nab_sweeper.py)）による採点。異常窓の**早い位置**で検知するほど高得点、窓の見逃しは FN ペナルティ、窓外の検知は FP ペナルティ | **高いほど良い**（100 = 完璧、0 = 無検出と同等、**マイナス = 無検出より悪い**） |
 | 異常区間の検出率（`window_recall`） | 既知異常区間のうち、区間内に 1 点以上を異常と判定できた区間の割合 | 高いほど良い（NAB スコアの TP 項に対応する**内訳**） |
 | 誤検知点（`false_alarms`） | 正解区間の外で異常と判定した点数 | 少ないほど良い（NAB スコアの FP 項に対応する**内訳**） |
 
@@ -144,7 +144,7 @@ flowchart LR
 > | `reward_low_FP_rate` | 1.0 | 0.22 | 1.0 | 誤検知のコストが高い現場 |
 > | `reward_low_FN_rate` | 1.0 | 0.11 | 2.0 | 見逃しのコストが高い現場 |
 >
-> **PA-F1 は載せない**。TSAD で慣習的に使われてきた指標だが、**一様乱数の異常スコアが SOTA を上回る**ことが示され過大評価が実証されている。実際 [70](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/70) の traffic-occupancy は PA-F1 で 0.891 と高得点だが、NAB スコアでは **-40.6**（無検出より悪い）だった。読者を誤導するため業界標準の NAB スコアに一本化している。
+> **PA-F1 は載せない**。TSAD で慣習的に使われてきた指標だが、**一様乱数の異常スコアが SOTA を上回る**ことが示され過大評価が実証されている。実際 [70](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/70) の traffic-occupancy は PA-F1 で 0.891 と高得点だが、NAB スコアでは **-40.6**（無検出より悪い）だった。読者を誤導するため NAB 公式スコアに一本化している。
 
 **検出は総じて疎**（2〜15 点）で、そのぶん誤検知が少なく NAB スコアは全センサーでプラス。図は **10 回のうち平均に最も近い試行**を掲載。
 
@@ -240,7 +240,7 @@ nlp_processing/69/
 ├── evaluate_report.py         # 生成レポートを LLM-as-judge で品質評価
 ├── download_dataset.py        # NAB データを datasets/nab へ取得
 ├── nab_common.py              # NAB ローダ／正解ラベルでの評価／可視化（系統 (b)(c) と共通の評価指標）
-├── nab_score.py               # NAB 公式スコア（業界標準・3 プロファイル）の算出
+├── nab_score.py               # NAB 公式スコア（3 プロファイル）の算出
 ├── nab_sweeper.py             # ※NAB 公式実装をそのまま流用（MIT, Numenta Inc.）。lint/format 対象外
 ├── prompts.yaml               # プロンプト定義（検知用・レポート生成用・judge 用。コードから分離）
 ├── images/                    # README 掲載図（コミット対象）

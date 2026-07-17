@@ -103,14 +103,14 @@ flowchart LR
 
 VLM は折れ線グラフから**異常な「時間帯」**を返す。返された時間帯を点に展開して NAB 公式スコアで採点した、**全 6 センサー × 10 回実行**の結果:
 
-| センサー（データ数） | 検知結果（<span style="color:#ff7f0e">■</span> 帯＝NAB が定義する異常区間／<span style="color:#d62728">●</span>＝VLM の検知点。クリックで原寸） | NAB スコア<br>10 回平均 | 10 回の分布 |
+| センサー（データ数） | 検知結果（<span style="color:#ff7f0e">■</span> 帯＝NAB が定義する異常区間／<span style="color:#d62728">●</span>＝VLM の検知点。クリックで原寸） | N=10 平均 | 10 回の分布（NAB スコア） |
 |---|---|---|---|
-| `machine-temp` (946) | <a href="images/machine-temp_vlm_image.png"><img width="240" src="images/machine-temp_vlm_image.png" /></a> | **42.6** | 74.4 が 6 回 / -5.1 が 4 回 |
-| `ambient-temp` (606) | <a href="images/ambient-temp_vlm_image.png"><img width="240" src="images/ambient-temp_vlm_image.png" /></a> | **95.3** | 95.7 が 6 回 / 94.6 が 4 回 |
-| `cpu` (672) | <a href="images/cpu_vlm_image.png"><img width="240" src="images/cpu_vlm_image.png" /></a> | **-169.3** | **47.0 が 5 回 / -385.7 が 5 回** |
-| `traffic-speed` (564) | <a href="images/traffic-speed_vlm_image.png"><img width="240" src="images/traffic-speed_vlm_image.png" /></a> | **30.8** | 23.6 が 7 回 / 47.7 が 3 回 |
-| `traffic-occupancy` (1190) | <a href="images/traffic-occupancy_vlm_image.png"><img width="240" src="images/traffic-occupancy_vlm_image.png" /></a> | **-36.3** | -40.6 が 6 回 / -29.8 が 4 回 |
-| `network` (789) | <a href="images/network_vlm_image.png"><img width="240" src="images/network_vlm_image.png" /></a> | **-163.1** | -172.5 が 6 回 / -149.1 が 4 回 |
+| `machine-temp` (946) | <a href="images/machine-temp_vlm_image.png"><img width="240" src="images/machine-temp_vlm_image.png" /></a> | 異常区間の検出率=0.80<br>誤検知点=25.4<br>**NAB スコア=42.6** | 74.4 が 6 回 / -5.1 が 4 回 |
+| `ambient-temp` (606) | <a href="images/ambient-temp_vlm_image.png"><img width="240" src="images/ambient-temp_vlm_image.png" /></a> | 異常区間の検出率=1.00<br>誤検知点=0.0<br>**NAB スコア=95.3** | 95.7 が 6 回 / 94.6 が 4 回 |
+| `cpu` (672) | <a href="images/cpu_vlm_image.png"><img width="240" src="images/cpu_vlm_image.png" /></a> | 異常区間の検出率=0.50<br>誤検知点=83.0<br>**NAB スコア=-169.3** | **47.0 が 5 回 / -385.7 が 5 回** |
+| `traffic-speed` (564) | <a href="images/traffic-speed_vlm_image.png"><img width="240" src="images/traffic-speed_vlm_image.png" /></a> | 異常区間の検出率=0.75<br>誤検知点=37.6<br>**NAB スコア=30.8** | 23.6 が 7 回 / 47.7 が 3 回 |
+| `traffic-occupancy` (1190) | <a href="images/traffic-occupancy_vlm_image.png"><img width="240" src="images/traffic-occupancy_vlm_image.png" /></a> | 異常区間の検出率=1.00<br>誤検知点=29.0<br>**NAB スコア=-36.3** | -40.6 が 6 回 / -29.8 が 4 回 |
+| `network` (789) | <a href="images/network_vlm_image.png"><img width="240" src="images/network_vlm_image.png" /></a> | 異常区間の検出率=0.50<br>誤検知点=81.2<br>**NAB スコア=-163.1** | -172.5 が 6 回 / -149.1 が 4 回 |
 
 図は **10 回のうち平均に最も近い試行**を掲載している（最良でも最悪でもない代表例）。図の見方:
 
@@ -171,7 +171,7 @@ VLM は折れ線グラフから**異常な「時間帯」**を返す。返され
 > - **(c) は間引きが不利**: ambient-temp は `--downsample 6`（1,212 点）なら 8 点検知できるが、この比較表の `--downsample 12`（606 点）では**検知 0 件（NAB スコア 0.0）**。**間引きが Chronos の得意な細かい構造を潰している**。単独で使うなら GPU で間引きなしが望ましい（CPU だと 22,599 窓の推論に数時間かかるのが唯一の理由）。
 > - **(b) は間引きなしの方が「見えて」いる**: machine-temp を `--downsample 1`（22,695 点）で実測すると**異常区間の検出率は 0.50 → 0.75 に向上**した（VLM は生解像度のグラフでもちゃんと読める）。ただし **NAB スコアは -5.1 → -2003.0 に悪化**する。VLM が返す「時間帯」は同じでも、点密度が 24 倍になるとその時間帯に含まれる点が 96 → 3,459 に膨れ、誤検知が 50 → 1,818 になるため。**(b) の間引きは VLM のためではなく、粗く返す方式を点単位で採点する副作用を抑えるためのもの**。
 
-主指標は**業界標準の NAB 公式スコア**（`standard` プロファイル）。**100 = 完璧、0 = 無検出と同等、マイナス = 無検出より悪い**。括弧内は内訳（異常区間の検出率 / 誤検知点）。
+主指標は **NAB 公式スコア**（`standard` プロファイル）。**100 = 完璧、0 = 無検出と同等、マイナス = 無検出より悪い**。括弧内は内訳（異常区間の検出率 / 誤検知点）。
 
 各セルは **異常区間の検出率 / 誤検知点 / NAB スコア** の 3 指標。**LLM/VLM は `temperature=0.0` でも決定的にならない**ため、**(a)(b) は N=10 回実行した平均**。(c) の検知層 Chronos は決定的で 10 回とも完全同一だったため N=1（🏆 = その行の最良）。
 
@@ -219,7 +219,7 @@ nlp_processing/70/
 ├── evaluate_report.py         # 生成レポートを LLM-as-judge で品質評価
 ├── download_dataset.py        # NAB データを datasets/nab へ取得
 ├── nab_common.py              # NAB ローダ／正解ラベルでの評価／可視化（系統 (a)(c) と共通の評価指標）
-├── nab_score.py               # NAB 公式スコア（業界標準・3 プロファイル）の算出
+├── nab_score.py               # NAB 公式スコア（3 プロファイル）の算出
 ├── nab_sweeper.py             # ※NAB 公式実装をそのまま流用（MIT, Numenta Inc.）。lint/format 対象外
 ├── prompts.yaml               # プロンプト定義（検知用・レポート生成用・judge 用。コードから分離）
 ├── images/                    # VLM への入力画像・README 掲載図（コミット対象）
