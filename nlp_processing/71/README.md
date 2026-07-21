@@ -1,8 +1,6 @@
 # 異常検知を公式サポートする時系列基盤モデル（TSPulse）＋ LLM の 2 段構成で、センサーデータの異常検知から自然言語レポート化までを行う
 
-[nlp_processing/67](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/67) と同じ **TSFM + LLM の 2 段構成**だが、**検知層を Chronos から [TSPulse](https://huggingface.co/ibm-granite/granite-timeseries-tspulse-r1)（IBM, Apache-2.0）に差し替えた**版。67 の実測で「(c) TSFM の検知精度が 3 系統中で最下位（F1 0.255）」という結果が出たため、**その原因が「TSFM だから」なのか「Chronos の転用だから」なのかを切り分ける**のが目的。67 / [69](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/69) / [70](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/70) と同一条件（NAB 全 6 センサー・区間単位 P/R/F1・誤検知率）で比較する。CPU で動作（LLM は API 経由）。
-
-> **⚠️ Chronos との決定的な違い**: **Chronos は「予測」モデル**であり、67 は予測残差を異常検知に転用していた（異常スコアの式は自作）。対して **TSPulse は異常検知そのものを学習しており、公式パイプラインが異常スコアを直接返す**。TSB-AD ベンチマークで統計モデルを 24%、より大きな基盤モデルを 33% 以上上回ると報告されている。**108 万パラメータ**（Chronos-Bolt-base より 2 桁小さい）で **GPU 不要**。
+[nlp_processing/67](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/67) と同じ **TSFM + LLM の 2 段構成**だが、**検知層を Chronos から [TSPulse](https://huggingface.co/ibm-granite/granite-timeseries-tspulse-r1)（IBM, Apache-2.0）に差し替えた**版。67 / [69](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/69) / [70](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/70) と同一条件（NAB 全 6 センサー・区間単位 P/R/F1・誤検知率）で比較する。
 
 ## 📑 目次
 
@@ -114,12 +112,12 @@ flowchart LR
 
 | センサー（データ数） | 検知結果（<span style="color:#ff7f0e">■</span> 帯＝NAB が定義する異常区間／<span style="color:#d62728">●</span>＝TSPulse の検知点。クリックで原寸） | スコア |
 |---|---|---|
-| `machine-temp` (22,695) | <a href="images/machine-temp_anomaly.png"><img width="240" src="images/machine-temp_anomaly.png" /></a> | 検出率=0.25 / 適合率=1.00<br>**F1=0.400**<br><sub>誤検知率=0.00%</sub> |
-| `ambient-temp` (7,267) | <a href="images/ambient-temp_anomaly.png"><img width="240" src="images/ambient-temp_anomaly.png" /></a> | 検出率=0.00 / 適合率=0.00<br>**F1=0.000**<br><sub>誤検知率=0.12%</sub> |
-| `cpu` (4,032) | <a href="images/cpu_anomaly.png"><img width="240" src="images/cpu_anomaly.png" /></a> | 検出率=1.00 / 適合率=0.18<br>**F1=0.308**<br><sub>誤検知率=5.51%</sub> |
-| `traffic-speed` (1,127) | <a href="images/traffic-speed_anomaly.png"><img width="240" src="images/traffic-speed_anomaly.png" /></a> | 検出率=0.50 / 適合率=0.67<br>**F1=0.571**<br><sub>誤検知率=0.69%</sub> |
-| `traffic-occupancy` (2,380) | <a href="images/traffic-occupancy_anomaly.png"><img width="240" src="images/traffic-occupancy_anomaly.png" /></a> | 検出率=1.00 / 適合率=0.50<br>**F1=0.667**<br><sub>誤検知率=2.52%</sub> |
-| `network` (4,730) | <a href="images/network_anomaly.png"><img width="240" src="images/network_anomaly.png" /></a> | 検出率=1.00 / 適合率=1.00<br>**F1=1.000**<br><sub>誤検知率=0.00%</sub> |
+| `machine-temp` (22,695) | <a href="images/machine-temp_anomaly.png"><img width="240" src="images/machine-temp_anomaly.png" /></a> | 検出率=25.00% / 適合率=100.00%<br>**F1=0.400**<br><sub>誤検知率=0.00%</sub> |
+| `ambient-temp` (7,267) | <a href="images/ambient-temp_anomaly.png"><img width="240" src="images/ambient-temp_anomaly.png" /></a> | 検出率=0.00% / 適合率=0.00%<br>**F1=0.000**<br><sub>誤検知率=0.12%</sub> |
+| `cpu` (4,032) | <a href="images/cpu_anomaly.png"><img width="240" src="images/cpu_anomaly.png" /></a> | 検出率=100.00% / 適合率=18.00%<br>**F1=0.308**<br><sub>誤検知率=5.51%</sub> |
+| `traffic-speed` (1,127) | <a href="images/traffic-speed_anomaly.png"><img width="240" src="images/traffic-speed_anomaly.png" /></a> | 検出率=50.00% / 適合率=67.00%<br>**F1=0.571**<br><sub>誤検知率=0.69%</sub> |
+| `traffic-occupancy` (2,380) | <a href="images/traffic-occupancy_anomaly.png"><img width="240" src="images/traffic-occupancy_anomaly.png" /></a> | 検出率=100.00% / 適合率=50.00%<br>**F1=0.667**<br><sub>誤検知率=2.52%</sub> |
+| `network` (4,730) | <a href="images/network_anomaly.png"><img width="240" src="images/network_anomaly.png" /></a> | 検出率=100.00% / 適合率=100.00%<br>**F1=1.000**<br><sub>誤検知率=0.00%</sub> |
 | **全体平均** | — | **F1=0.491**<br><sub>誤検知率=1.47%</sub> |
 
 各スコアの意味は次のとおり。

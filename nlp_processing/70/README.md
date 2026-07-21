@@ -105,12 +105,12 @@ VLM は折れ線グラフから**異常な「時間帯」**を返す。返され
 
 | センサー（データ数） | 検知結果（<span style="color:#ff7f0e">■</span> 帯＝NAB が定義する異常区間／<span style="color:#d62728">●</span>＝VLM の検知点。クリックで原寸） | スコア（N=10平均） |
 |---|---|---|
-| `machine-temp` (946) | <a href="images/machine-temp_vlm_image.png"><img width="240" src="images/machine-temp_vlm_image.png" /></a> | 検出率=0.80 / 適合率=0.40<br>**F1=0.529**<br><sub>誤検知率=2.98%</sub> |
-| `ambient-temp` (606) | <a href="images/ambient-temp_vlm_image.png"><img width="240" src="images/ambient-temp_vlm_image.png" /></a> | 検出率=1.00 / 適合率=1.00<br>**F1=1.000**<br><sub>誤検知率=0.00%</sub> |
-| `cpu` (672) | <a href="images/cpu_vlm_image.png"><img width="240" src="images/cpu_vlm_image.png" /></a> | 検出率=0.50 / 適合率=0.75<br>**F1=0.584**<br><sub>誤検知率=13.72%</sub> |
-| `traffic-speed` (564) | <a href="images/traffic-speed_vlm_image.png"><img width="240" src="images/traffic-speed_vlm_image.png" /></a> | 検出率=0.75 / 適合率=0.39<br>**F1=0.513**<br><sub>誤検知率=7.42%</sub> |
-| `traffic-occupancy` (1190) | <a href="images/traffic-occupancy_vlm_image.png"><img width="240" src="images/traffic-occupancy_vlm_image.png" /></a> | 検出率=1.00 / 適合率=0.33<br>**F1=0.500**<br><sub>誤検知率=2.71%</sub> |
-| `network` (789) | <a href="images/network_vlm_image.png"><img width="240" src="images/network_vlm_image.png" /></a> | 検出率=0.50 / 適合率=0.33<br>**F1=0.400**<br><sub>誤検知率=11.43%</sub> |
+| `machine-temp` (946) | <a href="images/machine-temp_vlm_image.png"><img width="240" src="images/machine-temp_vlm_image.png" /></a> | 検出率=80.00% / 適合率=40.00%<br>**F1=0.529**<br><sub>誤検知率=2.98%</sub> |
+| `ambient-temp` (606) | <a href="images/ambient-temp_vlm_image.png"><img width="240" src="images/ambient-temp_vlm_image.png" /></a> | 検出率=100.00% / 適合率=100.00%<br>**F1=1.000**<br><sub>誤検知率=0.00%</sub> |
+| `cpu` (672) | <a href="images/cpu_vlm_image.png"><img width="240" src="images/cpu_vlm_image.png" /></a> | 検出率=50.00% / 適合率=75.00%<br>**F1=0.584**<br><sub>誤検知率=13.72%</sub> |
+| `traffic-speed` (564) | <a href="images/traffic-speed_vlm_image.png"><img width="240" src="images/traffic-speed_vlm_image.png" /></a> | 検出率=75.00% / 適合率=39.00%<br>**F1=0.513**<br><sub>誤検知率=7.42%</sub> |
+| `traffic-occupancy` (1190) | <a href="images/traffic-occupancy_vlm_image.png"><img width="240" src="images/traffic-occupancy_vlm_image.png" /></a> | 検出率=100.00% / 適合率=33.00%<br>**F1=0.500**<br><sub>誤検知率=2.71%</sub> |
+| `network` (789) | <a href="images/network_vlm_image.png"><img width="240" src="images/network_vlm_image.png" /></a> | 検出率=50.00% / 適合率=33.00%<br>**F1=0.400**<br><sub>誤検知率=11.43%</sub> |
 
 図は **10 回のうち平均に最も近い試行**を掲載している（最良でも最悪でもない代表例）。図の見方:
 
@@ -206,12 +206,12 @@ VLM は折れ線グラフから**異常な「時間帯」**を返す。返され
 
 | センサー（データ数） | 数値直接入力（[69](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/69)）<br>スコア（N=10平均） | 画像→VLM（本 Tip）<br>スコア（N=10平均） | TSFM Chronos（[67](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/67)）<br>決定的（N=1 で十分） |
 |---|---|---|---|
-| machine-temp (946) | 検出率=0.50 / 適合率=0.83<br>**F1=0.619** 🏆<br><sub>誤検知率=0.06%</sub> | 検出率=0.80 / 適合率=0.40<br>**F1=0.529**<br><sub>誤検知率=2.98%</sub> | 検出率=0.50 / 適合率=0.29<br>**F1=0.364**<br><sub>誤検知率=0.59%</sub> |
-| ambient-temp (606) | 検出率=1.00 / 適合率=1.00<br>**F1=1.000** 🏆<br><sub>誤検知率=0.00%</sub> | 検出率=1.00 / 適合率=1.00<br>**F1=1.000** 🏆<br><sub>誤検知率=0.00%</sub> | 検出率=0.00 / 適合率=0.00<br>**F1=0.000**<br><sub>誤検知率=0.00%</sub> |
-| cpu (672) | 検出率=0.50 / 適合率=1.00<br>**F1=0.667** 🏆<br><sub>誤検知率=0.00%</sub> | 検出率=0.50 / 適合率=0.75<br>**F1=0.584**<br><sub>誤検知率=13.72%</sub> | 検出率=0.50 / 適合率=0.33<br>**F1=0.400**<br><sub>誤検知率=0.60%</sub> |
-| traffic-speed (564) | 検出率=0.75 / 適合率=0.54<br>**F1=0.627** 🏆<br><sub>誤検知率=0.51%</sub> | 検出率=0.75 / 適合率=0.39<br>**F1=0.513**<br><sub>誤検知率=7.42%</sub> | 検出率=0.50 / 適合率=0.67<br>**F1=0.571**<br><sub>誤検知率=0.20%</sub> |
-| traffic-occupancy (1190) | 検出率=1.00 / 適合率=0.25<br>**F1=0.400**<br><sub>誤検知率=0.28%</sub> | 検出率=1.00 / 適合率=0.33<br>**F1=0.500** 🏆<br><sub>誤検知率=2.71%</sub> | 検出率=1.00 / 適合率=0.04<br>**F1=0.080**<br><sub>誤検知率=2.33%</sub> |
-| network (789) | 検出率=1.00 / 適合率=0.26<br>**F1=0.400** 🏆<br><sub>誤検知率=1.15%</sub> | 検出率=0.50 / 適合率=0.33<br>**F1=0.400** 🏆<br><sub>誤検知率=11.43%</sub> | 検出率=1.00 / 適合率=0.06<br>**F1=0.114**<br><sub>誤検知率=4.65%</sub> |
+| machine-temp (946) | 検出率=50.00% / 適合率=83.00%<br>**F1=0.619** 🏆<br><sub>誤検知率=0.06%</sub> | 検出率=80.00% / 適合率=40.00%<br>**F1=0.529**<br><sub>誤検知率=2.98%</sub> | 検出率=50.00% / 適合率=29.00%<br>**F1=0.364**<br><sub>誤検知率=0.59%</sub> |
+| ambient-temp (606) | 検出率=100.00% / 適合率=100.00%<br>**F1=1.000** 🏆<br><sub>誤検知率=0.00%</sub> | 検出率=100.00% / 適合率=100.00%<br>**F1=1.000** 🏆<br><sub>誤検知率=0.00%</sub> | 検出率=0.00% / 適合率=0.00%<br>**F1=0.000**<br><sub>誤検知率=0.00%</sub> |
+| cpu (672) | 検出率=50.00% / 適合率=100.00%<br>**F1=0.667** 🏆<br><sub>誤検知率=0.00%</sub> | 検出率=50.00% / 適合率=75.00%<br>**F1=0.584**<br><sub>誤検知率=13.72%</sub> | 検出率=50.00% / 適合率=33.00%<br>**F1=0.400**<br><sub>誤検知率=0.60%</sub> |
+| traffic-speed (564) | 検出率=75.00% / 適合率=54.00%<br>**F1=0.627** 🏆<br><sub>誤検知率=0.51%</sub> | 検出率=75.00% / 適合率=39.00%<br>**F1=0.513**<br><sub>誤検知率=7.42%</sub> | 検出率=50.00% / 適合率=67.00%<br>**F1=0.571**<br><sub>誤検知率=0.20%</sub> |
+| traffic-occupancy (1190) | 検出率=100.00% / 適合率=25.00%<br>**F1=0.400**<br><sub>誤検知率=0.28%</sub> | 検出率=100.00% / 適合率=33.00%<br>**F1=0.500** 🏆<br><sub>誤検知率=2.71%</sub> | 検出率=100.00% / 適合率=4.00%<br>**F1=0.080**<br><sub>誤検知率=2.33%</sub> |
+| network (789) | 検出率=100.00% / 適合率=26.00%<br>**F1=0.400** 🏆<br><sub>誤検知率=1.15%</sub> | 検出率=50.00% / 適合率=33.00%<br>**F1=0.400** 🏆<br><sub>誤検知率=11.43%</sub> | 検出率=100.00% / 適合率=6.00%<br>**F1=0.114**<br><sub>誤検知率=4.65%</sub> |
 | **全体平均** | **F1=0.619** 🏆<br><sub>誤検知率=0.33%</sub> | **F1=0.588**<br><sub>誤検知率=6.38%</sub> | **F1=0.255**<br><sub>誤検知率=1.40%</sub> |
 
 > **考察（この結果の読み方 — 重要）**
