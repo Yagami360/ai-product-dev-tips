@@ -78,6 +78,32 @@ flowchart TB
     - **ネットワークアクセス**は**フルアクセス**にするのが簡単（uv インストーラ・PyPI・arXiv など複数ドメインを使うため）。最小権限にしたい場合は `astral.sh`（uv 取得）/ `pypi.org` ・ `files.pythonhosted.org`（パッケージ取得）/ `arxiv.org` ・ `export.arxiv.org`（論文取得）を allowlist する。
     - 作成したカスタム環境を **Routine の「環境」に適用**する（Routine 編集画面で選択）。Default のままだと arXiv へ到達できず 403 になり、スキルは Web 検索にフォールバックする。
 
+1. （任意・arXiv MCP を使う場合）カスタム環境に `SEMANTIC_SCHOLAR_API_KEY` を登録する<br>
+    arXiv MCP の `citation_graph`（被引用・引用の取得）は [Semantic Scholar API](https://www.semanticscholar.org/product/api#api-key) を使う。キー無しでも動くが、無料枠を使い切るとレート制限で失敗するため、キーを登録しておくとよい（論文検索・本文取得にはキー不要）。
+    > ⚠️ キーは公開リポジトリの `.mcp.json` に直接書かない。
+
+    [claude.ai/code](https://claude.ai/code) で作成したカスタム環境を編集し、次のどちらかで登録する。
+
+    - **パターン1: ネットワークシークレットで設定する（推奨）**<br>
+        キーは VM（サンドボックス）の外に保持され、Anthropic の agent proxy が指定ホスト宛てのリクエストにだけヘッダーを付与する。セッション内の環境変数・ファイルにも Claude にもキーが見えないため、最も安全。`.mcp.json` の変更も不要（arXiv MCP はキー無しでリクエストし、proxy がヘッダーを付ける）。
+        1. 「Edit cloud environment」ダイアログで **Network secrets** を選択し、**Add secret** を押す
+        1. Secret type はデフォルト（Bearer）のまま、次を入力して **Add** で保存する
+            - **Name**: `Semantic Scholar API`
+            - **Allowed websites**: `api.semanticscholar.org`
+            - **Custom headers**: Name を `x-api-key` に変更し、Prefix（`Bearer`）は空にして、Value にキーを貼り付ける
+        > 保存後は値を再表示できない（変更は削除 → 再追加）。Enterprise プランでは組織管理者ロールが無いと追加できない（Owner に依頼する）。
+
+    - **パターン2: 環境変数で設定する**<br>
+        設定が簡単だが、**環境変数の値はその環境を使う全員に見える**（セッション内の Claude からも参照できる）点に注意。
+        1. 「Edit cloud environment」ダイアログの **Environment variables** に次を追加して保存する
+            ```bash
+            SEMANTIC_SCHOLAR_API_KEY=<your-api-key>
+            ```
+        1. arXiv MCP サーバーへ確実に渡すため、リポジトリの `.mcp.json` の `env` で環境変数を参照する（`:-` で未設定時は空文字にフォールバックし、ローカルでも壊れないようにする）
+            ```json
+            {"mcpServers":{"arxiv-mcp-server":{"type":"stdio","command":"uvx","args":["arxiv-mcp-server"],"env":{"SEMANTIC_SCHOLAR_API_KEY":"${SEMANTIC_SCHOLAR_API_KEY:-}"}}}}
+            ```
+
 1. 種別ごとに Routine を登録する<br>
     1つの Routine は「1つの cron ＋ 1つのプロンプト」なので、**種別ごとに別の Routine を作る**（スキルは共有し、プロンプトの `mode` で切り替える）。
     `/schedule`（CLI）または [claude.ai/code/routines](https://claude.ai/code/routines)（Web）から登録する。時刻はローカルタイム（JST）で指定すれば、自動で UTC に変換される（cron は UTC で保存される）。
@@ -131,5 +157,9 @@ flowchart TB
 - Claude Code Routines（公式ドキュメント）: https://code.claude.com/docs/en/routines
 
 - Claude Code Skills（公式ドキュメント）: https://code.claude.com/docs/en/skills
+
+- Cloud environments（ネットワークシークレット・環境変数）: https://code.claude.com/docs/en/cloud-environments
+
+- arxiv-mcp-server: https://github.com/blazickjp/arxiv-mcp-server
 
 - Claude Code Routines の基礎（本リポジトリの Tip）: https://github.com/Yagami360/ai-product-dev-tips/tree/master/dev_optimize/8
