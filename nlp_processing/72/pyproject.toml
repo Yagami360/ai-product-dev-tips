@@ -1,0 +1,42 @@
+[project]
+name = "local-guardrail-ja-benchmark"
+version = "0.1.0"
+description = "ローカルで動くガードレールモデルを日本語データで CPU 実測比較する"
+requires-python = ">=3.11,<3.14"
+# バージョンは ~= で互換範囲を固定（記事作成時点 2026-11 の最新安定版に合わせる）
+dependencies = [
+    "torch~=2.15",           # CPU 推論（HF の分類器・Qwen3Guard）
+    "transformers~=4.57",    # ModernBERT(mmBERT) / Qwen3 対応。5.x は API 変更が大きいため 4.x に固定
+    "sentencepiece~=0.2",    # deberta-v3 のトークナイザ
+    "huggingface-hub~=0.36", # 評価データ(Nemotron-Safety-Guard-Dataset-v3)の取得
+]
+
+[project.optional-dependencies]
+dev = [
+    "flake8~=7.1",
+    "mypy~=1.11",
+    "black~=24.8",
+    "isort~=5.13",
+]
+
+[tool.black]
+line-length = 150
+
+[tool.isort]
+profile = "black"
+line_length = 150
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[tool.uv]
+package = false
+
+# CPU 版 torch を使う（CUDA 版の巨大な wheel を落とさない）
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }

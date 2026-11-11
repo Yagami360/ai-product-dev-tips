@@ -1,0 +1,8 @@
+# 実行時にダウンロードされるデータ（コミット対象外）
+datasets/
+
+# uv / Python
+.venv/
+__pycache__/
+*.pyc
+.mypy_cache/

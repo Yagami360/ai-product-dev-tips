@@ -990,6 +990,9 @@ AIプロダクト開発のための Tips 集。<br>
 - Generative UI（LLM による UI 動的生成）
     - [【Next.js】Vercel AI SDK の tool-calling 型 Generative UI を使用して Ollama の Qwen がユーザーメッセージに応じて UI コンポーネントを動的生成する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/front_end/web_app/52)
 
+- LLM ガードレール
+    - [ローカルで動く LLM ガードレールモデルを、日本語データで CPU 実測比較する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/72)
+
 - 研究開発 AI Agent
     - [[In-progress] Sakana AI の The AI Scientist-v2 を使用して、AI 研究開発のアイデア生成 → 実験（Agentic Tree Search）→ 論文執筆までを自律実行する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/65)
 

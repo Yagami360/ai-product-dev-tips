@@ -1,0 +1,5 @@
+[flake8]
+max-line-length = 150
+# black と競合する規則は無効化（E203: スライスの空白, W503: 演算子前改行）
+extend-ignore = E203, W503
+extend-exclude = .venv, datasets, results, __pycache__
