@@ -6,3 +6,6 @@ datasets/
 __pycache__/
 *.pyc
 .mypy_cache/
+
+# --limit での動作確認結果（コミット対象外）
+results/*_limit*.json

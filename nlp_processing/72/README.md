@@ -2,7 +2,7 @@
 
 LLM アプリのガードレール（入出力の安全性チェック）を、**外部 API を使わずローカルモデルだけで実現する** Tip。Hugging Face や Ollama で公開されている OSS のガードモデルを手元で動かし、プロンプトインジェクション（PI）や有害な入力を判定する。
 
-ローカルのガードモデルは種類が多い一方で、主要なものの多くはモデルカードの対象言語に**日本語を含まない**。そこで本 Tip では、**CPU だけで動く小型のローカルガードモデル 6 種**を、**日本語の PI 検出**と**日本語の有害プロンプト検出**の 2 タスクで実測比較する。あわせて、ローカルのガードモデルを LLM アプリに組み込むときの**多段構成（ルール → 小型分類器 → ガード LLM）**の考え方を整理する。
+ローカルのガードモデルは種類が多い一方で、主要なものの多くはモデルカードの対象言語に**日本語を含まない**。そこで本 Tip では、**CPU だけで動く小型のローカルガードモデル 6 種**を、**日本語の PI 検出**と**日本語の有害プロンプト検出**の 2 タスクで実測比較する。GPU 向けの大型ガードモデル 4 種（gpt-oss-safeguard-20b / Nemotron Safety Guard 8B / Qwen3Guard-Gen-4B・8B）も、同じスクリプトで評価できるようにしてある（GPU での実測結果は TBD）。あわせて、ローカルのガードモデルを LLM アプリに組み込むときの**多段構成（ルール → 小型分類器 → ガード LLM）**の考え方を整理する。
 
 > **⚠️ 注意点**: PI 評価セット（[`pi_ja.jsonl`](pi_ja.jsonl)）は本 Tip 用に**自作した 60 件の小規模セット**で、有害プロンプト評価は公開データから 200 件を抽出したもの。**モデルの絶対的な優劣を決めるベンチマークではなく、「日本語でどの程度動くか」の当たりを付けるための実測**として読むこと。
 
@@ -74,17 +74,24 @@ flowchart TB
 - **Qwen3Guard は「Controversial（判断が分かれる）」を返す**ことがある。本 Tip では unsafe 側に倒して数えている（見逃しを減らす側の設定。safe 側に倒した場合の結果も後述）。
 - **調達条件でモデルの出自（開発国）が問われる場合**は注意。Qwen3Guard は精度・言語数で有力だが中国 Alibaba 製なので、採否は利用先のポリシー次第になる。
 
-GPU があるなら、より大きい次のモデルも候補になる（本 Tip では未測定）。
+GPU があるなら、より大きい次のモデルも候補になる。同じスクリプトで評価できる（[GPU 推奨モデルの評価手順](#gpu-推奨モデルの評価手順)）が、**GPU での実測結果は TBD**。
 
-| モデル | パラメータ | 特徴 |
-|---|---|---|
-| [`openai/gpt-oss-safeguard-20b`](https://huggingface.co/openai/gpt-oss-safeguard-20b) | 20B（MoE） | 判定ポリシーをプロンプトで渡すポリシー追従型。Apache-2.0。Ollama 版（[`gpt-oss-safeguard:20b`](https://ollama.com/library/gpt-oss-safeguard)）もある |
-| [`nvidia/Llama-3.1-Nemotron-Safety-Guard-8B-v3`](https://huggingface.co/nvidia/Llama-3.1-Nemotron-Safety-Guard-8B-v3) | 8B | モデルカードに日本語を明記した多言語ガード |
-| [`Qwen/Qwen3Guard-Gen-4B`](https://huggingface.co/Qwen/Qwen3Guard-Gen-4B) / `-8B` | 4B / 8B | 0.6B の上位版 |
+| モデル（`MODEL` キー） | 段 | パラメータ | 日本語（モデルカード） | ライセンス | 実行方法 |
+|---|---|---|---|---|---|
+| [`openai/gpt-oss-safeguard-20b`](https://huggingface.co/openai/gpt-oss-safeguard-20b)（`gpt-oss-safeguard-20b`） | L2（ポリシー追従型） | 21B（MoE, 有効 3.6B） | 記載なし | Apache-2.0 | Ollama（[`gpt-oss-safeguard:20b`](https://ollama.com/library/gpt-oss-safeguard)） |
+| [`nvidia/Llama-3.1-Nemotron-Safety-Guard-8B-v3`](https://huggingface.co/nvidia/Llama-3.1-Nemotron-Safety-Guard-8B-v3)（`nemotron-safety-guard-8b`） | L2 | 8B | ✅ あり | NVIDIA Open Model License（+ Llama 3.1） | transformers |
+| [`Qwen/Qwen3Guard-Gen-4B`](https://huggingface.co/Qwen/Qwen3Guard-Gen-4B)（`qwen3guard-gen-4b`） | L2 | 4B | ✅ 119 言語 | Apache-2.0 | transformers |
+| [`Qwen/Qwen3Guard-Gen-8B`](https://huggingface.co/Qwen/Qwen3Guard-Gen-8B)（`qwen3guard-gen-8b`） | L2 | 8B | ✅ 119 言語 | Apache-2.0 | transformers |
+
+- **gpt-oss-safeguard は判定ポリシーを自分で書いて渡す**（Bring Your Own Policy）。本 Tip では公式ガイドの構成（INSTRUCTIONS / DEFINITIONS / VIOLATES (1) / SAFE (0) / EXAMPLES）に沿って、PI 用の [`policies/pi.md`](policies/pi.md) と有害性用の [`policies/harm.md`](policies/harm.md) を用意し、system メッセージで渡している（例文は評価データと重ならないものにした）。ポリシーのファイルを書き換えるだけで、独自ルールを追加できる。
+- **Nemotron Safety Guard は、有害タスクの評価データと同じデータセット（Nemotron-Safety-Guard-Dataset-v3）の学習用データで学習されている**。評価にはテスト用データを使っているが、データの傾向が同じぶん有利になる点に注意。
+- **Nemotron は公式のプロンプトテンプレート**（モデルカードの Quick Start）に入力を埋め込み、出力 JSON の `"User Safety"` で判定する。
 
 ## 🚀 使用方法
 
 パッケージ管理は [uv](https://docs.astral.sh/uv/)、実行は `make` で行う。API キーは不要（すべてローカルで完結する）。
+
+### CPU で動く小型モデルの評価手順
 
 1. 依存を uv で仮想環境に同期する（CPU 版 PyTorch が入る）
 
@@ -112,7 +119,7 @@ GPU があるなら、より大きい次のモデルも候補になる（本 Tip
     | `pi`（既定） | [`pi_ja.jsonl`](pi_ja.jsonl)（自作）。直接 PI / 間接 PI（文書・ツール結果に埋め込み）/ 良性 / 紛らわしい良性（PI について質問するなど）の 4 種 × 15 件 | 60 |
     | `harm` | [`nvidia/Nemotron-Safety-Guard-Dataset-v3`](https://huggingface.co/datasets/nvidia/Nemotron-Safety-Guard-Dataset-v3)（CC-BY-4.0）の `ja/test.jsonl` から、**人手ラベル**のプロンプトを safe / unsafe 半々で抽出（`seed=0`） | 200 |
 
-    `MODEL` には [`evaluate_guard.py`](evaluate_guard.py) の `MODELS` のキー（`horizon-pi-guard` / `protectai-deberta-pi` / `qwen3guard-gen-0.6b` / `llama-guard3-1b` / `shieldgemma-2b` / `granite3-guardian-2b`）を指定する。結果は `results/<タスク>_<モデル>.json` に、サンプルごとの判定・生の出力・レイテンシつきで保存される。
+    `MODEL` には [`evaluate_guard.py`](evaluate_guard.py) の `MODELS` のキー（`horizon-pi-guard` / `protectai-deberta-pi` / `qwen3guard-gen-0.6b` / `llama-guard3-1b` / `shieldgemma-2b` / `granite3-guardian-2b`。GPU 推奨モデルは[後述](#gpu-推奨モデルの評価手順)）を指定する。結果は `results/<タスク>_<モデル>.json` に、サンプルごとの判定・生の出力・レイテンシつきで保存される。
 
 1. 全モデル × 全タスクをまとめて評価する
 
@@ -120,9 +127,70 @@ GPU があるなら、より大きい次のモデルも候補になる（本 Tip
     make run-all
     ```
 
+### GPU 推奨モデルの評価手順
+
+gpt-oss-safeguard-20b / Nemotron Safety Guard 8B / Qwen3Guard-Gen-4B・8B を GPU で評価する。重みの大きさの目安は、gpt-oss-safeguard-20b が VRAM 16GB に収まる（モデルカードより）、8B モデルが bfloat16 で約 16GB、4B モデルが約 8GB。
+
+1. GPU 版 PyTorch を入れる
+
+    ```sh
+    make install TORCH=gpu
+    ```
+
+    `TORCH=gpu` では PyPI の torch 2.15 が入る（Linux 版は CUDA 13.2 同梱）。CUDA 13 系に対応した NVIDIA ドライバが必要。CPU 版に戻すときは `make install`（既定 `TORCH=cpu`）。
+
+1. gpt-oss-safeguard を Ollama で取得する（GPU があれば Ollama が自動で使う）
+
+    ```sh
+    make pull-ollama-models-gpu   # gpt-oss-safeguard:20b（約 13GB）
+    ```
+
+    transformers 系の 3 モデル（Nemotron / Qwen3Guard-Gen-4B・8B）は初回実行時に自動でダウンロードされる。
+
+1. まず数件だけで動作確認する（`LIMIT` を付けると先頭 N 件だけを評価し、結果は `results/<タスク>_<モデル>_limit<N>.json` に保存される）
+
+    ```sh
+    make run MODEL=qwen3guard-gen-8b DEVICE=cuda LIMIT=2
+    ```
+
+1. 1 モデルを評価する
+
+    ```sh
+    make run MODEL=nemotron-safety-guard-8b DEVICE=cuda               # PI タスク
+    make run TASK=harm MODEL=gpt-oss-safeguard-20b DEVICE=cuda        # 有害プロンプトタスク
+    ```
+
+    `DEVICE=cuda` を付けると、transformers 系のモデルは bfloat16 で GPU に載る（自動で `TORCH=gpu` の環境で実行される）。gpt-oss-safeguard の推論量（reasoning effort）は既定 `low`。変える場合は `uv run --extra gpu python evaluate_guard.py --model gpt-oss-safeguard-20b --reasoning-effort medium` のように直接指定する。
+
+1. GPU 推奨モデル × 全タスクをまとめて評価する
+
+    ```sh
+    make run-all-gpu
+    ```
+
+> **💡 GPU が無い場合も CPU で動かせる**（ただし遅い）。`DEVICE` を付けずに実行すれば CPU で動く。8B モデルは float32 だと約 32GB のメモリが必要なので、メモリ 32GB 未満の環境では `DTYPE=bfloat16`（約 16GB）を付ける。
+>
+> ```sh
+> make run MODEL=qwen3guard-gen-4b LIMIT=2                        # float32（約 16GB）
+> make run MODEL=nemotron-safety-guard-8b DTYPE=bfloat16 LIMIT=2  # bfloat16（約 16GB）
+> make run MODEL=gpt-oss-safeguard-20b LIMIT=2                    # Ollama が CPU で動かす
+> ```
+>
+> 本 Tip の環境（Xeon 2.3GHz × 8 コア・AVX-512 なし・メモリ 29GB）で `LIMIT=2` を実行したときの 1 件あたりの時間は次のとおり。AVX-512 BF16 などに対応していない CPU では、bfloat16 は float32 より大幅に遅くなる。
+>
+> | モデル | 精度 | 1 件あたり（PI タスク） |
+> |---|---|---|
+> | `qwen3guard-gen-4b` | float32 | 約 15 秒 |
+> | `qwen3guard-gen-4b` | bfloat16 | 約 54 秒 |
+> | `qwen3guard-gen-8b` | bfloat16 | 約 97 秒 |
+> | `nemotron-safety-guard-8b` | bfloat16 | 約 135 秒 |
+> | `gpt-oss-safeguard-20b` | MXFP4（Ollama） | 約 20〜25 秒 |
+
 ## 📊 実行結果
 
-CPU 8 コア・メモリ 29GB・GPU なしの環境で、全モデルを 1 件ずつ逐次実行した結果。全モデル `temperature=0`（生成型）または決定的な分類器なので、判定は何度実行しても変わらない（N=1）。
+CPU で動く 6 モデルは、CPU 8 コア・メモリ 29GB・GPU なしの環境で 1 件ずつ逐次実行した結果。全モデル `temperature=0`（生成型）または決定的な分類器なので、判定は何度実行しても変わらない（N=1）。
+
+**GPU 推奨の 4 モデル（表中の「（GPU）」）は GPU での実測が未実施のため TBD**。CPU 上で `LIMIT=2` の動作確認（スクリプトが最後まで動き、判定を解釈できること）のみ行っている。🏆 は CPU 6 モデル内での最良。
 
 各指標の意味は次のとおり。
 
@@ -141,6 +209,10 @@ CPU 8 コア・メモリ 29GB・GPU なしの環境で、全モデルを 1 件�
 | `llama-guard3-1b` | L2 | 20.0% | 3.3% | 0.324 | 1.5s / 2.0s |
 | `shieldgemma-2b` | L2 | 0.0% | 0.0% | 0.000 | 12.8s / 14.0s |
 | `granite3-guardian-2b`（`jailbreak` 定義） | L2 | 100.0% | **86.7%** | 0.698 | 5.5s / 7.2s |
+| `gpt-oss-safeguard-20b`（GPU） | L2 | TBD | TBD | TBD | TBD |
+| `nemotron-safety-guard-8b`（GPU） | L2 | TBD | TBD | TBD | TBD |
+| `qwen3guard-gen-4b`（GPU） | L2 | TBD | TBD | TBD | TBD |
+| `qwen3guard-gen-8b`（GPU） | L2 | TBD | TBD | TBD | TBD |
 
 種類別に「unsafe と判定した割合」を見ると、モデルごとの癖がはっきり出る（攻撃側は高いほど、良性側は低いほど良い）。
 
@@ -152,6 +224,10 @@ CPU 8 コア・メモリ 29GB・GPU なしの環境で、全モデルを 1 件�
 | `llama-guard3-1b` | 13% | 27% | 7% | 0% |
 | `shieldgemma-2b` | 0% | 0% | 0% | 0% |
 | `granite3-guardian-2b` | 100% | 100% | **73%** | **100%** |
+| `gpt-oss-safeguard-20b`（GPU） | TBD | TBD | TBD | TBD |
+| `nemotron-safety-guard-8b`（GPU） | TBD | TBD | TBD | TBD |
+| `qwen3guard-gen-4b`（GPU） | TBD | TBD | TBD | TBD |
+| `qwen3guard-gen-8b`（GPU） | TBD | TBD | TBD | TBD |
 
 > **考察 1: 日本語 PI は、日本語を学習した小型分類器が圧勝**
 >
@@ -172,6 +248,10 @@ CPU 8 コア・メモリ 29GB・GPU なしの環境で、全モデルを 1 件�
 | `granite3-guardian-2b`（`harm` 定義） | 72.0% | 37.0% | 0.689 | 3.9s / 18.7s |
 | `llama-guard3-1b` | 42.0% | 9.0% | 0.556 | **1.7s** / 8.8s |
 | `shieldgemma-2b` | 27.0% | **6.0%** | 0.406 | 12.7s / 23.3s |
+| `gpt-oss-safeguard-20b`（GPU） | TBD | TBD | TBD | TBD |
+| `nemotron-safety-guard-8b`（GPU） | TBD | TBD | TBD | TBD |
+| `qwen3guard-gen-4b`（GPU） | TBD | TBD | TBD | TBD |
+| `qwen3guard-gen-8b`（GPU） | TBD | TBD | TBD | TBD |
 
 > **考察 3: 日本語対応の Qwen3Guard だけが実用圏。ただし「判断が分かれる」の扱いで性格が変わる**
 >
@@ -205,14 +285,15 @@ nlp_processing/72/
 ├── pyproject.toml / Makefile / .flake8   # uv + make の実行環境 / lint 設定
 ├── evaluate_guard.py                     # 評価本体（モデル定義・データ読み込み・判定・指標計算）
 ├── pi_ja.jsonl                           # 自作の日本語 PI 評価セット（60 件）
+├── policies/                             # gpt-oss-safeguard に渡す判定ポリシー（pi.md / harm.md）
 ├── results/                              # 評価結果（サンプルごとの判定・レイテンシ）
 └── datasets/ ※git 管理外                 # Nemotron-Safety-Guard-Dataset-v3 の ja/test（自動ダウンロード）
 ```
 
 ### 🔑 コードの主なポイント
 
-- **すべてのモデルを「テキスト → unsafe か否か」の二値に揃えている**（`build_judge`）。分類器は `INJECTION` ラベル、Qwen3Guard は `Safety: Unsafe|Controversial`、Llama Guard は `unsafe`、ShieldGemma と Granite Guardian は `Yes` を unsafe とみなす。
-- **Ollama 系はプロンプトを自作していない**。各モデルの chat テンプレートが公式のガード用プロンプトに展開するので、ユーザー発話としてそのまま渡す。
+- **すべてのモデルを「テキスト → unsafe か否か」の二値に揃えている**（`build_judge`）。分類器は `INJECTION` ラベル、Qwen3Guard は `Safety: Unsafe|Controversial`、Llama Guard は `unsafe`、ShieldGemma と Granite Guardian は `Yes`、Nemotron は JSON の `"User Safety": "unsafe"`、gpt-oss-safeguard はポリシーで指定した `1` を unsafe とみなす。
+- **ガード用プロンプトは各モデルの公式の形式に従う**。Ollama 系（gpt-oss-safeguard 以外）と Qwen3Guard は chat テンプレートが公式のガード用プロンプトに展開するので、ユーザー発話としてそのまま渡す。Nemotron はモデルカードのテンプレート（`NEMOTRON_TEMPLATE`）に埋め込み、gpt-oss-safeguard は [`policies/`](policies/) のポリシーを system メッセージ（先頭に `Reasoning: low`）で渡す。
 - **レイテンシは 1 件ずつ計測**し、初回（モデルロード）はウォームアップとして除外している。
 - **PI 評価セットは「間接 PI 入りの文書」と「同じ文書のきれいな版」を対にしている**（例: 議事録・レビュー・README）。文書の種類ではなく、埋め込まれた指示を見ているかを確かめるため。
 
@@ -220,14 +301,16 @@ nlp_processing/72/
 
 | コマンド | 説明 |
 |---|---|
-| `make install` | 依存(+dev ツール)を uv で仮想環境に同期 |
+| `make install` | 依存(+dev ツール)を uv で仮想環境に同期（GPU 版 torch は `TORCH=gpu`） |
 | `make pull-ollama-models` | Ollama 経由で使うガードモデルを取得 |
+| `make pull-ollama-models-gpu` | GPU 推奨の Ollama モデル（`gpt-oss-safeguard:20b`）を取得 |
 | `make run` | 1 モデルを評価（`TASK=harm MODEL=llama-guard3-1b` 等で変更） |
-| `make run-all` | 全モデル × 全タスクを評価して `results/` に保存 |
+| `make run-all` | CPU で動く全モデル × 全タスクを評価して `results/` に保存 |
+| `make run-all-gpu` | GPU 推奨の 4 モデル × 全タスクを GPU で評価して `results/` に保存 |
 | `make lint` / `make format` | flake8・mypy で静的チェック / black・isort で自動整形 |
 | `make clean` | ダウンロードしたデータ（`datasets/`）を削除 |
 
-主な変数: `TASK`（既定 `pi`）/ `MODEL`（`horizon-pi-guard`）/ `N_HARM`（200）。
+主な変数: `TASK`（既定 `pi`）/ `MODEL`（`horizon-pi-guard`）/ `N_HARM`（200）/ `DEVICE`（`cpu`。GPU は `cuda`）/ `TORCH`（`DEVICE` に合わせて `cpu` / `gpu`）/ `DTYPE`（`auto`。CPU で 8B モデルは `bfloat16`）/ `LIMIT`（空 = 全件）。
 
 ## ⚠️ 注意点・課題
 
@@ -237,7 +320,9 @@ nlp_processing/72/
 - **Controversial のしきい値設計**: Qwen3Guard の 3 値判定をどちらに倒すかで、検出率と誤検知率が大きく変わる（90% / 27% ⇔ 64% / 13%）。一律 block ではなく、人の確認に回す設計を検討する。
 - **モデルの出自とライセンス**: Qwen3Guard（Alibaba）は精度面で有力だが、調達条件によっては中国系モデルを採用できないことがある。Llama / Gemma 系は独自ライセンスなので、商用条件を確認する。
 - **ガードモデル自体の脆さ**: RAG 風の長い文脈で判定が反転する（[arXiv:2510.05310](https://arxiv.org/abs/2510.05310)）、微調整で安全性の境界が崩れる（[arXiv:2605.02914](https://arxiv.org/abs/2605.02914)）などの報告がある。取得文書はチャンク単位で検査し、日本語向けにガードモデルを微調整する場合は安全性の劣化を監視する。
-- **今回測っていないもの**: 出力（応答）側の検査、ツール呼び出し引数の検査、GPU 前提の大型ガード（gpt-oss-safeguard-20b、Nemotron Safety Guard 8B など）。
+- **Nemotron Safety Guard の有害タスクの結果は割り引いて読む**: 有害タスクの評価データ（Nemotron-Safety-Guard-Dataset-v3 の ja/test）と同じデータセットの学習用データで学習されたモデルなので、他のモデルより有利な条件になる。
+- **gpt-oss-safeguard の結果はポリシー次第**: 判定ポリシー（[`policies/`](policies/)）の書き方で精度が変わる。本 Tip のポリシーは公式ガイドの構成に沿った一例で、最適化はしていない。
+- **今回測っていないもの**: 出力（応答）側の検査、ツール呼び出し引数の検査、GPU 推奨の 4 モデルの GPU での実測（TBD）。
 
 ## 🔗 参考サイト
 

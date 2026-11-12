@@ -1,17 +1,19 @@
 [project]
 name = "local-guardrail-ja-benchmark"
 version = "0.1.0"
-description = "ローカルで動くガードレールモデルを日本語データで CPU 実測比較する"
+description = "ローカルで動くガードレールモデルを日本語データで実測比較する（CPU / GPU）"
 requires-python = ">=3.11,<3.14"
 # バージョンは ~= で互換範囲を固定（記事作成時点 2026-11 の最新安定版に合わせる）
 dependencies = [
-    "torch~=2.15",           # CPU 推論（HF の分類器・Qwen3Guard）
     "transformers~=4.57",    # ModernBERT(mmBERT) / Qwen3 対応。5.x は API 変更が大きいため 4.x に固定
     "sentencepiece~=0.2",    # deberta-v3 のトークナイザ
     "huggingface-hub~=0.36", # 評価データ(Nemotron-Safety-Guard-Dataset-v3)の取得
 ]
 
 [project.optional-dependencies]
+# torch は CPU 版 / GPU 版のどちらか一方を選ぶ（make install TORCH=cpu|gpu）
+cpu = ["torch~=2.15"]  # CPU 専用ビルド（CUDA 同梱の巨大な wheel を落とさない）
+gpu = ["torch~=2.15"]  # PyPI の torch（Linux 版は CUDA 13.2 同梱）
 dev = [
     "flake8~=7.1",
     "mypy~=1.11",
@@ -31,12 +33,14 @@ ignore_missing_imports = true
 
 [tool.uv]
 package = false
+# cpu と gpu の extra は同時に入れられない
+conflicts = [[{ extra = "cpu" }, { extra = "gpu" }]]
 
-# CPU 版 torch を使う（CUDA 版の巨大な wheel を落とさない）
 [[tool.uv.index]]
 name = "pytorch-cpu"
 url = "https://download.pytorch.org/whl/cpu"
 explicit = true
 
+# cpu extra のときだけ CPU 専用ビルドの配布先を使う（gpu extra は PyPI から取得）
 [tool.uv.sources]
-torch = { index = "pytorch-cpu" }
+torch = [{ index = "pytorch-cpu", extra = "cpu" }]
