@@ -6,3 +6,6 @@ datasets/
 __pycache__/
 *.pyc
 .mypy_cache/
+
+# 認証情報（.env.example をコピーして作成）
+.env
