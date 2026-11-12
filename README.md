@@ -992,6 +992,7 @@ AIプロダクト開発のための Tips 集。<br>
 
 - LLM ガードレール
     - [ローカルで動く LLM ガードレールモデルを、日本語データで CPU 実測比較する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/72)
+    - [クラウドのマネージド LLM ガードレールサービス（AWS Bedrock Guardrails / Azure AI Content Safety / Google Model Armor など）を比較し、日本語データで実測する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/73)
 
 - 研究開発 AI Agent
     - [[In-progress] Sakana AI の The AI Scientist-v2 を使用して、AI 研究開発のアイデア生成 → 実験（Agentic Tree Search）→ 論文執筆までを自律実行する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/65)

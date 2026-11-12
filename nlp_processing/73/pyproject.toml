@@ -1,0 +1,31 @@
+[project]
+name = "cloud-guardrail-ja-benchmark"
+version = "0.1.0"
+description = "クラウドのマネージドガードレールサービスを日本語データで実測比較する"
+requires-python = ">=3.11,<3.14"
+# Azure / Model Armor / OpenAI は REST を標準ライブラリ（urllib）で直接呼ぶので SDK は不要
+dependencies = [
+    "boto3~=1.44",           # Bedrock Guardrails（ApplyGuardrail）
+    "huggingface-hub~=0.36", # 評価データ(Nemotron-Safety-Guard-Dataset-v3)の取得
+]
+
+[project.optional-dependencies]
+dev = [
+    "flake8~=7.1",
+    "mypy~=1.11",
+    "black~=24.8",
+    "isort~=5.13",
+]
+
+[tool.black]
+line-length = 150
+
+[tool.isort]
+profile = "black"
+line_length = 150
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[tool.uv]
+package = false
