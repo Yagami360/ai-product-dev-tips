@@ -150,10 +150,15 @@ def build_judge(name, task, device="cpu", dtype="auto", reasoning_effort="low"):
 
     def judge(text):
         messages = system + [{"role": "user", "content": text}]
-        body = {"model": target, "messages": messages, "stream": False, "options": {"temperature": 0}}
+        # 推論が長引いて終わらない入力があるため、生成トークン数に上限を設ける
+        body = {"model": target, "messages": messages, "stream": False, "options": {"temperature": 0, "num_predict": 1024}}
         req = urllib.request.Request(f"{host}/api/chat", data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
         with urllib.request.urlopen(req, timeout=600) as res:
-            content = json.load(res)["message"]["content"].strip()
+            out = json.load(res)
+        content = out["message"]["content"].strip()
+        # 上限で打ち切られて判定が出なかった場合は、ガードレールとして安全側（unsafe）に倒す
+        if out.get("done_reason") == "length" and not content:
+            return True, "(truncated)"
         # llama-guard3 は "safe" / "unsafe\nS1"、shieldgemma と granite3-guardian は "Yes"（違反あり）/ "No"、
         # gpt-oss-safeguard はポリシーで指定した "1"（違反あり）/ "0"（推論過程は message.thinking に分かれて返る）
         return content.lower().startswith(("unsafe", "yes", "1")), content.replace("\n", " ")
