@@ -131,13 +131,15 @@ GPU があるなら、より大きい次のモデルも候補になる。同じ�
 
 gpt-oss-safeguard-20b / Nemotron Safety Guard 8B / Qwen3Guard-Gen-4B・8B を GPU で評価する。重みの大きさの目安は、gpt-oss-safeguard-20b が VRAM 16GB に収まる（モデルカードより）、8B モデルが bfloat16 で約 16GB、4B モデルが約 8GB。
 
+**必要な GPU の目安は「VRAM 24GB 以上・Ampere 世代以降の NVIDIA GPU」**（L4 / A10G / RTX 3090・4090 / A100 など）。4 モデルとも 1 枚で動く。8B モデルは重みだけで約 16GB あり、推論中の KV キャッシュなどを含めると VRAM 16GB では足りない。bfloat16 で動かすので、bfloat16 を高速に計算できない Turing 以前（T4 など）は避ける。クラウドなら GCP の g2（L4 24GB）や AWS の g5（A10G 24GB）/ g6（L4 24GB）が手頃（VRAM の量は重みの大きさからの見積もりで、本 Tip では GPU での実測はしていない）。
+
 1. GPU 版 PyTorch を入れる
 
     ```sh
     make install TORCH=gpu
     ```
 
-    `TORCH=gpu` では PyPI の torch 2.15 が入る（Linux 版は CUDA 13.2 同梱）。CUDA 13 系に対応した NVIDIA ドライバが必要。CPU 版に戻すときは `make install`（既定 `TORCH=cpu`）。
+    `TORCH=gpu` では PyPI の torch 2.15 が入る（Linux 版は CUDA 13.2 同梱）。CUDA 13 系に対応した NVIDIA ドライバが必要（CUDA 13 では Volta 以前の GPU はサポート対象外）。CPU 版に戻すときは `make install`（既定 `TORCH=cpu`）。
 
 1. gpt-oss-safeguard を Ollama で取得する（GPU があれば Ollama が自動で使う）
 
