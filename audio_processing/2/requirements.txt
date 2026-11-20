@@ -1,0 +1,3 @@
+google-genai==2.25.0
+python-dotenv==1.2.4
+openai==3.55.0

@@ -117,6 +117,7 @@ AIプロダクト開発のための Tips 集。<br>
 <summary>音声処理</summary>
 
 - [pydub と ffmpeg を用いて音声ファイルの無音部分をクレンジングする](https://github.com/Yagami360/ai-product-dev-tips/tree/master/audio_processing/1)
+- [[In-progress] 日本語の ASR（文字起こし）・TTS（読み上げ）・リアルタイム対話をローカルモデルとクラウド API で試す](https://github.com/Yagami360/ai-product-dev-tips/tree/master/audio_processing/2)
 
 </details>
 
