@@ -1,0 +1,6 @@
+*
+!Dockerfile
+!pyproject.toml
+!uv.lock
+!replay.py
+!sandbox.html

@@ -1,0 +1,13 @@
+[project]
+name = "computer-use-desktop"
+version = "0.1.0"
+description = "Claude Computer Use で Linux のファイルマネージャーを操作する"
+requires-python = ">=3.10"
+dependencies = [
+    "anthropic==0.86.0",
+    "pillow==12.2.0",
+    "websockify==0.13.0",
+]
+
+[tool.uv]
+package = false

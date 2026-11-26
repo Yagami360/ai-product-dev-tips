@@ -1,0 +1,9 @@
+[project]
+name = "computer-use-replay"
+version = "0.1.0"
+description = "Playwright でブラウザ操作の記録・再実行・引き継ぎを試す"
+requires-python = ">=3.10"
+dependencies = ["playwright==1.60.0"]
+
+[tool.uv]
+package = false

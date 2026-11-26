@@ -995,6 +995,11 @@ AIプロダクト開発のための Tips 集。<br>
     - [ローカルで動く LLM ガードレールモデルを、日本語データで CPU 実測比較する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/72)
     - [クラウドのマネージド LLM ガードレールサービス（AWS Bedrock Guardrails / Azure AI Content Safety / Google Model Armor など）を比較し、日本語データで実測する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/73)
 
+- Computer Use
+    - [Claude の Computer Use を使用してコンピューター上の操作を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/74)
+    - [[In-progress] Grok Bot の Computer Use と Teach a task でブラウザ操作を再実行する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/76)
+    - [Playwright Codegen を使用して、Grok Bot の Teach a task のようなブラウザ操作の記録・再実行を試す](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/75)
+
 - 研究開発 AI Agent
     - [[In-progress] Sakana AI の The AI Scientist-v2 を使用して、AI 研究開発のアイデア生成 → 実験（Agentic Tree Search）→ 論文執筆までを自律実行する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/65)
 

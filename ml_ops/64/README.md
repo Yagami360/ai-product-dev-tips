@@ -223,13 +223,15 @@ Opsgenie を利用することで、サーバーで発生したアラートを�
         <img width="500" alt="image" src="https://user-images.githubusercontent.com/25688193/172161303-17ddfd6d-a68f-466e-940b-f77d42813bf0.png"><br> 
 
     1. Datadog Agent を EC2 インスタンスにインストールする<br>
-        Ubuntu の image id (`ami-008b09448b998a562` など)とする EC2 インスタンスの場合は、Ubuntu を選択後、画面右側に赤枠に表示されるインストールコマンドをコピペして、EC2 インスタンス（Ubuntu）に Datadog Agent をインストールする
+        Ubuntu の AMI を使う場合は、Datadog のセットアップ画面で Ubuntu を選択する。EC2 インスタンスの Bash で API キーを入力して Datadog Agent をインストールする。キーの入力は画面に表示されない。
 
-        ```sh
-        DD_AGENT_MAJOR_VERSION=7 DD_API_KEY=e22df3d0958810817576e2d94c0bedfb DD_SITE="datadoghq.com" bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script.sh)"
+        ```bash
+        (
+            read -rsp "Datadog API key: " DATADOG_API_KEY &&
+            printf '\n' &&
+            DD_AGENT_MAJOR_VERSION=7 DD_API_KEY="${DATADOG_API_KEY:?Datadog API キーを入力してください}" DD_SITE="datadoghq.com" bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script.sh)"
+        )
         ```
-
-        <img width="1157" alt="image" src="https://user-images.githubusercontent.com/25688193/172387695-f1f2a125-4909-400c-9572-2b9ec7e3a104.png">
 
     1. 【オプション】Datadog　から各種 EC2 インスタンスにアクセスするための IAM ユーザーを作成する。<br>
         使用したい IAM ユーザーに EC2 インスタンスへのアクセス権が付与されていない場合は、EC2 インスタンスへのアクセス権を付与する

@@ -1,0 +1,23 @@
+name: computer-use-desktop
+
+services:
+  desktop:
+    build: .
+    image: tip74-computer-use-desktop:local
+    init: true
+    environment:
+      ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY:-}"
+    command: ["--mode", "demo", "--out-dir", "/tmp/run-output"]
+
+  desktop-session:
+    extends:
+      service: desktop
+    profiles: [session]
+    ports:
+      - "127.0.0.1:${VIEW_PORT:-6080}:6080"
+    command: ["--mode", "claude", "--model", "${MODEL:-claude-sonnet-4-6}", "--max-turns", "${MAX_TURNS:-20}", "--wait-for-message"]
+    healthcheck:
+      test: ["CMD-SHELL", "test -S /tmp/computer-use-session.sock && python -c \"from socket import create_connection; create_connection(('127.0.0.1', 6080), 1).close()\""]
+      interval: 1s
+      timeout: 2s
+      retries: 30

@@ -19,13 +19,15 @@
 	ファイアウォール設定で、Datadog Agent が通信を行うためのポート `10516` を開放させておく。
 
 1. Datadog Agent を GCE インスタンスにインストールする<br>
-	Debian をベースイメージとした GCE インスタンスの場合は、Debian を選択後、画面右側に赤枠に表示されるインストールコマンドをコピペして、GCE インスタンス（Debian）に Datadog Agent をインストールする
+	Debian をベースイメージとした GCE インスタンスの場合は、Datadog のセットアップ画面で Debian を選択する。GCE インスタンスの Bash で API キーを入力して Datadog Agent をインストールする。キーの入力は画面に表示されない。
 
-	```sh
-	DD_AGENT_MAJOR_VERSION=7 DD_API_KEY=e22df3d0958810817576e2d94c0bedfb DD_SITE="datadoghq.com" bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script.sh)"
+	```bash
+	(
+	    read -rsp "Datadog API key: " DATADOG_API_KEY &&
+	    printf '\n' &&
+	    DD_AGENT_MAJOR_VERSION=7 DD_API_KEY="${DATADOG_API_KEY:?Datadog API キーを入力してください}" DD_SITE="datadoghq.com" bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script.sh)"
+	)
 	```
-
-	<img width="1197" alt="image" src="https://user-images.githubusercontent.com/25688193/159151213-ae6bd767-d8d1-4aa8-84ed-7789c516b94e.png">
 
 	> GCE インスタンスのポート `10514` または `10516` を開放していない場合は、`/etc/datadog-agent/datadog.yaml` に次の設定を追加することで、http 通信で Datadog Agent がログを転送するよう構成することができる。（`datadog.yaml` は、sudo権限のファイルなので、`sudo vi /etc/datadog-agent/datadog.yaml` などで編集可能）
 	> ```yaml
@@ -91,16 +93,24 @@
 1. Datadog 左メニューの「Logs」→「Getting Started」→「Cloud」→「Google Cloud Platform」をクリックして選択すると、下記画像のページが出るので、記載された内容を実施していく<br>
 
 	<img width="800" alt="image" src="https://user-images.githubusercontent.com/25688193/159152104-ecc449fd-e144-4f0d-8d2a-3b802c695e2f.png"><br>
-	<img width="800" alt="image" src="https://user-images.githubusercontent.com/25688193/159152113-91ccf9c4-6554-48ad-8740-d04191d96efc.png"><br>
 
 
 	1. GCE のメトリクスやログデータを Datadog に転送するための Cloud Pub/Sub の作成を行い、PUSH 型のサブスクリプションを作成する<br>
 
-		> このときの PUSH 型のサブスクリプションのエンドポイント URL には、先の画面に表示されている `https://gcp-intake.logs.datadoghq.com/v1/input/${DATADOG_API_KEY}を入力する`
+		> PUSH 型のサブスクリプションのエンドポイント URL には、Datadog のセットアップ画面に表示された URL を使う。CLI を実行する端末で API キーを `DATADOG_API_KEY` に設定する。
 
 		> Cloud Pub/Sub については、「[【GCP】Google Cloud Pub/Sub の基礎事項](https://github.com/Yagami360/ai-product-dev-tips/tree/master/ml_ops/18)」を参考のこと
 
-		- CLI で行う場合<br>
+		- CLI で行う場合は、`ml_ops/52` で次のコマンドを実行する。
+			```bash
+			(
+			    read -rsp "Datadog API key: " DATADOG_API_KEY &&
+			    printf '\n' &&
+			    DATADOG_API_KEY="$DATADOG_API_KEY" sh ./make_pubsub.sh
+			)
+			```
+
+			[`make_pubsub.sh`](make_pubsub.sh) の内容は以下の通り。
 			```sh
 			#!/bin/sh
 			set -eu
@@ -108,7 +118,7 @@
 			PROJECT_ID=my-project2-303004
 			TOPIC_NAME=export-logs-to-datadog
 			SUBSCRIPTION_NAME=datadog-sub
-			DATADOG_API_KEY=e22df3d0958810817576e2d94c0bedfb
+			: "${DATADOG_API_KEY:?Datadog API キーを環境変数に設定してください}"
 
 			# Cloud Pub/Sub 作成権限のある個人アカウントに変更
 			#gcloud auth login
@@ -126,7 +136,7 @@
 			if [ ! "$(gcloud pubsub subscriptions list | grep "name: projects/${PROJECT_ID}/subscriptions/${SUBSCRIPTION_NAME}")" ] ;then
 				gcloud pubsub subscriptions create ${SUBSCRIPTION_NAME} \
 					--topic ${TOPIC_NAME} \
-					--push-endpoint https://gcp-intake.logs.datadoghq.com/v1/input/${DATADOG_API_KEY} \
+					--push-endpoint "https://gcp-intake.logs.datadoghq.com/v1/input/${DATADOG_API_KEY}" \
 					--ack-deadline 10
 			fi
 

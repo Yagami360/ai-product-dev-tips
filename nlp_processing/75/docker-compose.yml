@@ -1,0 +1,11 @@
+name: computer-use-replay
+
+services:
+  replay:
+    build: .
+    init: true
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    shm_size: 256mb
+    environment:
+      HOME: /tmp
+      TICKET_ID: "${TICKET_ID:-DEMO-042}"
