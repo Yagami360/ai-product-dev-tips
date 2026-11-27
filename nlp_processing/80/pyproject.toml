@@ -1,0 +1,9 @@
+[project]
+name = "gemini-decisions-example"
+version = "0.1.0"
+description = "Gemini Decisions API で入力を判定する"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.uv]
+package = false

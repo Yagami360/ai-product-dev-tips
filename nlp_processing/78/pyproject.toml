@@ -1,0 +1,23 @@
+[project]
+name = "saihai-local-example"
+version = "0.1.0"
+description = "saihai の CPU 推論で日本語の問い合わせを判定する"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "torch>=2.10,<2.11",
+    "transformers==5.17.0",
+    "sentence-transformers==6.1.0",
+    "safetensors>=0.7",
+    "tqdm>=4.67",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
