@@ -1,0 +1,9 @@
+[project]
+name = "typesafe-jev-example"
+version = "0.1.0"
+description = "TypeSafe Jev API を呼び出す"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.uv]
+package = false

@@ -1,0 +1,9 @@
+[project]
+name = "jev-skill-selection-example"
+version = "0.1.0"
+description = "Jev の 2 段方式でエージェントのスキルを選ぶ"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.uv]
+package = false

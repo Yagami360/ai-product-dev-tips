@@ -995,6 +995,14 @@ AIプロダクト開発のための Tips 集。<br>
     - [ローカルで動く LLM ガードレールモデルを、日本語データで CPU 実測比較する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/72)
     - [クラウドのマネージド LLM ガードレールサービス（AWS Bedrock Guardrails / Azure AI Content Safety / Google Model Armor など）を比較し、日本語データで実測する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/73)
 
+- Jev [Typed Decision Model]
+    - [TypeSafe AI の Jev API を使用して型付き判断を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/77)
+    - [Google の Gemini Decisions API を使用して分類・選択・採点を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/80)
+    - [OpenAI の Decisions API を使用して分類・選択・採点を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/81)
+    - [AWS 上の Databricks Unity Gateway から TypeSafe AI の Jev を使用する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/82)
+    - [日本語対応の Jev モデル（saihai）をローカルで動かして、型付き判断を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/78)
+    - [Jev を AI エージェントのスキル選択に組み込み、日本語データで評価する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/79)
+
 - Computer Use
     - [Claude の Computer Use を使用してコンピューター上の操作を行う](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/74)
     - [[In-progress] Grok Bot の Computer Use と Teach a task でブラウザ操作を再実行する](https://github.com/Yagami360/ai-product-dev-tips/tree/master/nlp_processing/76)

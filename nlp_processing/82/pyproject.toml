@@ -1,0 +1,9 @@
+[project]
+name = "databricks-jev-example"
+version = "0.1.0"
+description = "AWS 上の Databricks Unity Gateway 経由で Jev を呼び出す"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.uv]
+package = false
